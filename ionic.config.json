@@ -1,0 +1,7 @@
+{
+  "name": "schoolDiary",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
