@@ -11,7 +11,7 @@ import {
 } from '@angular/fire/auth';
 import { AuthService } from './auth.service';
 import { getDatabase, onValue, push, ref, set } from 'firebase/database';
-import { UserModel } from '../../models/userModel';
+import { UserModel } from '../models/userModel';
 @Injectable({
   providedIn: 'root',
 })

@@ -31,6 +31,10 @@ export class AuthService {
   } */
   getUser(): Observable<firebase.User | null> {
     console.log("getting user");
+    this.afAuth.authState.subscribe((user) => {
+      console.log("user logged",user);
+    });
+
     return this.afAuth.authState;
   }
 

@@ -6,6 +6,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Auth, authState, signInAnonymously, signOut, User, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
 import { Router, RouterModule } from '@angular/router';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { ToasterService } from 'src/app/shared/services/toaster.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -38,6 +39,7 @@ password="";
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private router: Router,
+    private  $toaster: ToasterService
   ) {
     this.afAuth = inject(AngularFireAuth);
     this.loginForm = this.fb.group({
@@ -57,17 +59,20 @@ console.log("init login page")
       .signInWithEmailAndPassword(this.email, this.password)
       .catch((error: { message: any; }) => {
         console.log(error.message);
+        this.$toaster.presentToast({message: error.message});
         this.error = true;
         this.errorMessage = error.message;
         this.cdr.detectChanges();
       })
       .then((data: any) => {
-        console.log("login successfull")
-        console.log(data);
-        this.router.navigate(['/home']);
+        console.log("data",data)
         if (data) {
           this.error = false;
           this.errorMessage = '';
+     
+        console.log("login successfull")
+        
+        this.router.navigate(['/home']);
 
         } else {
           console.log('login failed');
@@ -75,6 +80,7 @@ console.log("init login page")
       });
     } else {
       console.log('Login form is invalid');
+      this.$toaster.presentToast({message: 'Login form is invalid'});
     }
   }
 

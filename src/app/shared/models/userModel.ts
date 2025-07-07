@@ -1,4 +1,4 @@
-import { ActivityModel } from "./activityModel";
+
 
 export class UserModel{
   setKey(uid: string) {
@@ -14,7 +14,6 @@ export class UserModel{
   classKey:string = ''
   phoneNumber = ''
   role = ''
-  prList: ActivityModel[] = []
   userName = ''
   constructor(args?:{}){
     this.build(args);
@@ -22,11 +21,8 @@ export class UserModel{
 
   build(args?:{}){
     Object.assign(this, args)
-    const pr:ActivityModel[] = []
-Object.entries(this.prList).forEach(([key, value]) => {
-  pr.push(new ActivityModel(value).setKey(key))
-})
-this.prList= pr
+
+
 
     return this
 
