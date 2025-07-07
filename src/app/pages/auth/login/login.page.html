@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>login</ion-title>
+  </ion-toolbar>
+  <title>reCAPTCHA demo: Simple page</title>
+  <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">login</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <form [formGroup]="loginForm">
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="email" formControlName="email" [(ngModel)]="email"></ion-input>
+      <p class="error" *ngIf="loginForm.get('email')!.hasError('required')">Email is required</p>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input type="password" formControlName="password" [(ngModel)]="password"></ion-input>
+      <p class="error" *ngIf="loginForm.get('password')!.hasError('required')">Password is required</p>
+      <p  class= "error" *ngIf="loginForm.get('password')!.hasError('minlength')">Password must be 8 char long</p>
+    </ion-item>
+    <ion-button type="submit" [disabled]="!loginForm.valid" (click)="login()">Login</ion-button>
+    
+  </form>
+  <a [routerLink]="['/recover-password']">Forgot password?</a>
+</ion-content>
