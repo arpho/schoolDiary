@@ -59,7 +59,7 @@ console.log("init login page")
       .signInWithEmailAndPassword(this.email, this.password)
       .catch((error: { message: any; }) => {
         console.log(error.message);
-        this.$toaster.presentToast({message: error.message});
+        this.$toaster.presentToast({message: String(error.message), position: "bottom"});
         this.error = true;
         this.errorMessage = error.message;
         this.cdr.detectChanges();
@@ -76,11 +76,12 @@ console.log("init login page")
 
         } else {
           console.log('login failed');
+          this.$toaster.presentToast({message: 'Login failed', position: "top"});
         }
       });
     } else {
       console.log('Login form is invalid');
-      this.$toaster.presentToast({message: 'Login form is invalid'});
+      this.$toaster.presentToast({message: 'Login form is invalid', position: "top"});
     }
   }
 

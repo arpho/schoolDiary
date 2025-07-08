@@ -10,6 +10,12 @@ export class ToasterService {
     private toastCtrl: ToastController
   ) { }
 
-  presentToast(data:{message?: string, duration?: number , position?: string}) {
-
-}}
+  async presentToast(data:{message?: string, duration?: number , position: "bottom" | "top" | "middle"}) {
+    const toast = await this.toastCtrl.create({
+      message: data.message,
+      duration: data.duration,
+      position: data.position   
+    });
+    toast.present();
+  }
+}
