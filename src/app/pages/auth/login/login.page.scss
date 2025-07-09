@@ -6,3 +6,9 @@
     position  : absolute;
     transform : translate(-50%, -50%);
 }
+
+#links {
+    display: flex
+;
+    flex-direction: column;
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit, Optional } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit, Optional, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
@@ -25,13 +25,38 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
   ]
 })
 export class LoginPage implements OnInit {
+
+  email= signal<string>('');
+password= signal<string>('');
+formValue= computed(() => {
+  const out = {
+    email: this.email(),
+    password: this.password()
+  }
+  return out
+})
+isFormValid= computed(() => {
+  return this.formValue() && this.formValue()?.email && this.formValue()?.password
+})
+
+onPasswordChange($event: any) {
+if($event.target){
+console.log("password",$event.target?.value)
+this.password.set($event.target?.value)
+}
+}
+onEmailChange($event: any) {
+if($event.target){
+console.log("email",$event.target?.value)
+this.email.set($event.target?.value)
+}
+}
 loginForm: FormGroup
-email="";
-password="";
+
   error: boolean= false;
   errorMessage: any;
   afAuth: AngularFireAuth;
@@ -56,7 +81,7 @@ console.log("init login page")
       console.log('Login form submitted:', this.loginForm.value);
 
     this.afAuth
-      .signInWithEmailAndPassword(this.email, this.password)
+      .signInWithEmailAndPassword(this.email(), this.password())
       .catch((error: { message: any; }) => {
         console.log(error.message);
         this.$toaster.presentToast({message: String(error.message), position: "bottom"});

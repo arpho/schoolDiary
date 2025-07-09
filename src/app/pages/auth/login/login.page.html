@@ -15,17 +15,28 @@
   <form [formGroup]="loginForm" id="loginForm">
     <ion-item>
       <ion-label position="floating">Email</ion-label>
-      <ion-input type="email" formControlName="email" [(ngModel)]="email"></ion-input>
-      <p class="error" *ngIf="loginForm.get('email')!.hasError('required')">Email is required</p>
+      <ion-input type="email" (change)="onEmailChange($event)" formControlName="email"></ion-input>
+      @if (loginForm.get('email')!.hasError('required')) {
+      <p class="error" >Email is required</p>
+      }
     </ion-item>
+
     <ion-item>
       <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" formControlName="password" [(ngModel)]="password"></ion-input>
-      <p class="error" *ngIf="loginForm.get('password')!.hasError('required')">Password is required</p>
-      <p  class= "error" *ngIf="loginForm.get('password')!.hasError('minlength')">Password must be 8 char long</p>
+      <ion-input type="password" (change)="onPasswordChange($event)" formControlName="password"></ion-input>
+      @if (loginForm.get('password')!.hasError('required')) {
+      <p class="error" >Password is required</p>
+      }
+
+@if (loginForm.get('password')!.hasError('minlength')) {
+      <p  class="error" >Password must be 8 char long</p>
+    }
     </ion-item>
     <ion-button type="submit" [disabled]="!loginForm.valid" (click)="login()">Login</ion-button>
-    
+    <div id="links">
   <a [routerLink]="['/recover-password']">Forgot password?</a>
+  <a [routerLink]="['/signup']">Don't have an account?</a>
+  </div>
   </form>
 </ion-content>
+ 

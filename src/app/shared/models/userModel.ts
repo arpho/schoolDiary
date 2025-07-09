@@ -1,3 +1,4 @@
+import { UsersRole } from "./usersRole";
 
 
 export class UserModel{
@@ -13,7 +14,7 @@ export class UserModel{
   password = ''
   classKey:string = ''
   phoneNumber = ''
-  role = ''
+  role : UsersRole = UsersRole.STUDENT
   userName = ''
   constructor(args?:{}){
     this.build(args);

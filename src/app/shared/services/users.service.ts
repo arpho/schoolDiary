@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { collection, doc, Firestore, setDoc, where,query, getDocs, addDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
 import {
   Auth,
   authState,
@@ -10,18 +11,17 @@ import {
   createUserWithEmailAndPassword,
 } from '@angular/fire/auth';
 import { AuthService } from './auth.service';
-import { getDatabase, onValue, push, ref, set } from 'firebase/database';
 import { UserModel } from '../models/userModel';
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
-  db = getDatabase();
+
   collection = 'userProfile';
 
   constructor(
     private auth: Auth,
-
+    private firestore: Firestore,
     private MyAuth: AuthService
   ) {}
   isUserAuthenticated(): Promise<boolean> {
@@ -48,6 +48,8 @@ export class UsersService {
     });
   }
 
+
+
   async signupUser(user: UserModel) {
     const auth = getAuth();
     const createdUser = await createUserWithEmailAndPassword(
@@ -55,11 +57,13 @@ export class UsersService {
       user.email,
       user.password
     );
+    console.log("createdUser",createdUser)
     user.setKey(createdUser.user.uid);
-    const userRef = ref(this.db, `${this.collection}/${user.key}`);
-    const result = set(userRef, user.serialize());
+const collectionRef = collection(this.firestore, this.collection)
 
-    return result;
+const userRed = doc(collectionRef,user.key)
+console.log("userRed",userRed)
+    return setDoc(userRed,user.serialize());
   }
   logout() {
     const auth = getAuth();
@@ -68,11 +72,11 @@ export class UsersService {
   }
 
   getUserByUid(uid: string): Promise<UserModel> {
-    const UsewrRef = ref(this.db, `userProfile/${uid}`);
+    const UsewrRef = doc(this.firestore, `userProfile/${uid}`);
     return new Promise((resolve, reject) => {
-      onValue(UsewrRef, (snapshot) => {
+      onSnapshot(UsewrRef, (snapshot) => {
         if (snapshot.exists()) {
-          const data = snapshot.val();
+          const data = snapshot.data();
           const user = new UserModel(data).setKey(uid);
           resolve(user);
         } else {
