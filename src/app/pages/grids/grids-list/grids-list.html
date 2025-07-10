@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>gridsList</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">griglie di Valutazione</ion-title>
+    </ion-toolbar>
+  </ion-header>
+@if (showList()) {
+  <ion-grid>
+    <ion-row>
+      @for (grid of gridsList(); track grid.key) {
+        <ion-col>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>{{grid.nome}}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p>{{grid.descrizione}}</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      }
+    </ion-row>
+  </ion-grid>
+} @else {
+  <p>Non ci sono griglie di valutazione</p>
+}
+</ion-content>

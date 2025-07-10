@@ -4,9 +4,10 @@ import { Criterio } from './criterio';
 export class Grids {
   key: string = '';
   nome: string = '';
+  descrizione: string = '';
   criteri: Criterio[] = [];
 
-  constructor(args?: Partial<Grids>) {
+  constructor(args?: any) {
     this.build(args);
   }
 
@@ -15,12 +16,15 @@ export class Grids {
     return this;
   }
 
-  build(args?: Partial<Grids>) {
+  build(args?: any) {
     if (args) {
       if (Array.isArray(args.criteri)) {
-        this.criteri = args.criteri.map(c => new Criterio(c));
+        this.criteri = args.criteri.map((c: any) => new Criterio(c));
       }
       Object.assign(this, { ...args, criteri: this.criteri });
+      if (typeof args.descrizione === 'string') {
+        this.descrizione = args.descrizione;
+      }
     }
     return this;
   }
@@ -29,6 +33,7 @@ export class Grids {
     return {
       key: this.key,
       nome: this.nome,
+      descrizione: this.descrizione,
       criteri: this.criteri.map(c => c.key)
     };
   }

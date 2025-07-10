@@ -19,9 +19,9 @@ import { DashboardStudent } from 'src/app/shared/components/dashboard-student/da
 export class Dashboard implements OnInit {
   loggdUser= signal<UserModel>(new UserModel());
   dashboards = {
-    3: DashboardAdmin,
-    2: DashboardTeacher,
-    1: DashboardStudent
+    [UsersRole.ADMIN]: DashboardAdmin,
+    [UsersRole.TEACHER]: DashboardTeacher,
+    [UsersRole.STUDENT]: DashboardStudent
   }
 
   constructor(private Users: UsersService) { }

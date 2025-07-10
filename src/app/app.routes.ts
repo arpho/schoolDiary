@@ -25,4 +25,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/dashboard/dashboard').then( m => m.Dashboard),
     canActivate:[authGuard]   
   },
+
+  {
+    path: 'grids-list',
+    loadComponent: () => import('./pages/grids/grids-list/grids-list').then( m => m.GridsList)
+  },
+  {
+    path: 'gridsdialog',
+    loadComponent: () => import('./pages/grids/gridsdialog/gridsdialog').then( m => m.Gridsdialog)
+  },
 ];
