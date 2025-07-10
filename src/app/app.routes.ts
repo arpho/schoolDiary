@@ -9,7 +9,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'dashboard',
     pathMatch: 'full',
   },
   {
@@ -22,6 +22,7 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard.page').then( m => m.DashboardPage)
+    loadComponent: () => import('./pages/dashboard/dashboard').then( m => m.Dashboard),
+    canActivate:[authGuard]   
   },
 ];

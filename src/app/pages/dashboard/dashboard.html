@@ -10,4 +10,5 @@
       <ion-title size="large">dashboard</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ng-container [ngComponentOutlet]="dashboards[loggdUser().role]"></ng-container>
 </ion-content>
