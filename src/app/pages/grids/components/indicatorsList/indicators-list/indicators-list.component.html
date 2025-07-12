@@ -1,4 +1,15 @@
-<p>
-  indicators-list works!
-</p>
-<app-indicators-dialog></app-indicators-dialog>
+<ion-content>
+<ion-list>
+
+  @for(indicator of indicatorslist(); track $index) {
+    <ion-item>
+      <ion-label>{{indicator.descrizione}}</ion-label>
+    </ion-item>
+  }
+  </ion-list>
+  <div>
+<app-indicators-dialog [indicatormodel]="editingIndicator()" (indicatorpushed)="addIndicator($event)"></app-indicators-dialog>
+</div>
+
+
+</ion-content>

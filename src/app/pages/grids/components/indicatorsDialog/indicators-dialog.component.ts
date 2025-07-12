@@ -1,8 +1,10 @@
 import {
     Component,
     computed,
+    EventEmitter,
     model,
     OnInit,
+    Output,
     signal
 } from '@angular/core';
 import { IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTextarea, IonItem } from '@ionic/angular/standalone';
@@ -41,6 +43,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 ],
 })
 export class IndicatorsDialogComponent implements OnInit {
+    @Output() indicatorpushed = new EventEmitter<Indicatore>();
 pushIndicator() {
 
     console.log("pushIndicator");
@@ -48,8 +51,10 @@ pushIndicator() {
         descrizione: this.descrizione(),
         criteri: this.criteri()
     });
-    this.indicatorModel.set(indicatore);
-    console.log("indicatorModel", this.indicatorModel( ));
+    this.indicatormodel.set(indicatore);
+    console.log("indicatorModel", this.indicatormodel( ));
+    this.indicatorpushed.emit(indicatore);
+   
 
 }
 onDescrizioneChange($event: any) {
@@ -59,7 +64,7 @@ console.log("descrizione changed to ", this.descrizione());
 saveIndicator() {
 throw new Error('Method not implemented.');
 }
-    indicatorModel=model<Indicatore>(new Indicatore());
+    indicatormodel=model<Indicatore>(new Indicatore());
     descrizione=signal<string>('');
     criteri=signal<Criterio[]>([]);
     criterio= computed(() => {
@@ -75,7 +80,7 @@ throw new Error('Method not implemented.');
 
     ngOnInit(): void {
         this.indicatorForm = this.fb.group({
-            descrizione: new FormControl(this.indicatorModel().descrizione, Validators.required),
+            descrizione: new FormControl(this.indicatormodel()?.descrizione, Validators.required),
         });
     }
 }
