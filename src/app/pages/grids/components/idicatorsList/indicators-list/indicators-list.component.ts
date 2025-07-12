@@ -8,14 +8,14 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
   styleUrls: ['./indicators-list.component.scss'],
 })
 export class IndicatorsListComponent  implements OnInit {
-indicatorsList = model<Indicatore[]>([]);
+indicatorslist = model<Indicatore[]>([]);
   constructor(
     private service: GridsService
   ) { }
 
   ngOnInit() {
 
-    console.log("indicatorsList",this.indicatorsList());
+    console.log("indicatorsList",this.indicatorslist());
   }
 
 }

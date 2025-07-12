@@ -61,18 +61,40 @@ import { IndicatorsListComponent } from "../components/idicatorsList/indicators-
 ]
 })
 export class GridsdialogPage implements OnInit{
+  gridForm = new FormGroup({
+    nome: new FormControl('', Validators.required),
+    descrizione: new FormControl(''),
+  });
   gridSignal= signal(new Grids());
+indicatorsList = signal(this.gridSignal().indicatori);
+nome = signal("");
+descrizione = signal("");
+formValue= computed(() => {
+  return {
+    nome: this.nome(),
+    descrizione: this.descrizione(),
+    indicatori: this.indicatorsList()
+  }
+});
+
 
   constructor(
     private navParams: NavParams,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private fb: FormBuilder
   ) {
     addIcons({push});
   }
 
 ngOnInit(): void {
   this.gridSignal.set(this.navParams.get('grid'));
-  
+  this.nome.set(this.gridSignal().nome);
+  this.descrizione.set(this.gridSignal().descrizione);
+  this.indicatorsList.set(this.gridSignal().indicatori);
+  this.gridForm = this.fb.group({
+    nome: new FormControl(this.nome(), Validators.required),
+    descrizione: new FormControl(this.descrizione(), Validators.required),
+  });
 }
 
 }
