@@ -26,7 +26,9 @@ import {
 import { addIcons } from 'ionicons';
 import { push } from 'ionicons/icons';
 import { Grids } from 'src/app/shared/models/grids';
-import { IndicatorsListComponent } from "../components/idicatorsList/indicators-list/indicators-list.component";
+import {
+    IndicatorsListComponent
+} from "../components/indicatorsList/indicators-list/indicators-list.component";
 
 @Component({
     selector: 'app-gridsdialog',

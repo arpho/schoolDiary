@@ -1,0 +1,34 @@
+<ion-tabs>
+    <ion-tab tab="descrizione" >
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Descrizione</ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content>
+          <div class="example-content">Descrizione
+            <form [formGroup]="indicatorForm">
+              <ion-item>
+                <ion-label position="floating">Descrizione</ion-label>
+                <ion-textarea (change)="onDescrizioneChange($event)" formControlName="descrizione"></ion-textarea>
+              </ion-item>
+            <ion-button  type="submit" (click)="pushIndicator()">Salva</ion-button>
+            </form>
+          </div>
+        </ion-content>
+    </ion-tab>
+    <ion-tab tab="criteri" >
+        <ion-label>Criteri</ion-label>
+        criteri
+    </ion-tab>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button tab="descrizione">
+        <ion-label>Descrizione</ion-label>
+      </ion-tab-button>
+      <ion-tab-button tab="criteri">
+        <ion-label>Criteri</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+
+</ion-tabs>
+
