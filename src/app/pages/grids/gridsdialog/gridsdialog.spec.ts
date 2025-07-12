@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Gridsdialog } from './gridsdialog';
+import { GridsdialogPage } from './gridsdialog';
 
 describe('Gridsdialog', () => {
-  let component: Gridsdialog;
-  let fixture: ComponentFixture<Gridsdialog>;
+  let component: GridsdialogPage;
+  let fixture: ComponentFixture<GridsdialogPage>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Gridsdialog);
+    fixture = TestBed.createComponent(GridsdialogPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

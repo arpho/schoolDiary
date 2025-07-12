@@ -22,16 +22,16 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard').then( m => m.Dashboard),
+    loadComponent: () => import('./pages/dashboard/dashboard').then( m => m.DashboardPage),
     canActivate:[authGuard]   
   },
 
   {
     path: 'grids-list',
-    loadComponent: () => import('./pages/grids/grids-list/grids-list').then( m => m.GridsList)
+    loadComponent: () => import('./pages/grids/grids-list/grids-list').then( m => m.GridsListComponent)
   },
   {
     path: 'gridsdialog',
-    loadComponent: () => import('./pages/grids/gridsdialog/gridsdialog').then( m => m.Gridsdialog)
+    loadComponent: () => import('./pages/grids/gridsdialog/gridsdialog').then( m => m.GridsdialogPage)
   },
 ];

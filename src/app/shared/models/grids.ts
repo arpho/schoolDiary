@@ -1,11 +1,11 @@
 // Modello Grids, ispirato agli altri modelli
-import { Criterio } from './criterio';
+import { Indicatore } from './indicatore';
 
 export class Grids {
   key: string = '';
   nome: string = '';
   descrizione: string = '';
-  criteri: Criterio[] = [];
+  indicatori: Indicatore[] = [];
 
   constructor(args?: any) {
     this.build(args);
@@ -18,10 +18,10 @@ export class Grids {
 
   build(args?: any) {
     if (args) {
-      if (Array.isArray(args.criteri)) {
-        this.criteri = args.criteri.map((c: any) => new Criterio(c));
+      if (Array.isArray(args.indicatori)) {
+        this.indicatori = args.indicatori.map((c: any) => new Indicatore(c));
       }
-      Object.assign(this, { ...args, criteri: this.criteri });
+      Object.assign(this, { ...args, indicatori: this.indicatori });
       if (typeof args.descrizione === 'string') {
         this.descrizione = args.descrizione;
       }
@@ -34,7 +34,7 @@ export class Grids {
       key: this.key,
       nome: this.nome,
       descrizione: this.descrizione,
-      criteri: this.criteri.map(c => c.key)
+      indicatori: this.indicatori.map(c => c.serialize())
     };
   }
 }

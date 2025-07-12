@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
-import { HomeSquareComponent } from './home-square/home-square.component';
+import { HomeSquareComponent } from '../home-square/home-square.component';
+/* tslint:disable:component-selector */
 @Component({
   standalone: true,
   // Il componente è selectorless
-  selector: '',
+  //selector: '',
   templateUrl: './dashboard-admin.html',
   styleUrls: ['./dashboard-admin.css'],
   imports: [
@@ -14,4 +15,4 @@ import { HomeSquareComponent } from './home-square/home-square.component';
     HomeSquareComponent
   ]
 })
-export class DashboardAdmin {}
+export class DashboardAdminComponent {}

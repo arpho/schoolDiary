@@ -1,9 +1,4 @@
-import {
-  Component,
-  computed,
-  OnInit,
-  signal
-} from '@angular/core';
+import { Component, computed, OnInit, signal, inject } from '@angular/core';
 import {
   CommonModule
 } from '@angular/common';
@@ -31,8 +26,19 @@ import {
 import {
   GridsService
 } from 'src/app/shared/services/grids/grids.service';
-import { addIcons } from 'ionicons';
-import { add, addCircleOutline } from 'ionicons/icons';
+import {
+    addIcons
+} from 'ionicons';
+import {
+    add,
+    addCircleOutline
+} from 'ionicons/icons';
+import {
+    ModalController
+} from '@ionic/angular';
+import {
+    GridsdialogPage
+} from '../gridsdialog/gridsdialog';
 
 
 @Component({
@@ -55,18 +61,28 @@ import { add, addCircleOutline } from 'ionicons/icons';
     IonCardHeader,
     IonCardTitle,
     IonButton,
-    IonIcon
-]
+    IonIcon]
 })
-export class GridsList implements OnInit {
-openGridDialog() {
-throw new Error('Method not implemented.');
-}
+export class GridsListComponent implements OnInit {
+
+
+openGridDialog = async () => {
+  const grid = new Grids();
+    const modal = await this.modalController.create({
+        component: GridsdialogPage,
+        componentProps: {
+            grid
+        }
+    });
+    await modal.present();
+};
   showList = computed(() => this.gridsList().length > 0);
 
   gridsList = signal<Grids[]>([]);
 
-  constructor(private service: GridsService) {
+  constructor(private modalController: ModalController,
+    private service: GridsService
+  ) {
     addIcons({add});
   }
 

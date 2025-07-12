@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonList } from '@ionic/angular/standalone';
@@ -29,6 +29,10 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
         ]
 })
 export class SignupPage  {
+private fb = inject(FormBuilder);
+private service = inject(UsersService);
+private toaster = inject(ToasterService);
+
 onNameChange($event: any) {
   if($event.target){
 console.log("name",$event.target?.value)
@@ -58,11 +62,7 @@ this.passwordConfirm.set($event.target?.value)
   surname= signal<string>('');
   passwordConfirm= signal<string>('');
 
-  constructor(
-    private fb: FormBuilder,
-    private service: UsersService,
-    private toaster: ToasterService
-  ) { 
+  constructor() { 
     this.signupForm=this.fb.group({
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(8)]),

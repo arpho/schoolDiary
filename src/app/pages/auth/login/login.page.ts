@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, inject, OnInit, Optional, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
@@ -29,6 +29,11 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
   ]
 })
 export class LoginPage implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private $toaster = inject(ToasterService);
+
 
   email= signal<string>('');
 password= signal<string>('');
@@ -60,12 +65,7 @@ loginForm: FormGroup
   error: boolean= false;
   errorMessage: any;
   afAuth: AngularFireAuth;
-  constructor(
-    private cdr: ChangeDetectorRef,
-    private fb: FormBuilder,
-    private router: Router,
-    private  $toaster: ToasterService
-  ) {
+  constructor() {
     this.afAuth = inject(AngularFireAuth);
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],

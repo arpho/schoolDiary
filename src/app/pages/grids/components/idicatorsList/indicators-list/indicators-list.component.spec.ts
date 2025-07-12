@@ -1,18 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
-import { DashboardTeacherComponent } from './dashboard-teacher';
 
-describe('DashboardTeacherComponent', () => {
-  let component: DashboardTeacherComponent;
-  let fixture: ComponentFixture<DashboardTeacherComponent>;
+import { IndicatorsListComponent } from './indicators-list.component';
+
+describe('IndicatorsListComponent', () => {
+  let component: IndicatorsListComponent;
+  let fixture: ComponentFixture<IndicatorsListComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardTeacherComponent ],
+      declarations: [ IndicatorsListComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DashboardTeacherComponent);
+    fixture = TestBed.createComponent(IndicatorsListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

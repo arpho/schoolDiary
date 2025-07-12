@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GridsList } from './grids-list';
+import { GridsListComponent } from './grids-list';
 
 describe('GridsListPage', () => {
-  let component: GridsList;
-  let fixture: ComponentFixture<GridsList>;
+  let component: GridsListComponent;
+  let fixture: ComponentFixture<GridsListComponent>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GridsList);
+    fixture = TestBed.createComponent(GridsListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

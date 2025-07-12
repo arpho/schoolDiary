@@ -1,20 +1,78 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {
+    Component,
+    computed,
+    OnInit,
+    signal
+} from '@angular/core';
+
+import {
+    CommonModule
+} from '@angular/common';
+import { NavParams, ModalController } from '@ionic/angular';
+import {
+    FormBuilder,
+    FormGroup,
+    Validators,
+    FormsModule,
+    ReactiveFormsModule,
+    FormControl
+} from '@angular/forms';
+
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonTextarea, IonAccordion, IonAccordionGroup } from '@ionic/angular/standalone';
+
+import {
+    Criterio
+} from 'src/app/shared/models/criterio';
+import { addIcons } from 'ionicons';
+import { push } from 'ionicons/icons';
+import { Grids } from 'src/app/shared/models/grids';
+import { IndicatorsListComponent } from "../components/idicatorsList/indicators-list/indicators-list.component";
 
 @Component({
-  selector: 'app-gridsdialog',
-  templateUrl: './gridsdialog.html',
-  styleUrls: ['./gridsdialog.scss'],
-  standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+    selector: 'app-gridsdialog',
+    templateUrl: './gridsdialog.html',
+    styleUrls: ['./gridsdialog.scss'],
+    standalone: true,
+    imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    IonButton,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonCol,
+    IonContent,
+    IonGrid,
+    IonHeader,
+    IonIcon,
+    IonInput,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonRow,
+    IonTitle,
+    IonToolbar,
+    IonTextarea,
+    IonAccordion,
+    IonAccordionGroup,
+    IndicatorsListComponent
+]
 })
-export class Gridsdialog implements OnInit {
+export class GridsdialogPage implements OnInit{
+  gridSignal= signal(new Grids());
 
-  constructor() { }
-
-  ngOnInit() {
+  constructor(
+    private navParams: NavParams,
+    private modalController: ModalController
+  ) {
+    addIcons({push});
   }
+
+ngOnInit(): void {
+  this.gridSignal.set(this.navParams.get('grid'));
+  
+}
 
 }

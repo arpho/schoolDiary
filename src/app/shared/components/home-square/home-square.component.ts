@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonImg } from "@ionic/angular/standalone";
 
@@ -10,6 +10,8 @@ import { IonImg } from "@ionic/angular/standalone";
   imports: [IonImg]
 })
 export class HomeSquareComponent  implements OnInit {
+private router = inject(Router);
+
 goTo() {
 this.router.navigate([this.url])
 }
@@ -17,7 +19,6 @@ this.router.navigate([this.url])
   @Input({required:true})  title:string = ""
   @Input({required:true})  image:string = ""
   @Input({required:true})  url:string = ""
-  constructor(private router:Router) { }
 
   ngOnInit() {
 

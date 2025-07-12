@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
@@ -10,10 +10,9 @@ import 'firebase/compat/auth'; // Import the authentication module
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private afAuth: AngularFireAuth,
-    private http: HttpClient
-  ) {
-  }
+  private afAuth = inject(AngularFireAuth);
+  private http = inject(HttpClient);
+
 /*   async googleLogin(): Promise<void> {
     const provider = new firebase.auth.GoogleAuthProvider();
     const credential = await this.afAuth.signInWithPopup(provider);

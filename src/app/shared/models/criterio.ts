@@ -3,23 +3,16 @@ import { Descrittore } from './descrittore';
 
 export class Criterio {
   key: string = '';
-  descrittori: Descrittore[] = [];
+  descrizione: string = '';
+  rangeValue: string = '';
 
-  constructor(args?: Partial<Criterio>) {
+  constructor(args?: any) {
     this.build(args);
   }
 
-  setKey(key: string) {
-    this.key = key;
-    return this;
-  }
-
-  build(args?: Partial<Criterio>) {
+  build(args?: any) {
     if (args) {
-      if (Array.isArray(args.descrittori)) {
-        this.descrittori = args.descrittori.map(d => new Descrittore(d));
-      }
-      Object.assign(this, { ...args, descrittori: this.descrittori });
+      Object.assign(this, args);
     }
     return this;
   }
@@ -27,7 +20,8 @@ export class Criterio {
   serialize() {
     return {
       key: this.key,
-      descrittori: this.descrittori.map(d => d.key)
+        descrizione: this.descrizione,
+        rangeValue: this.rangeValue
     };
   }
 }

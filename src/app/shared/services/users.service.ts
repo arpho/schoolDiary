@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { collection, doc, Firestore, setDoc, where,query, getDocs, addDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
 import {
   Auth,
@@ -16,14 +16,12 @@ import { UserModel } from '../models/userModel';
   providedIn: 'root',
 })
 export class UsersService {
+  private auth = inject(Auth);
+  private firestore = inject(Firestore);
+  private MyAuth = inject(AuthService);
+
 
   collection = 'userProfile';
-
-  constructor(
-    private auth: Auth,
-    private firestore: Firestore,
-    private MyAuth: AuthService
-  ) {}
   isUserAuthenticated(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.auth.onAuthStateChanged((user) => {
