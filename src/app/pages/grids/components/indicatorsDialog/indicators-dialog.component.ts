@@ -7,10 +7,11 @@ import {
     Output,
     signal
 } from '@angular/core';
-import { IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTextarea, IonItem, IonList } from '@ionic/angular/standalone';
+import { IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTextarea, IonItem, IonList, IonFab, IonFabButton } from '@ionic/angular/standalone';
 import { Criterio } from 'src/app/shared/models/criterio';
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import { AlertController } from '@ionic/angular';
 
 @Component({
     selector: 'app-indicators-dialog',
@@ -40,19 +41,61 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
     IonTabButton,
     IonTextarea,
     IonItem,
-    IonList
+    IonList,
+    IonFab,
+    IonFabButton
 ],
 })
 export class IndicatorsDialogComponent implements OnInit {
+    constructor(
+        private fb: FormBuilder,
+    private alertController: AlertController,
+    ) {
+        this.criterioForm = this.fb.group({
+            descrizione: new FormControl("", Validators.required),
+            valori: new FormControl("", Validators.required),
+        });
+    }
+    async addCriterio() {
+    const alert = await this.alertController.create({
+        header: 'inserisci il criterio',
+        subHeader: '',
+        message: 'A message should be a short, complete sentence.',
+        buttons: [{text: 'Cancel', role: 'cancel'}, {text: 'OK', role: 'ok', handler: (data) => {
+            console.log(data);
+            const criterio = new Criterio({
+                descrizione: data.descrizione,
+                valori: data.valori,
+            });
+            console.log("criterio", criterio);
+            //this.criteri.set([...this.criteri(), criterio]);
+            this.pushCriterio(criterio);
+        }}],
+        inputs: [
+            {
+                name: 'descrizione',
+                type: 'text',
+                placeholder: 'descrizione',
+            },
+            {
+                name: 'valori',
+                type: 'text',
+                placeholder: 'valori',
+            },
+        ],
+      });
+  
+      await alert.present();
+}
     valueCriterio= computed(() => {
         return  new Criterio({
             descrizione: this.criterioDescrizione(),
             valori: this.criterioValori()
         })
     });
-pushCriterio() {
+pushCriterio(criterio: Criterio) {
 console.log("pushCriterio", this.valueCriterio());
-this.criteri.set([...this.criteri(), this.valueCriterio()]);
+this.criteri.set([...this.criteri(), criterio]);
 }
 onValoriCriterioChange($event: any) {
 this.criterioValori.set($event.target.value);
@@ -103,12 +146,6 @@ console.log("descrizione changed to ", this.descrizione());
     indicatorForm: FormGroup= new FormGroup({
         descrizione: new FormControl(""),
     });
-    constructor(private fb: FormBuilder) {
-        this.criterioForm = this.fb.group({
-            descrizione: new FormControl("", Validators.required),
-            valori: new FormControl("", Validators.required),
-        });
-    }
 
     ngOnInit(): void {
         this.indicatorForm = this.fb.group({
