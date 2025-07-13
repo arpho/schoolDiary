@@ -17,6 +17,12 @@ export class Criterio {
     return this;
   }
 
+  get valori() {
+    return this.rangeValue;
+  }
+  set valori(valori: string) {
+    this.rangeValue = valori;
+  }
   serialize() {
     return {
       key: this.key,

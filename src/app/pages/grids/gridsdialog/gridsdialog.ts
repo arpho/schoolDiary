@@ -63,6 +63,9 @@ import {
 ]
 })
 export class GridsdialogPage implements OnInit{
+saveGrid() {
+throw new Error('Method not implemented.');
+}
   gridForm = new FormGroup({
     nome: new FormControl('', Validators.required),
     descrizione: new FormControl(''),

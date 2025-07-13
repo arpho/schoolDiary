@@ -12,13 +12,41 @@
                 <ion-label position="floating">Descrizione</ion-label>
                 <ion-textarea (change)="onDescrizioneChange($event)" formControlName="descrizione"></ion-textarea>
               </ion-item>
-            <ion-button  type="submit" (click)="pushIndicator()">Salva</ion-button>
+            <ion-button  type="submit" (click)="pushIndicator()"><ion-icon name="push"></ion-icon>accetta  indicatore</ion-button>
             </form>
           </div>
         </ion-content>
     </ion-tab>
     <ion-tab tab="criteri" >
-        <ion-label>Criteri</ion-label>
+      <ion-toolbar>
+        <pre>{{title4criterio()}}</pre>
+      </ion-toolbar>
+
+      <ion-content>
+<ion-list>
+  @for(criterio of criteri(); track $index) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{criterio.descrizione}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-label>{{criterio.valori}}</ion-label>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-list>
+        <form [formGroup]="criterioForm">
+          <ion-item>
+            <ion-label position="floating">Criterio:</ion-label>
+            <ion-textarea (change)="onDescrizioneCriterioChange($event)" formControlName="descrizione"></ion-textarea>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Valori:</ion-label>
+            <ion-input (change)="onValoriCriterioChange($event)" formControlName="valori"></ion-input>
+          </ion-item>
+          <ion-button  type="submit" (click)="pushCriterio()"><ion-icon name="push"></ion-icon>accetta  criterio</ion-button>
+        </form>
+      </ion-content>
     </ion-tab>
     <ion-tab-bar slot="bottom">
       <ion-tab-button tab="descrizione">
