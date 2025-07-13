@@ -3,7 +3,7 @@ import { Indicatore } from 'src/app/shared/models/indicatore';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { IndicatorsDialogComponent } from "../../indicatorsDialog/indicators-dialog.component";
 import { IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, first } from 'rxjs';
 @Component({
   selector: 'app-indicators-list',
   templateUrl: './indicators-list.component.html',
@@ -19,21 +19,29 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class IndicatorsListComponent  {
   $indicatorsListSubject = new BehaviorSubject<Indicatore[]>([]);
-  $indicatorsList$ = this.$indicatorsListSubject.asObservable();
+  readonly $indicatorsList$ = this.$indicatorsListSubject.asObservable();
 
 check() {
 console.log("check", this.editingIndicator()!);
 }
 indicatorslist = model<Indicatore[]>([]);
 editingIndicator = model<Indicatore>(new Indicatore());
+ getLastIndicatorList(): Promise<Indicatore[]> {
+  return new Promise((resolve) => {
+    this.$indicatorsList$.pipe(first()).subscribe((indicators) => {
+      resolve(indicators);
+    });
+  });
+}
 
   constructor(
     private service: GridsService
   ) { 
-   effect(() => {
+   effect(async () => {
     const indicatore = this.editingIndicator()
     console.log("editingIndicator ths is the effect", indicatore)
-    this.$indicatorsListSubject.next([...this.indicatorslist(), indicatore]);
+    const actualList = await this.getLastIndicatorList();
+    this.$indicatorsListSubject.next([...actualList?actualList:[], indicatore]);
   });
   this.$indicatorsList$.subscribe((indicators) => {
     console.log(" subscribed indicatorslist", indicators);
