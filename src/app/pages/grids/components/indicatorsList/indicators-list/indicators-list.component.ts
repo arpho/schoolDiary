@@ -4,6 +4,7 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { IndicatorsDialogComponent } from "../../indicatorsDialog/indicators-dialog.component";
 import { IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
 import { BehaviorSubject, first } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 @Component({
   selector: 'app-indicators-list',
   templateUrl: './indicators-list.component.html',
@@ -14,7 +15,8 @@ import { BehaviorSubject, first } from 'rxjs';
     IonContent,
     IonList,
     IonItem,
-    IonLabel
+    IonLabel,
+    AsyncPipe
 ],
 })
 export class IndicatorsListComponent  {

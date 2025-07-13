@@ -1,7 +1,7 @@
 <ion-content>
 <ion-list>
 
-  @for(indicator of indicatorslist(); track $index) {
+  @for(indicator of $indicatorsList$|async; track $index) {
     <ion-item>
       <ion-label>{{indicator.descrizione}}</ion-label>
     </ion-item>
