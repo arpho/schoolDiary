@@ -16,7 +16,6 @@ import { AsyncPipe } from '@angular/common';
     IonList,
     IonItem,
     IonLabel,
-    AsyncPipe
 ],
 })
 export class IndicatorsListComponent  {
@@ -40,10 +39,9 @@ editingIndicator = model<Indicatore>(new Indicatore());
     private service: GridsService
   ) { 
    effect(async () => {
-    const indicatore = this.editingIndicator()
-    console.log("editingIndicator ths is the effect", indicatore)
-    const actualList = await this.getLastIndicatorList();
-    this.$indicatorsListSubject.next([...actualList?actualList:[], indicatore]);
+    const indicatori = this.indicatorslist()
+    console.log("indicatorslist ths is the effect", indicatori)
+    this.indicatorslist.set(indicatori);
   });
   this.$indicatorsList$.subscribe((indicators) => {
     console.log(" subscribed indicatorslist", indicators);
@@ -53,7 +51,7 @@ editingIndicator = model<Indicatore>(new Indicatore());
 
    
 
-  addIndicator(indicatore: any) {
+  addIndicator(indicatore: Indicatore) {
     console.log("pushing indicator", indicatore);
     if(indicatore){
       this.indicatorslist.set([...this.indicatorslist(), indicatore]);
