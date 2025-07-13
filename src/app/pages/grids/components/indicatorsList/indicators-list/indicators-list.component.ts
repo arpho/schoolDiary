@@ -3,6 +3,7 @@ import { Indicatore } from 'src/app/shared/models/indicatore';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { IndicatorsDialogComponent } from "../../indicatorsDialog/indicators-dialog.component";
 import { IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
+import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-indicators-list',
   templateUrl: './indicators-list.component.html',
@@ -17,18 +18,28 @@ import { IonButton, IonContent, IonList, IonItem, IonLabel } from '@ionic/angula
 ],
 })
 export class IndicatorsListComponent  {
+  $indicatorsListSubject = new BehaviorSubject<Indicatore[]>([]);
+  $indicatorsList$ = this.$indicatorsListSubject.asObservable();
 
 check() {
 console.log("check", this.editingIndicator()!);
 }
-indicatorslist = model<any[]>([]);
+indicatorslist = model<Indicatore[]>([]);
 editingIndicator = model<Indicatore>(new Indicatore());
 
   constructor(
     private service: GridsService
   ) { 
-   
-  }
+   effect(() => {
+    const indicatore = this.editingIndicator()
+    console.log("editingIndicator ths is the effect", indicatore)
+    this.$indicatorsListSubject.next([...this.indicatorslist(), indicatore]);
+  });
+  this.$indicatorsList$.subscribe((indicators) => {
+    console.log(" subscribed indicatorslist", indicators);
+  
+  });
+}
 
    
 
@@ -38,12 +49,12 @@ editingIndicator = model<Indicatore>(new Indicatore());
       this.indicatorslist.set([...this.indicatorslist(), indicatore]);
     }
     console.log("indicatorslist", this.indicatorslist());
-    this.editingIndicator.set(new Indicatore());
+    this.editingIndicator.set(new Indicatore());  
   }
   
 
   ngOnInit() {
-
+this.$indicatorsListSubject.next(this.indicatorslist());
     console.log("indicatorsList",this.indicatorslist());
   }
 
