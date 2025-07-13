@@ -2,7 +2,7 @@
     <ion-tab tab="descrizione" >
         <ion-header>
           <ion-toolbar>
-            <ion-title>Descrizione</ion-title>
+            <ion-title>Descrizione dell'indicatore</ion-title>
           </ion-toolbar>
         </ion-header>
         <ion-content>
@@ -11,6 +11,10 @@
               <ion-item>
                 <ion-label position="floating">Descrizione</ion-label>
                 <ion-textarea (change)="onDescrizioneChange($event)" formControlName="descrizione"></ion-textarea>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Valore</ion-label>
+                <ion-textarea (change)="onIndicatorValueChange($event)" formControlName="valore"></ion-textarea>
               </ion-item>
             <ion-button  type="submit" (click)="pushIndicator()"><ion-icon name="push"></ion-icon>accetta  indicatore</ion-button>
             </form>
@@ -25,7 +29,7 @@
       <ion-content>
 <ion-list>
   @for(criterio of criteri(); track $index) {
-    <ion-card>
+    <ion-card (click)="selectCriterio(criterio,$index)">
       <ion-card-header>
         <ion-card-title>{{criterio.descrizione}}</ion-card-title>
       </ion-card-header>

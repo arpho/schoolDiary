@@ -3,6 +3,7 @@ import { Criterio } from "./criterio";
 export class Indicatore{
     criteri: Criterio[] = [];
     voto: number = 0;
+    valore: string = '';
     descrizione: string = '';
     
     constructor(args?: any){

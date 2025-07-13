@@ -5,6 +5,38 @@
 </ion-header>
 
 <ion-content >
+  <form [formGroup]="gridForm">
+    <ion-item>
+      <ion-label  position="floating">Descrizione</ion-label>
+    <ion-textarea  formControlName="descrizione" (change)="onDescrizioneChange($event)"></ion-textarea>
+    </ion-item>
+<ion-item>
+  <ion-label  position="floating">Nome</ion-label>
+  <ion-input formControlName="nome" (change)="onNomeChange($event)"></ion-input>
+</ion-item>
+</form>
+@if(indicatorsList().length >0) {
 
-<app-indicators-list [(indicatorslist)]="indicatorsList"></app-indicators-list>
+  <ion-list>
+    @for(indicator of indicatorsList(); track $index) {
+      <ion-card (click)="selectIndicator(indicator,$index)">
+        <ion-card-header>
+          <ion-card-title>{{indicator.descrizione}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-label>{{indicator.valore}}</ion-label>
+        </ion-card-content>
+      </ion-card>
+    }
+  </ion-list>
+}
+@else {
+  <p>Non ci sono indicatori, aggiungine uno</p>
+}
+<ion-fab vertical="bottom" horizontal="start">
+<ion-fab-button  size="small" (click)="addIndicator()">
+  <ion-icon name="add"></ion-icon>
+</ion-fab-button>
+</ion-fab>
+
 </ion-content>

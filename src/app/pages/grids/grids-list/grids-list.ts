@@ -31,7 +31,10 @@ import {
 } from 'ionicons';
 import {
     add,
-    addCircleOutline
+    share,
+    close,
+    create,
+    trash
 } from 'ionicons/icons';
 import {
     ModalController
@@ -39,6 +42,7 @@ import {
 import {
     GridsdialogPage
 } from '../gridsdialog/gridsdialog';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -66,24 +70,19 @@ import {
 export class GridsListComponent implements OnInit {
 
 
-openGridDialog = async () => {
-  const grid = new Grids();
-    const modal = await this.modalController.create({
-        component: GridsdialogPage,
-        componentProps: {
-            grid
-        }
-    });
-    await modal.present();
+go2GridDialog = async () => {
+  const grid = new Grids;
+this.router.navigate(['/gridsdialog'],{state:{gridKey:grid.key}});
 };
   showList = computed(() => this.gridsList().length > 0);
 
   gridsList = signal<Grids[]>([]);
 
   constructor(private modalController: ModalController,
+    private router: Router,
     private service: GridsService
   ) {
-    addIcons({add});
+    addIcons({add,share,close,trash,create});
   }
 
   ngOnInit(): void {

@@ -1,14 +1,17 @@
 <ion-content>
+  cicia
+  <div id="indicatorslist">
 <ion-list>
 
-  @for(indicator of $indicatorsList$|async; track $index) {
+  @for(indicator of indicatorslist(); track $index) {
     <ion-item>
       <ion-label>{{indicator.descrizione}}</ion-label>
     </ion-item>
   }
   </ion-list>
+  </div>
   <div>
-<app-indicators-dialog [(indicatormodel)]="editingIndicator" ></app-indicators-dialog>
+<app-indicators-dialog [(indicatormodel)]="editingIndicator" (indicatorpushed)="addIndicator($event)" ></app-indicators-dialog>
 </div>
 
 
