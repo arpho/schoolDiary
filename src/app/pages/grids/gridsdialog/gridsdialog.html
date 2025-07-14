@@ -15,18 +15,14 @@
   <ion-input formControlName="nome" (change)="onNomeChange($event)"></ion-input>
 </ion-item>
 </form>
+<h3>Indicatori</h3>
 @if(indicatorsList().length >0) {
 
   <ion-list>
     @for(indicator of indicatorsList(); track $index) {
-      <ion-card (click)="selectIndicator(indicator,$index)">
-        <ion-card-header>
-          <ion-card-title>{{indicator?.descrizione}}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-label>{{indicator?.valore}}</ion-label>
-        </ion-card-content>
-      </ion-card>
+      <ion-item (click)="selectIndicator(indicator,$index)">
+    <app-indicator-viewer [indicatore]="indicator"></app-indicator-viewer>
+      </ion-item>
     }
   </ion-list>
 }

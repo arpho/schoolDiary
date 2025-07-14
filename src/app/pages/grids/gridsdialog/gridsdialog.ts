@@ -40,6 +40,7 @@ import { Router } from '@angular/router';
 import { IndicatorsDialogComponent } from '../components/indicatorsDialog/indicators-dialog.component';
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import { ActionSheetController } from '@ionic/angular';
+import { IndicatorViewerComponent } from "src/app/shared/components/indicatorsViewer/indicator-viewer/indicator-viewer.component";
 
 @Component({
     selector: 'app-gridsdialog',
@@ -72,7 +73,8 @@ import { ActionSheetController } from '@ionic/angular';
     IonAccordionGroup,
     IndicatorsListComponent,
     IonFabButton,
-    IonFab
+    IonFab,
+    IndicatorViewerComponent
 ]
 })
 export class GridsdialogPage implements OnInit{
