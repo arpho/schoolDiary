@@ -21,10 +21,10 @@
     @for(indicator of indicatorsList(); track $index) {
       <ion-card (click)="selectIndicator(indicator,$index)">
         <ion-card-header>
-          <ion-card-title>{{indicator.descrizione}}</ion-card-title>
+          <ion-card-title>{{indicator?.descrizione}}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-label>{{indicator.valore}}</ion-label>
+          <ion-label>{{indicator?.valore}}</ion-label>
         </ion-card-content>
       </ion-card>
     }
