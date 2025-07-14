@@ -4,5 +4,14 @@
   </ion-card-header>
   <ion-card-content>
     <ion-label>{{indicatore()?.valore}}</ion-label>
+    <h2>Criteri</h2>
+    <ion-list>
+      @for(criterio of indicatore()?.criteri; track $index) {
+        <ion-item>
+          <ion-label>{{criterio.descrizione}}</ion-label>
+          <ion-label>{{criterio.rangeValue}}</ion-label>
+        </ion-item>
+      }
+    </ion-list>
   </ion-card-content>
 </ion-card>

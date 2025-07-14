@@ -9,6 +9,7 @@ import { AsyncPipe } from '@angular/common';
   selector: 'app-indicators-list',
   templateUrl: './indicators-list.component.html',
   styleUrls: ['./indicators-list.component.scss'],
+  standalone: true,
   imports: [
     IndicatorsDialogComponent,
     IonButton,

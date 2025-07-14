@@ -1,3 +1,5 @@
+
+
 <ion-tabs>
     <ion-tab tab="descrizione" >
         <ion-header>
@@ -16,7 +18,6 @@
                 <ion-label position="floating">Valore massimo</ion-label>
                 <ion-textarea (change)="onIndicatorValueChange($event)" formControlName="valore"></ion-textarea>
               </ion-item>
-            <ion-button  type="submit" (click)="pushIndicator()"><ion-icon name="push"></ion-icon>accetta  indicatore</ion-button>
             </form>
           </div>
         </ion-content>
@@ -54,6 +55,8 @@
         <ion-label>Criteri</ion-label>
       </ion-tab-button>
     </ion-tab-bar>
+  <ion-button  type="submit" (click)="pushIndicator()"><ion-icon name="push"></ion-icon>accetta  indicatore</ion-button>
 
 </ion-tabs>
+
 

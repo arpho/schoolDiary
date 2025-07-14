@@ -6,6 +6,7 @@ export class Grids {
   nome: string = '';
   descrizione: string = '';
   indicatori: Indicatore[] = [];
+  ownerKey: string = '';
 
   constructor(args?: any) {
     this.build(args);
@@ -24,7 +25,7 @@ export class Grids {
       Object.assign(this, { ...args, indicatori: this.indicatori });
       if (typeof args.descrizione === 'string') {
         this.descrizione = args.descrizione;
-      }
+        }
     }
     return this;
   }
@@ -34,7 +35,8 @@ export class Grids {
       key: this.key,
       nome: this.nome,
       descrizione: this.descrizione,
-      indicatori: this.indicatori.map(c => c.serialize())
+      indicatori: this.indicatori.map(c => c.serialize()),
+      ownerKey: this.ownerKey
     };
   }
 }

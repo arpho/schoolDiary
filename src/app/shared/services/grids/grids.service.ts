@@ -6,6 +6,14 @@ import { Grids } from '../../models/grids';
   providedIn: 'root'
 })
 export class GridsService {
+  addGrid(grid: Grids) {
+    const collectionRef = collection(this.firestore, this.collection)
+    return addDoc(collectionRef, grid.serialize());
+  }
+  updateGrid(gridKey: string, grid: Grids) {
+    const docRef = doc(this.firestore, this.collection, gridKey);
+    return setDoc(docRef, grid.serialize());
+  }
 private firestore = inject(Firestore);
 
 collection = 'grids';

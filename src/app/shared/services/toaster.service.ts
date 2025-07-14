@@ -5,6 +5,9 @@ import { ToastController } from '@ionic/angular';
   providedIn: 'root'
 })
 export class ToasterService {
+  showToast(data:{message?: string, duration?: number , position: "bottom" | "top" | "middle"}) {
+    this.presentToast(data);
+  }
   private toastCtrl = inject(ToastController);
 
 

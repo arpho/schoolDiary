@@ -19,7 +19,7 @@ import {
     FormControl
 } from '@angular/forms';
 
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonTextarea, IonAccordion, IonAccordionGroup, IonFabButton, IonFab } from '@ionic/angular/standalone';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonTextarea, IonAccordion, IonAccordionGroup, IonFabButton, IonFab, IonFooter } from '@ionic/angular/standalone';
 
 import {
     Criterio
@@ -30,7 +30,8 @@ import {
   create,
   push,
   trash,
-  close 
+  close,
+  save
 } from 'ionicons/icons';
 import { Grids } from 'src/app/shared/models/grids';
 import {
@@ -41,6 +42,9 @@ import { IndicatorsDialogComponent } from '../components/indicatorsDialog/indica
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import { ActionSheetController } from '@ionic/angular';
 import { IndicatorViewerComponent } from "src/app/shared/components/indicatorsViewer/indicator-viewer/indicator-viewer.component";
+import { UsersService } from 'src/app/shared/services/users.service';
+import { GridsService } from 'src/app/shared/services/grids/grids.service';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
 
 @Component({
     selector: 'app-gridsdialog',
@@ -74,10 +78,60 @@ import { IndicatorViewerComponent } from "src/app/shared/components/indicatorsVi
     IndicatorsListComponent,
     IonFabButton,
     IonFab,
-    IndicatorViewerComponent
+    IndicatorViewerComponent,
+    IonFooter
 ]
 })
 export class GridsdialogPage implements OnInit{
+gridKey =""
+
+  constructor(
+    private modalController: ModalController,
+    private fb: FormBuilder,
+    private router: Router,
+    private $users: UsersService,
+    private $grids: GridsService,
+    private $toaster: ToasterService,
+    private actionSheetController: ActionSheetController,   
+  ) {
+    addIcons({
+      push,
+      add,
+      create,
+      close,
+      trash,
+      save
+    });
+    effect(() => {
+      console.log("indicatorsList", this.indicatorsList());
+    });
+    const navigation = this.router.getCurrentNavigation();
+    this.gridKey = navigation?.extras.state?.['gridKey'];
+    console.log("gridKey", this.gridKey);
+  }
+async storeGrid() {
+console.log("storeGrid", this.formValue());
+const grid = new Grids(this.formValue());
+const loggedUser = await this.$users.getLoggedUser();
+grid.ownerKey = loggedUser.key;
+console.log("grid", grid);
+console.log("serializzo", grid.serialize())
+if(this.gridKey){
+  this.$grids.updateGrid(this.gridKey, grid).then(() => {
+    this.$toaster.showToast({message:"Griglia aggiornata", duration:2000, position:"bottom"});
+   }).catch((error) => {
+    this.$toaster.showToast({message:"Errore aggiornamento griglia", duration:2000, position:"bottom"});
+   })
+}
+else {
+   this.$grids.addGrid(grid).then(() => {
+    this.$toaster.showToast({message:"Griglia salvata", duration:2000, position:"bottom"});
+   }).catch((error) => {
+    this.$toaster.showToast({message:"Errore salvataggio griglia", duration:2000, position:"bottom"});
+   })
+}
+
+}
   async selectIndicator(indicator: Indicatore,index: number) {
 console.log("selectIndicator", indicator, index);
 const actionSheet = await this.actionSheetController.create({
@@ -127,22 +181,6 @@ const actionSheet = await this.actionSheetController.create({
       this.indicatorsList.set([...this.indicatorsList().slice(0,index), data.data, ...this.indicatorsList().slice(index+1)]);
     });
 }
-gridKey =""
-
-  constructor(
-    private modalController: ModalController,
-    private fb: FormBuilder,
-    private router: Router,
-    private actionSheetController: ActionSheetController,   
-  ) {
-    addIcons({push,add,create,close,trash});
-    effect(() => {
-      console.log("indicatorsList", this.indicatorsList());
-    });
-    const navigation = this.router.getCurrentNavigation();
-    this.gridKey = navigation?.extras.state?.['gridKey'];
-    console.log("gridKey", this.gridKey);
-  }
   async addIndicator() {
     const newIndicator = new Indicatore();
 const modal = await this.modalController.create({
@@ -154,8 +192,9 @@ const modal = await this.modalController.create({
 await modal.present();  
 modal.onDidDismiss().then((data) => {
   console.log("data", data);
+  if(data.data){
   this.indicatorsList.set([...this.indicatorsList(), data.data]);
-
+}
 });
 }
   onNomeChange($event: any) {
