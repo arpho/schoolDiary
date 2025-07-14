@@ -11,7 +11,7 @@
   </ion-list>
   </div>
   <div>
-<app-indicators-dialog [(indicatormodel)]="editingIndicator" (indicatorpushed)="addIndicator($event)" ></app-indicators-dialog>
+<app-indicators-dialog [indicatore]="editingIndicator()" (indicatorpushed)="addIndicator($event)"></app-indicators-dialog>
 </div>
 
 

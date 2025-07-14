@@ -25,7 +25,13 @@ import {
     Criterio
 } from 'src/app/shared/models/criterio';
 import { addIcons } from 'ionicons';
-import { add, push } from 'ionicons/icons';
+import { 
+  add,
+  create,
+  push,
+  trash,
+  close 
+} from 'ionicons/icons';
 import { Grids } from 'src/app/shared/models/grids';
 import {
     IndicatorsListComponent
@@ -127,7 +133,7 @@ gridKey =""
     private router: Router,
     private actionSheetController: ActionSheetController,   
   ) {
-    addIcons({push,add});
+    addIcons({push,add,create,close,trash});
     effect(() => {
       console.log("indicatorsList", this.indicatorsList());
     });

@@ -2,6 +2,7 @@ import {
     Component,
     computed,
     EventEmitter,
+    Input,
     model,
     OnInit,
     Output,
@@ -48,12 +49,11 @@ import { AlertController, ActionSheetController, ModalController } from '@ionic/
 ],
 })
 export class IndicatorsDialogComponent implements OnInit {
-    indicatore=model<Indicatore>(new Indicatore());
 onIndicatorValueChange($event: any) {
 this.indicatorValue.set($event.target.value);
 console.log("indicatorValue changed to ", this.indicatorValue());
 }
-    indicatormodel=model<Indicatore>(new Indicatore());
+    @Input() indicatore!: Indicatore;
     descrizione=signal<string>('');
     indicatorValue=signal<string>(''); 
     criterioDescrizione=signal<string>('');
@@ -214,8 +214,6 @@ pushIndicator() {
         criteri: this.criteri()
     });
     console.log("nuovo indicatore", indicatore);
-    this.indicatormodel.set(indicatore);
-    console.log("indicatorModel", this.indicatormodel( ));
     this.indicatorpushed.emit(indicatore);
     this.modalController.dismiss(indicatore);
    
@@ -228,10 +226,11 @@ console.log("descrizione changed to ", this.descrizione());
 
 
     ngOnInit(): void {
-        console.log("indicatorsDialog ngOnInit", this.indicatore());    
+        console.log("indicatorsDialog ngOnInit", this.indicatore);    
+        this.criteri.set(this.indicatore?.criteri);
         this.indicatorForm = this.fb.group({
-            descrizione: new FormControl(this.indicatore()?.descrizione, Validators.required),
-            valori: new FormControl(this.indicatore()?.criteri?.[0]?.valori, Validators.required),
+            descrizione: new FormControl(this.indicatore?.descrizione, Validators.required),
+            valore: new FormControl(this.indicatore?.valore, Validators.required),
         });
     }
 }
