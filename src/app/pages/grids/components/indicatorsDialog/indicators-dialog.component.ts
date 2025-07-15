@@ -9,7 +9,7 @@ import {
     signal
 } from '@angular/core';
 import {
-    IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTextarea, IonItem, IonList, IonFab, IonFabButton } from '@ionic/angular/standalone';
+    IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTextarea, IonItem, IonList, IonFab, IonFabButton } from '@ionic/angular/standalone';
 import { Criterio } from 'src/app/shared/models/criterio';
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -29,9 +29,6 @@ import { AlertController, ActionSheetController, ModalController } from '@ionic/
     IonHeader,
     IonTitle,
     IonToolbar,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonCard,
     IonCardContent,
     IonCardHeader,

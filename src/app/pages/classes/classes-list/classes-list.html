@@ -1,0 +1,36 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Classi</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large" align="center">Classi</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  @if (classiList().length >0) {
+    <ion-list>
+        @for (classe of classiList(); track classe.key) {
+            <ion-item >
+              <ion-card (click)="clickedClass(classe)">
+                <ion-card-header>
+                  <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <p>{{classe.descrizione}}</p>
+                </ion-card-content>
+            </ion-card>
+            </ion-item>
+        }
+
+      <ion-fab>
+    <ion-fab-button shape="round" size="small" (click)="go2ClasseDialog('')"><ion-icon name="add"></ion-icon></ion-fab-button>
+  </ion-fab>
+    </ion-list>
+  } @else {
+    <p>Non ci sono classi, creane una</p>
+    <ion-button shape="round" size="small" (click)="go2ClasseDialog('')"><ion-icon name="add"></ion-icon></ion-button>
+  }
+</ion-content>

@@ -1,5 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { collection, doc, Firestore, setDoc, where,query, getDocs, addDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
+import {
+   collection,
+   doc,
+   Firestore,
+   setDoc,
+   where,
+   query,
+   getDocs,
+   addDoc,
+   getDoc,
+   onSnapshot 
+  } from '@angular/fire/firestore';
 import { Grids } from '../../models/grids';
 
 @Injectable({

@@ -36,11 +36,11 @@ export const routes: Routes = [
   },
   {
     path: 'classes-list',
-    loadComponent: () => import('./pages/classes/pages/classes-list/classes-list.page').then( m => m.ClassesListPage)
+    loadComponent: () => import('./pages/classes/classes-list/classes-list').then( m => m.ClassesListComponent)
   },
   {
     path: 'class-dialog',
-    loadComponent: () => import('./pages/classes/pages/class-dialog/class-dialog.page').then( m => m.ClassDialogPage)
+    loadComponent: () => import('./pages/classes/classe-dialog/classe-dialog').then( m => m.ClasseDialogPage)
   },
   {
     path: 'users-list',
