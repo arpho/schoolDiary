@@ -8,8 +8,7 @@ describe('DashboardTeacherComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardTeacherComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [DashboardTeacherComponent, IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DashboardTeacherComponent);

@@ -9,8 +9,7 @@ describe('IndicatorViewerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ IndicatorViewerComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IndicatorViewerComponent, IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(IndicatorViewerComponent);

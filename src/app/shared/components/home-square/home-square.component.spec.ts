@@ -9,8 +9,7 @@ describe('HomeSquareComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HomeSquareComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [HomeSquareComponent, IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomeSquareComponent);

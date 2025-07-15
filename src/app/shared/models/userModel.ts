@@ -12,10 +12,11 @@ export class UserModel{
   firstName = ''
   lastName = ''
   password = ''
-  classKey:string = ''
+  classKey: string = ''
   phoneNumber = ''
-  role : UsersRole = UsersRole.STUDENT
+  role: UsersRole = UsersRole.STUDENT
   userName = ''
+  classes: string[] = []
   constructor(args?:{}){
     this.build(args);
   }
@@ -38,7 +39,8 @@ serialize(){
     lastName: this.lastName,
     phoneNumber: this.phoneNumber,
     role: this.role,
-    userName: this.userName
+    userName: this.userName,
+    classes: this.classes
   }
 }
 }
