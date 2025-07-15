@@ -232,5 +232,7 @@ console.log("descrizione changed to ", this.descrizione());
             descrizione: new FormControl(this.indicatore?.descrizione, Validators.required),
             valore: new FormControl(this.indicatore?.valore, Validators.required),
         });
+        this.descrizione.set(this.indicatore?.descrizione);
+        this.indicatorValue.set(this.indicatore?.valore);
     }
 }

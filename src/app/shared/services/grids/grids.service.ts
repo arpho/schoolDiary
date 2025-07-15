@@ -6,6 +6,11 @@ import { Grids } from '../../models/grids';
   providedIn: 'root'
 })
 export class GridsService {
+  async fetchGrid(gridKey: string) {
+    const docRef = doc(this.firestore, this.collection, gridKey);
+    const rawGrid = await getDoc(docRef);
+    return new Grids(rawGrid.data()).setKey(rawGrid.id);
+  }
   addGrid(grid: Grids) {
     const collectionRef = collection(this.firestore, this.collection)
     return addDoc(collectionRef, grid.serialize());

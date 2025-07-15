@@ -84,6 +84,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 })
 export class GridsdialogPage implements OnInit{
 gridKey =""
+pageTitle: any;
 
   constructor(
     private modalController: ModalController,
@@ -231,7 +232,26 @@ ngOnInit(): void {
   this.gridForm = this.fb.group({
     nome: new FormControl(this.nome(), Validators.required),
     descrizione: new FormControl(this.descrizione(), Validators.required),
-  });
+  });   
+  if(this.gridKey){
+    this.pageTitle = "Modifica Griglia";
+    console.log("devo aprire la griglia con key", this.gridKey);
+
+    this.$grids.fetchGrid(this.gridKey).then((grid) => {
+      console.log("grid", grid);
+      this.gridSignal.set(grid);
+      this.nome.set(grid.nome);
+      this.descrizione.set(grid.descrizione);
+      this.indicatorsList.set(grid.indicatori);
+      this.gridForm.setValue({
+        nome: grid.nome,
+        descrizione: grid.descrizione
+      });
+    });
+}
+else {
+  this.pageTitle = "Crea Griglia";
 }
 
+}
 }

@@ -24,7 +24,8 @@ export class Indicatore{
         return {
                 criteri: this.criteri.map(c => c.serialize()),
             voto: this.voto,
-            descrizione: this.descrizione
+            descrizione: this.descrizione,
+            valore: this.valore
         };
     }
 }

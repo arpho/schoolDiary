@@ -5,21 +5,7 @@ import {
 import {
   FormsModule
 } from '@angular/forms';
-import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonButton,
-  IonIcon
-} from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonItem } from '@ionic/angular/standalone';
 import {
   Grids
 } from 'src/app/shared/models/grids';
@@ -65,14 +51,16 @@ import { Router } from '@angular/router';
     IonCardHeader,
     IonCardTitle,
     IonButton,
-    IonIcon]
+    IonIcon,
+    IonItem
+]
 })
 export class GridsListComponent implements OnInit {
 
 
-go2GridDialog = async () => {
-  const grid = new Grids;
-this.router.navigate(['/gridsdialog'],{state:{gridKey:grid.key}});
+go2GridDialog = async (gridKey: string) => {
+  console.log("go2GridDialog", gridKey);
+  this.router.navigate(['gridsdialog'],{state:{gridKey:gridKey}});
 };
   showList = computed(() => this.gridsList().length > 0);
 
