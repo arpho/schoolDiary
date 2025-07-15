@@ -34,4 +34,20 @@ export const routes: Routes = [
     path: 'gridsdialog',
     loadComponent: () => import('./pages/grids/gridsdialog/gridsdialog').then( m => m.GridsdialogPage)
   },
+  {
+    path: 'classes-list',
+    loadComponent: () => import('./pages/classes/pages/classes-list/classes-list.page').then( m => m.ClassesListPage)
+  },
+  {
+    path: 'class-dialog',
+    loadComponent: () => import('./pages/classes/pages/class-dialog/class-dialog.page').then( m => m.ClassDialogPage)
+  },
+  {
+    path: 'users-list',
+    loadComponent: () => import('./pages/users/users-list/users-list.page').then( m => m.UsersListPage)
+  },
+  {
+    path: 'user-dialog',
+    loadComponent: () => import('./pages/users/user-dialog/user-dialog.page').then( m => m.UserDialogPage)
+  },
 ];
