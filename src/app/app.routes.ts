@@ -50,4 +50,8 @@ export const routes: Routes = [
     path: 'user-dialog',
     loadComponent: () => import('./pages/users/user-dialog/user-dialog.page').then( m => m.UserDialogPage)
   },
+  {
+    path: 'classes-selector',
+    loadComponent: () => import('./pages/classes/pages/classes-selector/classes-selector.page').then( m => m.ClassesSelectorPage)
+  },
 ];

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
@@ -8,6 +8,10 @@ import { UserModel } from 'src/app/shared/models/userModel';
 import { signal } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { UsersRole } from 'src/app/shared/models/usersRole';
+import { ClassesFieldComponent } from '../../classes/components/classes-field/classes-field.component';
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { user } from '@angular/fire/auth';
+import { ClassiService } from '../../classes/services/classi.service';
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
@@ -17,15 +21,16 @@ import { UsersRole } from 'src/app/shared/models/usersRole';
     IonContent,
     IonHeader,
     IonTitle,
+    IonToolbar,
     IonItem,
     IonLabel,
     IonInput,
-    IonToolbar,
-    CommonModule,
-    FormsModule,
     IonSelect,
     IonSelectOption,
-    ReactiveFormsModule
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ClassesFieldComponent
   ]
 })
 export class UserDialogPage implements OnInit {
@@ -43,11 +48,22 @@ userForm: FormGroup= new FormGroup({
   birthDate: new FormControl(''),
   classes: new FormControl(''),
 });
+usersClasses= signal<ClasseModel[]>([]);
 $UsersRole = UsersRole;
   constructor(
-    private router: Router,
-    private $users: UsersService, 
-    ) { }
+      private router: Router,
+      private $users: UsersService,
+      private $classes: ClassiService
+    ) { 
+      effect(async()=>{
+        const classesKeys = this.userSignal()?.classes;
+        if(classesKeys){
+          this.$classes.fetchClasses(classesKeys).then((classes) => {
+            this.usersClasses.set(classes);
+          });
+        } 
+      })
+    }
 
   ngOnInit() {
      const rolesKey = Object.keys(UsersRole);
@@ -69,11 +85,14 @@ $UsersRole = UsersRole;
             phoneNumber: user?.phoneNumber,
             birthDate: user?.birthDate,
             classes: user?.classes,      
-          });
+              });
+          
+            
         }
-      });
-    }
+        }
+      )   ;
     console.log("user", this.userSignal());
 
   }
+}
 }

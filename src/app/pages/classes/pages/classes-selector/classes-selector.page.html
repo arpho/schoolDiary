@@ -1,0 +1,20 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Seleziona le classi</ion-title>
+    <ion-select>
+      @for (anno of anniScolastici(); track $index) {
+        <ion-select-option [value]="anno">{{anno}}</ion-select-option>
+      }
+    </ion-select>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    @for (classe of classi(); track classe.key) {
+      <ion-item>
+        <app-class-viewer [classe]="classe"></app-class-viewer>
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>

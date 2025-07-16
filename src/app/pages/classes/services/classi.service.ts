@@ -20,6 +20,11 @@ import { ClasseModel } from '../models/classModel';
   providedIn: 'root'
 })
 export class ClassiService {
+  fetchClasses(classes: string[]) {
+    const classi = classes.map((classe) => this.fetchClasse(classe));
+    return Promise.all(classi);
+
+  }
   deleteClasse(key: string) {
     const docRef = doc(this.firestore, this.collection, key);
     return deleteDoc(docRef);

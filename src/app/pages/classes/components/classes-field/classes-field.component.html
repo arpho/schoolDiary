@@ -1,0 +1,8 @@
+<ion-list>
+  @for (classe of classes; track classe.key) {
+    <ion-item>
+   <app-class-viewer [classe]="classe"></app-class-viewer>
+    </ion-item>
+  }
+</ion-list>
+<ion-button (click)="selectClasses()"><ion-icon name="list"></ion-icon>Aggiungi Classi</ion-button>
