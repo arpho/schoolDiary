@@ -12,7 +12,22 @@ import {
 import {
   FormsModule
 } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonItem, IonFab, IonFabButton, IonFabList, IonList } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonFab,
+  IonFabButton,
+  IonFabList,
+  IonList } from '@ionic/angular/standalone';
 import {
   ClassiService,
 } from '../services/classi.service';

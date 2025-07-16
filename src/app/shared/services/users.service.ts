@@ -16,6 +16,31 @@ import { UserModel } from '../models/userModel';
   providedIn: 'root',
 })
 export class UsersService {
+  fetchUser(userKey: string) {
+    const userRef = doc(this.firestore, `userProfile/${userKey}`);
+    return getDoc(userRef).then((doc) => {
+      if (doc.exists()) {
+        console.log("user found",doc.data());
+        const data = doc.data();
+        const user = new UserModel(data).setKey(userKey);
+        return user;
+      } else {
+        console.log('No user found');
+        return null;
+      }
+    });
+  }
+    getUsersOnRealTime(cb: (users: UserModel[]) => void) {
+    const collectionRef = collection(this.firestore, this.collection)
+    onSnapshot(collectionRef, (snapshot) => {
+      const users: UserModel[] = [];
+      snapshot.forEach((doc) => {
+        const user = new UserModel(doc.data()).setKey(doc.id);
+        users.push(user);
+      });
+      cb(users);
+    });
+  }
   private auth = inject(Auth);
   private firestore = inject(Firestore);
   private MyAuth = inject(AuthService);

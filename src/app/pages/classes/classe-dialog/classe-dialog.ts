@@ -16,7 +16,12 @@ import {
   CommonModule
 } from '@angular/common';
 import {
-  FormsModule
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
 import {
   ClassiService,
@@ -36,19 +41,19 @@ import { ClasseModel } from '../models/classModel';
     IonTitle,
     IonToolbar,
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class ClasseDialogPage {
   @Input() classe: ClasseModel = new ClasseModel();
   @Input() classeId: string | null = null;
 
-  private modalCtrl = inject(ModalController);
-  private classiService = inject(ClassiService);
   constructor(
-
+private modalCtrl: ModalController,
+private fb: FormBuilder
   ) {
-    
+
   }
 
   save() {
