@@ -1,4 +1,8 @@
 <ion-header [translucent]="true">
+  <ion-back-button 
+    text="dashboard"
+    class="back-button"
+    defaultHref="/dashboard"></ion-back-button>
   <ion-toolbar>
     <ion-title>Classi</ion-title>
   </ion-toolbar>
@@ -22,6 +26,22 @@
                   <p>{{classe.descrizione}}</p>
                 </ion-card-content>
             </ion-card>
+            <ion-fab id="test"  vertical="bottom" horizontal="end" >
+              <ion-fab-button size="small"   color="medium">
+                <ion-icon name="ellipsis-vertical"></ion-icon>
+              </ion-fab-button>
+              <ion-fab-list side="start">
+                <ion-fab-button color="light" (click)="editClass(classe.key)">
+                  <ion-icon name="create"></ion-icon>
+                </ion-fab-button>
+                <ion-fab-button color="danger" (click)="deleteClass(classe)">
+                  <ion-icon name="trash"></ion-icon>
+                </ion-fab-button>
+                <ion-fab-button color="light">
+                  <ion-icon name="close"></ion-icon>
+                </ion-fab-button>
+              </ion-fab-list>
+            </ion-fab>
             </ion-item>
         }
     </ion-list>

@@ -1,9 +1,6 @@
 import {
   Component,
-  computed,
-  OnInit,
   signal,
-  inject,
   effect
 } from '@angular/core';
 import {
@@ -27,13 +24,14 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
-  IonList } from '@ionic/angular/standalone';
+  IonList,
+  IonBackButton
+} from '@ionic/angular/standalone';
 import {
   ClassiService,
 } from '../services/classi.service';
 import { ModalController } from '@ionic/angular';
 import { AlertController, ActionSheetController } from '@ionic/angular';
-import { ClasseDialogPage } from '../classe-dialog/classe-dialog';
 import { Router } from '@angular/router';
 import { ClasseModel } from '../models/classModel';
 import { Subscription } from 'rxjs';
@@ -44,7 +42,8 @@ import {
     create,
     trash,
     close,
-    archive
+    archive,
+    ellipsisVertical
 } from 'ionicons/icons';
 
 @Component({
@@ -68,7 +67,9 @@ import {
     IonItem,
     IonFab,
     IonFabButton,
-    IonList
+    IonList,
+    IonFabList,
+    IonBackButton
 ]
 })
 export class ClassesListComponent {
@@ -157,6 +158,7 @@ constructor(
   private alertController: AlertController
 ) {
   addIcons({
+    ellipsisVertical,
     add,
     trash,
     create,

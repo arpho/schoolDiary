@@ -1,4 +1,8 @@
 <ion-header [translucent]="true">
+  <ion-back-button 
+    text="dashboard"
+    class="back-button"
+    defaultHref="/dashboard"></ion-back-button>
   <ion-toolbar>
     <ion-title size="large" align="center">Utenti</ion-title>
   </ion-toolbar>
@@ -24,7 +28,7 @@
     <ion-fab-button color="light" (click)="editUser(users.key)">
       <ion-icon name="create"></ion-icon>
     </ion-fab-button>
-    <ion-fab-button color="light" (click)="deleteUser(users.key)">
+    <ion-fab-button color="danger" (click)="deleteUser(users.key)">
       <ion-icon name="trash"></ion-icon>
     </ion-fab-button>
     <ion-fab-button color="light">

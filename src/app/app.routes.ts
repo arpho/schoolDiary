@@ -47,7 +47,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/users/users-list/users-list.page').then( m => m.UsersListPage)
   },
   {
-    path: 'user-dialog',
+    path: 'user-dialog/:userKey',
     loadComponent: () => import('./pages/users/user-dialog/user-dialog.page').then( m => m.UserDialogPage)
   },
   {

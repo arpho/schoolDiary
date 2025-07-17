@@ -19,11 +19,18 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
+  IonBackButton
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
-import { add, create, close, save, trash, ellipsisVertical } from 'ionicons/icons';
+import {
+   add,
+   create,
+   close,
+   save,
+   trash,
+   ellipsisVertical } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 
@@ -53,6 +60,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonFab,
     IonFabButton,
     IonFabList,
+    IonBackButton  
   ]
 })
 export class UsersListPage implements OnInit {
@@ -60,7 +68,7 @@ deleteUser(userKey: string) {
 console.log("deleteUser", userKey);
 }
 editUser(userKey: string) {
-  this.router.navigate(['user-dialog'],{state:{userKey:userKey}});
+  this.router.navigate(['user-dialog',userKey]);
 }
 
   userList= signal<UserModel[]>([]);

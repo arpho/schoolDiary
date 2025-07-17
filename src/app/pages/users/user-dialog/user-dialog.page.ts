@@ -2,7 +2,7 @@ import { Component, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { signal } from '@angular/core';
@@ -34,7 +34,6 @@ import { ClassiService } from '../../classes/services/classi.service';
   ]
 })
 export class UserDialogPage implements OnInit {
-  userKey = "";
 userSignal = signal(new UserModel());
 rolesValue: any[] = [];
 rolesName: string[] = [];
@@ -51,7 +50,7 @@ userForm: FormGroup= new FormGroup({
 usersClasses= signal<ClasseModel[]>([]);
 $UsersRole = UsersRole;
   constructor(
-      private router: Router,
+      private router: ActivatedRoute,
       private $users: UsersService,
       private $classes: ClassiService
     ) { 
@@ -66,14 +65,13 @@ $UsersRole = UsersRole;
     }
 
   ngOnInit() {
+    const userKey=this.router.snapshot.paramMap.get('userKey');
      const rolesKey = Object.keys(UsersRole);
      this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
      console.log("rolesKey", rolesKey);
      console.log("rolesValue", this.rolesValue);
-    const navigation = this.router.getCurrentNavigation();
-    this.userKey = navigation?.extras.state?.['userKey'];
-    if(this.userKey){   
-      this.$users.fetchUser(this.userKey).then((user) => {
+    if(userKey){   
+      this.$users.fetchUser(userKey).then((user) => {
         if(user){
           this.userSignal.set(user);
           this.userForm.setValue({
