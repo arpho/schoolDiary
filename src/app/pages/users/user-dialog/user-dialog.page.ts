@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { 
   FormsModule,
   ReactiveFormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonBackButton, IonButton, IonDatetime, IonFooter } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonBackButton, IonButton, IonDatetime, IonFooter, IonFabButton, IonIcon, IonButtons, IonFab } from '@ionic/angular/standalone';
 import {
    ActivatedRoute,
    Router 
@@ -23,6 +23,8 @@ import { ClassesFieldComponent } from '../../classes/components/classes-field/cl
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { user } from '@angular/fire/auth';
 import { ClassiService } from '../../classes/services/classi.service';
+import { addIcons } from 'ionicons';
+import { save } from 'ionicons/icons';
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
@@ -45,6 +47,11 @@ import { ClassiService } from '../../classes/services/classi.service';
     ClassesFieldComponent,
     IonButton,
     IonDatetime,
+    IonFooter,
+    IonFabButton,
+    IonIcon,
+    IonButtons,
+    IonFab
 ]
 })
 export class UserDialogPage implements OnInit {
@@ -78,6 +85,9 @@ $UsersRole = UsersRole;
       private $users: UsersService,
       private $classes: ClassiService
     ) { 
+      addIcons({
+        save,
+      });
       effect(async()=>{
         const classesKeys = this.userSignal()?.classes;
         if(classesKeys){
