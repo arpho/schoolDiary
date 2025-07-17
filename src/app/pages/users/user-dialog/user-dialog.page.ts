@@ -6,20 +6,7 @@ import { CommonModule } from '@angular/common';
 import { 
   FormsModule,
   ReactiveFormsModule } from '@angular/forms';
-import {
-   IonContent,
-   IonHeader,
-   IonTitle,
-   IonToolbar,
-   IonItem,
-   IonLabel,
-   IonInput,
-   IonSelect,
-   IonSelectOption,
-   IonBackButton,
-   IonButton,
-   IonDatetime
-   } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonBackButton, IonButton, IonDatetime, IonFooter } from '@ionic/angular/standalone';
 import {
    ActivatedRoute,
    Router 
@@ -57,11 +44,11 @@ import { ClassiService } from '../../classes/services/classi.service';
     IonBackButton,
     ClassesFieldComponent,
     IonButton,
-    IonDatetime
+    IonDatetime,
 ]
 })
 export class UserDialogPage implements OnInit {
-save() {
+save() { 
 console.log("save",);
 const user = new UserModel(this.userForm.value);
 user.key = this.userSignal()?.key;
@@ -69,18 +56,20 @@ user.classes = this.usersClasses().map((classe) => classe.key);
 this.userSignal.set(user);
 console.log("userSignal", this.userSignal());
 }
-userSignal = signal(new UserModel());
+userSignal = signal(new UserModel({ role: UsersRole.STUDENT }));
 rolesValue: any[] = [];
 rolesName: string[] = [];
+elencoClassi= signal<ClasseModel[]>([]); 
 userForm: FormGroup= new FormGroup({
   firstName: new FormControl(''),
   lastName: new FormControl(''),
   userName: new FormControl(''),
   email: new FormControl(''),
-  role: new FormControl(''),
+  role: new FormControl(UsersRole.STUDENT),
   phoneNumber: new FormControl(''),
   birthDate: new FormControl(''),
-  classes: new FormControl(''),
+  classes: new FormControl([]),
+  classe: new FormControl('')
 });
 usersClasses= signal<ClasseModel[]>([]);
 $UsersRole = UsersRole;
@@ -100,25 +89,27 @@ $UsersRole = UsersRole;
     }
 
   ngOnInit() {
+    this.$classes.getClassiOnRealtime((classi) => {
+      this.elencoClassi.set(classi);
+    });
     const userKey=this.router.snapshot.paramMap.get('userKey');
      const rolesKey = Object.keys(UsersRole);
      this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
-     console.log("rolesKey", rolesKey);
-     console.log("rolesValue", this.rolesValue);
     if(userKey){   
       this.$users.fetchUser(userKey).then((user) => {
         if(user){
           this.userSignal.set(user);
           this.userForm.setValue({
-            firstName: user?.firstName,
-            lastName: user?.lastName,
-            userName: user?.userName,
-            email: user?.email,
-            role: user?.role,
-            phoneNumber: user?.phoneNumber,
-            birthDate: user?.birthDate,
-            classes: user?.classes,      
-              });
+            firstName: user?.firstName || '',
+            lastName: user?.lastName || '',
+            userName: user?.userName || '',
+            email: user?.email || '',
+            role: user?.role || UsersRole.STUDENT,
+            phoneNumber: user?.phoneNumber || '',
+            birthDate: user?.birthDate || '',
+            classes: user?.classes || [],
+            classe: user?.classKey || ''
+          });
           
             
         }

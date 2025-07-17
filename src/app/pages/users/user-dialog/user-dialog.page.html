@@ -5,6 +5,8 @@
     defaultHref="/users-list"></ion-back-button>
   <ion-toolbar>
     <ion-title align="center">editing utente</ion-title>
+
+  <ion-button (click)="save()"slot="end">Save</ion-button>
   </ion-toolbar>
 </ion-header>
 
@@ -35,6 +37,16 @@
         }
       </ion-select>
     </ion-item>
+
+
+    <ion-item>
+      <ion-label position="floating">Classe</ion-label>
+ <ion-select formControlName="classe">
+  @for (classe of elencoClassi(); track classe.key) {
+    <ion-select-option [value]="classe.key">{{classe.classe}}</ion-select-option>
+  }
+  </ion-select>
+    </ion-item>
     <ion-item>
       <ion-label position="floating">Phone Number</ion-label>
       <ion-input formControlName="phoneNumber"></ion-input>
@@ -43,10 +55,14 @@
       <ion-label position="floating">Birth Date</ion-label>
       <ion-datetime  presentation="date" formControlName="birthDate"></ion-datetime>
     </ion-item>
+
     <ion-item>
-      <ion-label position="floating">Classes</ion-label>
+      <ion-label position="floating">Classi</ion-label>
       <app-classes-field [classes]="usersClasses()" (classesChange)="userForm.get('classes')!.setValue($event)"></app-classes-field>
     </ion-item>
+
+
+
   </form>
-  <ion-button (click)="save()">Save</ion-button>
+
 </ion-content>
