@@ -4,16 +4,16 @@
     class="back-button"
     defaultHref="/classes-list"></ion-back-button>
   <ion-toolbar>
-    <ion-title align="center">Modifica Classe</ion-title>
+    <ion-title align="center">Dashboard Classe</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form (ngsubmit)="save()" [formGroup]="formClass">
+  <form (ngsubmit)="save()" [formGroup]="formClass" class="black-form">
     <ion-tabs #tabs [selected]="selectedTab">
       <ion-tab-bar slot="top">
-        <ion-tab-button tab="anagrafica">
-          <ion-label>Anagrafica</ion-label>
+        <ion-tab-button tab="generalita">
+          <ion-label>Generalità</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="studenti">
           <ion-label>Studenti</ion-label>
@@ -23,29 +23,35 @@
         </ion-tab-button>
       </ion-tab-bar>
 
-      <ion-tab tab="anagrafica">
+      <ion-tab tab="generalita">
         <ion-content>
           <ion-card>
             <ion-card-content>
               <ion-input
+                class="custom-input"
                 label="Nome Classe"
                 required
                 formControlName="classe"
                 fill="outline"
                 labelplacement="floating">
+                <ion-label slot="floating" class="custom-label">Nome Classe</ion-label>
               </ion-input>
               <ion-input
+                class="custom-input"
                 label="Anno"
                 formControlName="year"
                 fill="outline"
                 required
                 labelplacement="floating">
+                <ion-label slot="floating" class="custom-label">Anno</ion-label>
               </ion-input>
               <ion-textarea
+                class="custom-input"
                 label="Descrizione"
                 formControlName="descrizione"
                 fill="outline"
                 labelplacement="floating">
+                <ion-label slot="floating" class="custom-label">Descrizione</ion-label>
               </ion-textarea>
             </ion-card-content>
           </ion-card>
@@ -67,11 +73,13 @@
           <ion-card>
             <ion-card-content>
               <ion-textarea
+                class="custom-input"
                 label="Note"
                 name="note"
                 formControlName="note"
                 fill="outline"
                 labelplacement="floating">
+                <ion-label slot="floating" class="custom-label">Note</ion-label>
               </ion-textarea>
             </ion-card-content>
           </ion-card>

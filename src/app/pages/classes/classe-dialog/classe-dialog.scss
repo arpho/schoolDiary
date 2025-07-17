@@ -8,3 +8,52 @@ ion-content .back-button {
   --width: 40px;
   --height: 40px;
 }
+
+.black-form {
+  --ion-color-primary: #000000;
+  --ion-color-primary-rgb: 0, 0, 0;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  
+  ion-card {
+    --background: #ffffff;
+    --color: #000000;
+  }
+
+  ion-input,
+  ion-textarea {
+    --background: #f5f5f5;
+    --color: #000000;
+    --placeholder-color: #666666;
+    --floating-label-color: #000000;
+    --floating-label-color-focused: #000000;
+    --floating-label-color-invalid: #000000;
+  }
+
+  .custom-input {
+    --background: #ffffff;
+    --color: #000000;
+    --placeholder-color: #666666;
+    --floating-label-color: #000000;
+    --floating-label-color-focused: #000000;
+    --floating-label-color-invalid: #000000;
+    font-weight: lighter !important;
+  }
+
+  ion-label[slot="floating"] {
+    font-weight: bold !important;
+    font-size: 16px;
+    color: #000000;
+  }
+
+  ion-input::part(input),
+  ion-textarea::part(input) {
+    font-weight: normal !important;
+    color: #000000 !important;
+  }
+
+  ion-button {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+  }
+}

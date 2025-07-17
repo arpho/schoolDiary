@@ -28,6 +28,7 @@
     "@capacitor/haptics": "7.0.1",
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
+    "@fontsource/anton": "^5.2.6",
     "@ionic/angular": "^8.6.4",
     "@ionic/angular-server": "^8.6.4",
     "firebase": "^11.10.0",

@@ -76,7 +76,7 @@ export class ClasseDialogPage  implements OnInit {
     note: new FormControl('', Validators.required),
   });
   isEditMode: boolean = false;
-  selectedTab: string = 'anagrafica';
+  selectedTab: string = 'generalita';
 
   constructor(
     private modalCtrl: ModalController,
