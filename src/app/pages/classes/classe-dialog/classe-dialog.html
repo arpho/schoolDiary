@@ -1,8 +1,8 @@
 <ion-header>
-    <ion-back-button 
-      text="Indietro"
-      class="back-button"
-      defaultHref="/classes-list"></ion-back-button>
+  <ion-back-button 
+    text="Indietro"
+    class="back-button"
+    defaultHref="/classes-list"></ion-back-button>
   <ion-toolbar>
     <ion-title align="center">Modifica Classe</ion-title>
   </ion-toolbar>
@@ -10,36 +10,79 @@
 
 <ion-content>
   <form (ngsubmit)="save()" [formGroup]="formClass">
-    <ion-input
-      label="Nome Classe"
-      required
-      formControlName="classe"
-      fill="outline"
-      labelplacement="floating">
-    </ion-input>
-    <ion-input
-      label="Anno"
-      formControlName="year"
-      fill="outline"
-      required
-      labelplacement="floating">
-    </ion-input>
-    <ion-textarea
-      label="Descrizione"
-          formControlName="descrizione"
-      fill="outline"
-      labelplacement="floating">
-    </ion-textarea>
-    <ion-textarea
-      label="Note"
-      name="note"
-      formControlName="note"
-      fill="outline"
-      labelplacement="floating">
-    </ion-textarea>
-    <div>
-      <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
-      <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
-    </div>
+    <ion-tabs #tabs [selected]="selectedTab">
+      <ion-tab-bar slot="top">
+        <ion-tab-button tab="anagrafica">
+          <ion-label>Anagrafica</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="studenti">
+          <ion-label>Studenti</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="annotazioni">
+          <ion-label>Annotazioni</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+
+      <ion-tab tab="anagrafica">
+        <ion-content>
+          <ion-card>
+            <ion-card-content>
+              <ion-input
+                label="Nome Classe"
+                required
+                formControlName="classe"
+                fill="outline"
+                labelplacement="floating">
+              </ion-input>
+              <ion-input
+                label="Anno"
+                formControlName="year"
+                fill="outline"
+                required
+                labelplacement="floating">
+              </ion-input>
+              <ion-textarea
+                label="Descrizione"
+                formControlName="descrizione"
+                fill="outline"
+                labelplacement="floating">
+              </ion-textarea>
+            </ion-card-content>
+          </ion-card>
+        </ion-content>
+      </ion-tab>
+
+      <ion-tab tab="studenti">
+        <ion-content>
+          <ion-card>
+            <ion-card-content>
+              <!-- Il contenuto per la sezione studenti verrà aggiunto in seguito -->
+            </ion-card-content>
+          </ion-card>
+        </ion-content>
+      </ion-tab>
+
+      <ion-tab tab="annotazioni">
+        <ion-content>
+          <ion-card>
+            <ion-card-content>
+              <ion-textarea
+                label="Note"
+                name="note"
+                formControlName="note"
+                fill="outline"
+                labelplacement="floating">
+              </ion-textarea>
+            </ion-card-content>
+          </ion-card>
+        </ion-content>
+      </ion-tab>
+
+      <!-- Pulsanti fuori dai tab ma all'interno del form -->
+      <div class="ion-padding">
+        <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
+        <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
+      </div>
+    </ion-tabs>
   </form>
 </ion-content>

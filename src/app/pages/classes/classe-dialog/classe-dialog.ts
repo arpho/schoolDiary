@@ -15,7 +15,12 @@ import {
   IonTitle,
   IonToolbar,
   IonTextarea,
-  IonBackButton
+  IonBackButton,
+  IonTabs,
+  IonTab,
+  IonTabBar,
+  IonTabButton,
+  IonLabel
 } from '@ionic/angular/standalone';
 import {
   CommonModule
@@ -49,6 +54,11 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonToolbar,
     IonTextarea,
     IonBackButton,
+    IonTabs,
+    IonTab,
+    IonTabBar,
+    IonTabButton,
+    IonLabel,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -65,6 +75,8 @@ export class ClasseDialogPage  implements OnInit {
     descrizione: new FormControl('', Validators.required),
     note: new FormControl('', Validators.required),
   });
+  isEditMode: boolean = false;
+  selectedTab: string = 'anagrafica';
 
   constructor(
     private modalCtrl: ModalController,
@@ -85,6 +97,7 @@ export class ClasseDialogPage  implements OnInit {
     if (classeKey) {
       this.classeId.set(classeKey);
       if (this.classeId()) {
+        this.isEditMode = true;
         const editingClasse = await this.service.fetchClasse(this.classeId()!);
         this.classe.set(editingClasse);
         this.formClass.setValue({
