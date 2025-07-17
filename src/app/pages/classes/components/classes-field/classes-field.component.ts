@@ -4,8 +4,12 @@ import {
   OnInit,
   forwardRef,
   signal,
-  computed
+  computed,
+  ViewEncapsulation,
+  ChangeDetectionStrategy
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { 
   ControlValueAccessor,
   NG_VALUE_ACCESSOR
@@ -31,6 +35,18 @@ import { addIcons } from 'ionicons';
 import { ModalController } from '@ionic/angular';
 import { ClassesSelectorPage } from '../../pages/classes-selector/classes-selector.page';
 @Component({
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonList,
+    IonItem,
+    ClassViewerComponent,
+    FormsModule,
+    IonButton,
+    IonIcon,
+    IonSelect,
+    IonSelectOption
+  ],
   selector: 'app-classes-field',
   templateUrl: './classes-field.component.html',
   styleUrls: ['./classes-field.component.scss'],
@@ -41,13 +57,6 @@ import { ClassesSelectorPage } from '../../pages/classes-selector/classes-select
       multi: true
     }
   ],
-  imports: [
-    IonList,
-    IonItem,
-    ClassViewerComponent,
-    IonButton,
-    IonIcon,
-]
 })
 export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
   @Input() disabled: boolean = false;
@@ -55,6 +64,10 @@ export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
   onChange: any = () => {};
   onTouched: any = () => {};
   classi = signal<ClasseModel[]>([]);
+
+  trackByFn(index: number, item: ClasseModel): string {
+    return item.key;
+  }
  
 
   constructor(

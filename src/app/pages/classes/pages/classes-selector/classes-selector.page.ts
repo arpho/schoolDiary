@@ -15,7 +15,9 @@ import {
   IonTitle,
   IonToolbar,
   IonSelectOption,
-  IonSelect } from '@ionic/angular/standalone';
+  IonSelect ,
+  IonCheckbox
+} from '@ionic/angular/standalone';
 import { ClasseModel } from '../../models/classModel';
 import { ClassiService } from '../../services/classi.service';
 import { ClassViewerComponent } from '../../components/class-viewer/class-viewer.component';
@@ -36,10 +38,23 @@ import { ClassViewerComponent } from '../../components/class-viewer/class-viewer
     FormsModule,
     ClassViewerComponent,
     IonSelectOption,
-    IonSelect
+    IonSelect,
+    IonCheckbox
 ]
 })
 export class ClassesSelectorPage implements OnInit {
+isClassSelected(classe: ClasseModel) {
+  return this.selectedClasses.some((selectedClass) => selectedClass.key === classe.key);
+}
+selectedClass(classe: ClasseModel, event: any) {
+  console.log("selectedClass", classe);
+  console.log("event", event);
+  if(event.detail.checked){
+    this.selectedClasses.push(classe);
+  }else{
+    this.selectedClasses.splice(this.selectedClasses.indexOf(classe), 1);
+  }
+}
   @Input() selectedClasses: ClasseModel[] = [];
   classi = signal<ClasseModel[]>([]); 
   anniScolastici = computed(() => {
@@ -57,6 +72,7 @@ export class ClassesSelectorPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log("selectedClasses", this.selectedClasses);
     this.$classes.getClassiOnRealtime((classi) => {
       this.classi.set(classi);
     });

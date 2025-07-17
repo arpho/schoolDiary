@@ -10,10 +10,15 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-list>
+  <ion-list >
     @for (classe of classi(); track classe.key) {
       <ion-item>
-        <app-class-viewer [classe]="classe"></app-class-viewer>
+        <ion-checkbox label-placement="stacked" (ionChange)="selectedClass(classe,$event)" 
+        [checked]="isClassSelected(classe)"
+        alignment="start">
+        <app-class-viewer [classe]="classe" ></app-class-viewer>
+        </ion-checkbox>
+
       </ion-item>
     }
   </ion-list>
