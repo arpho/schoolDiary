@@ -14,7 +14,8 @@ import {
   IonHeader,
   IonTitle,
   IonToolbar,
-  IonTextarea
+  IonTextarea,
+  IonBackButton
 } from '@ionic/angular/standalone';
 import {
   CommonModule
@@ -47,6 +48,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonTitle,
     IonToolbar,
     IonTextarea,
+    IonBackButton,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

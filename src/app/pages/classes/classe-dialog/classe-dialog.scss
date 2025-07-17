@@ -1,3 +1,10 @@
 ion-content {
   padding: 16px;
 }
+
+ion-content .back-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  --width: 40px;
+  --height: 40px;
+}
