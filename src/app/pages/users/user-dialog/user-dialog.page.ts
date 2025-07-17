@@ -1,7 +1,23 @@
-import { Component, effect, OnInit } from '@angular/core';
+import {
+   Component,
+   effect,
+   OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { 
+  FormsModule,
+  ReactiveFormsModule } from '@angular/forms';
+import {
+   IonContent,
+   IonHeader,
+   IonTitle,
+   IonToolbar,
+   IonItem,
+   IonLabel,
+   IonInput,
+   IonSelect,
+   IonSelectOption,
+   IonBackButton
+ } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -30,6 +46,7 @@ import { ClassiService } from '../../classes/services/classi.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    IonBackButton,
     ClassesFieldComponent
   ]
 })
