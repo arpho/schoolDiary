@@ -16,13 +16,21 @@ import {
    IonInput,
    IonSelect,
    IonSelectOption,
-   IonBackButton
- } from '@ionic/angular/standalone';
-import { ActivatedRoute, Router } from '@angular/router';
+   IonBackButton,
+   IonButton,
+   IonDatetime
+   } from '@ionic/angular/standalone';
+import {
+   ActivatedRoute,
+   Router 
+  } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { signal } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import {
+   FormGroup,
+    FormControl
+  } from '@angular/forms';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { ClassesFieldComponent } from '../../classes/components/classes-field/classes-field.component';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
@@ -47,10 +55,20 @@ import { ClassiService } from '../../classes/services/classi.service';
     FormsModule,
     ReactiveFormsModule,
     IonBackButton,
-    ClassesFieldComponent
-  ]
+    ClassesFieldComponent,
+    IonButton,
+    IonDatetime
+]
 })
 export class UserDialogPage implements OnInit {
+save() {
+console.log("save",);
+const user = new UserModel(this.userForm.value);
+user.key = this.userSignal()?.key;
+user.classes = this.usersClasses().map((classe) => classe.key);
+this.userSignal.set(user);
+console.log("userSignal", this.userSignal());
+}
 userSignal = signal(new UserModel());
 rolesValue: any[] = [];
 rolesName: string[] = [];

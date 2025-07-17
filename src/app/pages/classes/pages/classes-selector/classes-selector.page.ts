@@ -66,6 +66,9 @@ selectedClass(classe: ClasseModel, event: any) {
     });
     return new Set(anniScolastici);
   });
+  makeClassTitle(classe: ClasseModel) {
+      return `${classe.classe}`;
+  }
 
   constructor(
     private $classes: ClassiService
@@ -74,7 +77,7 @@ selectedClass(classe: ClasseModel, event: any) {
   ngOnInit() {
     console.log("selectedClasses", this.selectedClasses);
     this.$classes.getClassiOnRealtime((classi) => {
-      this.classi.set(classi);
+      this.classi.set(classi.sort((a, b) => this.makeClassTitle(a).localeCompare(this.makeClassTitle(b))));
     });
   }
 
