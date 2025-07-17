@@ -32,6 +32,7 @@ import {
 } from '../services/classi.service';
 import { ClasseModel } from '../models/classModel';
 import { ActivatedRoute } from '@angular/router';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
 
 @Component({
   selector: 'app-classe-dialog',
@@ -66,7 +67,8 @@ export class ClasseDialogPage  implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private service: ClassiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toaster: ToasterService
   ) {
     // Initialize with empty model
     this.classe.set(new ClasseModel({
@@ -101,15 +103,17 @@ export class ClasseDialogPage  implements OnInit {
     }
   }
 
-  save() {
+  async save() {
     // Crea una nuova istanza con i valori della form
     const classeObj = new ClasseModel(this.formClass.value).setKey(this.classeId()!);
-    console.log("classeObj", classeObj);
-    
-    if (this.classeId()) {
-      classeObj.setKey(this.classeId()!);
+    console.log("saving classeObj", classeObj);
+    try {
+      await this.service.updateClasse(this.classeId()!, classeObj);
+      this.toaster.presentToast({message:"Classe aggiornata con successo",duration:2000,position:"bottom"});
+
+    } catch (error) {
+      this.toaster.presentToast({message:"Errore durante l'aggiornamento della classe",duration:2000,position:"bottom"});
     }
-    this.modalCtrl.dismiss(classeObj);
   }
 
   dismiss() {
