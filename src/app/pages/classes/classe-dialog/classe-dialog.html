@@ -1,44 +1,41 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{classeId ? 'Modifica Classe' : 'Nuova Classe'}}</ion-title>
+    <ion-title>Modifica Classe</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form (ngSubmit)="save()">
+  <form (ngsubmit)="save()" [formGroup]="formClass">
     <ion-input
       label="Nome Classe"
-      name="classe"
       required
-      [(ngModel)]="classe.classe"
+      formControlName="classe"
       fill="outline"
-      labelPlacement="floating">
+      labelplacement="floating">
     </ion-input>
     <ion-input
       label="Anno"
-      [(ngModel)]="classe.year"
-      name="year"
+      formControlName="year"
       fill="outline"
       required
-      labelPlacement="floating">
+      labelplacement="floating">
     </ion-input>
     <ion-textarea
       label="Descrizione"
-      [(ngModel)]="classe.descrizione"
-      name="descrizione"
+          formControlName="descrizione"
       fill="outline"
-      labelPlacement="floating">
+      labelplacement="floating">
     </ion-textarea>
     <ion-textarea
       label="Note"
-      [(ngModel)]="classe.note"
       name="note"
+      formControlName="note"
       fill="outline"
-      labelPlacement="floating">
+      labelplacement="floating">
     </ion-textarea>
-    <div style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 1rem;">
+    <div>
       <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
-      <ion-button type="submit" color="primary">Salva</ion-button>
+      <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
     </div>
   </form>
 </ion-content>

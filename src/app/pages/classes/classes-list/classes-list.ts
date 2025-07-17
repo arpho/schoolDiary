@@ -180,38 +180,7 @@ constructor(
     if (classeId) {
       classe = this.classiList().find(c => c.key === classeId);
     }
-    const modal = await this.modalController.create({
-      component: ClasseDialogPage,
-      componentProps: {
-        classe: classe ? { ...classe } : { nome: '', descrizione: '' },
-        classeId: classeId || null
-      }
-    });
-    const modalRef = await modal.present();
-const {data,role} = await modal.onDidDismiss();
-console.log("role ",role);
-console.log("data",data);
-if (data)
-{
-const editedClass = new ClasseModel(data);
-console.log("data from dialog",editedClass)
-if(!editedClass.key){
-this.service.addClasse(editedClass).then(() => {
-  this.toaster.presentToast({message:"Classe aggiunta con successo",duration:2000,position:"bottom"});
-}).catch((error) => {
-  this.toaster.presentToast({message:"Errore durante l'aggiunta della classe",duration:2000,position:"bottom"});
-})  .finally(() => {
-
-});
-}else{
-  this.service.updateClasse(classe!.key,editedClass).then(() => {
-    this.toaster.presentToast({message:"Classe aggiornata con successo",duration:2000,position:"bottom"});
-  }).catch((error) => {
-    this.toaster.presentToast({message:"Errore durante l'aggiornamento della classe",duration:2000,position:"bottom"});
-  })  .finally(() => {
-
-  });
-}}
+    this.router.navigate(['/class-dialog', classeId]);
   }
 }
 
