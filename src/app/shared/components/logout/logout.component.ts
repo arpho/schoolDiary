@@ -1,7 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { IonFabButton, IonIcon, IonFab, IonFabList } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { ellipsisVertical, logOut } from 'ionicons/icons';
+import { 
+  ellipsisVertical,
+  key,
+  logOut
+} from 'ionicons/icons';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { Router } from '@angular/router';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -26,7 +30,8 @@ export class LogoutComponent implements OnInit {
   ) { 
     addIcons({
       ellipsisVertical,
-      logOut
+      logOut,
+      key
     });
   }
 

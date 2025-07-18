@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular/standalone';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Auth, authState, signInAnonymously, signOut, User, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
 import { Router, RouterModule } from '@angular/router';
@@ -26,6 +26,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
+    IonInputPasswordToggle
   ]
 })
 export class LoginPage implements OnInit {
@@ -94,10 +95,10 @@ console.log("init login page")
         if (data) {
           this.error = false;
           this.errorMessage = '';
-     
-        console.log("login successfull")
-        
-        this.router.navigate(['/dashboard']);
+          
+          console.log("login successfull");
+          // Reindirizza alla dashboard
+          this.router.navigate(['/dashboard']);
 
         } else {
           console.log('login failed');
