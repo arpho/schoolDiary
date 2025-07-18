@@ -97,7 +97,7 @@ console.log("init login page")
      
         console.log("login successfull")
         
-        this.router.navigate(['/home']);
+        this.router.navigate(['/dashboard']);
 
         } else {
           console.log('login failed');

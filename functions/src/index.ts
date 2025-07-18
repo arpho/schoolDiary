@@ -1,6 +1,7 @@
 
 
 import {initializeApp} from "firebase-admin/app";
+import {getAuth} from "firebase-admin/auth";
 import * as functions from "firebase-functions";
 import * as logger from "firebase-functions/logger";
 initializeApp();
@@ -33,6 +34,11 @@ const setCustomClaims = functions.https.onCall(async (data, context) => {
     );
 
     logger.info("Returning data");
+    logger.debug("data", data.data);
+    getAuth().setCustomUserClaims(
+      data.data.userKey,
+      data.data.claims
+    );
     return {result: "ok", data: cleanedData};
   } catch (error) {
     logger.error("Error processing data:", error);

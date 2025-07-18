@@ -8,13 +8,22 @@ import { DashboardAdminComponent } from 'src/app/shared/components/dashboard-adm
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { DashboardTeacherComponent } from 'src/app/shared/components/dashboard-teacher/dashboard-teacher';
 import { DashboardStudentComponent } from 'src/app/shared/components/dashboard-student/dashboard-student';
+import { LogoutComponent } from 'src/app/shared/components/logout/logout.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [ 
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    CommonModule,
+    FormsModule,
+    LogoutComponent
+    ]
 })
 export class DashboardPage implements OnInit {
   private Users = inject(UsersService);

@@ -6,7 +6,24 @@ import { CommonModule } from '@angular/common';
 import { 
   FormsModule,
   ReactiveFormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonBackButton, IonButton, IonDatetime, IonFooter, IonFabButton, IonIcon, IonButtons, IonFab } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonBackButton,
+  IonButton,
+  IonDatetime,
+  IonFooter,
+  IonFabButton,
+  IonIcon,
+  IonButtons,
+  IonFab } from '@ionic/angular/standalone';
 import {
    ActivatedRoute,
    Router 
@@ -68,8 +85,10 @@ const claims = {
   classKey: user.classe
 }
 console.log("claims", claims)
-this.$users.setCustomClaims(user.key, claims).then((data) => {
+this.$users.setCustomClaims(user.key, claims).then(async (data:any) => {
   console.log("claims set",data);
+  const usersClaims =await this.$users.getCustomClaims4LoggedUser();
+  console.log("usersClaims", usersClaims);
 }).catch((error: any) => {
   console.log("error setting claims", error);
 })
@@ -109,7 +128,7 @@ $UsersRole = UsersRole;
       })
     }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.$classes.getClassiOnRealtime((classi) => {
       this.elencoClassi.set(classi);
     });
@@ -137,6 +156,8 @@ $UsersRole = UsersRole;
         }
       )   ;
     console.log("user", this.userSignal());
+    const claims =  await this.$users.getCustomClaims4LoggedUser();
+    console.log("claims", claims);
 
   }
 }

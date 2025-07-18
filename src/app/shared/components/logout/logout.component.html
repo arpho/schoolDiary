@@ -1,0 +1,16 @@
+<div class="logout-container">
+  <p class="welcome-message">Benvenuto {{loggedUser()?.email}}</p>
+  <ion-fab id="test" vertical="bottom" horizontal="end">
+    <ion-fab-button size="small" color="medium">
+      <ion-icon name="ellipsis-vertical"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="start">
+      <ion-fab-button color="light" (click)="logout()">
+        <ion-icon name="log-out"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="light">
+        <ion-icon name="close"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</div>

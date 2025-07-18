@@ -58,7 +58,18 @@ export class UsersService {
         }
       });
     });
+  }      
+
+  getCustomClaims4LoggedUser(): Promise<any> {
+    return new Promise((resolve, reject) => {
+   const auth = getAuth();
+   auth.currentUser?.getIdTokenResult().then((tokenResult) => {
+    resolve(tokenResult.claims);    
+    });
+  });
   }
+
+
 
   getLoggedUser(): Promise<UserModel> {
     console.log('ciao user seervice');
