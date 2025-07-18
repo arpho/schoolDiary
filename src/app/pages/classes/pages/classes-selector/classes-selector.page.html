@@ -1,7 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Seleziona le classi</ion-title>
+      <ion-label>filtra per a.a. </ion-label>
     <ion-select>
+
       @for (anno of anniScolastici(); track $index) {
         <ion-select-option [value]="anno">{{anno}}</ion-select-option>
       }

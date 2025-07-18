@@ -18,12 +18,15 @@ import {
    IonSelect,
    IonCheckbox,
    IonFabButton,
-   IonIcon
+   IonIcon,
+   IonLabel
 } from '@ionic/angular/standalone';
 import { ClasseModel } from '../../models/classModel';
 import { ClassiService } from '../../services/classi.service';
 import { ClassViewerComponent } from '../../components/class-viewer/class-viewer.component';
 import { ModalController } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { checkmark } from 'ionicons/icons';
 @Component({
   selector: 'app-classes-selector',
   templateUrl: './classes-selector.page.html',
@@ -43,7 +46,8 @@ import { ModalController } from '@ionic/angular';
     IonSelect,
     IonCheckbox,
     IonFabButton,
-    IonIcon
+    IonIcon,
+    IonLabel
   ]
 })
 export class ClassesSelectorPage implements OnInit {
@@ -54,7 +58,12 @@ this.$modal.dismiss();
   constructor(
     private $classes: ClassiService,
     private $modal: ModalController
-  ) { }
+  ) { 
+
+    addIcons({
+      checkmark
+    });
+  }
 isClassSelected(classe: ClasseModel) {
   return this.selectedClasses.some((selectedClass) => selectedClass.key === classe.key);
 }
