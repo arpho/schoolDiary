@@ -20,7 +20,13 @@ export class UserModel{
   constructor(args?:{}){
     this.build(args);
   }
+  set classe(classe: string) {
+    this.classKey = classe;
+  }
 
+  get classe() {
+    return this.classKey;
+  }
   build(args?:{}){
     Object.assign(this, args)
 

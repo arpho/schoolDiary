@@ -12,6 +12,7 @@ import {
 } from '@angular/fire/auth';
 import { AuthService } from './auth.service';
 import { UserModel } from '../models/userModel';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 @Injectable({
   providedIn: 'root',
 })
@@ -70,7 +71,11 @@ export class UsersService {
       });
     });
   }
-
+setCustomClaims(userKey:string,claims:object){
+  const functions = getFunctions();
+  const setCustomClaims = httpsCallable(functions, 'setCustomClaims');
+  return setCustomClaims({data:{userKey,claims}});
+}
 
 
   async signupUser(user: UserModel) {
