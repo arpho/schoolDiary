@@ -62,6 +62,17 @@ user.key = this.userSignal()?.key;
 user.classes = this.usersClasses().map((classe) => classe.key);
 this.userSignal.set(user);
 console.log("userSignal", this.userSignal());
+const claims = {
+  role: user.role,
+  classes: user.classes,
+  classKey: user.classe
+}
+console.log("claims", claims)
+this.$users.setCustomClaims(user.key, claims).then((data) => {
+  console.log("claims set",data);
+}).catch((error: any) => {
+  console.log("error setting claims", error);
+})
 }
 userSignal = signal(new UserModel({ role: UsersRole.STUDENT }));
 rolesValue: any[] = [];

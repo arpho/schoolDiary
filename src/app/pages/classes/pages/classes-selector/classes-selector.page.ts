@@ -7,21 +7,23 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent,
-  IonList,
-  IonItem,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonSelectOption,
-  IonSelect ,
-  IonCheckbox
+import {
+   IonContent,
+   IonList,
+   IonItem,
+   IonHeader,
+   IonTitle,
+   IonToolbar,
+   IonSelectOption,
+   IonSelect,
+   IonCheckbox,
+   IonFabButton,
+   IonIcon
 } from '@ionic/angular/standalone';
 import { ClasseModel } from '../../models/classModel';
 import { ClassiService } from '../../services/classi.service';
 import { ClassViewerComponent } from '../../components/class-viewer/class-viewer.component';
-
+import { ModalController } from '@ionic/angular';
 @Component({
   selector: 'app-classes-selector',
   templateUrl: './classes-selector.page.html',
@@ -39,10 +41,20 @@ import { ClassViewerComponent } from '../../components/class-viewer/class-viewer
     ClassViewerComponent,
     IonSelectOption,
     IonSelect,
-    IonCheckbox
-]
+    IonCheckbox,
+    IonFabButton,
+    IonIcon
+  ]
 })
 export class ClassesSelectorPage implements OnInit {
+close() {
+this.$modal.dismiss();
+}
+
+  constructor(
+    private $classes: ClassiService,
+    private $modal: ModalController
+  ) { }
 isClassSelected(classe: ClasseModel) {
   return this.selectedClasses.some((selectedClass) => selectedClass.key === classe.key);
 }
@@ -70,9 +82,6 @@ selectedClass(classe: ClasseModel, event: any) {
       return `${classe.classe}`;
   }
 
-  constructor(
-    private $classes: ClassiService
-  ) { }
 
   ngOnInit() {
     console.log("selectedClasses", this.selectedClasses);
