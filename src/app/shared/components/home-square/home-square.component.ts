@@ -22,7 +22,6 @@ this.router.navigate([this.url])
 
   ngOnInit() {
 
-    console.log("init home square",this.title,this.url,this.image)
   }
 
 }

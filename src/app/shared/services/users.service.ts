@@ -13,6 +13,13 @@ import {
 import { AuthService } from './auth.service';
 import { UserModel } from '../models/userModel';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+
+interface ClaimsResponse {
+  result: 'ok' | 'error';
+  message?: string;
+  data?: any;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -63,7 +70,7 @@ export class UsersService {
   getCustomClaims4LoggedUser(): Promise<any> {
     return new Promise((resolve, reject) => {
    const auth = getAuth();
-   auth.currentUser?.getIdTokenResult().then((tokenResult) => {
+   auth.currentUser?.getIdTokenResult(true).then((tokenResult) => {
     resolve(tokenResult.claims);    
     });
   });
@@ -82,10 +89,21 @@ export class UsersService {
       });
     });
   }
-setCustomClaims(userKey:string,claims:object){
-  const functions = getFunctions();
-  const setCustomClaims = httpsCallable(functions, 'setCustomClaims');
-  return setCustomClaims({data:{userKey,claims}});
+async setCustomClaims(userKey: string, claims: object): Promise<void> {
+  try {
+    const functions = getFunctions();
+    const setCustomClaims = httpsCallable(functions, 'setCustomClaims');
+    
+    // La funzione Cloud Function si aspetta i dati direttamente in data
+    const result = await setCustomClaims({ userKey, claims }) as ClaimsResponse;
+    
+    if (result.result !== 'ok') {
+      throw new Error('Failed to set custom claims: ' + (result.message || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error setting custom claims:', error);
+    throw error;
+  }
 }
 
 

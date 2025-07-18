@@ -51,13 +51,11 @@ isFormValid= computed(() => {
 
 onPasswordChange($event: any) {
 if($event.target){
-console.log("password",$event.target?.value)
 this.password.set($event.target?.value)
 }
 }
 onEmailChange($event: any) {
 if($event.target){
-console.log("email",$event.target?.value)
 this.email.set($event.target?.value)
 }
 }
