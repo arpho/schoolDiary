@@ -38,6 +38,12 @@ export class UsersService {
       }
     });
   }
+
+  updateUser(userKey: string, user: UserModel) {
+    const userRef = doc(this.firestore, `userProfile/${userKey}`);
+    return setDoc(userRef, user.serialize());
+  }
+
     getUsersOnRealTime(cb: (users: UserModel[]) => void) {
     const collectionRef = collection(this.firestore, this.collection)
     onSnapshot(collectionRef, (snapshot) => {

@@ -1,0 +1,68 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Profilo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Profilo</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Dettagli Profilo</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <ion-item>
+          <ion-label position="floating">Nome</ion-label>
+          <ion-input type="text" formControlName="firstName"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Cognome</ion-label>
+          <ion-input type="text" formControlName="lastName"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input type="email" formControlName="email"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Data di nascita</ion-label>
+          <ion-datetime formcontrolname="birthDate" displayformat="DD/MM/YYYY" pickerformat="DD/MM/YYYY"></ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Numero di telefono</ion-label>
+          <ion-input formcontrolname="phoneNumber"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Nome utente</ion-label>
+          <ion-input formcontrolname="userName"></ion-input>
+        </ion-item>
+
+        <ion-item *ngif="isClassSelectionEnabled()">
+          <ion-label position="floating">Classe</ion-label>
+          <ion-select formcontrolname="classKey">
+            <ion-select-option *ngfor="let classe of listaClassi()" value="{{classe.key}}">
+              {{classe.nome}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button expand="block" type="submit" [disabled]="!profileForm.valid">
+          Salva
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

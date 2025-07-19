@@ -54,4 +54,9 @@ export const routes: Routes = [
     path: 'classes-selector',
     loadComponent: () => import('./pages/classes/pages/classes-selector/classes-selector.page').then( m => m.ClassesSelectorPage)
   },
+
+  {
+    path: 'profile/:userKey',
+    loadComponent: () => import('./pages/profile/profile.page').then( m => m.ProfilePage)
+  },
 ];

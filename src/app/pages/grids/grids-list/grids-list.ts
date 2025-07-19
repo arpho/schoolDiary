@@ -5,20 +5,23 @@ import {
 import {
   FormsModule
 } from '@angular/forms';
-import { IonContent,
-   IonHeader,
-    IonTitle,
-     IonToolbar,
-      IonGrid,
-       IonRow,
-        IonCol,
-         IonCard,
-          IonCardContent,
-           IonCardHeader,
-            IonCardTitle,
-             IonButton,
-              IonIcon,
-               IonItem } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonBackButton 
+} from '@ionic/angular/standalone';
 import {
   Grids
 } from 'src/app/shared/models/grids';
@@ -65,7 +68,8 @@ import { Router } from '@angular/router';
     IonCardTitle,
     IonButton,
     IonIcon,
-    IonItem
+    IonItem,
+    IonBackButton
 ]
 })
 export class GridsListComponent implements OnInit {

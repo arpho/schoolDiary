@@ -2,9 +2,11 @@ import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/cor
 import { IonFabButton, IonIcon, IonFab, IonFabList } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
+  bodyOutline,
   ellipsisVertical,
   key,
-  logOut
+  logOut,
+  person
 } from 'ionicons/icons';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { Router } from '@angular/router';
@@ -23,6 +25,10 @@ import { UserModel } from 'src/app/shared/models/userModel';
   ]
 })
 export class LogoutComponent implements OnInit {
+ openProfile() {
+const userKey= this.loggedUser()?.key;
+this.router.navigate(['/profile',userKey]);
+}
   loggedUser= signal<UserModel>(new UserModel());
   constructor(
     private $user: UsersService,
@@ -31,7 +37,9 @@ export class LogoutComponent implements OnInit {
     addIcons({
       ellipsisVertical,
       logOut,
-      key
+      key,
+      person,
+      bodyOutline
     });
   }
 
