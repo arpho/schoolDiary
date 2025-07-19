@@ -62,12 +62,10 @@ import { save } from 'ionicons/icons';
     ReactiveFormsModule,
     IonBackButton,
     ClassesFieldComponent,
-    IonButton,
     IonDatetime,
     IonFooter,
     IonFabButton,
     IonIcon,
-    IonButtons,
     IonFab
 ]
 })
@@ -85,7 +83,7 @@ const claims = {
   classKey: user.classe
 }
 console.log("claims", claims)
-this.$users.setCustomClaims(user.key, claims).then(async (data:any) => {
+this.$users.setUserClaims2user(user.key, claims).then(async (data:any) => {
   console.log("claims set",data);
   const usersClaims =await this.$users.getCustomClaims4LoggedUser();
   console.log("usersClaims", usersClaims);

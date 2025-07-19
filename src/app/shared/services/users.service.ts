@@ -95,13 +95,13 @@ export class UsersService {
       });
     });
   }
-async setCustomClaims(userKey: string, claims: object): Promise<void> {
+async setUserClaims2user(userKey: string, claims: object): Promise<void> {
   try {
     const functions = getFunctions();
     const setCustomClaims = httpsCallable(functions, 'setCustomClaims');
     
     // La funzione Cloud Function si aspetta i dati direttamente in data
-    const result = await setCustomClaims({ userKey, claims }) as ClaimsResponse;
+    const result = await setCustomClaims( {userKey, claims} ) as ClaimsResponse;
     
     if (result.result !== 'ok') {
       throw new Error('Failed to set custom claims: ' + (result.message || 'Unknown error'));
