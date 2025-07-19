@@ -19,7 +19,7 @@ import {
     FormControl
 } from '@angular/forms';
 
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonTextarea, IonAccordion, IonAccordionGroup, IonFabButton, IonFab, IonFooter } from '@ionic/angular/standalone';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonTextarea, IonAccordion, IonAccordionGroup, IonFabButton, IonFab, IonFooter, IonFabList } from '@ionic/angular/standalone';
 
 import {
     Criterio
@@ -31,7 +31,8 @@ import {
   push,
   trash,
   close,
-  save
+  save,
+  ellipsisVertical  
 } from 'ionicons/icons';
 import { Grids } from 'src/app/shared/models/grids';
 import {
@@ -79,7 +80,9 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonFabButton,
     IonFab,
     IndicatorViewerComponent,
-    IonFooter
+    IonFooter,
+    IonFabList,
+    IonIcon
 ]
 })
 export class GridsdialogPage implements OnInit{
@@ -96,12 +99,13 @@ pageTitle: any;
     private actionSheetController: ActionSheetController,   
   ) {
     addIcons({
+      ellipsisVertical,
       push,
       add,
       create,
       close,
       trash,
-      save
+      save,
     });
     effect(() => {
       console.log("indicatorsList", this.indicatorsList());

@@ -8,27 +8,7 @@ import {
     Output,
     signal
 } from '@angular/core';
-import {
-    IonTab,
-    IonTabs,
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonButton,
-    IonIcon,
-    IonLabel,
-    IonTabBar,
-    IonTabButton,
-    IonTextarea,
-    IonItem,
-    IonList,
-    IonFab,
-    IonFabButton } from '@ionic/angular/standalone';
+import { IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTextarea, IonItem, IonList, IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
 import { Criterio } from 'src/app/shared/models/criterio';
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import {
@@ -72,7 +52,8 @@ import {
     IonItem,
     IonList,
     IonFab,
-    IonFabButton
+    IonFabButton,
+    IonFabList
 ],
 })
 export class IndicatorsDialogComponent implements OnInit {

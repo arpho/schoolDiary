@@ -30,12 +30,28 @@
       <ion-content>
 <ion-list>
   @for(criterio of criteri(); track $index) {
-    <ion-card (click)="selectCriterio(criterio,$index)">
+    <ion-card>
       <ion-card-header>
         <ion-card-title>{{criterio.descrizione}}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-label>{{criterio.valori}}</ion-label>
+        <ion-fab id="test"  vertical="bottom" horizontal="end" >
+          <ion-fab-button size="small"   color="medium">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-fab-button>
+          <ion-fab-list side="start">
+            <ion-fab-button color="light" (click)="editCriterio(criterio,$index)">
+              <ion-icon name="create"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button color="danger" (click)="removeCriterio($index)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button color="light">
+              <ion-icon name="close"></ion-icon>
+            </ion-fab-button>
+          </ion-fab-list>
+        </ion-fab>
       </ion-card-content>
     </ion-card>
   }
