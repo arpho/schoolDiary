@@ -81,7 +81,6 @@ console.log("indicatorValue changed to ", this.indicatorValue());
     constructor(
         private fb: FormBuilder,
     private alertController: AlertController,
-    private actionSheetController: ActionSheetController,
     private modalController: ModalController    
     ) { 
         this.criterioForm = this.fb.group({
@@ -91,35 +90,7 @@ console.log("indicatorValue changed to ", this.indicatorValue());
     }
     async selectCriterio(criterio: Criterio,index: number) {
 console.log("selectCriterio", criterio, index);
-const actionSheet = await this.actionSheetController.create({
-    header: 'Select an option',
-    buttons: [
-      {
-        text: 'Delete',
-        role: 'destructive',
-        icon: 'trash',
-        handler: () => {
-         this.removeCriterio(index);
-        },
-      },
-      {
-        text: 'Edit',
-        icon: 'create',
-        handler: () => {
-          this.editCriterio(criterio,index);
-        },
-      },
-      {
-        text: 'Cancel',
-        icon: 'close',
-        role: 'cancel',
-        handler: () => {
-          console.log('Cancel clicked');
-        },
-      },
-    ],
-  });
-  await actionSheet.present();
+
 }
     removeCriterio(index: number) {
         this.criteri.set([...this.criteri().slice(0,index), ...this.criteri().slice(index+1)]);
