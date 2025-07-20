@@ -1,0 +1,31 @@
+<h1>Lista Studenti</h1>
+<ion-list>
+    @for(student of _students(); track student.key) {
+        <ion-item>
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>{{student.firstName}} {{student.lastName}}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p>{{student.email}}</p>
+                </ion-card-content>
+            </ion-card>
+<ion-fab id="test"  vertical="bottom" horizontal="end" >
+  <ion-fab-button size="small"   color="medium">
+    <ion-icon name="ellipsis-vertical"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-list side="start">
+    <ion-fab-button color="light" (click)="editStudent(student.key)">
+      <ion-icon name="create"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button color="danger" (click)="deleteStudent(student.key)">
+      <ion-icon name="trash"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button color="light">
+      <ion-icon name="close"></ion-icon>
+    </ion-fab-button>
+  </ion-fab-list>
+</ion-fab>
+        </ion-item>
+    }
+</ion-list>

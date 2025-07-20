@@ -1,0 +1,17 @@
+<ion-content [fullscreen]="true">
+    <ion-title size="large" align="center">Studenti</ion-title>
+  <ion-list>
+    @for(student of students(); track student.key) {
+      <ion-item>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{student.firstName}} {{student.lastName}}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>{{student.email}}</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>

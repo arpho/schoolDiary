@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Observable, Observer } from 'rxjs';
 import { collection, doc, Firestore, setDoc, where,query, getDocs, addDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
 import {
   Auth,
@@ -27,6 +28,18 @@ interface ClaimsResponse {
   providedIn: 'root',
 })
 export class UsersService {
+  getUsersByClass(classKey: string, callback: (users: UserModel[]) => void) {
+    const collectionRef = collection(this.firestore, this.collection);
+    const queryRef = query(collectionRef, where('classKey', '==', classKey));
+    return onSnapshot(queryRef, (snapshot) => {
+      const users: UserModel[] = [];
+      snapshot.forEach((doc) => {
+        const user = new UserModel(doc.data()).setKey(doc.id);
+        users.push(user);
+      });
+      callback(users);
+    });
+  }
   private auth = inject(Auth);
   private firestore = inject(Firestore);
   private MyAuth = inject(AuthService);

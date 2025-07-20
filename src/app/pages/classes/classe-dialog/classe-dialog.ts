@@ -39,7 +39,7 @@ import {
 import { ClasseModel } from '../models/classModel';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
-
+import { ListStudent4classComponent } from '../components/list-student4class/list-student4class.component';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -62,12 +62,13 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    ListStudent4classComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ClasseDialogPage  implements OnInit {
 
-  classeId = signal<string>('');
+  classKey = signal<string>('');
   classe = signal<ClasseModel>(new ClasseModel({}));
   formClass = new FormGroup({
     classe: new FormControl('', Validators.required),
@@ -93,12 +94,12 @@ export class ClasseDialogPage  implements OnInit {
     }));
   }
   async ngOnInit(): Promise<void> {
-    const classeKey = this.route.snapshot.paramMap.get('classeKey');
-    if (classeKey) {
-      this.classeId.set(classeKey);
-      if (this.classeId()) {
+    const classKey = this.route.snapshot.paramMap.get('classeKey');
+    if (classKey) {
+      this.classKey.set(classKey);
+      if (this.classKey()) {
         this.isEditMode = true;
-        const editingClasse = await this.service.fetchClasse(this.classeId()!);
+        const editingClasse = await this.service.fetchClasse(this.classKey()!);
         this.classe.set(editingClasse);
         this.formClass.setValue({
           classe: editingClasse.classe,
@@ -120,10 +121,10 @@ export class ClasseDialogPage  implements OnInit {
 
   async save() {
     // Crea una nuova istanza con i valori della form
-    const classeObj = new ClasseModel(this.formClass.value).setKey(this.classeId()!);
+    const classeObj = new ClasseModel(this.formClass.value).setKey(this.classKey()!);
     console.log("saving classeObj", classeObj);
     try {
-      await this.service.updateClasse(this.classeId()!, classeObj);
+      await this.service.updateClasse(this.classKey()!, classeObj);
       this.toaster.presentToast({message:"Classe aggiornata con successo",duration:2000,position:"bottom"});
 
     } catch (error) {

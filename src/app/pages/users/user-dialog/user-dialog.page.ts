@@ -43,6 +43,7 @@ import { user } from '@angular/fire/auth';
 import { ClassiService } from '../../classes/services/classi.service';
 import { addIcons } from 'ionicons';
 import { save } from 'ionicons/icons';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
@@ -71,6 +72,24 @@ import { save } from 'ionicons/icons';
 ]
 })
 export class UserDialogPage implements OnInit {
+  constructor(
+      private router: ActivatedRoute,
+      private $users: UsersService,
+      private $classes: ClassiService,
+      private toaster: ToasterService
+    ) { 
+      addIcons({
+        save,
+      });
+      effect(async()=>{
+        const classesKeys = this.userSignal()?.classes;
+        if(classesKeys){
+          this.$classes.fetchClasses(classesKeys).then((classes) => {
+            this.usersClasses.set(classes);
+          });
+        } 
+      })
+    }
 save() { 
 console.log("save",);
 const user = new UserModel(this.userForm.value);
@@ -84,12 +103,21 @@ const claims = {
   classKey: user.classe
 }
 console.log("claims", claims)
+this.$users.updateUser(user.key, user).then(() => {
+  console.log("user updated");
+  this.toaster.presentToast({message:"User aggiornato con successo",duration:2000,position:"bottom"});
+}).catch((error: any) => {
+  console.log("error updating user", error);
+  this.toaster.presentToast({message:"Errore durante l'aggiornamento del user",duration:2000,position:"bottom"});
+})
 this.$users.setUserClaims2user(user.key, claims).then(async (data:any) => {
   console.log("claims set",data);
   const usersClaims =await this.$users.getCustomClaims4LoggedUser();
   console.log("usersClaims", usersClaims);
+  this.toaster.presentToast({message:"Claims aggiornati con successo",duration:2000,position:"bottom"});
 }).catch((error: any) => {
   console.log("error setting claims", error);
+  this.toaster.presentToast({message:"Errore durante l'aggiornamento dei claims",duration:2000,position:"bottom"});
 })
 }
 userSignal = signal(new UserModel({ role: UsersRole.STUDENT }));
@@ -109,23 +137,6 @@ userForm: FormGroup= new FormGroup({
 });
 usersClasses= signal<ClasseModel[]>([]);
 $UsersRole = UsersRole;
-  constructor(
-      private router: ActivatedRoute,
-      private $users: UsersService,
-      private $classes: ClassiService
-    ) { 
-      addIcons({
-        save,
-      });
-      effect(async()=>{
-        const classesKeys = this.userSignal()?.classes;
-        if(classesKeys){
-          this.$classes.fetchClasses(classesKeys).then((classes) => {
-            this.usersClasses.set(classes);
-          });
-        } 
-      })
-    }
 
   async ngOnInit() {
     this.$classes.getClassiOnRealtime((classi) => {

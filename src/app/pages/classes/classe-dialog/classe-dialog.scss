@@ -1,5 +1,75 @@
 ion-content {
-  padding: 16px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+ion-header {
+  --height: 44px;
+  --min-height: 44px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+}
+
+ion-toolbar {
+  --min-height: 44px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  height: 44px;
+}
+
+ion-title {
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+ion-buttons {
+  margin: 0;
+  padding: 0;
+}
+
+ion-back-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  padding: 0;
+}
+
+ion-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+ion-tab-bar {
+  margin: 0;
+  padding: 0;
+}
+
+ion-tab-button {
+  margin: 0;
+  padding: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.black-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 ion-content .back-button {
@@ -7,6 +77,7 @@ ion-content .back-button {
   --padding-end: 0;
   --width: 40px;
   --height: 40px;
+  margin: 0;
 }
 
 .black-form {
