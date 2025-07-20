@@ -1,10 +1,30 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon } from '@ionic/angular/standalone';
+import {
+IonList,
+IonItem,
+IonCard,
+IonCardContent,
+IonCardHeader,
+IonCardTitle,
+IonFab,
+IonFabButton,
+IonFabList,
+IonIcon 
+} from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
+import { addIcons } from 'ionicons';
+import {
+   create,
+   ellipsisVertical,
+   sparkles,
+   close,
+   trash,
+   eye,
+  } from 'ionicons/icons';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-student4class',
@@ -26,6 +46,22 @@ import { UsersService } from 'src/app/shared/services/users.service';
   ]
 })
 export class ListStudent4classComponent  implements OnInit {
+newEvaluation(studentKey: string) {
+this.router.navigate(['/evaluation-dialog', studentKey]);
+}
+
+  constructor(
+    private $users: UsersService,
+    private router: Router
+  ) { 
+    addIcons({
+      ellipsisVertical,
+      create,
+      eye,
+      sparkles,
+      close,
+    })
+  }
 deleteStudent(arg0: string) {
 throw new Error('Method not implemented.');
 }
@@ -42,10 +78,6 @@ throw new Error('Method not implemented.');
   private setStudents(users: UserModel[]): void {
     this._students.set(users);
   }
-
-  constructor(
-    private $users: UsersService,
-  ) { }
 
   ngOnInit() {
     this.$users.getUsersByClass(this.classkey, (users: UserModel[]) => {

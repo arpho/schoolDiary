@@ -59,4 +59,12 @@ export const routes: Routes = [
     path: 'profile/:userKey',
     loadComponent: () => import('./pages/profile/profile.page').then( m => m.ProfilePage)
   },
+  {
+    path: 'evaluations-list4-student',
+    loadComponent: () => import('./pages/evaluations/pages/evaluations-list4-student/evaluations-list4-student.page').then( m => m.EvaluationsList4StudentPage)
+  },
+  {
+    path: 'evaluation-dialog/:evaluationKey?',
+    loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then( m => m.EvaluationDialogPage)
+  },
 ];
