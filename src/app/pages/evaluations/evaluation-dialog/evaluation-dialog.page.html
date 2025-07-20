@@ -28,7 +28,7 @@
     <ion-item>
       <ion-label position="floating">Griglia</ion-label>
       <ion-select formControlName="grid" placeholder="Seleziona griglia">
-        <ion-select-option *ngFor="let grid of griglie()" [value]="grid">
+        <ion-select-option *ngFor="let grid of griglie()" [value]="grid.key">
           {{grid.nome}}
         </ion-select-option>
       </ion-select>
@@ -39,4 +39,7 @@
     </ion-button>
     </form>
   </ion-list>
+  @if(grid().key){
+  <app-evaluate-grid [grid]="grid()"></app-evaluate-grid>
+}
 </ion-content>

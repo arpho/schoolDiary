@@ -25,6 +25,7 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { Grids } from 'src/app/shared/models/grids';
 import { Evaluation } from 'src/app/shared/models/evaluation';
 import { EvaluationService } from '../services/evaluation/evaluation.service';
+import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/evaluate-grid.component';
 @Component({
   selector: 'app-evaluation-dialog',
   templateUrl: './evaluation-dialog.page.html',
@@ -34,8 +35,6 @@ import { EvaluationService } from '../services/evaluation/evaluation.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterLink,
-    RouterOutlet,
     IonBackButton,
     IonButtons,
     IonContent,
@@ -50,7 +49,9 @@ import { EvaluationService } from '../services/evaluation/evaluation.service';
     IonDatetime,
     IonButton,
     IonList,
-    IonTextarea]
+    IonTextarea,
+    EvaluateGridComponent
+  ]
 })
 export class EvaluationDialogPage implements OnInit {
   valutazione=signal<Evaluation>(new Evaluation())
