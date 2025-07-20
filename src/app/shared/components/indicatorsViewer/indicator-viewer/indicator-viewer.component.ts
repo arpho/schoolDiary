@@ -12,7 +12,7 @@ import {
   IonFabButton,
   IonFabList,
   IonIcon 
-} from "@ionic/angular/standalone";
+ } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-indicator-viewer',
