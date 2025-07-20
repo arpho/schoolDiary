@@ -1,13 +1,42 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>evaluationDialog</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaulthref="evaluations-list4-student" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title align="center">{{title}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">evaluationDialog</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-list>
+    <form [formGroup]="evaluationForm"> 
+    <ion-item>
+      <ion-label position="floating">Descrizione</ion-label>
+      <ion-input type="text" formControlName="description"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Note</ion-label>
+      <ion-textarea rows="3" formControlName="note"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Data Valutazione</ion-label>
+      <ion-datetime formControlName="data" presentation="date"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Griglia</ion-label>
+      <ion-select formControlName="grid" placeholder="Seleziona griglia">
+        <ion-select-option *ngFor="let grid of griglie()" [value]="grid">
+          {{grid.nome}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button expand="block" (click)="saveEvaluation()" [disabled]="!evaluationForm.valid">
+      Salva Valutazione
+    </ion-button>
+    </form>
+  </ion-list>
 </ion-content>

@@ -64,7 +64,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/evaluations/pages/evaluations-list4-student/evaluations-list4-student.page').then( m => m.EvaluationsList4StudentPage)
   },
   {
-    path: 'evaluation-dialog/:evaluationKey?',
+    path: 'evaluation-dialog',
+    loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then( m => m.EvaluationDialogPage)
+  },
+  {
+    path: 'evaluation-dialog/:evaluationKey',
     loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then( m => m.EvaluationDialogPage)
   },
 ];

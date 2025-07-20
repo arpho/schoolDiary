@@ -24,7 +24,7 @@ import {
    trash,
    eye,
   } from 'ionicons/icons';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-student4class',
@@ -47,12 +47,15 @@ import { Router } from '@angular/router';
 })
 export class ListStudent4classComponent  implements OnInit {
 newEvaluation(studentKey: string) {
-this.router.navigate(['/evaluation-dialog', studentKey]);
+this.router.navigate(['/evaluation-dialog'],{
+  queryParams: { studentKey: studentKey,classKey: this.classkey }
+});
 }
 
   constructor(
     private $users: UsersService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { 
     addIcons({
       ellipsisVertical,

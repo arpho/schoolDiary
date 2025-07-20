@@ -1,4 +1,4 @@
-import { ValutazioneModel } from './valutazioneModel';
+import { ValutazioneModel } from './ValutazioneModel';
 import { Grids } from './grids';
 import { Indicatore } from './indicatore';
 
