@@ -5,7 +5,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { 
   FormsModule,
-  ReactiveFormsModule } from '@angular/forms';
+  ReactiveFormsModule,
+  Validators } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
@@ -96,10 +97,10 @@ rolesValue: any[] = [];
 rolesName: string[] = [];
 elencoClassi= signal<ClasseModel[]>([]); 
 userForm: FormGroup= new FormGroup({
-  firstName: new FormControl(''),
-  lastName: new FormControl(''),
-  userName: new FormControl(''),
-  email: new FormControl(''),
+  firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+  lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+  userName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+  email: new FormControl('', [Validators.email]),
   role: new FormControl(UsersRole.STUDENT),
   phoneNumber: new FormControl(''),
   birthDate: new FormControl(''),

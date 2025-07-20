@@ -46,9 +46,11 @@ this.router.navigate(['/profile',userKey]);
   async ngOnInit() {
     const user= await this.$user.getLoggedUser();
     console.log("user",user)
+    if(user){
     this.loggedUser.set(user);
     const claims= await this.$user.getCustomClaims4LoggedUser();
     console.log("claims",claims)
+    }
   }
 
   async logout() {

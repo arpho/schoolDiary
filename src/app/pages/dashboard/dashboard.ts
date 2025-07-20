@@ -36,9 +36,12 @@ export class DashboardPage implements OnInit {
   }
 
   async ngOnInit() {
-   this.loggdUser.set(await  this.Users.getLoggedUser())
+    const loggedUser = await this.Users.getLoggedUser();
+    if(loggedUser ){
+   this.loggdUser.set(loggedUser)
    console.log("loggdUser",this.loggdUser())
    console.log("role",this.loggdUser().role)
    console.log("dashboard",this.dashboards[this.loggdUser().role])
+    }
   }
 }

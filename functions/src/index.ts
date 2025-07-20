@@ -9,53 +9,27 @@ import * as logger from "firebase-functions/logger";
 initializeApp();
 
 // eslint-disable-next-line max-len
-const setCustomClaims = functions.https.onCall(async (request) => {
-  logger.info("request ", request);
-  logger.info("request.data ", request.data);
-
+const setCustomClaims = functions.https.onCall(async (data:any, context) => {
+  logger.debug("data ", data.data);
+  logger.debug("context ", context);
+  logger.info("***************************************************");
+  logger.debug(data.data.claims);
+  logger.debug(data.data);
+  logger.info("***************************************************");
   // Verifica che i dati siano un oggetto JSON valido
-  if (!request.data || typeof request.data !== "object") {
+  if (!data || typeof data !== "object") {
     logger.error("Invalid data format");
     return {result: "error", message: "Invalid data format"};
   }
+  const userKey = data.data.userKey;
+  const claims = data.data.claims;
 
   try {
-    const userKey = request.data.userKey;
-    const claims = request.data.claims;
+    logger.debug(userKey);
+    logger.debug(claims);
 
-    logger.info("userKey", userKey);
-    logger.info("claims", claims);
-    if (!userKey || !claims) {
-      return {result: "error", message: "Missing required parameters"};
-    }
-
-    // Verifica che claims sia un oggetto valido
-    if (typeof claims !== "object" || claims === null) {
-      return {result: "error", message: "Claims must be a valid object"};
-    }
-
-    // Filtra solo i campi validi per claims
-    const validClaims = Object.fromEntries(
-      Object.entries(claims).filter(([key, value]) => {
-        logger.info("key", key);
-        logger.debug("value", value);
-        // Verifica che il valore sia serializzabile
-        try {
-          JSON.stringify(value);
-          return true;
-        } catch {
-          return false;
-        }
-      })
-    );
-
-    logger.info("Valid claims", validClaims);
-    const validUserKey = validClaims.userKey;
-    const validClaims2 = validClaims.claims;
-    logger.info("validUserKey", validUserKey);
-    logger.info("validClaims2", validClaims2);
-    await getAuth().setCustomUserClaims(userKey, validClaims);
-    return {result: "ok", data: {userKey, claims: validClaims}};
+    await getAuth().setCustomUserClaims(userKey, claims);
+    return {result: "ok", data: {userKey, claims}};
   } catch (error) {
     logger.error("Error processing data:", error);
     throw new functions.https.HttpsError(

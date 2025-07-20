@@ -118,7 +118,9 @@ async storeGrid() {
 console.log("storeGrid", this.formValue());
 const grid = new Grids(this.formValue());
 const loggedUser = await this.$users.getLoggedUser();
+if(loggedUser){
 grid.ownerKey = loggedUser.key;
+}
 console.log("grid", grid);
 console.log("serializzo", grid.serialize())
 if(this.gridKey){
