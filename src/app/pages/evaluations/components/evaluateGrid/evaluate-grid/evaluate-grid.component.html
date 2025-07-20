@@ -1,3 +1,19 @@
-<p>
-  evaluate-grid works!
-</p>
+<ion-list>  
+  @for(indicatore of grid.indicatori; track $index){
+    <ion-item>
+      <ion-card >
+        <ion-card-header>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-label>{{indicatore.descrizione}}</ion-label>
+
+        </ion-card-content>
+      </ion-card>
+      <p>max: {{indicatore.valore}}</p>
+      
+
+
+
+    </ion-item>
+  }
+</ion-list>

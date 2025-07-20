@@ -34,12 +34,12 @@
       </ion-select>
     </ion-item>
 
+    @if(grid().key){
+      <app-evaluate-grid [grid]="grid()"></app-evaluate-grid>
+    }
     <ion-button expand="block" (click)="saveEvaluation()" [disabled]="!evaluationForm.valid">
       Salva Valutazione
     </ion-button>
     </form>
   </ion-list>
-  @if(grid().key){
-  <app-evaluate-grid [grid]="grid()"></app-evaluate-grid>
-}
 </ion-content>
