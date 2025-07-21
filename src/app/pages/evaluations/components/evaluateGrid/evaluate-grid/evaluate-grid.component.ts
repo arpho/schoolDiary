@@ -31,10 +31,13 @@ showCriteri(_t3: Indicatore) {
 throw new Error('Method not implemented.');
 }
 setValue($event:any,indicatore: Indicatore) {
-console.log("setting",indicatore,$event.detail.value);
-console.log("valore", $event.detail.value);
-indicatore.voto = $event.detail.value;
+  console.log("event",$event)
+console.log("setting",indicatore,$event);
+console.log("valore", $event);
+indicatore.voto = Number($event);
+console.log("indicatore", indicatore);
 const voto = this.grid.indicatori.reduce((acc, indicatore) => Number(acc) + Number(indicatore.voto), 0);
+console.log("voto", voto);
 this.voto.set(voto);
 }
   @Input() grid: Grids = new Grids(); 

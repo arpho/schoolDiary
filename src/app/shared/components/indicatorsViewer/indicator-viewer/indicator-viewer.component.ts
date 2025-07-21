@@ -27,10 +27,6 @@ import {
     IonCardContent,
     IonList,
     IonItem,
-    IonFab,
-    IonFabButton,
-    IonFabList,
-    IonIcon
   ],
 })
 export class IndicatorViewerComponent  implements OnInit {

@@ -23,7 +23,7 @@
             </ion-card>
             </ion-col>
             <ion-col>
-              <app-criteri [criteri]="indicatore.criteri"></app-criteri>
+              <app-criteri [criteri]="indicatore.criteri" (selectedcriterio)="setValue($event,indicatore)"></app-criteri>
             </ion-col>
             <ion-col>
               <ion-input value="{{indicatore.voto}}" (ionChange)="setValue($event,indicatore)"></ion-input>
