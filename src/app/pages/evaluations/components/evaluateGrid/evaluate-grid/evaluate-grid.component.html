@@ -2,16 +2,16 @@
   @for(indicatore of grid.indicatori; track $index){
     <ion-item>
       <ion-grid>
-        <ion-row>
+        <ion-row id="header-indicatori">
           <ion-col>
             <ion-label>Indicatore</ion-label>
           </ion-col>
           <ion-col>
             voto
           </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-row>
+          </ion-row> <!-- fine-->
+          
+            <ion-row class="data-indicatori"><!-- inizio dati-->
             <ion-col>
             <ion-card (click)="showCriteri(indicatore)">
             <ion-card-header>
@@ -21,13 +21,13 @@
             <h3>{{indicatore.valore}}</h3>
             </ion-card>
             </ion-col>
-            </ion-row>
-            <ion-row>
             <ion-col>
               <ion-input value="7" (ionChange)="setValue($event,indicatore)"></ion-input>
             </ion-col>
-          </ion-row>
-        </ion-row>
+            </ion-row>
+            <!-- fine dati-->
+          
+        
       </ion-grid>
 
     </ion-item>
