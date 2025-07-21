@@ -1,23 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { 
-  IonBackButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonSelect,
-  IonSelectOption,
-  IonDatetime,
-  IonButton,
-  IonList,
-  IonTextarea
-} from '@ionic/angular/standalone';
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonButton, IonList, IonTextarea, IonCard } from '@ionic/angular/standalone';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
@@ -50,8 +34,9 @@ import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/
     IonButton,
     IonList,
     IonTextarea,
-    EvaluateGridComponent
-  ]
+    EvaluateGridComponent,
+    IonCard
+]
 })
 export class EvaluationDialogPage implements OnInit {
   valutazione=signal<Evaluation>(new Evaluation())
