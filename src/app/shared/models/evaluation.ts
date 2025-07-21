@@ -6,8 +6,10 @@ export class Evaluation {
   note: string = '';
   data: string = '';
   grid: Grids = new Grids();
-  classeKey: string = '';
+  gridsKey: string = '';
+  classKey: string = '';
   studentKey: string = '';
+  teacherKey: string = '';
 
   constructor(args?: any) {
     this.build(args);
@@ -19,11 +21,12 @@ export class Evaluation {
   }
 
   build(args?: any) {
+    console.log("building evaluation",args)
     if (args) {
       if (args.grid && typeof args.grid === 'string') {
         this.grid = new Grids({ key: args.grid });
       } else {
-        this.grid = args.grid || new Grids();
+        this.grid =new Grids(args.grid);
       }
       Object.assign(this, { 
         ...args, 
@@ -39,8 +42,9 @@ export class Evaluation {
       note: this.note,
       data: this.data,
       grid: this.grid.key,
-      classeKey: this.classeKey,
-      studentKey: this.studentKey
+      classKey: this.classKey,
+      studentKey: this.studentKey,
+      teacherKey: this.teacherKey
     };
   }
 }

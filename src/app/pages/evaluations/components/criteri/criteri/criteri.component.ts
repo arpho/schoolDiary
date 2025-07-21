@@ -19,7 +19,6 @@ export class CriteriComponent  implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log("criteri", this.criteri);
   }
 
 }
