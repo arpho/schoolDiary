@@ -1,8 +1,8 @@
 <ion-list>
   @for(criterio of criteri; track $index){
     <ion-item>
-      <ion-label class="criterio">{{criterio.descrizione}}</ion-label>
-      <ion-label>{{criterio.rangeValue}}</ion-label>
+      <p class="criterio">{{criterio.descrizione}}</p>
+      <p class="criterio-value">{{criterio.rangeValue}}</p>
     </ion-item>
   }
 </ion-list>
