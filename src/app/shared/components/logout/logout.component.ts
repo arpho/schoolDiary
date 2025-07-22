@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { IonFabButton, IonIcon, IonFab, IonFabList } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
+import {
   bodyOutline,
   ellipsisVertical,
   key,
@@ -33,7 +33,7 @@ this.router.navigate(['/profile',userKey]);
   constructor(
     private $user: UsersService,
     private router: Router
-  ) { 
+  ) {
     addIcons({
       ellipsisVertical,
       logOut,

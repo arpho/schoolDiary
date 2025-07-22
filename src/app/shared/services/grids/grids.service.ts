@@ -9,7 +9,7 @@ import {
    getDocs,
    addDoc,
    getDoc,
-   onSnapshot 
+   onSnapshot
   } from '@angular/fire/firestore';
 import { Grids } from '../../models/grids';
 

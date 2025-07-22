@@ -11,7 +11,7 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
-  IonIcon 
+  IonIcon
  } from "@ionic/angular/standalone";
 
 @Component({

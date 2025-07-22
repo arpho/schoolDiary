@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
+import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR
 } from '@angular/forms';
@@ -68,7 +68,7 @@ export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
   trackByFn(index: number, item: ClasseModel): string {
     return item.key;
   }
- 
+
 
   constructor(
     private $classes: ClassiService,
@@ -76,7 +76,7 @@ export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
   ) {
     addIcons({
        add,
-       list 
+       list
     });
    }
 

@@ -59,7 +59,7 @@ describe('Evaluation', () => {
 
     evaluation.build(args);
     const serialized = evaluation.serialize();
-    
+
     expect(serialized).toEqual({
       description: args.description,
       note: args.note,

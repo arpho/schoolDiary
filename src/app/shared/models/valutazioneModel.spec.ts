@@ -5,7 +5,7 @@ import { Indicatore } from './indicatore';
 describe('ValutazioneModel', () => {
   let model: ValutazioneModel;
   let testGrid: Grids;
-  
+
   beforeEach(() => {
     model = new ValutazioneModel();
     testGrid = new Grids({
@@ -62,7 +62,7 @@ describe('ValutazioneModel', () => {
 
     model.build(args);
     const serialized = model.serialize();
-    
+
     expect(serialized).toEqual({
       key: args.key,
       studentKey: args.studentKey,
@@ -90,7 +90,7 @@ describe('ValutazioneModel', () => {
   it('should handle empty args during build', () => {
     const emptyModel = new ValutazioneModel();
     emptyModel.build();
-    
+
     expect(emptyModel.key).toBeUndefined();
     expect(emptyModel.studentKey).toBe('');
     expect(emptyModel.classeKey).toBe('');

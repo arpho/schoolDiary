@@ -18,7 +18,7 @@
   <ion-list >
     @for (classe of classi(); track classe.key) {
       <ion-item>
-        <ion-checkbox label-placement="end" (ionChange)="selectedClass(classe,$event)" 
+        <ion-checkbox label-placement="end" (ionChange)="selectedClass(classe,$event)"
         [checked]="isClassSelected(classe)"
         alignment="start">
         <app-class-viewer [classe]="classe" ></app-class-viewer>

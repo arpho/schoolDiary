@@ -20,7 +20,7 @@ import {
   IonButton,
   IonIcon,
   IonItem,
-  IonBackButton 
+  IonBackButton
 } from '@ionic/angular/standalone';
 import {
   Grids

@@ -28,9 +28,9 @@ export class Evaluation {
       } else {
         this.grid =new Grids(args.grid);
       }
-      Object.assign(this, { 
-        ...args, 
-        grid: this.grid 
+      Object.assign(this, {
+        ...args,
+        grid: this.grid
       });
     }
     return this;

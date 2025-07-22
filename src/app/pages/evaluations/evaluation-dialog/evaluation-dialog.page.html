@@ -9,7 +9,7 @@
 
 <ion-content [fullscreen]="true">
   <ion-list>
-    <form [formGroup]="evaluationForm"> 
+    <form [formGroup]="evaluationForm">
     <ion-item>
       <ion-label position="floating">Descrizione</ion-label>
       <ion-input type="text" formControlName="description"></ion-input>
@@ -38,7 +38,7 @@
       <app-evaluate-grid [grid]="grid()!"></app-evaluate-grid>
     }
     <ion-button expand="block" (click)="saveEvaluation()" [disabled]="!evaluationForm.valid">
-     
+
       Salva Valutazione
     </ion-button>
     </form>

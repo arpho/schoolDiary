@@ -93,7 +93,7 @@ console.log("init login page")
         if (data) {
           this.error = false;
           this.errorMessage = '';
-          
+
           console.log("login successfull");
           // Reindirizza alla dashboard
           this.router.navigate(['/dashboard']);

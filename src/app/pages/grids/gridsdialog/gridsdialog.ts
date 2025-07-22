@@ -25,14 +25,14 @@ import {
     Criterio
 } from 'src/app/shared/models/criterio';
 import { addIcons } from 'ionicons';
-import { 
+import {
   add,
   create,
   push,
   trash,
   close,
   save,
-  ellipsisVertical  
+  ellipsisVertical
 } from 'ionicons/icons';
 import { Grids } from 'src/app/shared/models/grids';
 import {
@@ -96,7 +96,7 @@ pageTitle: any;
     private $users: UsersService,
     private $grids: GridsService,
     private $toaster: ToasterService,
-    private actionSheetController: ActionSheetController,   
+    private actionSheetController: ActionSheetController,
   ) {
     addIcons({
       ellipsisVertical,
@@ -182,7 +182,7 @@ const actionSheet = await this.actionSheetController.create({
         indicatore: indicator
       }
     });
-    await modal.present();  
+    await modal.present();
     modal.onDidDismiss().then((data) => {
       console.log("data", data);
       this.indicatorsList.set([...this.indicatorsList().slice(0,index), data.data, ...this.indicatorsList().slice(index+1)]);
@@ -196,7 +196,7 @@ const modal = await this.modalController.create({
     indicatore: newIndicator
   }
 });
-await modal.present();  
+await modal.present();
 modal.onDidDismiss().then((data) => {
   console.log("data", data);
   if(data.data){
@@ -238,7 +238,7 @@ ngOnInit(): void {
   this.gridForm = this.fb.group({
     nome: new FormControl(this.nome(), Validators.required),
     descrizione: new FormControl(this.descrizione(), Validators.required),
-  });   
+  });
   if(this.gridKey){
     this.pageTitle = "Modifica Griglia";
     console.log("devo aprire la griglia con key", this.gridKey);

@@ -38,7 +38,7 @@ editingIndicator = model<Indicatore>(new Indicatore());
 
   constructor(
     private service: GridsService
-  ) { 
+  ) {
    effect(async () => {
     const indicatori = this.indicatorslist()
     console.log("indicatorslist ths is the effect", indicatori)
@@ -46,11 +46,11 @@ editingIndicator = model<Indicatore>(new Indicatore());
   });
   this.$indicatorsList$.subscribe((indicators) => {
     console.log(" subscribed indicatorslist", indicators);
-  
+
   });
 }
 
-   
+
 
   addIndicator(indicatore: Indicatore) {
     console.log("pushing indicator", indicatore);
@@ -58,9 +58,9 @@ editingIndicator = model<Indicatore>(new Indicatore());
       this.indicatorslist.set([...this.indicatorslist(), indicatore]);
     }
     console.log("indicatorslist", this.indicatorslist());
-    this.editingIndicator.set(new Indicatore());  
+    this.editingIndicator.set(new Indicatore());
   }
-  
+
 
   ngOnInit() {
 this.$indicatorsListSubject.next(this.indicatorslist());

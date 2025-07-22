@@ -63,7 +63,7 @@ console.log("indicatorValue changed to ", this.indicatorValue());
 }
     @Input() indicatore!: Indicatore;
     descrizione=signal<string>('');
-    indicatorValue=signal<string>(''); 
+    indicatorValue=signal<string>('');
     criterioDescrizione=signal<string>('');
     criterioValori=signal<string>('');
     criteri=signal<Criterio[]>([]);
@@ -81,8 +81,8 @@ console.log("indicatorValue changed to ", this.indicatorValue());
     constructor(
         private fb: FormBuilder,
     private alertController: AlertController,
-    private modalController: ModalController    
-    ) { 
+    private modalController: ModalController
+    ) {
         this.criterioForm = this.fb.group({
             descrizione: new FormControl("", Validators.required),
             valori: new FormControl("", Validators.required),
@@ -123,7 +123,7 @@ console.log("selectCriterio", criterio, index);
                 },
             ],
           });
-      
+
           await alert.present();
     }
     async addCriterio() {
@@ -154,7 +154,7 @@ console.log("selectCriterio", criterio, index);
             },
         ],
       });
-  
+
       await alert.present();
 }
     valueCriterio= computed(() => {
@@ -180,7 +180,7 @@ console.log("descrizione changed to ", this.criterioDescrizione());
         valori: new FormControl("", Validators.required),
     });
 title4criterio = computed(() => {
-    return ` inserisci i criteri per 
+    return ` inserisci i criteri per
     ${this.descrizione()}`;
 });
     @Output() indicatorpushed = new EventEmitter<Indicatore>();
@@ -195,7 +195,7 @@ pushIndicator() {
     console.log("nuovo indicatore", indicatore);
     this.indicatorpushed.emit(indicatore);
     this.modalController.dismiss(indicatore);
-   
+
 
 }
 onDescrizioneChange($event: any) {
@@ -205,7 +205,7 @@ console.log("descrizione changed to ", this.descrizione());
 
 
     ngOnInit(): void {
-        console.log("indicatorsDialog ngOnInit", this.indicatore);    
+        console.log("indicatorsDialog ngOnInit", this.indicatore);
         this.criteri.set(this.indicatore?.criteri);
         this.indicatorForm = this.fb.group({
             descrizione: new FormControl(this.indicatore?.descrizione, Validators.required),

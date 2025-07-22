@@ -3,7 +3,7 @@ import {
    effect,
    OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { 
+import {
   FormsModule,
   ReactiveFormsModule,
   Validators } from '@angular/forms';
@@ -27,7 +27,7 @@ import {
   IonFab } from '@ionic/angular/standalone';
 import {
    ActivatedRoute,
-   Router 
+   Router
   } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -77,7 +77,7 @@ export class UserDialogPage implements OnInit {
       private $users: UsersService,
       private $classes: ClassiService,
       private toaster: ToasterService
-    ) { 
+    ) {
       addIcons({
         save,
       });
@@ -87,10 +87,10 @@ export class UserDialogPage implements OnInit {
           this.$classes.fetchClasses(classesKeys).then((classes) => {
             this.usersClasses.set(classes);
           });
-        } 
+        }
       })
     }
-save() { 
+save() {
 console.log("save",);
 const user = new UserModel(this.userForm.value);
 user.key = this.userSignal()?.key;
@@ -123,7 +123,7 @@ this.$users.setUserClaims2user(user.key, claims).then(async (data:any) => {
 userSignal = signal(new UserModel({ role: UsersRole.STUDENT }));
 rolesValue: any[] = [];
 rolesName: string[] = [];
-elencoClassi= signal<ClasseModel[]>([]); 
+elencoClassi= signal<ClasseModel[]>([]);
 userForm: FormGroup= new FormGroup({
   firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
   lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
@@ -145,7 +145,7 @@ $UsersRole = UsersRole;
     const userKey=this.router.snapshot.paramMap.get('userKey');
      const rolesKey = Object.keys(UsersRole);
      this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
-    if(userKey){   
+    if(userKey){
       this.$users.fetchUser(userKey).then((user) => {
         if(user){
           this.userSignal.set(user);
@@ -160,8 +160,8 @@ $UsersRole = UsersRole;
             classes: user?.classes || [],
             classe: user?.classKey || ''
           });
-          
-            
+
+
         }
         }
       )   ;

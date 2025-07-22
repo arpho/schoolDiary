@@ -15,7 +15,7 @@ import { LogoutComponent } from 'src/app/shared/components/logout/logout.compone
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss'],
   standalone: true,
-  imports: [ 
+  imports: [
     IonContent,
     IonHeader,
     IonTitle,

@@ -19,7 +19,7 @@ export class ValutazioneModel {
             data: this.data,
             grid: this.grid.serialize()
         };
-    }   
+    }
     setKey(key: string) {
         this.key = key;
         return this;

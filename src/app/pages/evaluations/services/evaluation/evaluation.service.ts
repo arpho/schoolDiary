@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { 
+import {
   collection,
   doc,
   Firestore,
@@ -9,7 +9,7 @@ import {
   getDocs,
   addDoc,
   getDoc,
-  onSnapshot 
+  onSnapshot
 } from '@angular/fire/firestore';
 import { Evaluation } from '../../../../shared/models/evaluation';
 

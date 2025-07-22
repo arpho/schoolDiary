@@ -113,18 +113,18 @@ export class UsersService {
     try {
       console.log('Setting claims for user:', userKey);
       console.log('claims:', claims);
-      
+
       const functions = getFunctions();
       const setCustomClaims = httpsCallable(functions, 'setCustomClaims');
-      
+
       const result = await setCustomClaims({ userKey, claims}) as ClaimsResponse;
       console.log('Claims response:', result);
-      
+
       if (result.data?.result !== 'ok') {
         console.error('Claims failed:', result);
         throw new Error('Failed to set custom claims: ' + (result.message || 'Unknown error'));
       }
-      
+
       console.log('Claims successfully set:', result.data);
     } catch (error) {
       console.error('Error setting custom claims:', error);
@@ -140,7 +140,7 @@ export class UsersService {
       user.password
     );
     console.log('createdUser', createdUser);
-    
+
     if (!createdUser.user) {
       throw new Error('User creation failed');
     }
@@ -149,7 +149,7 @@ export class UsersService {
     const collectionRef = collection(this.firestore, this.collection);
     const userRef = doc(collectionRef, user.key);
     console.log('userRef', userRef);
-    
+
     await setDoc(userRef, user.serialize());
   }
 

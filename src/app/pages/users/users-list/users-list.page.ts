@@ -1,7 +1,7 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
+import {
   IonContent,
   IonHeader,
   IonTitle,
@@ -60,7 +60,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonFab,
     IonFabButton,
     IonFabList,
-    IonBackButton  
+    IonBackButton
   ]
 })
 export class UsersListPage implements OnInit {
@@ -79,7 +79,7 @@ editUser(userKey: string) {
     private usersService: UsersService,
     private router: Router,
     private toaster: ToasterService
-  ) { 
+  ) {
     addIcons({
       ellipsisVertical,
       create,

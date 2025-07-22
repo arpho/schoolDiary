@@ -5,11 +5,11 @@ export class Indicatore{
     voto: number = 0;
     valore: string = '';
     descrizione: string = '';
-    
+
     constructor(args?: any){
         this.build(args);
     }
-    
+
     build(args?: any){
         if(args){
             if(Array.isArray(args.criteri)){
@@ -19,7 +19,7 @@ export class Indicatore{
         }
         return this;
     }
-    
+
     serialize(){
         return {
                 criteri: this.criteri.map(c => c.serialize()),

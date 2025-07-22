@@ -13,7 +13,7 @@ export class ClasseModel{
 
 
   return this
-}   
+}
 serialize(){
   return{
     year: this.year,

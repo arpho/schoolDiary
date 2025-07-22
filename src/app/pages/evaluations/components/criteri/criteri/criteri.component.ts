@@ -10,7 +10,7 @@ import { IonList, IonItem, AlertInput, AlertController } from "@ionic/angular/st
   imports: [
     IonList,
     IonItem,
-    
+
 ],
 })
 export class CriteriComponent  implements OnInit {

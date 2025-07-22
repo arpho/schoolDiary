@@ -59,7 +59,7 @@ export class EvaluationDialogPage implements OnInit {
     private fb: FormBuilder,
     private $users: UsersService,
     private gridsService: GridsService,
-    private evaluationService: EvaluationService  
+    private evaluationService: EvaluationService
   ) { }
 
   ngOnInit() {
@@ -87,11 +87,11 @@ export class EvaluationDialogPage implements OnInit {
         }
       }
     });
-    
+
     this.gridsService.getGridsOnRealtime((grids: Grids[]) => {
       this.griglie.set(grids);
     });
-    
+
     const evaluationKey = this.route.snapshot.queryParams['evaluationKey'];
     this.evaluationKey = evaluationKey;
     if (evaluationKey) {
@@ -110,8 +110,8 @@ export class EvaluationDialogPage implements OnInit {
     } else {
       this.title = "Nuova valutazione";
     }
-    
-    
+
+
   }
 
   async saveEvaluation() {
@@ -121,24 +121,24 @@ export class EvaluationDialogPage implements OnInit {
       const evaluation = new Evaluation();
       const loggedUser = await this.$users.getLoggedUser();
       if(loggedUser){
-        evaluation.teacherKey = loggedUser.key; 
+        evaluation.teacherKey = loggedUser.key;
       }
-      
+
       // Get values from route parameters
-  
-      
+
+
       console.log("studentKey from route params", this.studentKey);
       console.log("classKey from route params", this.classKey);
-      
+
       evaluation.studentKey = this.studentKey;
       evaluation.classKey = this.classKey;
-      
+
       if(this.grid()){
         evaluation.grid = this.grid()!;
       }
-      
+
       console.log("evaluation",evaluation);
-        /* 
+        /*
         if(this.evaluationKey()){
           this.evaluationService.updateEvaluation(this.evaluationKey(), evaluation);
         }else{

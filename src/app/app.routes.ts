@@ -5,7 +5,7 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
-    canActivate:[authGuard]   
+    canActivate:[authGuard]
   },
   {
     path: '',
@@ -23,7 +23,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard').then( m => m.DashboardPage),
-    canActivate:[authGuard]   
+    canActivate:[authGuard]
   },
 
   {

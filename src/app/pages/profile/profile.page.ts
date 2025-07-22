@@ -66,7 +66,7 @@ export class ProfilePage implements OnInit {
   ngOnInit() {
     this.userKey.set(this.route.snapshot.paramMap.get('userKey')!);
     console.log("userKey", this.userKey());
-    
+
     // Fetch class list
     this.classiService.getClassiOnRealtime((classi) => {
       this.listaClassi.set(classi);
@@ -95,7 +95,7 @@ export class ProfilePage implements OnInit {
     if (this.profileForm.valid) {
       const updatedUser = new UserModel();
       Object.assign(updatedUser, this.profileForm.value);
-      
+
       try {
         await this.$user.updateUser(this.userKey(), updatedUser);
         await this.presentToast('Profilo aggiornato con successo!', 'success');

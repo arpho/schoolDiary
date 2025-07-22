@@ -25,7 +25,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
          RouterModule,
          IonInput,
          IonList
-      
+
         ]
 })
 export class SignupPage  {
@@ -62,7 +62,7 @@ this.passwordConfirm.set($event.target?.value)
   surname= signal<string>('');
   passwordConfirm= signal<string>('');
 
-  constructor() { 
+  constructor() {
     this.signupForm=this.fb.group({
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(8)]),

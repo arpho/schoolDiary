@@ -58,7 +58,7 @@ this.$modal.dismiss();
   constructor(
     private $classes: ClassiService,
     private $modal: ModalController
-  ) { 
+  ) {
 
     addIcons({
       checkmark
@@ -77,7 +77,7 @@ selectedClass(classe: ClasseModel, event: any) {
   }
 }
   @Input() selectedClasses: ClasseModel[] = [];
-  classi = signal<ClasseModel[]>([]); 
+  classi = signal<ClasseModel[]>([]);
   anniScolastici = computed(() => {
     const anniScolastici: string[] = [];
     this.classi().forEach((classe) => {

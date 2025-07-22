@@ -32,10 +32,10 @@ describe('UserModel', () => {
   });
 
   it('should serialize correctly', () => {
-    const user = new UserModel({ 
-      key: 'x', 
-      email: 'y', 
-      role: UsersRole.ADMIN, 
+    const user = new UserModel({
+      key: 'x',
+      email: 'y',
+      role: UsersRole.ADMIN,
       classes: ['a', 'b'],
       phoneNumber: '+390987654321'
     });

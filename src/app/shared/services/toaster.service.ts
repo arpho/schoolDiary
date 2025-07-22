@@ -15,7 +15,7 @@ export class ToasterService {
     const toast = await this.toastCtrl.create({
       message: data.message,
       duration: data.duration,
-      position: data.position   
+      position: data.position
     });
     toast.present();
   }

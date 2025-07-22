@@ -24,7 +24,7 @@ import { calendarNumber } from 'ionicons/icons';
   imports: [
     IonButton,
     IonIcon,
-    
+
 })
 export class MyDatePickerComponent  implements ControlValueAccessor {
   @Input() data: string = "";
@@ -33,7 +33,7 @@ export class MyDatePickerComponent  implements ControlValueAccessor {
   disabled: boolean = false;
 
 
-  constructor() { 
+  constructor() {
     addIcons({
       calendarNumber
     })

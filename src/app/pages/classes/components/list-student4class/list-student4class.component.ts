@@ -11,7 +11,7 @@ IonCardTitle,
 IonFab,
 IonFabButton,
 IonFabList,
-IonIcon 
+IonIcon
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -56,7 +56,7 @@ this.router.navigate(['/evaluation-dialog'],{
     private $users: UsersService,
     private router: Router,
     private route: ActivatedRoute
-  ) { 
+  ) {
     addIcons({
       ellipsisVertical,
       create,

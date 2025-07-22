@@ -40,7 +40,7 @@ const voto = this.grid.indicatori.reduce((acc, indicatore) => Number(acc) + Numb
 console.log("voto", voto);
 this.voto.set(voto);
 }
-  @Input() grid: Grids = new Grids(); 
+  @Input() grid: Grids = new Grids();
 
   constructor() { }
 
