@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { Grids } from 'src/app/shared/models/grids';
-import { IonList, IonItem, IonLabel, IonCard, IonCardContent, IonCardHeader, IonGrid, IonRow, IonCol, IonInput, IonCardTitle, InputChangeEventDetail } from "@ionic/angular/standalone";
+import { IonList, IonItem, IonLabel, IonCard, IonGrid, IonRow, IonCol, IonInput } from "@ionic/angular/standalone";
 import { IndicatorViewerComponent } from "src/app/shared/components/indicatorsViewer/indicator-viewer/indicator-viewer.component";
-import { IonInputCustomEvent } from '@ionic/core';
+
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import { CriteriComponent} from "../../criteri/criteri/criteri.component";
 @Component({
@@ -14,13 +14,10 @@ import { CriteriComponent} from "../../criteri/criteri/criteri.component";
     IonItem,
     IonLabel,
     IonCard,
-    IonCardContent,
-    IonCardHeader,
     IonGrid,
     IonRow,
     IonCol,
     IonInput,
-    IonCardTitle,
     CriteriComponent
 ],
 })

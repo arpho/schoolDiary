@@ -23,15 +23,9 @@ import { ClassViewerComponent } from "../class-viewer/class-viewer.component";
 import { ClassiService } from '../../services/classi.service';
 import {
   IonButton,
-  IonIcon,
-  IonSelect,
-  IonSelectOption
+  IonIcon
 } from '@ionic/angular/standalone';
-import {
-  add,
-  list
-} from 'ionicons/icons';
-import { addIcons } from 'ionicons';
+
 import { ModalController } from '@ionic/angular';
 import { ClassesSelectorPage } from '../../pages/classes-selector/classes-selector.page';
 @Component({
@@ -43,9 +37,7 @@ import { ClassesSelectorPage } from '../../pages/classes-selector/classes-select
     ClassViewerComponent,
     FormsModule,
     IonButton,
-    IonIcon,
-    IonSelect,
-    IonSelectOption
+    IonIcon
   ],
   selector: 'app-classes-field',
   templateUrl: './classes-field.component.html',
@@ -71,35 +63,29 @@ export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
 
 
   constructor(
-    private $classes: ClassiService,
-    private $modal: ModalController
-  ) {
-    addIcons({
-       add,
-       list
-    });
-   }
+    private classiService: ClassiService,
+    private modalController: ModalController
+  ) {}
 
   async selectClasses() {
-const modal = await this.$modal.create({
-  component: ClassesSelectorPage,
-  componentProps: {
-    selectedClasses: this.classes
+    const modal = await this.modalController.create({
+      component: ClassesSelectorPage,
+      componentProps: {
+        selectedClasses: this.classes
+      }
+    });
+    const modalRef = await modal.present();
+    const {data,role} = await modal.onDidDismiss();
+    console.log("role ",role);
+    console.log("data",data);
+    if (data) {
+      this.classes = data;
+      this.onChange(this.classes);
+    }
   }
-});
-const modalRef = await modal.present();
-const {data,role} = await modal.onDidDismiss();
-console.log("role ",role);
-console.log("data",data);
-if (data)
-{
-this.classes = data;
-this.onChange(this.classes);
-}
-}
 
   ngOnInit() {
-    this.$classes.getClassiOnRealtime((classi) => {
+    this.classiService.getClassiOnRealtime((classi) => {
       this.classi.set(classi);
     });
   }
