@@ -1,6 +1,6 @@
 <ion-list>
   @for(criterio of criteri; track $index){
-    <ion-item (click)="selectedCriterio(criterio)">
+    <ion-item (click)="selectedCriterio(criterio)" class="criterio">
       <p class="criterio">{{criterio.descrizione}}</p>
       <p class="criterio-value">{{criterio.rangeValue}}</p>
     </ion-item>
