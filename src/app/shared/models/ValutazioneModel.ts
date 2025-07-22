@@ -6,6 +6,7 @@ export class ValutazioneModel {
     classeKey: string="";
     note: string="";
     data: string="";
+    description=""
     grid: Grids=new Grids({});
     constructor(args?: any) {
         this.build(args);
@@ -16,6 +17,7 @@ export class ValutazioneModel {
             studentKey: this.studentKey,
             classeKey: this.classeKey,
             note: this.note,
+            description: this.description,
             data: this.data,
             grid: this.grid.serialize()
         };

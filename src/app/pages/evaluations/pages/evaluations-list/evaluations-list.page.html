@@ -9,10 +9,10 @@
     @for(evaluation of evaluationsList; track $index){
     <ion-item>
       <ion-label>
-        <h2>{{ evaluation.note }}</h2>
+        <h2>{{ evaluation.description }}</h2>
         <p>Data: {{ evaluation.data | date : 'dd/MM/yyyy'}}</p>
         <p>{{ evaluation.description }}</p>
-        <p>Griglia: {{ evaluation.grid?.nome }}</p>
+        <p>Griglia: {{ evaluation.grid?.descrizione }}</p>
       </ion-label>
       <ion-fab vertical="bottom" horizontal="end">
         <ion-fab-button size="small" color="medium">

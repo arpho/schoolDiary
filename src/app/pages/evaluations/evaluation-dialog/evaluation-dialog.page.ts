@@ -44,6 +44,7 @@ export class EvaluationDialogPage implements OnInit {
   @ViewChild('evaluateGrid') evaluateGrid!: ElementRef;
   @ViewChild(EvaluateGridComponent) evaluateGridComponent!: EvaluateGridComponent;
   evaluation = input<Evaluation>(new Evaluation());
+  evaluationSignal = signal<Evaluation>(new Evaluation());
   evaluationForm!: FormGroup;
   title: string = '';
   valutazione: Evaluation | null = null;
@@ -63,16 +64,9 @@ export class EvaluationDialogPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.evaluationSignal.set(new Evaluation(this.evaluation))
     console.log("init evaluation-dialog");
-    console.log("evaluation",this.evaluation())
-    // Initialize form controls with URL parameters
-    this.classKey = this.route.snapshot.queryParams['classKey'] || '';
-    this.studentKey = this.route.snapshot.queryParams['studentKey'] || '';
-    this.evaluationKey = this.route.snapshot.queryParams['evaluationKey'] || '';
-    console.log("classKey", this.classKey);
-    console.log("studentKey", this.studentKey);
-    console.log("evaluationKey", this.evaluationKey);
-
+    console.log("evaluation",this.evaluationSignal())
     this.evaluationForm = new FormGroup({
       description: new FormControl(''),
       note: new FormControl(''),
@@ -81,7 +75,33 @@ export class EvaluationDialogPage implements OnInit {
       classKey: new FormControl(this.classKey),
       studentKey: new FormControl(this.studentKey)
     });
+    if(this.evaluationSignal().key){
+      this.title = "rivedi valutazione";
+      this.classKey = this.evaluationSignal().classKey;
+      this.studentKey = this.evaluationSignal().studentKey;
+      this.evaluationKey = this.evaluationSignal().key;
+      this.evaluationForm.patchValue({
+        description: this.evaluationSignal().description,
+        note: this.evaluationSignal().note,
+        data: this.evaluationSignal().data,
+        classKey: this.evaluationSignal().classKey,
+        studentKey: this.evaluationSignal().studentKey
+      });
+      this.grid.set(this.evaluationSignal().grid);
+    }else{
+      this.title = "Nuova valutazione";
 
+  
+    }
+    // Initialize form controls with URL parameters
+    this.classKey = this.route.snapshot.queryParams['classKey'] || '';
+    this.studentKey = this.route.snapshot.queryParams['studentKey'] || '';
+    this.evaluationKey = this.route.snapshot.queryParams['evaluationKey'] || '';
+    console.log("classKey", this.classKey);
+    console.log("studentKey", this.studentKey);
+    console.log("evaluationKey", this.evaluationKey);
+
+  
     this.evaluationForm.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
       if (gridKey) {
         const grid = this.griglie().find((g: Grids) => g.key === gridKey);
@@ -120,7 +140,7 @@ export class EvaluationDialogPage implements OnInit {
     if (this.evaluationForm.valid) {
       const evaluationData = this.evaluationForm.value;
     try {
-      const evaluation = new Evaluation();
+      const evaluation = new Evaluation(evaluationData);
       const loggedUser = await this.$users.getLoggedUser();
       if(loggedUser){
         evaluation.teacherKey = loggedUser.key;
