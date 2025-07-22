@@ -49,7 +49,7 @@ export class EvaluationDialogPage implements OnInit {
   valutazione: Evaluation | null = null;
   classKey: string = '';
   studentKey: string = '';
-  grid = signal<Grids | null>(null);
+  grid = signal<Grids>(new Grids());
   evaluationKey: string | null = null;
   griglie = signal<Grids[]>([]);
 
@@ -76,7 +76,7 @@ export class EvaluationDialogPage implements OnInit {
     this.evaluationForm = new FormGroup({
       description: new FormControl(''),
       note: new FormControl(''),
-      data: new FormControl(''),
+      data: new FormControl(new Date().toISOString()),
       grid: new FormControl(''),
       classKey: new FormControl(this.classKey),
       studentKey: new FormControl(this.studentKey)
@@ -88,7 +88,6 @@ export class EvaluationDialogPage implements OnInit {
         console.log("Selected grid", gridKey);
         if (grid) {
           this.grid.set(grid);
-
         }
       }
     });
@@ -141,12 +140,13 @@ export class EvaluationDialogPage implements OnInit {
       }
 
       console.log("evaluation",evaluation);
-        
+      console.log("evaluation serialzed",evaluation.serialize());
+         
         if(this.evaluationKey){
           this.evaluationService.updateEvaluation(this.evaluationKey, evaluation);
         }else{
           this.evaluationService.addEvaluation(evaluation);
-        }
+        } 
         console.log('Saving evaluation:', evaluationData);
         this.toaster.showToast({
           message: 'Valutazione salvata con successo',

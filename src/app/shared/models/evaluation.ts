@@ -31,6 +31,7 @@ export class Evaluation {
         ...args,
         grid: this.grid
       });
+      this.gridsKey = this.grid.key;
     }
     return this;
   }
@@ -40,7 +41,7 @@ export class Evaluation {
       description: this.description,
       note: this.note,
       data: this.data,
-      grid: this.grid.key,
+      grid: this.grid.serialize(),
       classKey: this.classKey,
       studentKey: this.studentKey,
       teacherKey: this.teacherKey
