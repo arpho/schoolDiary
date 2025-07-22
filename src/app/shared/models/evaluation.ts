@@ -21,7 +21,6 @@ export class Evaluation {
   }
 
   build(args?: any) {
-    console.log("building evaluation",args)
     if (args) {
       if (args.grid && typeof args.grid === 'string') {
         this.grid = new Grids({ key: args.grid });

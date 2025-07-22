@@ -22,38 +22,38 @@
       <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
         <ion-item>
           <ion-label position="floating">Nome</ion-label>
-          <ion-input type="text" formControlName="firstName"></ion-input>
+          <ion-input type="text" formcontrolname="firstName"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Cognome</ion-label>
-          <ion-input type="text" formControlName="lastName"></ion-input>
+          <ion-input type="text" formcontrolname="lastName"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Email</ion-label>
-          <ion-input type="email" [readonly]="true" formControlName="email"></ion-input>
+          <ion-input type="email" [readonly]="true" formcontrolname="email"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Data di nascita</ion-label>
-          <ion-datetime formControlName="birthDate" displayformat="DD/MM/YYYY" pickerformat="DD/MM/YYYY"></ion-datetime>
+          <ion-datetime formcontrolname="birthDate" displayformat="DD/MM/YYYY" pickerformat="DD/MM/YYYY"></ion-datetime>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Numero di telefono</ion-label>
-          <ion-input formControlName="phoneNumber"></ion-input>
+          <ion-input formcontrolname="phoneNumber"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Nome utente</ion-label>
-          <ion-input formControlName="userName"></ion-input>
+          <ion-input formcontrolname="userName"></ion-input>
         </ion-item>
 
         @if (isClassSelectionEnabled()) {
           <ion-item>
             <ion-label position="floating">Classe</ion-label>
-            <ion-select formControlName="classKey">
+            <ion-select formcontrolname="classKey">
               @for(classe of listaClassi(); track $index){  
                 <ion-select-option [value]="classe.key">
                   {{classe.classe}} {{classe.year}}

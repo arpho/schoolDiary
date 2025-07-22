@@ -40,6 +40,7 @@ import { ClasseModel } from '../models/classModel';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ListStudent4classComponent } from '../components/list-student4class/list-student4class.component';
+import { Evaluation } from 'src/app/shared/models/evaluation';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -67,7 +68,6 @@ import { ListStudent4classComponent } from '../components/list-student4class/lis
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ClasseDialogPage  implements OnInit {
-
   classKey = signal<string>('');
   classe = signal<ClasseModel>(new ClasseModel({}));
   formClass = new FormGroup({

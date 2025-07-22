@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild, ElementRef, Renderer2, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonButton, IonList, IonTextarea } from '@ionic/angular/standalone';
@@ -43,7 +43,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
 export class EvaluationDialogPage implements OnInit {
   @ViewChild('evaluateGrid') evaluateGrid!: ElementRef;
   @ViewChild(EvaluateGridComponent) evaluateGridComponent!: EvaluateGridComponent;
-
+  evaluation = input<Evaluation>(new Evaluation());
   evaluationForm!: FormGroup;
   title: string = '';
   valutazione: Evaluation | null = null;
@@ -63,11 +63,15 @@ export class EvaluationDialogPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log("init evaluation-dialog");
+    console.log("evaluation",this.evaluation())
     // Initialize form controls with URL parameters
     this.classKey = this.route.snapshot.queryParams['classKey'] || '';
     this.studentKey = this.route.snapshot.queryParams['studentKey'] || '';
+    this.evaluationKey = this.route.snapshot.queryParams['evaluationKey'] || '';
     console.log("classKey", this.classKey);
     console.log("studentKey", this.studentKey);
+    console.log("evaluationKey", this.evaluationKey);
 
     this.evaluationForm = new FormGroup({
       description: new FormControl(''),
@@ -84,6 +88,7 @@ export class EvaluationDialogPage implements OnInit {
         console.log("Selected grid", gridKey);
         if (grid) {
           this.grid.set(grid);
+
         }
       }
     });
@@ -92,11 +97,9 @@ export class EvaluationDialogPage implements OnInit {
       this.griglie.set(grids);
     });
 
-    const evaluationKey = this.route.snapshot.queryParams['evaluationKey'];
-    this.evaluationKey = evaluationKey;
-    if (evaluationKey) {
+    if (this.evaluationKey) {
       this.title = "rivedi valutazione";
-      this.evaluationService.fetchEvaluation(evaluationKey).then((evaluation: Evaluation) => {
+      this.evaluationService.fetchEvaluation(this.evaluationKey).then((evaluation: Evaluation) => {
         this.valutazione = evaluation;
         this.evaluationForm.patchValue({
           description: evaluation.description,
@@ -132,15 +135,15 @@ export class EvaluationDialogPage implements OnInit {
 
       evaluation.studentKey = this.studentKey;
       evaluation.classKey = this.classKey;
-
       if(this.grid()){
         evaluation.grid = this.grid()!;
+        evaluation.gridsKey = this.grid()!.key;
       }
 
       console.log("evaluation",evaluation);
-        /*
-        if(this.evaluationKey()){
-          this.evaluationService.updateEvaluation(this.evaluationKey(), evaluation);
+        
+        if(this.evaluationKey){
+          this.evaluationService.updateEvaluation(this.evaluationKey, evaluation);
         }else{
           this.evaluationService.addEvaluation(evaluation);
         }
@@ -149,7 +152,7 @@ export class EvaluationDialogPage implements OnInit {
           message: 'Valutazione salvata con successo',
           duration: 3000,
           position: 'bottom'
-        }); */
+        }); 
       } catch (error) {
         console.error('Error saving evaluation:', error);
         this.toaster.showToast({
