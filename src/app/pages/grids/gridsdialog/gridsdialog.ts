@@ -19,7 +19,7 @@ import {
     FormControl
 } from '@angular/forms';
 
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonRow, IonTitle, IonToolbar, IonTextarea, IonAccordion, IonAccordionGroup, IonFabButton, IonFab, IonFooter, IonFabList } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonTextarea, IonFabButton, IonFab, IonFooter, IonFabList, IonToolbar, IonTitle } from '@ionic/angular/standalone';
 
 import {
     Criterio
@@ -57,32 +57,21 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     FormsModule,
     ReactiveFormsModule,
     IonButton,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonCol,
     IonContent,
-    IonGrid,
     IonHeader,
     IonIcon,
     IonInput,
     IonItem,
     IonLabel,
     IonList,
-    IonRow,
-    IonTitle,
-    IonToolbar,
     IonTextarea,
-    IonAccordion,
-    IonAccordionGroup,
-    IndicatorsListComponent,
     IonFabButton,
     IonFab,
     IndicatorViewerComponent,
     IonFooter,
-    IonFabList,
-    IonIcon
+    IonIcon,
+    IonToolbar,
+    IonTitle
 ]
 })
 export class GridsdialogPage implements OnInit{

@@ -53,9 +53,12 @@
         <ion-item *ngif="isClassSelectionEnabled()">
           <ion-label position="floating">Classe</ion-label>
           <ion-select formcontrolname="classKey">
-            <ion-select-option *ngfor="let classe of listaClassi()" value="{{classe.key}}">
-              {{classe.nome}}
+
+          @for(classe of listaClassi(); track $index){  
+            <ion-select-option [value]="classe.key">
+              {{classe.classe}} {{classe.year}}
             </ion-select-option>
+          }
           </ion-select>
         </ion-item>
 
