@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-
+import { ClassiService } from './pages/classes/services/classi.service';
+import { UsersService } from './shared/services/users.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -10,7 +11,9 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 })
 export class AppComponent implements OnInit {
   constructor(
-    private router: Router
+    private router: Router,
+    private classiService: ClassiService,
+    private usersService: UsersService
   ) {}
 
   ngOnInit() {

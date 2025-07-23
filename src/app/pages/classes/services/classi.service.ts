@@ -23,13 +23,13 @@ export class ClassiService {
   private classesOnCache = signal<ClasseModel[]>([]);
 
   constructor() {
-    this.ngOnInit();
-  }
-
-  ngOnInit() {
     this.getClassiOnRealtime((classi) => {
       this.classesOnCache.set(classi);
     });
+  }
+
+  ngOnInit(): void {
+    // Already initialized in constructor
   }
 
   fetchClasseOnCache(classKey: string): ClasseModel | undefined {

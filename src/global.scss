@@ -21,6 +21,25 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+/* Fullscreen modal styles */
+.fullscreen {
+  --height: 100vh;
+  --width: 100vw;
+  --border-radius: 0;
+  --padding: 0;
+  --margin: 0;
+  --overflow: hidden;
+}
+
+.fullscreen .modal-wrapper {
+  height: 100vh;
+  width: 100vw;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
 :root {
   --ion-font-family: 'Anton', sans-serif;
 }

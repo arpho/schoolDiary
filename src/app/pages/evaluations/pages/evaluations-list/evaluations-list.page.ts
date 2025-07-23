@@ -22,6 +22,7 @@ import {
    close,
    print } from 'ionicons/icons';
 import { EvaluationDialogPage } from '../../evaluation-dialog/evaluation-dialog.page';
+import { Evaluation2PdfComponent } from '../../components/evaluation2-pdf/evaluation2-pdf.component';
 
 @Component({
   selector: 'app-evaluations-list',
@@ -44,8 +45,16 @@ import { EvaluationDialogPage } from '../../evaluation-dialog/evaluation-dialog.
   ]
 })
 export class EvaluationsListPage implements OnInit {
-  async evaluationPdf(_t11: Evaluation) {
-console.log("evaluationPdf", _t11);
+  async evaluationPdf(valutazione: Evaluation) {
+console.log("evaluationPdf", valutazione);
+const modal = await this.modalCtrl.create({
+  component: Evaluation2PdfComponent,
+  cssClass: "fullscreen",
+  componentProps: {
+    evaluation: valutazione
+  }
+});
+await modal.present(); 
 }
   evaluationsList = [] as Evaluation[];
 

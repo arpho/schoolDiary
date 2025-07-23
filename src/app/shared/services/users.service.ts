@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, OnInit, inject, signal } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 import { collection, doc, Firestore, setDoc, where,query, getDocs, addDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
 import {
@@ -27,7 +27,8 @@ interface ClaimsResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class UsersService {
+export class UsersService  implements OnInit{
+  usersOnCache=signal<UserModel[]>([]);
   getUsersByClass(classKey: string, callback: (users: UserModel[]) => void) {
     const collectionRef = collection(this.firestore, this.collection);
     const queryRef = query(collectionRef, where('classKey', '==', classKey));
@@ -46,7 +47,19 @@ export class UsersService {
   private collection = 'userProfile';
 
   constructor() {
-    console.log('UsersService initialized');
+    console.log("UsersService constructor");
+this.getUsersOnRealTime((users)=>{
+  this.usersOnCache.set(users);
+})
+  }
+  ngOnInit(): void {
+    this.getUsersOnRealTime((users)=>{
+      this.usersOnCache.set(users);
+    })
+  }
+
+  fetchUserOnCache(userKey: string): UserModel | undefined {
+    return this.usersOnCache().find(user => user.key === userKey);
   }
 
   fetchUser(userKey: string): Promise<UserModel | null> {
