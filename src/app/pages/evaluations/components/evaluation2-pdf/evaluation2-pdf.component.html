@@ -1,4 +1,5 @@
 
+<ion-fab-button side="bottom" horizontal="end" vertical="top" (click)="generatePdf()">Genera PDF</ion-fab-button>
 <div id="contentToConvert">
 <ion-grid>
   <ion-row>
@@ -25,6 +26,8 @@
           <div class="value">{{evaluationData()?.data|date:'dd/MM/yyyy'}}</div>
         </div>
       </ion-col>
+    </ion-row>
+    <ion-row>
       <ion-col size="3">
         <div class="generalita">
           <div class="label">Prof.:</div>
@@ -68,5 +71,3 @@
 
   </ion-grid>
 </div>
-
-<ion-fab-button side="bottom" horizontal="end" vertical="bottom" (click)="generatePdf()">Genera PDF</ion-fab-button>
