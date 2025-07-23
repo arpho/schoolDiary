@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation, input, OnInit, signal, inject, computed } from '@angular/core';
 import { Evaluation } from 'src/app/shared/models/evaluation';
-import { IonGrid, IonRow, IonCol, IonButton } from "@ionic/angular/standalone";
+import { IonGrid, IonRow, IonCol, IonButton, IonFabButton } from "@ionic/angular/standalone";
 import { UserWieverComponent } from "src/app/shared/components/user-wiever/user-wiever.component";
 import { ClassViewerComponent } from "src/app/shared/components/class-wiever/class-wiever.component";
 import { DatePipe } from '@angular/common';
@@ -21,7 +21,8 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
     IonCol,
     UserWieverComponent,
     ClassViewerComponent,
-    IonButton
+    IonButton,
+    IonFabButton
 ],
 })
 export class Evaluation2PdfComponent  implements OnInit {

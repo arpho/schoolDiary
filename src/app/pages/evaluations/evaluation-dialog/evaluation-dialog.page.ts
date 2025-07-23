@@ -152,8 +152,8 @@ export class EvaluationDialogPage implements OnInit {
       console.log("studentKey from route params", this.studentKey);
       console.log("classKey from route params", this.classKey);
 
-      evaluation.studentKey = this.studentKey;
-      evaluation.classKey = this.classKey;
+      evaluation.studentKey = evaluation.studentKey || this.studentKey;
+      evaluation.classKey = evaluation.classKey || this.classKey;
       if(this.grid()){
         evaluation.grid = this.grid()!;
         evaluation.gridsKey = this.grid()!.key;
