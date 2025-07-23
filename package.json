@@ -32,7 +32,9 @@
     "@ionic/angular": "^8.6.4",
     "@ionic/angular-server": "^8.6.4",
     "firebase": "^11.10.0",
+    "html2canvas": "^1.4.1",
     "ionicons": "^7.0.0",
+    "jspdf": "^3.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
