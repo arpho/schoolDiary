@@ -5,27 +5,38 @@
     </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size="4">
+      <ion-col size="3">
         <div class="generalita">
           <div class="label">Studente:</div>
           <div class="value"><app-user-wiever [userkey]="evaluationData()?.studentKey"></app-user-wiever></div>
         </div>
       </ion-col>
-      <ion-col size="4">
+      <ion-col size="3">
         <div class="generalita">
           <div class="label">Classe:</div>
           <div class="value"><app-class-wiever [classkey]="evaluationData()?.classKey"></app-class-wiever></div>
         </div>
       </ion-col>
-      <ion-col size="4">
+      <ion-col size="3">
         <div class="generalita">
           <div class="label">Data:</div>
           <div class="value">{{evaluationData()?.data|date:'dd/MM/yyyy'}}</div>
         </div>
       </ion-col>
+      <ion-col size="3">
+        <div class="generalita">
+          <div class="label">Prof.:</div>
+          <div class="value"><app-user-wiever [userkey]="evaluationData()?.teacherKey"></app-user-wiever></div>
+        </div>
+      </ion-col>
     </ion-row>
-    @for(indicatore of evaluationData()?.grid?.indicatori; track $index){ 
-<ion-row>
+    <ion-row>
+      <ion-col class="section">
+        Indicatori
+      </ion-col>
+    </ion-row>
+    @for(indicatore of evaluationData()?.grid?.indicatori; track $index){
+<ion-row >
   <ion-col size="10">
     <div class="indicatore">
       <div class="value">{{indicatore.descrizione}}</div>
@@ -40,4 +51,17 @@
 </ion-row>
 
     }
+    <ion-row>
+      <ion-col size="10">
+        <div class="indicatore">
+          <div class="label">Voto finale</div>
+        </div>
+      </ion-col>
+      <ion-col size="2">
+        <div class="generalita">
+          <div class="value">{{votazione()}}</div>
+        </div>
+      </ion-col>
+    </ion-row>
+
   </ion-grid>
