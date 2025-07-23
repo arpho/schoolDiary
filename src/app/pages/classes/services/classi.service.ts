@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -20,6 +20,21 @@ import { ClasseModel } from '../models/classModel';
   providedIn: 'root'
 })
 export class ClassiService {
+  private classesOnCache = signal<ClasseModel[]>([]);
+
+  constructor() {
+    this.ngOnInit();
+  }
+
+  ngOnInit() {
+    this.getClassiOnRealtime((classi) => {
+      this.classesOnCache.set(classi);
+    });
+  }
+
+  fetchClasseOnCache(classKey: string): ClasseModel | undefined {
+    return this.classesOnCache().find(classe => classe.key === classKey);
+  }
   fetchClasses(classes: string[]) {
     const classi = classes.map((classe) => this.fetchClasse(classe));
     return Promise.all(classi);
