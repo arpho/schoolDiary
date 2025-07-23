@@ -3,6 +3,7 @@ export class ClasseModel{
  classe: string=""
  descrizione: string=""
  note:string=""
+ archived: boolean = false
  key: string=""
  constructor(args?:{}){
   this.build(args);
@@ -14,12 +15,13 @@ export class ClasseModel{
 
   return this
 }
-serialize(){
-  return{
+serialize() {
+  return {
     year: this.year,
     classe: this.classe,
     description: this.descrizione,
     note: this.note,
+    archived: this.archived,
     key: this.key
   }
     }

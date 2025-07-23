@@ -47,6 +47,16 @@ export class ClassiService {
   private firestore = inject(Firestore);
   collection = 'classi';
 
+  async archiviaClasse(classKey: string) {
+    const classe = this.fetchClasseOnCache(classKey);
+    if (!classe) {
+      throw new Error('Classe non trovata');
+    }
+
+    const docRef = doc(this.firestore, this.collection, classKey);
+    return setDoc(docRef, { ...classe, archived: true }, { merge: true });
+  }
+
   async fetchClasse(classeKey: string) {
     const docRef = doc(this.firestore, this.collection, classeKey);
     const rawClasse = await getDoc(docRef);
