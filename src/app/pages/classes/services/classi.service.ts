@@ -54,7 +54,8 @@ export class ClassiService {
     }
 
     const docRef = doc(this.firestore, this.collection, classKey);
-    return setDoc(docRef, { ...classe, archived: true }, { merge: true });
+    classe.archived = true;
+    return setDoc(docRef, classe.serialize(), { merge: true });
   }
 
   async fetchClasse(classeKey: string) {
