@@ -10,6 +10,8 @@ import {
   signInWithPopup,
   getAuth,
   createUserWithEmailAndPassword,
+  updatePassword,
+  User,
 } from '@angular/fire/auth';
 import { AuthService } from './auth.service';
 import { UserModel } from '../models/userModel';
@@ -28,6 +30,10 @@ interface ClaimsResponse {
   providedIn: 'root',
 })
 export class UsersService  implements OnInit{
+  updatePassword(user: User, newPassword: string) {
+    return updatePassword(user, newPassword)
+
+  }
   usersOnCache=signal<UserModel[]>([]);
   getUsersByClass(classKey: string, callback: (users: UserModel[]) => void) {
     const collectionRef = collection(this.firestore, this.collection);
