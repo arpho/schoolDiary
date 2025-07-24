@@ -21,7 +21,7 @@ export class ClassReservedNotesService {
   private notesOnCache = signal<ReservedNotes4class[]>([]);
 
   constructor() {
-    this.getNotesOnRealtime('', (notes: ReservedNotes4class[]) => {
+    this.getNotesOnRealtime('', '', (notes: ReservedNotes4class[]) => {
       this.notesOnCache.set(notes);
     });
   }
@@ -63,9 +63,10 @@ export class ClassReservedNotesService {
     return setDoc(docRef, { ...note });
   }
 
-  getNotesOnRealtime(ownerKey: string, callback: (notes: ReservedNotes4class[]) => void) {
+  getNotesOnRealtime(ownerKey: string, key: string, callback: (notes: ReservedNotes4class[]) => void) {
+    console.log("ownerKey", ownerKey);
     const collectionRef = collection(this.firestore, this.collection);
-    const q = query(collectionRef, where('ownerKey', '==', ownerKey));
+    const q = query(collectionRef, where('ownerKey', '==', ownerKey),where('classKey', '==', key));
     return onSnapshot(q, (snapshot) => {
       const notes: ReservedNotes4class[] = [];
       snapshot.forEach((docSnap) => {

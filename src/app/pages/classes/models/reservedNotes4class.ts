@@ -1,12 +1,17 @@
 export class ReservedNotes4class {
  ownerKey="";
  note="";
+ classKey="";
  key="";
  date="";
 
  constructor(args?: any){
   this.build(args);
  }
+  setClassKey(key: string) {
+    this.classKey = key
+    return this
+  }
  setKey(key: string){
   this.key = key
   return this
@@ -24,10 +29,7 @@ setDate(date: string){
   return this
 }   
 build(args: any){
-  this.key = args.key;
-  this.note = args.note;
-  this.ownerKey = args.owner;
-  this.date = args.date;
+  Object.assign(this, args)
   return this
 }
 serialize(){
@@ -35,6 +37,7 @@ serialize(){
     key: this.key,
     note: this.note,
     ownerKey: this.ownerKey,
+    classKey: this.classKey,
     date: this.date
   }
 }   

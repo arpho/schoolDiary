@@ -42,9 +42,15 @@
 
 :root {
   --ion-font-family: 'Anton', sans-serif;
+  --ion-color-primary: #3880ff;
+  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #3171e0;
+  --ion-color-primary-tint: #4c94ff;
 }
 
-/**
+/*
  * Ionic Dark Mode
  * -----------------------------------------------------
  * For more info, please see:
@@ -53,4 +59,4 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */

@@ -41,6 +41,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ListStudent4classComponent } from '../components/list-student4class/list-student4class.component';
 import { Evaluation } from 'src/app/shared/models/evaluation';
+import { ReservedNotes4ClassesComponent } from '../components/reserved-notes4classes/reserved-notes4classes.component';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -63,7 +64,8 @@ import { Evaluation } from 'src/app/shared/models/evaluation';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ListStudent4classComponent
+    ListStudent4classComponent,
+    ReservedNotes4ClassesComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
