@@ -1,22 +1,26 @@
 <ion-header [translucent]="true">
   <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button defaulthref="/grids-list"></ion-back-button>
+    </ion-buttons>
     <ion-title>{{pageTitle}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content >
-  <form [formGroup]="gridForm">
+<ion-content>
+  <form formgroup="gridForm">
     <ion-item>
-      <ion-label  position="floating">Descrizione</ion-label>
-    <ion-textarea  formControlName="descrizione" (change)="onDescrizioneChange($event)"></ion-textarea>
+      <ion-label position="floating">Descrizione</ion-label>
+      <ion-textarea formcontrolname="descrizione" (change)="onDescrizioneChange($event)"></ion-textarea>
     </ion-item>
-<ion-item>
-  <ion-label  position="floating">Nome</ion-label>
-  <ion-input formControlName="nome" (change)="onNomeChange($event)"></ion-input>
-</ion-item>
-</form>
-<h3>Indicatori</h3>
-@if(indicatorsList().length >0) {
+    <ion-item>
+      <ion-label position="floating">Nome</ion-label>
+      <ion-input formcontrolname="nome" (change)="onNomeChange($event)"></ion-input>
+    </ion-item>
+    <ion-button expand="block" type="submit">Salva</ion-button>
+  </form>
+  <h3>Indicatori</h3>
+  @if(indicatorsList().length > 0) {
 
   <ion-list>
     @for(indicator of indicatorsList(); track $index) {

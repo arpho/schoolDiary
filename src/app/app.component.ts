@@ -23,12 +23,24 @@ export class AppComponent implements OnInit {
   private setupAuthListener() {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
+      const currentUrl = this.router.url;
+      
+      // Allow access to reset-password page regardless of auth state
+      if (currentUrl.includes('reset-password')) {
+        return;
+      }
+
       if (!user) {
         // Se l'utente non è autenticato, reindirizza alla pagina di login
-        this.router.navigate(['/login']);
+        if (!currentUrl.includes('login')) {
+          this.router.navigate(['/login']);
+        }
       }
-      else{
-        this.router.navigate(['/dashboard']);
+      else {
+        // Se l'utente è autenticato, reindirizza alla dashboard
+        if (!currentUrl.includes('dashboard')) {
+          this.router.navigate(['/dashboard']);
+        }
       }
     });
   }

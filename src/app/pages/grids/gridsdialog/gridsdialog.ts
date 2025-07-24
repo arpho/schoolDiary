@@ -1,29 +1,10 @@
-import {
-    Component,
-    computed,
-    effect,
-    OnInit,
-    signal
-} from '@angular/core';
+import { Component, OnInit, computed, effect, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { ModalController } from '@ionic/angular';
+import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonTextarea, IonFabButton, IonFab, IonFooter, IonToolbar, IonTitle, IonBackButton, IonButtons } from '@ionic/angular/standalone';
 
-import {
-    CommonModule
-} from '@angular/common';
-import {  ModalController } from '@ionic/angular';
-import {
-    FormBuilder,
-    FormGroup,
-    Validators,
-    FormsModule,
-    ReactiveFormsModule,
-    FormControl
-} from '@angular/forms';
-
-import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonTextarea, IonFabButton, IonFab, IonFooter, IonFabList, IonToolbar, IonTitle } from '@ionic/angular/standalone';
-
-import {
-    Criterio
-} from 'src/app/shared/models/criterio';
+import { Criterio } from 'src/app/shared/models/criterio';
 import { addIcons } from 'ionicons';
 import {
   add,
@@ -35,9 +16,7 @@ import {
   ellipsisVertical
 } from 'ionicons/icons';
 import { Grids } from 'src/app/shared/models/grids';
-import {
-    IndicatorsListComponent
-} from "../components/indicatorsList/indicators-list/indicators-list.component";
+import { IndicatorsListComponent } from "../components/indicatorsList/indicators-list/indicators-list.component";
 import { Router } from '@angular/router';
 import { IndicatorsDialogComponent } from '../components/indicatorsDialog/indicators-dialog.component';
 import { Indicatore } from 'src/app/shared/models/indicatore';
@@ -46,16 +25,12 @@ import { IndicatorViewerComponent } from "src/app/shared/components/indicatorsVi
 import { UsersService } from 'src/app/shared/services/users.service';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
-
 @Component({
     selector: 'app-gridsdialog',
     templateUrl: './gridsdialog.html',
     styleUrls: ['./gridsdialog.scss'],
     standalone: true,
     imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     IonButton,
     IonContent,
     IonHeader,
@@ -71,7 +46,9 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonFooter,
     IonIcon,
     IonToolbar,
-    IonTitle
+    IonTitle,
+    IonButtons,
+    IonBackButton
 ]
 })
 export class GridsdialogPage implements OnInit{
