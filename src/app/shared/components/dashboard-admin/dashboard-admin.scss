@@ -1,0 +1,31 @@
+.dashboard-admin {
+  .header-centered {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .title-centered {
+    text-align: center;
+    color: var(--ion-color-primary);
+    margin: 0;
+  }
+
+  .welcome-text {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 20px;
+  }
+}
+
+h2.title-centered {
+    display: flex
+;
+    justify-content: space-evenly;
+}
+
+p.welcome-text {
+    display: flex
+;
+    justify-content: space-evenly;
+}

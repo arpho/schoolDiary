@@ -12,6 +12,7 @@ import {
   createUserWithEmailAndPassword,
   updatePassword,
   User,
+  sendPasswordResetEmail,
 } from '@angular/fire/auth';
 import { AuthService } from './auth.service';
 import { UserModel } from '../models/userModel';
@@ -34,6 +35,19 @@ export class UsersService  implements OnInit{
     return updatePassword(user, newPassword)
 
   }
+
+  sendPasswordRecoverEmail(email: string): Promise<boolean> {
+    const auth = getAuth();
+    return sendPasswordResetEmail(auth, email)
+      .then(() => {
+        return true;
+      })
+      .catch((error) => {
+        console.error('Errore durante l"invio dell\'email di recupero:', error);
+        return false;
+      });
+  }
+
   usersOnCache=signal<UserModel[]>([]);
   getUsersByClass(classKey: string, callback: (users: UserModel[]) => void) {
     const collectionRef = collection(this.firestore, this.collection);
