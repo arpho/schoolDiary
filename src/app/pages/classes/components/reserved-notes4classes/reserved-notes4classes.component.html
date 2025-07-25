@@ -6,13 +6,13 @@
       <ion-label>
         <p>{{ note.date|date:"dd/MM/yyyy" }}</p>
         <h2>{{ note.note }}</h2>
-      </ion-label> 
+      </ion-label>
       <ion-fab id="test"  vertical="bottom" horizontal="end" >
         <ion-fab-button size="small"   color="medium">
           <ion-icon name="ellipsis-vertical"></ion-icon>
         </ion-fab-button>
         <ion-fab-list side="start">
-          <ion-fab-button color="light" (click)="editNote(note)">
+          <ion-fab-button color="light" (click)="updateNote(note)">
             <ion-icon name="create"></ion-icon>
           </ion-fab-button>
           <ion-fab-button color="danger" (click)="deleteNote(note.key)">

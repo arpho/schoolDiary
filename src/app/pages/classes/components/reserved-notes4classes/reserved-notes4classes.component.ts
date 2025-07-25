@@ -35,9 +35,7 @@ import { addIcons } from 'ionicons';
   providers: [AlertController]
 })
 export class ReservedNotes4ClassesComponent implements OnInit {
-editNote(note: ReservedNotes4class) {
-  console.log("editNote", note);
-}
+
   @Input() classe!: ClasseModel;
   notes = signal<ReservedNotes4class[]>([]);
   private classReservedNotesService = inject(ClassReservedNotesService);
@@ -116,11 +114,67 @@ editNote(note: ReservedNotes4class) {
     await alert.present();
   }
 
-  deleteNote(noteKey: string) {
-    this.classReservedNotesService.deleteNote(noteKey);
+  async deleteNote(noteKey: string) {
+    const alert = await this.alertController.create({
+      header: 'Conferma',
+      message: 'Sei sicuro di voler eliminare la nota?',
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel'
+        },
+        {
+          text: 'Elimina',
+          handler: () => {
+            this.classReservedNotesService.deleteNote(noteKey).then(() => {
+              this.toast.presentToast({message:"Nota eliminata con successo",duration:2000,position:"bottom"});
+              console.log("nota eliminata", noteKey);
+            }).catch((error) => {
+              this.toast.presentToast({message:"Errore durante l'eliminazione della nota",duration:2000,position:"bottom"});
+              console.log("errore durante l'eliminazione della nota", error);
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
-  updateNote(note: ReservedNotes4class) {
-    this.classReservedNotesService.updateNote(note.key, note);
+  async updateNote(note: ReservedNotes4class) {
+    const alert = await this.alertController.create({
+      header: 'Modifica Nota',
+      inputs: [
+        {
+          name: 'note',
+          type: 'text',
+          placeholder: 'Inserisci la nota',
+          value: note.note
+        }
+      ],
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel'
+        },
+        {
+          text: 'Aggiorna',
+          handler: async (data: { note: string }) => {
+            if (data.note) {
+              note.setNote(data.note);
+              this.classReservedNotesService.updateNote(note.key, note).then(() => {
+                this.toast.presentToast({message:"Nota aggiornata con successo",duration:2000,position:"bottom"});
+                console.log("nota aggiornata", note);
+              }).catch((error) => {
+                this.toast.presentToast({message:"Errore durante l'aggiornamento della nota",duration:2000,position:"bottom"});
+                console.log("errore durante l'aggiornamento della nota", error);
+              });
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+    
   }
 }
