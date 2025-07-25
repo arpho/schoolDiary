@@ -98,16 +98,16 @@ userKey: any;
       })
     }
 save() {
-console.log("save",);
+console.log("save",this.userForm.value);
 const user = new UserModel(this.userForm.value);
 user.key = this.userSignal()?.key;
 user.classes = this.usersClasses().map((classe) => classe.key);
-this.userSignal.set(user);
+//this.userSignal.set(user);
 console.log("userSignal", this.userSignal());
 const claims = {
-  role: user.role,
-  classes: user.classes,
-  classKey: user.classe
+  role: this.userSignal()?.role,
+  classes: this.userSignal()?.classes,
+  classKey: this.userSignal()?.classe
 }
 console.log("claims", claims)
 this.$users.updateUser(user.key, user).then(() => {

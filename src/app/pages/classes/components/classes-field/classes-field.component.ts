@@ -6,7 +6,9 @@ import {
   signal,
   computed,
   ViewEncapsulation,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  EventEmitter,
+  Output
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -53,6 +55,7 @@ import { ClassesSelectorPage } from '../../pages/classes-selector/classes-select
 export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
   @Input() disabled: boolean = false;
   @Input() classes: ClasseModel[] = [];
+  @Output() classeschange = new EventEmitter<ClasseModel[]>();
   onChange: any = () => {};
   onTouched: any = () => {};
   classi = signal<ClasseModel[]>([]);
@@ -78,7 +81,7 @@ export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
     const {data} = await modal.onDidDismiss();
     console.log("data",data);
     this.classes = data;
-    this.onChange(this.classes);
+    this.classeschange.emit(this.classes);
   }
 
   ngOnInit() {
