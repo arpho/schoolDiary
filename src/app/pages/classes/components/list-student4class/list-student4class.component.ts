@@ -69,7 +69,7 @@ deleteStudent(arg0: string) {
 throw new Error('Method not implemented.');
 }
 editStudent(arg0: string) {
-throw new Error('Method not implemented.');
+this.router.navigate(['/user-dialog',arg0]);
 }
   @Input() classkey!: string;
   readonly _students = signal<UserModel[]>([]);
