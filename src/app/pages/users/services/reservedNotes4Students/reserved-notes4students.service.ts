@@ -1,6 +1,19 @@
-import { Injectable } from '@angular/core';
-import { collection, addDoc, doc, setDoc, onSnapshot, query, where, DocumentReference, DocumentData } from 'firebase/firestore';
-import { firestore } from 'src/app/shared/services/firebase.service';
+import { inject, Injectable } from '@angular/core';
+import {
+  Firestore,
+  collection,
+  doc,
+  setDoc,
+  where,
+  query,
+  getDocs,
+  addDoc,
+  getDoc,
+  onSnapshot,
+  deleteDoc,
+  DocumentReference,
+  DocumentData
+} from '@angular/fire/firestore';
 import { ReservedNotes4student } from '../../models/reservedNotes4student';
 import { signal } from '@angular/core';
 
@@ -10,11 +23,9 @@ import { signal } from '@angular/core';
 export class ReservedNotes4studentsService {
   private notesOnCache = signal<ReservedNotes4student[]>([]);
   private collection = 'reservedNotes4Student';
-
+  private firestore = inject(Firestore);
   constructor() {
-    this.getNotesOnRealtime('', '', (notes) => {
-      this.notesOnCache.set(notes);
-    });
+    // No initialization needed here
   }
 
   ngOnInit(): void {
@@ -34,17 +45,22 @@ export class ReservedNotes4studentsService {
   }
 
   async addNote(note: ReservedNotes4student): Promise<DocumentReference<DocumentData>> {
-    const collectionRef = collection(firestore, this.collection);
+    const collectionRef = collection(this.firestore, this.collection);
     return addDoc(collectionRef, note.serialize());
   }
 
   async updateNote(noteKey: string, note: ReservedNotes4student): Promise<void> {
-    const docRef = doc(firestore, this.collection, noteKey);
+    const docRef = doc(this.firestore, this.collection, noteKey);
     return setDoc(docRef, note.serialize());
   }
 
+  async deleteNote(noteKey: string): Promise<void> {
+    const docRef = doc(this.firestore, this.collection, noteKey);
+    return deleteDoc(docRef);
+  }
+
   getNotesOnRealtime(ownerKey: string, studentKey: string, callback: (notes: ReservedNotes4student[]) => void) {
-    const collectionRef = collection(firestore, this.collection);
+    const collectionRef = collection(this.firestore, this.collection);
     const q = query(
       collectionRef,
       where('ownerKey', '==', ownerKey),

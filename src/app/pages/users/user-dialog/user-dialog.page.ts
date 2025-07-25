@@ -50,6 +50,7 @@ import { save } from 'ionicons/icons';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UserGeneralitiesComponent } from "../components/user-generalities/user-generalities.component";
 import { IonicModule } from "@ionic/angular";
+import { ReservedNotes4studentComponent } from "../components/reserved-notes4student/reserved-notes4student.component";
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
@@ -79,6 +80,7 @@ import { IonicModule } from "@ionic/angular";
     IonTab,
     IonTabBar,
     IonTabButton,
+    ReservedNotes4studentComponent
 ]
 })
 export class UserDialogPage implements OnInit {

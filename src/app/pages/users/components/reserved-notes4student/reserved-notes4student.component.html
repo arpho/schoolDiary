@@ -1,0 +1,30 @@
+<div class="container">
+  <h2>Note Riservate</h2>
+  <ion-list>
+    @for(note of notes(); track note.key) {
+    <ion-card>
+      <ion-label>
+        <p>{{ note.date | date:"dd/MM/yyyy" }}</p>
+        <h2>{{ note.note }}</h2>
+      </ion-label>
+      <ion-fab id="test" vertical="bottom" horizontal="end" size="small">
+        <ion-fab-button size="small" color="medium">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-list side="start">
+          <ion-fab-button size="small" color="light" (click)="updateNote(note)">
+            <ion-icon name="create"></ion-icon>
+          </ion-fab-button>
+          <ion-fab-button size="small" color="danger" (click)="deleteNote(note.key)">
+            <ion-icon name="trash"></ion-icon>
+          </ion-fab-button>
+          <ion-fab-button size="small" color="light">
+            <ion-icon name="close"></ion-icon>
+          </ion-fab-button>
+        </ion-fab-list>
+      </ion-fab>
+    </ion-card>
+    }
+  </ion-list>
+  <ion-button expand="full" color="primary" shape="round" (click)="addNote()">Aggiungi Nota</ion-button>
+</div>
