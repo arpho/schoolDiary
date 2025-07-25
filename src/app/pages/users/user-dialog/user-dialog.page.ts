@@ -24,7 +24,11 @@ import {
   IonFabButton,
   IonIcon,
   IonButtons,
-  IonFab } from '@ionic/angular/standalone';
+  IonFab,
+  IonTabs,
+  IonTab,
+  IonTabBar,
+  IonTabButton } from '@ionic/angular/standalone';
 import {
    ActivatedRoute,
    Router
@@ -45,6 +49,7 @@ import { addIcons } from 'ionicons';
 import { save } from 'ionicons/icons';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UserGeneralitiesComponent } from "../components/user-generalities/user-generalities.component";
+import { IonicModule } from "@ionic/angular";
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
@@ -69,7 +74,11 @@ import { UserGeneralitiesComponent } from "../components/user-generalities/user-
     IonFabButton,
     IonIcon,
     IonFab,
-    UserGeneralitiesComponent
+    UserGeneralitiesComponent,
+    IonTabs,
+    IonTab,
+    IonTabBar,
+    IonTabButton,
 ]
 })
 export class UserDialogPage implements OnInit {

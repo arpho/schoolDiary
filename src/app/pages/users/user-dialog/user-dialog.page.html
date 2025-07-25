@@ -9,16 +9,72 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-tabs>
+  <ion-tab tab="home">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Generalità</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <app-user-generalities [userkey]="userKey" (editeduser)="editedUser($event)"></app-user-generalities>
+      <ion-footer>
+        <ion-fab vertical="bottom" horizontal="end">
+          <ion-fab-button (click)="save()">
+            <ion-icon name="save"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </ion-footer>
+    </ion-content>
+  </ion-tab>
+  <ion-tab tab="radio">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Note</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      notenotenote
+    </ion-content>
+  </ion-tab>
+  <ion-tab tab="library">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Library</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="example-content">Library content</div>
+    </ion-content>
+  </ion-tab>
+  <ion-tab tab="search">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Search</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="example-content">Search content</div>
+    </ion-content>
+  </ion-tab>
 
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home">
+      <ion-icon name="play-circle"></ion-icon>
+      <ion-label>Generalità</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="radio">
+      <ion-icon name="radio"></ion-icon>
+      <ion-label>Note</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="library">
+      <ion-icon name="library"></ion-icon>
+      <ion-label>Library</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="search">
+      <ion-icon name="search"></ion-icon>
+      <ion-label>Search</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>
 
-<app-user-generalities [userkey]="userKey" (editeduser)="editedUser($event)"></app-user-generalities>
-
-</ion-content>
-<ion-footer>
-  <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="save()">
-        <ion-icon name="save"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-</ion-footer>
