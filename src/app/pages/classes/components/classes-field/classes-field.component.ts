@@ -75,13 +75,10 @@ export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
       }
     });
     const modalRef = await modal.present();
-    const {data,role} = await modal.onDidDismiss();
-    console.log("role ",role);
+    const {data} = await modal.onDidDismiss();
     console.log("data",data);
-    if (data) {
-      this.classes = data;
-      this.onChange(this.classes);
-    }
+    this.classes = data;
+    this.onChange(this.classes);
   }
 
   ngOnInit() {

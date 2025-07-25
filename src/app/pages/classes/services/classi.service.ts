@@ -20,7 +20,7 @@ import { ClasseModel } from '../models/classModel';
   providedIn: 'root'
 })
 export class ClassiService {
-  private classesOnCache = signal<ClasseModel[]>([]);
+   classesOnCache = signal<ClasseModel[]>([]);
 
   constructor() {
     this.getClassiOnRealtime((classi) => {

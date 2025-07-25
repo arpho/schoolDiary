@@ -11,58 +11,8 @@
 
 <ion-content [fullscreen]="true">
 
-  <form [formGroup]="userForm">
-    <ion-item>
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Nome</ion-label>
-      <ion-input formControlName="firstName"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Cognome</ion-label>
-      <ion-input formControlName="lastName"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Nickname</ion-label>
-      <ion-input formControlName="userName"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Email</ion-label>
-      <ion-input  [readonly]="true" formControlName="email"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Role</ion-label>
-      <ion-select formControlName="role">
-        @for (role of rolesValue; track $index) {
-          <ion-select-option [value]="role">{{$UsersRole[role]}}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
 
-
-    <ion-item>
-      <ion-label position="floating">Classe</ion-label>
- <ion-select formControlName="classe">
-  @for (classe of elencoClassi(); track classe.key) {
-    <ion-select-option [value]="classe.key">{{classe.classe}}</ion-select-option>
-  }
-  </ion-select>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Phone Number</ion-label>
-      <ion-input formControlName="phoneNumber"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Birth Date</ion-label>
-      <ion-datetime  presentation="date" formControlName="birthDate"></ion-datetime>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating">Classi</ion-label>
-      <app-classes-field [classes]="usersClasses()" (classesChange)="userForm.get('classes')!.setValue($event)"></app-classes-field>
-    </ion-item>
-
-
-
-  </form>
+<app-user-generalities [userkey]="userKey" (editeduser)="editedUser($event)"></app-user-generalities>
 
 </ion-content>
 <ion-footer>

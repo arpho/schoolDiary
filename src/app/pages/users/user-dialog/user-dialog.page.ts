@@ -44,6 +44,7 @@ import { ClassiService } from '../../classes/services/classi.service';
 import { addIcons } from 'ionicons';
 import { save } from 'ionicons/icons';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { UserGeneralitiesComponent } from "../components/user-generalities/user-generalities.component";
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
@@ -59,7 +60,6 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonInput,
     IonSelect,
     IonSelectOption,
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonBackButton,
@@ -68,10 +68,17 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonFooter,
     IonFabButton,
     IonIcon,
-    IonFab
+    IonFab,
+    UserGeneralitiesComponent
 ]
 })
 export class UserDialogPage implements OnInit {
+editedUser($event: UserModel) {
+console.log("editedUser", $event);
+this.userSignal.set($event);
+console.log("userSignal", this.userSignal());
+}
+userKey: any;
   constructor(
       private router: ActivatedRoute,
       private $users: UsersService,
@@ -143,6 +150,7 @@ $UsersRole = UsersRole;
       this.elencoClassi.set(classi);
     });
     const userKey=this.router.snapshot.paramMap.get('userKey');
+    this.userKey = userKey;
      const rolesKey = Object.keys(UsersRole);
      this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
     if(userKey){

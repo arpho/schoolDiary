@@ -52,7 +52,7 @@ import { checkmark } from 'ionicons/icons';
 })
 export class ClassesSelectorPage implements OnInit {
 close() {
-this.$modal.dismiss();
+this.$modal.dismiss(this.selectedClasses);
 }
 
   constructor(
