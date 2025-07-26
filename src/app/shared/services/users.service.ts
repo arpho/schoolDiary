@@ -17,7 +17,8 @@ import {
 import { AuthService } from './auth.service';
 import { UserModel } from '../models/userModel';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-
+import { ClassiService } from '../../../app/pages/classes/services/classi.service';  
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 interface ClaimsResponse {
   message?: string;
   data?: {
@@ -31,9 +32,36 @@ interface ClaimsResponse {
   providedIn: 'root',
 })
 export class UsersService  implements OnInit{
+  private usersCache = new Map<string, UserModel>();
+
   updatePassword(user: User, newPassword: string) {
     return updatePassword(user, newPassword)
 
+  }
+
+  async getUser(userKey: string): Promise<UserModel | null> {
+    // Prima verifica nella cache
+    const cachedUser = this.usersCache.get(userKey);
+    if (cachedUser) {
+      return cachedUser;
+    }
+
+    try {
+      const docRef = doc(this.firestore, 'users', userKey);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const userData = docSnap.data() as UserModel;
+        userData.key = userKey;
+        // Aggiungi alla cache
+        this.usersCache.set(userKey, userData);
+        return userData;
+      }
+      return null;
+    } catch (error) {
+      console.error('Errore nel caricamento dell\'utente:', error);
+      return null;
+    }
   }
 
   sendPasswordRecoverEmail(email: string): Promise<boolean> {
@@ -56,6 +84,15 @@ export class UsersService  implements OnInit{
       const users: UserModel[] = [];
       snapshot.forEach((doc) => {
         const user = new UserModel(doc.data()).setKey(doc.id);
+        const  classes:ClasseModel[] = [];
+        user.classes?.forEach((classKey:string) => {
+          console.log("fetching classModel in usersService", classKey);
+        const classe = this.$classes.fetchClasseOnCache(classKey);
+        if(classe){
+          classes.push(classe);
+        }
+        });
+        user.classi = classes;
         users.push(user);
       });
       callback(users);
@@ -66,7 +103,9 @@ export class UsersService  implements OnInit{
   private MyAuth = inject(AuthService);
   private collection = 'userProfile';
 
-  constructor() {
+  constructor(
+    private $classes: ClassiService
+  ) {
     console.log("UsersService constructor");
 this.getUsersOnRealTime((users)=>{
   this.usersOnCache.set(users);
@@ -93,19 +132,29 @@ this.getUsersOnRealTime((users)=>{
         return null;
       }
     });
-  }
+  } 
 
   updateUser(userKey: string, user: UserModel): Promise<void> {
     const userRef = doc(this.firestore, `userProfile/${userKey}`);
+    console.log("serialized user", user.serialize());
     return setDoc(userRef, user.serialize());
   }
 
   getUsersOnRealTime(cb: (users: UserModel[]) => void) {
+    console.log("UsersService getUsersOnRealTime")
     const collectionRef = collection(this.firestore, this.collection);
     onSnapshot(collectionRef, (snapshot) => {
+      const  classes:ClasseModel[] = [];
       const users: UserModel[] = [];
       snapshot.forEach((doc) => {
         const user = new UserModel(doc.data()).setKey(doc.id);
+        console.log("loading user*", user);
+        user.classes?.forEach((classKey:string) => {
+        const classe = this.$classes.fetchClasseOnCache(classKey);
+        if(classe)
+        classes.push(classe);
+        });
+        user.classi = classes;
         users.push(user);
       });
       cb(users);

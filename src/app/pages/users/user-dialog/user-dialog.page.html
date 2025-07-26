@@ -17,14 +17,8 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <app-user-generalities [userkey]="userKey" (editeduser)="editedUser($event)"></app-user-generalities>
-      <ion-footer>
-        <ion-fab vertical="bottom" horizontal="end">
-          <ion-fab-button (click)="save()">
-            <ion-icon name="save"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-      </ion-footer>
+      <app-user-generalities [user]="user()" (editeduser)="editedUser($event)"></app-user-generalities>
+
     </ion-content>
   </ion-tab>
   <ion-tab tab="radio">

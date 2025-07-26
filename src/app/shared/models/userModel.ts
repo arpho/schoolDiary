@@ -1,3 +1,4 @@
+import { ClasseModel } from "src/app/pages/classes/models/classModel";
 import { UsersRole } from "./usersRole";
 
 
@@ -16,7 +17,14 @@ export class UserModel{
   phoneNumber = ''
   role: UsersRole = UsersRole.STUDENT
   userName = ''
-  classes: string[] = []
+  classi:ClasseModel[] = []
+  classesKey: string[] = []
+set classes (classes:string[]) {
+  this.classesKey = classes;
+}
+get classes () {
+  return this.classesKey;
+}
   constructor(args?:{}){
     this.build(args);
   }
@@ -46,7 +54,7 @@ serialize(){
     phoneNumber: this.phoneNumber,
     role: this.role,
     userName: this.userName,
-    classes: this.classes
+    classes: this.classi.map((classe) => classe.key)
   }
 }
 }

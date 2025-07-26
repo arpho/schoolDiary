@@ -1,4 +1,4 @@
-import { Component, effect, EventEmitter, Input, input, OnInit, Output, signal } from '@angular/core';
+import { Component, effect, EventEmitter, Input, input, model, OnInit, Output, signal } from '@angular/core';
 import { IonContent } from "@ionic/angular/standalone";
 import { IonicModule } from "@ionic/angular";
 import { ClassesFieldComponent } from "src/app/pages/classes/components/classes-field/classes-field.component";
@@ -54,10 +54,37 @@ import {
   ],
 })
 export class UserGeneralitiesComponent  implements OnInit {
-  userSignal = signal(new UserModel({ role: UsersRole.STUDENT }));
- @Input() userkey : string="";
+save() {
+console.log("saving",this.user())
+  const user = new UserModel(this.user());
+console.log("user serialized",user.serialize())
+const claims = {
+  role: user.role,
+  classes: user.classes,
+  classKey: user.classe,
+};
+console.log("claims", claims);
+this.$users.updateUser(user.key, user).then(() => {
+  console.log("user updated");
+  this.toaster.presentToast({message: "User aggiornato con successo", duration: 2000, position: "bottom"});
+}).catch((error: any) => {
+  console.log("error updating user", error);
+  this.toaster.presentToast({message: "Errore durante l'aggiornamento del user", duration: 2000, position: "bottom"});
+});
+
+this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
+  console.log("claims set", data);
+  const usersClaims = await this.$users.getCustomClaims4LoggedUser();
+  console.log("usersClaims", usersClaims);
+  this.toaster.presentToast({message: "Claims aggiornati con successo", duration: 2000, position: "bottom"});
+}).catch((error: any) => {
+  console.log("error setting claims", error);
+  this.toaster.presentToast({message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom"});
+});
+ }
+
  @Output() editeduser= new EventEmitter<UserModel>();
- user = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
+ user = model<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
 rolesValue: any[] = [];
 rolesName: string[] = [];
 elencoClassi= signal<ClasseModel[]>([]);
@@ -85,78 +112,51 @@ $UsersRole = UsersRole;
       save,
     });
   this.userForm.valueChanges.subscribe((value) => {
-    console.log("userForm valueChanges", value);
-    this.userSignal.set(new UserModel(value).setKey(this.userkey));
-    console.log("userSignal", this.userSignal());
-    this.editeduser.emit(this.userSignal());
+    console.log("  valueChanges on form + ", value);
+    const user = new UserModel({...value,
+       key: this.user()?.key,
+        classi: this.user()?.classi,
+         classesKey: this.user()?.classesKey,
+          classe: this.user()?.classe
+        }
+      );
+    this.user.set(user);
+    console.log("userSignal*", this.user());
   })
     effect(async()=>{
-      const classesKeys = this.userSignal()?.classes;
-      if(classesKeys){
-        this.$classes.fetchClasses(classesKeys).then((classes) => {
-          this.usersClasses.set(classes);
-        });
-      }
+      const classesKeys = this.user()?.classesKey;
+      console.log("setting classi*", this.user());
+    this.usersClasses.set(this.user().classi);
     })
   }
 
   ngOnInit() {
+    console.log("userkey**", this.user().key)  
     this.elencoClassi= this.$classes.classesOnCache;
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
-    console.log("userkey**", this.userkey)  
-    this.$users.fetchUser(this.userkey).then((user) => {
-      if(user){
-        this.userSignal.set(user);
+    console.log("userkey**", this.user().key)  
+      this.usersClasses.set(this.user().classi || []);  
+      console.log("usersClasses*", this.usersClasses());
+      
         this.userForm.setValue({
-          firstName: user?.firstName || '',
-          lastName: user?.lastName || '',
-          userName: user?.userName || '',
-          email: user?.email || '',
-          role: user?.role || UsersRole.STUDENT,
-          phoneNumber: user?.phoneNumber || '',
-          birthDate: user?.birthDate || '',
-          classes: user?.classes || [],
-          classe: user?.classKey || ''
+          firstName: this.user()?.firstName || '',
+          lastName: this.user()?.lastName || '',
+          userName: this.user()?.userName || '',
+          email: this.user()?.email || '',
+          role: this.user()?.role || UsersRole.STUDENT,
+          phoneNumber: this.user()?.phoneNumber || '',
+          birthDate: this.user()?.birthDate || '',
+          classes: this.user()?.classes || [],
+          classe: this.user()?.classKey || ''
         });
 
-console.log("user*", this.userSignal());
-      }
-    })   ;
-       
+console.log("user*", this.user());
+      
+    }   
   }
 
 
-save() {
-  console.log("save*",);
-  console.log("userForm*", this.userForm.value )
-  const user = new UserModel(this.userForm.value);
-  user.key = this.userkey;
-  user.classes = this.usersClasses().map((classe) => classe.key);
-  this.userSignal.set(user);
-  console.log("userSignal*", this.userSignal());
-  const claims = {
-    role: user.role,
-    classes: user.classes,
-    classKey: user.classe
-  }
-  console.log("claims", claims)
-  this.$users.updateUser(user.key, user).then(() => {
-    console.log("user updated");
-    this.toaster.presentToast({message:"User aggiornato con successo",duration:2000,position:"bottom"});
-  }).catch((error: any) => {
-    console.log("error updating user", error);
-    this.toaster.presentToast({message:"Errore durante l'aggiornamento del user",duration:2000,position:"bottom"});
-  })
-  this.$users.setUserClaims2user(user.key, claims).then(async (data:any) => {
-    console.log("claims set",data);
-    const usersClaims =await this.$users.getCustomClaims4LoggedUser();
-    console.log("usersClaims", usersClaims);
-    this.toaster.presentToast({message:"Claims aggiornati con successo",duration:2000,position:"bottom"});
-  }).catch((error: any) => {
-    console.log("error setting claims", error);
-    this.toaster.presentToast({message:"Errore durante l'aggiornamento dei claims",duration:2000,position:"bottom"});
-  })
-  }
 
-}
+
+

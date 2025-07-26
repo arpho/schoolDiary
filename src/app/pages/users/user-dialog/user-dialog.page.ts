@@ -84,80 +84,117 @@ import { ReservedNotes4studentComponent } from "../components/reserved-notes4stu
 ]
 })
 export class UserDialogPage implements OnInit {
-editedUser($event: UserModel) {
-console.log("editedUser", $event);
-this.userSignal.set($event);
-console.log("userSignal", this.userSignal());
-}
-userKey: any;
+  editedUser($event: UserModel) {
+    console.log("editedUser*", $event);
+    this.user.set($event);
+    console.log("userSignal*", this.user());
+  }
+
+  // Variabili di stato
+  userKey: string=""
+  user = signal(new UserModel({ role: UsersRole.STUDENT }));
+  usersClasses = signal<ClasseModel[]>([]);
+  elencoClassi = signal<ClasseModel[]>([]);
+  rolesValue: any[] = [];
+  rolesName: string[] = [];
+  userForm: FormGroup = new FormGroup({
+    firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    userName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    email: new FormControl('', [Validators.email]),
+    role: new FormControl(UsersRole.STUDENT),
+    phoneNumber: new FormControl(''),
+    birthDate: new FormControl(''),
+    classes: new FormControl([]),
+    classe: new FormControl('')
+  });
+
   constructor(
-      private router: ActivatedRoute,
-      private $users: UsersService,
-      private $classes: ClassiService,
-      private toaster: ToasterService
-    ) {
-      addIcons({
-        save,
-      });
-      effect(async()=>{
-        const classesKeys = this.userSignal()?.classes;
-        if(classesKeys){
-          this.$classes.fetchClasses(classesKeys).then((classes) => {
-            this.usersClasses.set(classes);
-          });
-        }
-      })
-    }
-save() {
-console.log("save",this.userForm.value);
-const user = new UserModel(this.userForm.value);
-user.key = this.userSignal()?.key;
-user.classes = this.usersClasses().map((classe) => classe.key);
-//this.userSignal.set(user);
-console.log("userSignal", this.userSignal());
-const claims = {
-  role: this.userSignal()?.role,
-  classes: this.userSignal()?.classes,
-  classKey: this.userSignal()?.classe
-}
-console.log("claims", claims)
-this.$users.updateUser(user.key, user).then(() => {
-  console.log("user updated");
-  this.toaster.presentToast({message:"User aggiornato con successo",duration:2000,position:"bottom"});
-}).catch((error: any) => {
-  console.log("error updating user", error);
-  this.toaster.presentToast({message:"Errore durante l'aggiornamento del user",duration:2000,position:"bottom"});
-})
-this.$users.setUserClaims2user(user.key, claims).then(async (data:any) => {
-  console.log("claims set",data);
-  const usersClaims =await this.$users.getCustomClaims4LoggedUser();
-  console.log("usersClaims", usersClaims);
-  this.toaster.presentToast({message:"Claims aggiornati con successo",duration:2000,position:"bottom"});
-}).catch((error: any) => {
-  console.log("error setting claims", error);
-  this.toaster.presentToast({message:"Errore durante l'aggiornamento dei claims",duration:2000,position:"bottom"});
-})
-}
-userSignal = signal(new UserModel({ role: UsersRole.STUDENT }));
-rolesValue: any[] = [];
-rolesName: string[] = [];
-elencoClassi= signal<ClasseModel[]>([]);
-userForm: FormGroup= new FormGroup({
-  firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-  lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-  userName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-  email: new FormControl('', [Validators.email]),
-  role: new FormControl(UsersRole.STUDENT),
-  phoneNumber: new FormControl(''),
-  birthDate: new FormControl(''),
-  classes: new FormControl([]),
-  classe: new FormControl('')
-});
-usersClasses= signal<ClasseModel[]>([]);
-$UsersRole = UsersRole;
+    private route: ActivatedRoute,
+    private $users: UsersService,
+    private $classes: ClassiService,
+    private toaster: ToasterService,
+    private router: Router
+  ) {
+    console.log("UserDialogPage constructor");
+    
+    // Inizializzazione nel constructor
+
+    // Aggiungi gli effetti
+    effect(() => {
+      console.log("userSignal updated", this.user());
+    });
+
+    addIcons({
+      save,
+    });
+
+    effect(async () => {
+      const classesKeys = this.user()?.classesKey;
+      console.log("setting classi", this.user().classi);
+      this.usersClasses.set(this.user().classi);
+    });
+  }
 
   async ngOnInit() {
+    const userKey = this.route.snapshot.paramMap.get('userKey');
+    console.log("UserDialogPage ngOnInit, userKey:", userKey);
+    
+    // Se userKey esiste, carica l'utente
+    if (userKey) {
+      try {
+        const user = this.$users.fetchUserOnCache(userKey);
+        if (user) {
+          this.user.set(user);
+          console.log("Utente caricato:", user);
+        }
+      } catch (error) {
+        console.error("Errore nel caricamento dell'utente:", error);
+      }
+    }
+
+    // Inizializza le classi
     this.$classes.getClassiOnRealtime((classi) => {
+      this.elencoClassi.set(classi);
+    });
+
+    // Inizializza i ruoli
+    const rolesKey = Object.keys(UsersRole);
+    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
+  }
+
+  save() {
+    console.log("save", this.user());
+    console.log("clases on user from userSignal", this.user()?.classes);
+    const user = this.user();
+    user.key = this.user()?.key;
+    console.log("userSignal", this.user());
+    const claims = {
+      role: user.role,
+      classes: user.classes,
+      classKey: user.classe
+    };
+    console.log("claims", claims);
+
+    this.$users.updateUser(user.key, user).then(() => {
+      console.log("user updated");
+      this.toaster.presentToast({message: "User aggiornato con successo", duration: 2000, position: "bottom"});
+    }).catch((error: any) => {
+      console.log("error updating user", error);
+      this.toaster.presentToast({message: "Errore durante l'aggiornamento del user", duration: 2000, position: "bottom"});
+    });
+
+    this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
+      console.log("claims set", data);
+      const usersClaims = await this.$users.getCustomClaims4LoggedUser();
+      console.log("usersClaims", usersClaims);
+      this.toaster.presentToast({message: "Claims aggiornati con successo", duration: 2000, position: "bottom"});
+    }).catch((error: any) => {
+      console.log("error setting claims", error);
+      this.toaster.presentToast({message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom"});
+    });
+  }
+/*     this.$classes.getClassiOnRealtime((classi) => {
       this.elencoClassi.set(classi);
     });
     const userKey=this.router.snapshot.paramMap.get('userKey');
@@ -167,6 +204,7 @@ $UsersRole = UsersRole;
     if(userKey){
       this.$users.fetchUser(userKey).then((user) => {
         if(user){
+          console.log("user on dialog*", user);
           this.userSignal.set(user);
           this.userForm.setValue({
             firstName: user?.firstName || '',
@@ -184,10 +222,10 @@ $UsersRole = UsersRole;
         }
         }
       )   ;
-    console.log("user", this.userSignal());
+    console.log("userSignal*", this.userSignal());
     const claims =  await this.$users.getCustomClaims4LoggedUser();
     console.log("claims", claims);
 
-  }
+  } */
 }
-}
+
