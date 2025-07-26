@@ -87,7 +87,8 @@ await modal.present();
       component: EvaluationDialogPage,
       componentProps: {
         evaluation: evaluation
-      }
+      },
+      cssClass: "fullscreen"
     });
     await modal.present();
   }

@@ -1,17 +1,36 @@
-import { Component, OnInit, inject, signal, ViewChild, ElementRef, Renderer2, input } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonDatetime, IonButton, IonList, IonTextarea } from '@ionic/angular/standalone';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  FormControl } from '@angular/forms';
+import { 
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonDatetime,
+  IonButton,
+  IonList,
+  IonTextarea,
+  IonIcon,
+} from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { Grids } from 'src/app/shared/models/grids';
 import { Evaluation } from 'src/app/shared/models/evaluation';
 import { EvaluationService } from '../services/evaluation/evaluation.service';
-import { UserModel } from 'src/app/shared/models/userModel';
 import { EvaluateGridComponent } from 'src/app/pages/evaluations/components/evaluateGrid/evaluate-grid/evaluate-grid.component';
 import { UsersService } from 'src/app/shared/services/users.service';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-evaluation-dialog',
@@ -22,7 +41,6 @@ import { UsersService } from 'src/app/shared/services/users.service';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonBackButton,
     IonButtons,
     IonContent,
     IonHeader,
@@ -37,16 +55,23 @@ import { UsersService } from 'src/app/shared/services/users.service';
     IonButton,
     IonList,
     IonTextarea,
-    EvaluateGridComponent
-  ]
+    EvaluateGridComponent,
+    IonIcon,
+]
 })
 export class EvaluationDialogPage implements OnInit {
+close() {
+this.modalCtrl.dismiss();
+}
+printEvaluation() {
+console.log("printEvaluation");
+}
   @ViewChild('evaluateGrid') evaluateGrid!: ElementRef;
   @ViewChild(EvaluateGridComponent) evaluateGridComponent!: EvaluateGridComponent;
   evaluation = input<Evaluation>(new Evaluation());
   evaluationSignal = signal<Evaluation>(new Evaluation());
   evaluationForm!: FormGroup;
-  title: string = '';
+  title=signal('');
   valutazione: Evaluation | null = null;
   classKey: string = '';
   studentKey: string = '';
@@ -60,7 +85,8 @@ export class EvaluationDialogPage implements OnInit {
     private fb: FormBuilder,
     private $users: UsersService,
     private gridsService: GridsService,
-    private evaluationService: EvaluationService
+    private evaluationService: EvaluationService,
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit() {
@@ -76,10 +102,10 @@ export class EvaluationDialogPage implements OnInit {
       studentKey: new FormControl(this.studentKey)
     });
     if(this.evaluationSignal().key){
-      this.title = "rivedi valutazione";
+      this.evaluationKey = this.evaluationSignal().key;
+      this.title.set("rivedi valutazione");
       this.classKey = this.evaluationSignal().classKey;
       this.studentKey = this.evaluationSignal().studentKey;
-      this.evaluationKey = this.evaluationSignal().key;
       this.evaluationForm.patchValue({
         description: this.evaluationSignal().description,
         note: this.evaluationSignal().note,
@@ -89,14 +115,14 @@ export class EvaluationDialogPage implements OnInit {
       });
       this.grid.set(this.evaluationSignal().grid);
     }else{
-      this.title = "Nuova valutazione";
+      this.title.set("Nuova valutazione *");
 
   
     }
     // Initialize form controls with URL parameters
     this.classKey = this.route.snapshot.queryParams['classKey'] || '';
     this.studentKey = this.route.snapshot.queryParams['studentKey'] || '';
-    this.evaluationKey = this.route.snapshot.queryParams['evaluationKey'] || '';
+    this.evaluationKey = this.evaluationSignal().key || this.route.snapshot.queryParams['evaluationKey'] || '';
     console.log("classKey", this.classKey);
     console.log("studentKey", this.studentKey);
     console.log("evaluationKey", this.evaluationKey);
@@ -117,7 +143,7 @@ export class EvaluationDialogPage implements OnInit {
     });
 
     if (this.evaluationKey) {
-      this.title = "rivedi valutazione";
+      this.title.set("rivedi valutazione");
       this.evaluationService.fetchEvaluation(this.evaluationKey).then((evaluation: Evaluation) => {
         this.valutazione = evaluation;
         this.evaluationForm.patchValue({
@@ -130,7 +156,7 @@ export class EvaluationDialogPage implements OnInit {
         });
       });
     } else {
-      this.title = "Nuova valutazione";
+      this.title.set("Nuova valutazione**");
     }
 
 

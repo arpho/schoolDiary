@@ -1,9 +1,14 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="evaluations-list4-student" text="Indietro"></ion-back-button>
+      <ion-button (click)="close()"><ion-icon name="close"></ion-icon></ion-button>
+      @if(evaluationSignal().key){
+      <ion-button (click)="printEvaluation()" [disabled]="!evaluationForm.valid">
+        <ion-icon name="print"></ion-icon>
+      </ion-button>
+    }
     </ion-buttons>
-    <ion-title align="center">{{title}}</ion-title>
+    <ion-title align="center">{{title()}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
