@@ -49,7 +49,6 @@ export class EvaluationsListPage implements OnInit {
 console.log("evaluationPdf", valutazione);
 const modal = await this.modalCtrl.create({
   component: Evaluation2PdfComponent,
-  cssClass: "fullscreen",
   componentProps: {
     evaluation: valutazione
   }
