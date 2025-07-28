@@ -1,6 +1,24 @@
 
-<ion-fab-button side="bottom" horizontal="end" vertical="top" (click)="generatePdf()">Genera PDF</ion-fab-button>
+<ion-header>
+  <ion-toolbar>
+    <ion-title align="center">stampa valutazione</ion-title>
+    <ion-fab vertical="top" horizontal="end">
+      <ion-fab-button size="small" color="medium">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list side="start">
+        <ion-fab-button color="light" (click)="generatePdf()">
+          <ion-icon name="print"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button color="light" (click)="close()">
+          <ion-icon name="close"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab>
+  </ion-toolbar>
+</ion-header>
 <div id="contentToConvert">
+
 <ion-grid>
   <ion-row>
     <ion-col>

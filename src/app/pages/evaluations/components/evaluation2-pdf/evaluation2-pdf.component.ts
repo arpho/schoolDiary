@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation, input, OnInit, signal, inject, computed } from '@angular/core';
 import { Evaluation } from 'src/app/shared/models/evaluation';
-import { IonGrid, IonRow, IonCol, IonButton, IonFabButton } from "@ionic/angular/standalone";
+import { IonGrid, IonRow, IonCol, IonButton, IonFabButton, IonFab, IonFabList, IonIcon, IonHeader, IonContent, IonToolbar, IonTitle } from "@ionic/angular/standalone";
 import { UserWieverComponent } from "src/app/shared/components/user-wiever/user-wiever.component";
 import { ClassViewerComponent } from "src/app/shared/components/class-wiever/class-wiever.component";
 import { DatePipe } from '@angular/common';
@@ -9,6 +9,8 @@ import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { UsersService } from 'src/app/shared/services/users.service'; 
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
+import { IonicModule } from "@ionic/angular";
+import { ModalController } from '@ionic/angular';
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'app-evaluation2-pdf',
@@ -22,13 +24,25 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
     UserWieverComponent,
     ClassViewerComponent,
     IonButton,
-    IonFabButton
+    IonFabButton,
+    IonFab,
+    IonIcon,
+    IonFabList,
+    IonHeader,
+    IonContent,
+    IonToolbar,
+    IonTitle
 ],
 })
 export class Evaluation2PdfComponent  implements OnInit {
+close() {
+this.modalCtrl.dismiss();
+}
+  hideButtons= signal(false);
   constructor(
     private $users:UsersService,
     private $class:ClassiService,
+    private modalCtrl:ModalController
   
   ) { }
 
@@ -40,6 +54,7 @@ export class Evaluation2PdfComponent  implements OnInit {
     })
   }
 generatePdf() {
+  this.hideButtons.set(true);
 console.log("generatePdf");
 const data = document.getElementById('contentToConvert');
 if(data){
@@ -69,7 +84,7 @@ const fileName = `evaluation_${userName}_${className}_${this.formatDate(this.eva
   pdf.save(fileName); // Generated PDF
     });
 }
-
+this.hideButtons.set(false);
 
 }
 
