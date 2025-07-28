@@ -76,7 +76,7 @@ export class ClassiService {
 
   getClassiOnRealtime(callback: (classi: ClasseModel[]) => void) {
     const collectionRef = collection(this.firestore, this.collection);
-    return onSnapshot(collectionRef, (snapshot) => {
+    onSnapshot(collectionRef, (snapshot) => {
       const classi: ClasseModel[] = [];
       snapshot.forEach((docSnap) => {
         classi.push(new ClasseModel(docSnap.data()).setKey(docSnap.id));

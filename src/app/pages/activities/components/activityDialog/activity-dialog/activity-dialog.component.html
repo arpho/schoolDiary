@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title align="center">Nuova attività</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeDialog()">Chiudi</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="activityForm" (ngSubmit)="closeDialog()">
+    <ion-item>
+      <ion-label position="floating">Titolo</ion-label>
+      <ion-input formControlName="title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Descrizione</ion-label>
+      <ion-textarea formControlName="description"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Classe</ion-label>
+      <ion-select formControlName="classKey">
+        <ion-select-option *ngFor="let classe of listaClassi" [value]="classe.key">
+          {{ classe.classe }} {{ classe.year }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Data</ion-label>
+      <ion-datetime presentation="date" formControlName="date" displayFormat="DD/MM/YYYY"></ion-datetime>
+    </ion-item>
+  </form>
+</ion-content>
+<ion-button (click)="saveActivity()">Salva</ion-button>

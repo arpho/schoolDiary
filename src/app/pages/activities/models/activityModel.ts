@@ -15,6 +15,10 @@ export class ActivityModel {
     return this;
   }
 
+  setTeacherKey(teacherKey: string) {
+    this.teacherKey = teacherKey;
+    return this;
+  }
   build(args?: any) {
     if (args) {
       Object.assign(this, args);

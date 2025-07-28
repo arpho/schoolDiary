@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title align="center">Attività</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    @for(activity of activitiesList(); track activity.key) {
+      <ion-item>
+        <ion-card>
+          <ion-card-title>{{ activity.title }}</ion-card-title>
+          <ion-card-subtitle>{{ activity.description }}</ion-card-subtitle>
+          <p>{{ activity.date }}</p>
+          <p>{{ seeClass(activity.classKey) }}</p>
+          <p>{{ activity.teacherKey }}</p>
+        </ion-card>
+      </ion-item>
+    }
+      </ion-list>
+      <ion-button  shape="round" size="small" (click)="newActivity()"><ion-icon name="add"></ion-icon>Nuova attività</ion-button>
+
+</ion-content>

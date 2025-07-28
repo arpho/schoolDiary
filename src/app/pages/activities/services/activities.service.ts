@@ -1,0 +1,106 @@
+import { Injectable, inject, signal } from '@angular/core';
+import {
+  Firestore,
+  collection,
+  doc,
+  setDoc,
+  where,
+  query,
+  getDocs,
+  addDoc,
+  getDoc,
+  onSnapshot,
+  deleteDoc,
+  QuerySnapshot,
+  DocumentReference,
+  DocumentData,
+  QueryConstraint,
+  WhereFilterOp,
+  OrderByDirection,
+  Query,
+  orderBy,
+  limit
+} from '@angular/fire/firestore';
+import { ActivityModel } from '../models/activityModel';
+import { QueryCondition } from 'src/app/shared/models/queryCondition';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ActivitiesService {
+  private activitiesOnCache = signal<ActivityModel[]>([]);
+  private collection = 'activities';
+  private firestore = inject(Firestore);
+
+  constructor() {
+    // Initialize real-time listener with empty parameters
+    this.getActivitiesOnRealtime('', '', (activities: ActivityModel[]) => {
+      this.activitiesOnCache.set(activities);
+    });
+  }
+
+  ngOnInit(): void {
+    // Already initialized in constructor
+  }
+
+  fetchActivityOnCache(activityKey: string): ActivityModel | undefined {
+    return this.activitiesOnCache().find(activity => activity.key === activityKey);
+  }
+
+  fetchActivities(teachersKey: string, classKey: string): Promise<ActivityModel[]> {
+    try {
+      const collectionRef = collection(this.firestore, this.collection);
+      let q = query(collectionRef);
+      q = query(q, where('teachersKey', '==', teachersKey));
+      q = query(q, where('classKey', '==', classKey));
+      return getDocs(q).then(snapshot => {
+        return snapshot.docs.map(docSnap => {
+          const activity = new ActivityModel();
+          activity.build(docSnap.data());
+          activity.setKey(docSnap.id);
+          return activity;
+        });
+      });
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+      throw error;
+    }
+  }
+
+  async addActivity(activity: ActivityModel): Promise<DocumentReference<DocumentData>> {
+    const collectionRef = collection(this.firestore, this.collection);
+    return addDoc(collectionRef, activity.serialize());
+  }
+
+  async updateActivity(activityKey: string, activity: ActivityModel): Promise<void> {
+    const docRef = doc(this.firestore, this.collection, activityKey);
+    return setDoc(docRef, activity.serialize());
+  }
+
+  async deleteActivity(activityKey: string): Promise<void> {
+    const docRef = doc(this.firestore, this.collection, activityKey);
+    return deleteDoc(docRef);
+  }
+
+  getActivitiesOnRealtime(
+    teachersKey: string,
+    classKey: string,
+    callback: (activities: ActivityModel[]) => void,
+    queries?: QueryCondition[]
+  ) {
+    const collectionRef = collection(this.firestore, this.collection);
+    let q = query(collectionRef, where('teachersKey', '==', teachersKey), where('classKey', '==', classKey));
+    if (queries) {
+      queries.forEach((condition: QueryCondition) => {
+        q = query(q, where(condition.field, condition.operator, condition.value));
+      });
+    }
+    onSnapshot(q, (snapshot) => {
+      const activities: ActivityModel[] = [];
+      snapshot.forEach((docSnap) => {
+        activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
+        });
+        callback(activities);
+      });
+  }     
+}
