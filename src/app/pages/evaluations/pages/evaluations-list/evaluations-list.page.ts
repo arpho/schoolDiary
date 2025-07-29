@@ -9,6 +9,8 @@ import { IonContent, IonHeader, IonTitle, IonToolbar,
   IonFabButton,
   IonIcon,
   IonFabList,
+  IonButtons,
+  IonBackButton,
   ModalController,
   AlertController } from '@ionic/angular/standalone';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
@@ -28,7 +30,6 @@ import { Evaluation2PdfComponent } from '../../components/evaluation2-pdf/evalua
   selector: 'app-evaluations-list',
   templateUrl: './evaluations-list.page.html',
   styleUrls: ['./evaluations-list.page.scss'],
-  standalone: true,
   imports: [
     IonContent,
     IonHeader,
@@ -41,8 +42,10 @@ import { Evaluation2PdfComponent } from '../../components/evaluation2-pdf/evalua
     IonFabButton,
     IonIcon,
     IonFabList,
-    DatePipe
-  ]
+    DatePipe,
+    IonButtons,
+    IonBackButton
+]
 })
 export class EvaluationsListPage implements OnInit {
   async evaluationPdf(valutazione: Evaluation) {
