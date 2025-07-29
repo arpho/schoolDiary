@@ -17,54 +17,52 @@
 <ion-content [fullscreen]="true">
   <ion-list>
     <form [formGroup]="evaluationForm">
-    <ion-item>
-      <ion-label position="floating">Descrizione</ion-label>
-      <ion-input type="text" formControlName="description"></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="floating">Descrizione</ion-label>
+        <ion-input type="text" formControlName="description"></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="floating">Note</ion-label>
-      <ion-textarea rows="3" formControlName="note"></ion-textarea>
-    </ion-item>
+      <ion-item>
+        <ion-label position="floating">Note</ion-label>
+        <ion-textarea rows="3" formControlName="note"></ion-textarea>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="floating">Data Valutazione</ion-label>
-      <ion-datetime formControlName="data" presentation="date"></ion-datetime>
-    </ion-item>
-    <ion-item>
+      <ion-item>
+        <ion-label position="floating">Data Valutazione</ion-label>
+        <ion-datetime formControlName="data" presentation="date"></ion-datetime>
+      </ion-item>
+      <ion-item>
 
-      <ion-label position="floating">Attività</ion-label>
-      <ion-select formControlName="activityKey" placeholder="Seleziona attività">
-        @for(activity of activities(); track $index){
-        <ion-select-option [value]="activity.key">
-          {{activity.title}}
-        </ion-select-option>
+        <ion-label position="floating">Attività</ion-label>
+        <ion-select formControlName="activityKey" placeholder="Seleziona attività">
+          @for(activity of activities(); track $index){
+          <ion-select-option [value]="activity.key">
+            {{activity.title}}
+          </ion-select-option>
+        }
+        </ion-select>
+        @if(activities().length == 0){
+        <ion-button (click)="openActivityDialog()">Aggiungi attività</ion-button>
+        }
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Griglia</ion-label>
+        <ion-select formControlName="grid" placeholder="Seleziona griglia">
+          @for(grid of griglie(); track $index){
+          <ion-select-option [value]="grid.key">
+            {{grid.nome}}
+          </ion-select-option>
+        }
+        </ion-select>
+      </ion-item>
+
+      @if(grid() !== null && grid().key !== null){
+        <app-evaluate-grid [grid]="grid()"></app-evaluate-grid>
       }
-      </ion-select>
-      @if(activities().length == 0){
-      <ion-button (click)="openActivityDialog()">Aggiungi attività</ion-button>
-      }
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="floating">Griglia</ion-label>
-      <ion-select formControlName="grid" placeholder="Seleziona griglia">
-
-        @for(grid of griglie(); track $index){
-        <ion-select-option [value]="grid.key">
-          {{grid.nome}}
-        </ion-select-option>
-      }
-      </ion-select>
-    </ion-item>
-
-    @if(grid() !== null && grid()?.key !== null){
-      <app-evaluate-grid [grid]="grid()!"></app-evaluate-grid>
-    }
-    <ion-button expand="block" (click)="saveEvaluation()" [disabled]="!evaluationForm.valid">
-
-      Salva Valutazione
-    </ion-button>
+      <ion-button expand="block" (click)="saveEvaluation()" [disabled]="!evaluationForm.valid">
+        Salva Valutazione
+      </ion-button>
     </form>
   </ion-list>
 </ion-content>

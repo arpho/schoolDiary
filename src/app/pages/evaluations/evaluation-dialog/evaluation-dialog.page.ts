@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild, ElementRef, input } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule,
   ReactiveFormsModule,
@@ -107,6 +107,57 @@ this.activitiesService.addActivity(activity()).then((res: any) => {
 close() {
 this.modalCtrl.dismiss();
 }
+
+async saveEvaluation() {
+    if (this.evaluationForm.valid) {
+      const evaluationData = this.evaluationForm.value;
+      try {
+        const evaluation = new Evaluation(evaluationData);
+        const loggedUser = await this.$users.getLoggedUser();
+        if (loggedUser) {
+          evaluation.teacherKey = loggedUser.key;
+        }
+
+        // Get values from route parameters
+        console.log("studentKey from route params", this.studentKey);
+        console.log("classKey from route params", this.classKey);
+
+        evaluation.studentKey = evaluation.studentKey || this.studentKey;
+        evaluation.classKey = evaluation.classKey || this.classKey;
+        if (this.grid()) {
+          evaluation.grid = this.grid()!;
+          evaluation.gridsKey = this.grid()!.key;
+          if (this.evaluateGridComponent) {
+            evaluation.grid.indicatori = this.evaluateGridComponent.grid.indicatori;
+          }
+        }
+
+        console.log("evaluation", evaluation);
+        console.log("evaluation serialzed", evaluation.serialize());
+
+        if (this.evaluationKey) {
+          await this.evaluationService.updateEvaluation(this.evaluationKey, evaluation);
+        } else {
+          await this.evaluationService.addEvaluation(evaluation);
+        }
+
+        console.log('Saving evaluation:', evaluationData);
+        this.toaster.showToast({
+          message: 'Valutazione salvata con successo',
+          duration: 3000,
+          position: 'bottom'
+        });
+        this.modalCtrl.dismiss();
+      } catch (error) {
+        console.error('Error saving evaluation:', error);
+        this.toaster.showToast({
+          message: 'Errore nel salvataggio della valutazione',
+          duration: 3000,
+          position: 'bottom'
+        });
+      }
+    }
+  }
 printEvaluation() {
 console.log("printEvaluation");
 }
@@ -124,6 +175,7 @@ console.log("printEvaluation");
   grid = signal<Grids>(new Grids());
   evaluationKey: string | null = null;
   griglie = signal<Grids[]>([]);
+  modalCtrl = inject(ModalController);
 
   constructor(
     private route: ActivatedRoute,
@@ -133,10 +185,11 @@ console.log("printEvaluation");
     private $users: UsersService,
     private gridsService: GridsService,
     private evaluationService: EvaluationService,
-    private modalCtrl: ModalController,
     private classiService: ClassiService,
     
-  ) { }
+  ) { 
+    const modalCtrl = inject(ModalController);
+  }
 
   async ngOnInit() {
     // Initialize form controls with URL parameters
@@ -223,54 +276,4 @@ const user = await this.$users.getLoggedUser();
 
   }
 
-  async saveEvaluation() {
-    if (this.evaluationForm.valid) {
-      const evaluationData = this.evaluationForm.value;
-    try {
-      const evaluation = new Evaluation(evaluationData);
-      const loggedUser = await this.$users.getLoggedUser();
-      if(loggedUser){
-        evaluation.teacherKey = loggedUser.key;
-      }
-
-      // Get values from route parameters
-
-
-      console.log("studentKey from route params", this.studentKey);
-      console.log("classKey from route params", this.classKey);
-
-      evaluation.studentKey = evaluation.studentKey || this.studentKey;
-      evaluation.classKey = evaluation.classKey || this.classKey;
-      if(this.grid()){
-        evaluation.grid = this.grid()!;
-        evaluation.gridsKey = this.grid()!.key;
-        if (this.evaluateGridComponent) {
-          evaluation.grid.indicatori = this.evaluateGridComponent.grid.indicatori;
-        }
-      }
-
-      console.log("evaluation",evaluation);
-      console.log("evaluation serialzed",evaluation.serialize());
-         
-        if(this.evaluationKey){
-          this.evaluationService.updateEvaluation(this.evaluationKey, evaluation);
-        }else{
-          this.evaluationService.addEvaluation(evaluation);
-        } 
-        console.log('Saving evaluation:', evaluationData);
-        this.toaster.showToast({
-          message: 'Valutazione salvata con successo',
-          duration: 3000,
-          position: 'bottom'
-        }); 
-      } catch (error) {
-        console.error('Error saving evaluation:', error);
-        this.toaster.showToast({
-          message: 'Errore nel salvataggio della valutazione',
-          duration: 3000,
-          position: 'bottom'
-        });
-      }
-    }
-  }
 }

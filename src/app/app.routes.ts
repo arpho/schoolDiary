@@ -72,6 +72,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then( m => m.EvaluationDialogPage)
   },
   {
+    path: 'evaluation',
+    loadComponent: () => import('./pages/evaluations/evaluation/evaluation.page').then( m => m.EvaluationPage)
+  },
+  {
     path: 'evaluations-list',
     loadComponent: () => import("./pages/evaluations/pages/evaluations-list/evaluations-list.page").then( m => m.EvaluationsListPage)
   },
