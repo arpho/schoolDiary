@@ -150,10 +150,12 @@ const user = await this.$users.getLoggedUser();
 
     this.evaluationSignal.set(new Evaluation(this.evaluation))
     if(user){
+      console.log(" teacherKey*", user.key)
       this.activitiesService.getActivitiesOnRealtime( user.key, (activities: ActivityModel[]) => {
+        console.log("activities*", activities);
         this.activities.set(activities);
       },
-    [new QueryCondition('classKey', '==', this.evaluationSignal().classKey)]);
+    [new QueryCondition('classKey', '==', this.classKey)]);
     }
     console.log("init evaluation-dialog");
     console.log("evaluation",this.evaluationSignal())
