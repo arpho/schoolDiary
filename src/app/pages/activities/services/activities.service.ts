@@ -97,7 +97,7 @@ export class ActivitiesService {
     console.log("teachersKey", teachersKey);
     console.log("queries", queries);
     const collectionRef = collection(this.firestore, this.collection);
-    let q = query(collectionRef, where('teachersKey', '==', teachersKey));
+    let q = query(collectionRef, where('teacherKey', '==', teachersKey));
     if (queries) {
       queries.forEach((condition: QueryCondition) => {
         console.log("condition", condition);
@@ -105,7 +105,7 @@ export class ActivitiesService {
       });
     }
       const activities: ActivityModel[] = [];
-    onSnapshot(collectionRef, (snapshot) => {
+    onSnapshot(q, (snapshot) => {
       console.log("snapshot", snapshot);
       console.log("snapshot.docs", snapshot.docs);
       snapshot.forEach((docSnap) => {

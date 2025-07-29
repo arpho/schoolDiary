@@ -114,9 +114,10 @@ this.activitiesService.addActivity(activity());
         this.activitiesService.getActivitiesOnRealtime(
           user.key,
           (activities: ActivityModel[]) => {
+            console.log("activities", activities);
             this.activitiesList.set(activities);
           },
- /*          [new QueryCondition('classKey', 'in', classKeys)] */
+           [new QueryCondition('classKey', 'in', classKeys)] 
         );
       }
     });
