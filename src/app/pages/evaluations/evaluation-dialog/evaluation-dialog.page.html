@@ -9,6 +9,8 @@
     }
     </ion-buttons>
     <ion-title align="center">{{title()}}</ion-title>
+
+
   </ion-toolbar>
 </ion-header>
 
@@ -28,6 +30,20 @@
     <ion-item>
       <ion-label position="floating">Data Valutazione</ion-label>
       <ion-datetime formControlName="data" presentation="date"></ion-datetime>
+    </ion-item>
+    <ion-item>
+
+      <ion-label position="floating">Attività</ion-label>
+      <ion-select formControlName="activityKey" placeholder="Seleziona attività">
+        @for(activity of activities(); track $index){
+        <ion-select-option [value]="activity.key">
+          {{activity.title}}
+        </ion-select-option>
+      }
+      </ion-select>
+      @if(activities().length == 0){
+      <ion-button (click)="openActivityDialog()">Aggiungi attività</ion-button>
+      }
     </ion-item>
 
     <ion-item>

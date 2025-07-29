@@ -11,7 +11,7 @@ import {
   getDoc,
   onSnapshot
 } from '@angular/fire/firestore';
-import { Evaluation } from '../../../../shared/models/evaluation';
+import { Evaluation } from '../../models/evaluation';
 
 @Injectable({
   providedIn: 'root'

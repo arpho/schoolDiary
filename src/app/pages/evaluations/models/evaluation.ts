@@ -1,4 +1,4 @@
-import { Grids } from './grids';
+import { Grids } from '../../../shared/models/grids';
 
 export class Evaluation {
   key: string = '';
@@ -10,6 +10,7 @@ export class Evaluation {
   classKey: string = '';
   studentKey: string = '';
   teacherKey: string = '';
+  activityKey: string = '';
 
   constructor(args?: any) {
     this.build(args);
@@ -44,7 +45,8 @@ export class Evaluation {
       grid: this.grid.serialize(),
       classKey: this.classKey,
       studentKey: this.studentKey,
-      teacherKey: this.teacherKey
+      teacherKey: this.teacherKey,
+      activityKey: this.activityKey
     };
   }
 }

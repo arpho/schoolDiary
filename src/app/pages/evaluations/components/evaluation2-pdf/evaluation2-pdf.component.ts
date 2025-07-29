@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation, input, OnInit, signal, inject, computed } from '@angular/core';
-import { Evaluation } from 'src/app/shared/models/evaluation';
+import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { IonGrid, IonRow, IonCol, IonButton, IonFabButton, IonFab, IonFabList, IonIcon, IonHeader, IonContent, IonToolbar, IonTitle } from "@ionic/angular/standalone";
 import { UserWieverComponent } from "src/app/shared/components/user-wiever/user-wiever.component";
 import { ClassViewerComponent } from "src/app/shared/components/class-wiever/class-wiever.component";
@@ -91,8 +91,8 @@ this.hideButtons.set(false);
   evaluation=input<Evaluation>();
   evaluationData=signal<Evaluation>(new Evaluation());
  votazione= computed(() => {
-const max =  this.evaluationData().grid?.indicatori.reduce((acc, indicatore) => Number(acc) + Number(indicatore.valore), 0);
-const voto = this.evaluationData().grid?.indicatori.reduce((acc, indicatore) => Number(acc) + Number(indicatore.voto), 0);
+const max =  this.evaluationData().grid?.indicatori.reduce((acc: any, indicatore: { valore: any; }) => Number(acc) + Number(indicatore.valore), 0);
+const voto = this.evaluationData().grid?.indicatori.reduce((acc: any, indicatore: { voto: any; }) => Number(acc) + Number(indicatore.voto), 0);
   return `${voto}/${max}`
  })
 

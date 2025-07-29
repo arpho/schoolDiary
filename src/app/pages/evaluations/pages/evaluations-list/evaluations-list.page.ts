@@ -14,7 +14,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar,
   ModalController,
   AlertController } from '@ionic/angular/standalone';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
-import { Evaluation } from '../../../../shared/models/evaluation';
+import { Evaluation } from '../../models/evaluation';
 import { addIcons } from 'ionicons';
 import {
    create,

@@ -29,9 +29,10 @@ describe('Evaluation', () => {
       note: 'A',
       data: '2025-07-21',
       grid: testGrid,
-      classeKey: 'class-1',
+      classKey: 'class-1',
       studentKey: 'student-1',
-      teacherKey: 'teacher-1'
+      teacherKey: 'teacher-1',
+      activityKey: 'activity-1'
     };
 
     evaluation.build(args);
@@ -40,9 +41,10 @@ describe('Evaluation', () => {
     expect(evaluation.note).toBe(args.note);
     expect(evaluation.data).toBe(args.data);
     expect(evaluation.grid).toBe(args.grid);
-    expect(evaluation.classKey).toBe(args.classeKey);
+    expect(evaluation.classKey).toBe(args.classKey);
     expect(evaluation.studentKey).toBe(args.studentKey);
     expect(evaluation.teacherKey).toBe(args.teacherKey);
+    expect(evaluation.activityKey).toBe(args.activityKey);
   });
 
   it('should serialize correctly', () => {
@@ -67,7 +69,8 @@ describe('Evaluation', () => {
       grid: args.grid.key,
       classKey: args.classKey,
       studentKey: args.studentKey,
-      teacherKey: args.teacherKey
+      teacherKey: args.teacherKey,
+      activityKey: args.activityKey
     });
   });
 
