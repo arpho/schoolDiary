@@ -23,6 +23,7 @@ import {
 } from '@angular/fire/firestore';
 import { ActivityModel } from '../models/activityModel';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
+import { UsersService } from 'src/app/shared/services/users.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,17 +32,23 @@ export class ActivitiesService {
   private activitiesOnCache = signal<ActivityModel[]>([]);
   private collection = 'activities';
   private firestore = inject(Firestore);
+  private $users = inject(UsersService);
 
   constructor() {
     // Initialize real-time listener with empty parameters
-    this.getActivitiesOnRealtime('', '', (activities: ActivityModel[]) => {
+    this.getActivitiesOnRealtime('', (activities: ActivityModel[]) => {
       this.activitiesOnCache.set(activities);
     });
   }
 
-  ngOnInit(): void {
-    // Already initialized in constructor
+  async ngOnInit(): Promise<void> {
+  const user = await this.$users.getLoggedUser();
+  if (user) {
+    this.getActivitiesOnRealtime(user.key, (activities: ActivityModel[]) => {
+      this.activitiesOnCache.set(activities);
+    });
   }
+}
 
   fetchActivityOnCache(activityKey: string): ActivityModel | undefined {
     return this.activitiesOnCache().find(activity => activity.key === activityKey);
@@ -84,20 +91,25 @@ export class ActivitiesService {
 
   getActivitiesOnRealtime(
     teachersKey: string,
-    classKey: string,
     callback: (activities: ActivityModel[]) => void,
     queries?: QueryCondition[]
   ) {
+    console.log("teachersKey", teachersKey);
+    console.log("queries", queries);
     const collectionRef = collection(this.firestore, this.collection);
-    let q = query(collectionRef, where('teachersKey', '==', teachersKey), where('classKey', '==', classKey));
+    let q = query(collectionRef, where('teachersKey', '==', teachersKey));
     if (queries) {
       queries.forEach((condition: QueryCondition) => {
+        console.log("condition", condition);
         q = query(q, where(condition.field, condition.operator, condition.value));
       });
     }
-    onSnapshot(q, (snapshot) => {
       const activities: ActivityModel[] = [];
+    onSnapshot(collectionRef, (snapshot) => {
+      console.log("snapshot", snapshot);
+      console.log("snapshot.docs", snapshot.docs);
       snapshot.forEach((docSnap) => {
+        console.log("docSnap", docSnap);
         activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
         });
         callback(activities);

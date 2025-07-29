@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { ClassiService } from './pages/classes/services/classi.service';
 import { UsersService } from './shared/services/users.service';
+import { ActivitiesService } from './pages/activities/services/activities.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -13,7 +14,8 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private classiService: ClassiService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private activitiesService: ActivitiesService
   ) {}
 
   ngOnInit() {

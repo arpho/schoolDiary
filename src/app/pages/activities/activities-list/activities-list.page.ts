@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject, effect } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonFab, IonFabButton, IonFabList, IonBackButton, IonCardSubtitle, IonButton, AlertInput } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonFab, IonFabButton, IonFabList, IonBackButton, IonButtons, IonCardSubtitle, IonButton, AlertInput } from '@ionic/angular/standalone';
 import { ActivityModel } from '../models/activityModel';
 import { UsersService } from '../../../shared/services/users.service';
 import { UserModel } from '../../../shared/models/userModel';
@@ -9,6 +9,7 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ModalController } from '@ionic/angular';
 import { ActivityDialogComponent } from '../components/activityDialog/activity-dialog/activity-dialog.component';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -32,8 +33,10 @@ import { ActivityDialogComponent } from '../components/activityDialog/activity-d
     IonFabButton,
     IonFabList,
     IonBackButton,
+    IonButtons,
     IonCardSubtitle,
-    IonButton
+    IonButton,
+    DatePipe
 ]
 })
 export class ActivitiesListPage implements OnInit {
@@ -105,20 +108,16 @@ this.activitiesService.addActivity(activity());
       this.loggedUser.set(user);
       if (user?.classes) {
         // Get activities for all classes the user is in
-        const classKeys = user.classesKey as string[];
-        if (Array.isArray(classKeys)) {
-          classKeys.forEach(classKey => {
-            this.activitiesService.getActivitiesOnRealtime(
-              '', // teachersKey - leave empty since we want all teachers
-              classKey,
-              (activities: ActivityModel[]) => {
-                // Update the activities list
-                this.activitiesList.set(activities);
-              },
-              [new QueryCondition('classKey', 'in', classKey)]
-            );
-          });
-        }
+        const classKeys = user.classesKey;
+        console.log("classKeys", classKeys);
+
+        this.activitiesService.getActivitiesOnRealtime(
+          user.key,
+          (activities: ActivityModel[]) => {
+            this.activitiesList.set(activities);
+          },
+ /*          [new QueryCondition('classKey', 'in', classKeys)] */
+        );
       }
     });
   }
