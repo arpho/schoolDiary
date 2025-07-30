@@ -31,7 +31,6 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { Grids } from 'src/app/shared/models/grids';
 import { Evaluation } from '../models/evaluation';
 import { EvaluationService } from '../services/evaluation/evaluation.service';
-import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/evaluate-grid.component';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { ActivitiesService } from '../../activities/services/activities.service';
 import { ActivityModel } from '../../activities/models/activityModel';
@@ -39,6 +38,7 @@ import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { ClasseModel } from '../../classes/models/classModel';
 import { ClassiService } from '../../classes/services/classi.service';
 import { ActivityDialogComponent } from '../../activities/components/activityDialog/activity-dialog/activity-dialog.component';
+import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/evaluate-grid.component';
 
 @Component({
   selector: 'app-evaluation',
@@ -65,11 +65,20 @@ import { ActivityDialogComponent } from '../../activities/components/activityDia
     IonTextarea,
     EvaluateGridComponent,
     IonIcon,
+    
   ]
 })
 export class EvaluationPage implements OnInit {
   activities = signal<ActivityModel[]>([]);
-  evaluationForm!: FormGroup;
+  evaluationform: FormGroup = new FormGroup({
+    description: new FormControl(''),
+    note: new FormControl(''),
+    data: new FormControl(new Date().toISOString()),
+    grid: new FormControl(''),
+    activityKey: new FormControl(''),
+    classKey: new FormControl(""),
+    studentKey: new FormControl("")
+  });
   title = signal('');
   classKey: string = '';
   studentKey: string = '';
@@ -93,9 +102,14 @@ export class EvaluationPage implements OnInit {
 
   async ngOnInit() {
     // Initialize form controls with URL parameters
-    this.classKey = this.route.snapshot.queryParams['classKey'] || '';
-    this.studentKey = this.route.snapshot.queryParams['studentKey'] || '';
+    const routeParams = this.route.snapshot.params;
+    this.classKey = routeParams['classKey'] || '';
+    this.studentKey = routeParams['studentKey'] || '';
+
+    console.log("classKey", this.classKey);
+    console.log("studentKey", this.studentKey);
     const user = await this.$users.getLoggedUser();
+
 
     if (user) {
       this.activitiesService.getActivitiesOnRealtime(
@@ -107,7 +121,7 @@ export class EvaluationPage implements OnInit {
       );
     }
 
-    this.evaluationForm = this.fb.group({
+    this.evaluationform = this.fb.group({
       description: [''],
       note: [''],
       data: [new Date().toISOString()],
@@ -116,6 +130,19 @@ export class EvaluationPage implements OnInit {
       classKey: [this.classKey],
       studentKey: [this.studentKey]
     });
+   
+    if(this.evaluationform)
+      {
+        this.evaluationform.valueChanges.subscribe((value) => {
+          console.log("value", value);
+          if(value.grid){
+            const grid = this.griglie().find((grid) => grid.key === value.grid);
+            if( grid &&grid.key!=this.grid().key){
+              this.grid.set(grid);
+            }
+          }
+        });
+      }
 
     this.gridsService.getGridsOnRealtime((grids: Grids[]) => {
       this.griglie.set(grids);
@@ -127,8 +154,8 @@ export class EvaluationPage implements OnInit {
   }
 
   async saveEvaluation() {
-    if (this.evaluationForm.valid) {
-      const evaluationData = this.evaluationForm.value;
+    if (this.evaluationform.valid) {
+      const evaluationData = this.evaluationform.value;
       try {
         const evaluation = new Evaluation(evaluationData);
         const loggedUser = await this.$users.getLoggedUser();
@@ -189,7 +216,7 @@ export class EvaluationPage implements OnInit {
     const result = await modal.onDidDismiss();
     if (result.data) {
       await this.activitiesService.addActivity(activity());
-      this.evaluationForm.patchValue({
+      this.evaluationform.patchValue({
         activityKey: result.data.key
       });
     }

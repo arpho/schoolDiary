@@ -47,9 +47,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class ListStudent4classComponent  implements OnInit {
 newEvaluation(studentKey: string) {
-  this.router.navigate(['/evaluation'], {
-    queryParams: { studentKey: studentKey, classKey: this.classkey }
-  });
+  this.router.navigate(['/evaluation',studentKey,this.classkey]);
 }
 
   constructor(

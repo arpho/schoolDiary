@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild, ElementRef, input, inject } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule,
   ReactiveFormsModule,
@@ -95,7 +95,7 @@ const activity = signal<ActivityModel>(new ActivityModel({teacherKey: user?.key,
 console.log("dismissed activity", result.data);
 this.activitiesService.addActivity(activity()).then((res: any) => {
   console.log("activity added", res);
-  this.evaluationForm.patchValue({
+  this.evaluationform.patchValue({
     activityKey: res.key
   })
 })  .catch((error: any) => {
@@ -109,8 +109,8 @@ this.modalCtrl.dismiss();
 }
 
 async saveEvaluation() {
-    if (this.evaluationForm.valid) {
-      const evaluationData = this.evaluationForm.value;
+    if (this.evaluationform.valid) {
+      const evaluationData = this.evaluationform.value;
       try {
         const evaluation = new Evaluation(evaluationData);
         const loggedUser = await this.$users.getLoggedUser();
@@ -128,7 +128,7 @@ async saveEvaluation() {
           evaluation.grid = this.grid()!;
           evaluation.gridsKey = this.grid()!.key;
           if (this.evaluateGridComponent) {
-            evaluation.grid.indicatori = this.evaluateGridComponent.grid.indicatori;
+            evaluation.grid.indicatori = this.evaluateGridComponent.grid().indicatori;
           }
         }
 
@@ -166,13 +166,13 @@ console.log("printEvaluation");
   evaluation = input<Evaluation>(new Evaluation());
   evaluationSignal = signal<Evaluation>(new Evaluation());
   activities = signal<ActivityModel[]>([]);
-  evaluationForm!: FormGroup;
+  evaluationform!: FormGroup;
   title=signal('');
   valutazione: Evaluation | null = null;
   classKey: string = '';
   studentKey: string = '';
   activityKey: string = '';
-  grid = signal<Grids>(new Grids());
+  grid = model<Grids>(new Grids());
   evaluationKey: string | null = null;
   griglie = signal<Grids[]>([]);
   modalCtrl = inject(ModalController);
@@ -212,7 +212,7 @@ const user = await this.$users.getLoggedUser();
     }
     console.log("init evaluation-dialog");
     console.log("evaluation",this.evaluationSignal())
-    this.evaluationForm = new FormGroup({
+    this.evaluationform = new FormGroup({
       description: new FormControl(''),
       note: new FormControl(''),
       data: new FormControl(new Date().toISOString()),
@@ -227,7 +227,7 @@ const user = await this.$users.getLoggedUser();
       this.classKey = this.evaluationSignal().classKey;
       this.studentKey = this.evaluationSignal().studentKey;
       this.activityKey = this.evaluationSignal().activityKey;
-      this.evaluationForm.patchValue({
+      this.evaluationform.patchValue({
         description: this.evaluationSignal().description,
         note: this.evaluationSignal().note,
         data: this.evaluationSignal().data,
@@ -242,7 +242,7 @@ const user = await this.$users.getLoggedUser();
     }
 
   
-    this.evaluationForm.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
+    this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
       if (gridKey) {
         const grid = this.griglie().find((g: Grids) => g.key === gridKey);
         console.log("Selected grid", gridKey);
@@ -260,7 +260,7 @@ const user = await this.$users.getLoggedUser();
       this.title.set("rivedi valutazione");
       this.evaluationService.fetchEvaluation(this.evaluationKey).then((evaluation: Evaluation) => {
         this.valutazione = evaluation;
-        this.evaluationForm.patchValue({
+        this.evaluationform.patchValue({
           description: evaluation.description,
           note: evaluation.note,
           data: evaluation.data,

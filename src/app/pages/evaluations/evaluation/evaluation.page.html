@@ -11,25 +11,25 @@
 
 <ion-content fullscreen="true">
   <ion-list>
-    <form formgroup="evaluationForm" (ngsubmit)="saveEvaluation()">
+    <form [formGroup]="evaluationform" (ngSubmit)="saveEvaluation()">
       <ion-item>
         <ion-label position="floating">Descrizione</ion-label>
-        <ion-input type="text" formcontrolname="description"></ion-input>
+        <ion-input type="text" formControlName="description"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Note</ion-label>
-        <ion-textarea rows="3" formcontrolname="note"></ion-textarea>
+        <ion-textarea rows="3" formControlName="note"></ion-textarea>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Data Valutazione</ion-label>
-        <ion-datetime formcontrolname="data" presentation="date"></ion-datetime>
+        <ion-datetime formControlName="data" presentation="date"></ion-datetime>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Attività</ion-label>
-        <ion-select formcontrolname="activityKey" placeholder="Seleziona attività">
+        <ion-select formControlName="activityKey" placeholder="Seleziona attività">
           @for(activity of activities(); track $index) {
             <ion-select-option [value]="activity.key">
               {{activity.title}}
@@ -43,7 +43,7 @@
 
       <ion-item>
         <ion-label position="floating">Griglia</ion-label>
-        <ion-select formcontrolname="grid" placeholder="Seleziona griglia">
+        <ion-select formControlName="grid" placeholder="Seleziona griglia">
           @for(grid of griglie(); track $index) {
             <ion-select-option [value]="grid.key">
               {{grid.nome}}
@@ -51,12 +51,8 @@
           }
         </ion-select>
       </ion-item>
-
-      @if(grid() !== null && grid().key !== null) {
         <app-evaluate-grid [grid]="grid()!"></app-evaluate-grid>
-      }
-
-      <ion-button type="submit" expand="block" [disabled]="!evaluationForm.valid">
+      <ion-button type="submit" expand="block" [disabled]="!evaluationform.valid">
         Salva Valutazione
       </ion-button>
     </form>
