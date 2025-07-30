@@ -166,7 +166,15 @@ console.log("printEvaluation");
   evaluation = input<Evaluation>(new Evaluation());
   evaluationSignal = signal<Evaluation>(new Evaluation());
   activities = signal<ActivityModel[]>([]);
-  evaluationform!: FormGroup;
+  evaluationform: FormGroup = new FormGroup({
+    description: new FormControl(''),
+    note: new FormControl(''),
+    data: new FormControl(new Date().toISOString()),
+    grid: new FormControl(''),
+    activityKey: new FormControl(''),
+    classKey: new FormControl(''),
+    studentKey: new FormControl('')
+  });
   title=signal('');
   valutazione: Evaluation | null = null;
   classKey: string = '';
@@ -240,14 +248,16 @@ const user = await this.$users.getLoggedUser();
 
   
     }
+    this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
+      if (activityKey) {
+        const activity = this.activities().find((a: ActivityModel) => a.key === activityKey);
+        console.log("Selected   activity", activityKey);
+        if (activity) {
 
-  
-    this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
-      if (gridKey) {
-        const grid = this.griglie().find((g: Grids) => g.key === gridKey);
-        console.log("Selected grid", gridKey);
-        if (grid) {
-          this.grid.set(grid);
+          this.evaluationform.patchValue({
+            title: activity.title,
+            activityKey: activityKey,
+          });
         }
       }
     });

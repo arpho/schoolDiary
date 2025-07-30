@@ -139,12 +139,32 @@ export class EvaluationPage implements OnInit {
    
     if(this.evaluationform)
       {
-        this.evaluationform.valueChanges.subscribe((value) => {
+      this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
+        if (gridKey) {
+          const grid = this.griglie().find((grid) => grid.key === gridKey);
+          if (grid) {
+            this.grid.set(grid);
+          }
+        }
+      });
+    /*     this.evaluationform.valueChanges.subscribe((value) => {
           console.log("value", value);
+   
           if(value.grid){
             const grid = this.griglie().find((grid) => grid.key === value.grid);
             if( grid &&grid.key!=this.grid().key){
               this.grid.set(grid);
+            }
+          }
+        }); */
+        this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
+          if (activityKey) {
+            const activity = this.activities().find((a: ActivityModel) => a.key === activityKey);
+            console.log("Selected   activity", activityKey);
+            if (activity) {
+            this.evaluationform.patchValue({
+              description: activity.title
+            });
             }
           }
         });
