@@ -37,6 +37,7 @@ export class EvaluationService {
   }
 
   getEvaluationsOnRealtime(callback: (evaluations: Evaluation[]) => void) {
+    console.log("getEvaluationsOnRealtime")
     const collectionRef = collection(this.firestore, this.collection);
     return onSnapshot(collectionRef, (snapshot) => {
       const evaluations: Evaluation[] = [];

@@ -44,6 +44,8 @@ import { ClasseModel } from '../../classes/models/classModel';
 import { ClassiService } from '../../classes/services/classi.service';
 import { ActivityDialogComponent } from '../../activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/evaluate-grid.component';
+import { filter } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
 
 @Component({
   selector: 'app-evaluation',
@@ -75,6 +77,9 @@ import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/
   ]
 })
 export class EvaluationPage implements OnInit {
+openFilterPopup() {
+console.log("openFilterPopup");
+}
   activities = signal<ActivityModel[]>([]);
   evaluationform: FormGroup = new FormGroup({
     description: new FormControl(''),
@@ -104,7 +109,11 @@ export class EvaluationPage implements OnInit {
     private evaluationService: EvaluationService,
     private classiService: ClassiService,
     private modalCtrl: ModalController
-  ) { }
+  ) { 
+    addIcons({
+      filter
+    });
+  }
 
   async ngOnInit() {
     // Initialize form controls with URL parameters

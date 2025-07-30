@@ -2,6 +2,14 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button default-href="/dashboard" text="Dashboard"></ion-back-button>
+      <ion-item>
+      <ion-button size="small" shape="round" (click)="openFilterPopup($event)">
+        <ion-icon name="filter"></ion-icon>
+      </ion-button>
+      @if(badgefilter() > 0){
+      <ion-badge>{{badgefilter()}}</ion-badge>
+      }
+      </ion-item>
     </ion-buttons>
     <ion-title align="center">Valutazioni</ion-title>
   </ion-toolbar>
@@ -9,7 +17,7 @@
 
 <ion-content [fullscreen]="true">
   <ion-list>
-    @for(evaluation of evaluationsList; track $index){
+    @for(evaluation of evaluationsList(); track $index){
     <ion-item>
       <ion-label>
         <h2>{{ evaluation.description }}</h2>

@@ -50,6 +50,7 @@ import {
 } from 'ionicons';
 import {
   addCircle,
+  filter,
   add,
   push,
   addCircleOutline,

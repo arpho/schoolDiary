@@ -2,8 +2,10 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button [defaultHref]="'/evaluations'" text="Indietro"></ion-back-button>
+      <ion-button size="small" shape="round" (click)="openFilterPopup()"><ion-icon name="filter"></ion-icon></ion-button>
     </ion-buttons>
     <ion-title align="center">{{title()}}</ion-title>
+
   </ion-toolbar>
 </ion-header>
 

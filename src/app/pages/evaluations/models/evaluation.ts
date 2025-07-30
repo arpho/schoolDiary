@@ -46,7 +46,8 @@ export class Evaluation {
       classKey: this.classKey,
       studentKey: this.studentKey,
       teacherKey: this.teacherKey,
-      activityKey: this.activityKey
+      activityKey: this.activityKey,
+      fullText: `${this.description} ${this.note}`  // per la ricerca fulltext
     };
   }
 }
