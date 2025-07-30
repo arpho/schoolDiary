@@ -19,6 +19,7 @@ import { UserModel } from '../models/userModel';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { ClassiService } from '../../../app/pages/classes/services/classi.service';  
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { QueryCondition } from '../models/queryCondition';
 interface ClaimsResponse {
   message?: string;
   data?: {
@@ -77,9 +78,9 @@ export class UsersService  implements OnInit{
   }
 
   usersOnCache=signal<UserModel[]>([]);
-  getUsersByClass(classKey: string, callback: (users: UserModel[]) => void) {
+  getUsersByClass(classKey: string, callback: (users: UserModel[]) => void, queryConditions?: QueryCondition[]) {
     const collectionRef = collection(this.firestore, this.collection);
-    const queryRef = query(collectionRef, where('classKey', '==', classKey));
+    const queryRef = query(collectionRef, where('classKey', '==', classKey), ...queryConditions?.map((condition) => condition.toWhere()) || []);
     return onSnapshot(queryRef, (snapshot) => {
       const users: UserModel[] = [];
       snapshot.forEach((doc) => {

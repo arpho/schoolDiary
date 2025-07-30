@@ -36,6 +36,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ActivityModel } from "../../../activities/models/activityModel";
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
+import { UsersRole } from 'src/app/shared/models/usersRole';
 @Component({
   selector: 'app-evaluations-list',
   templateUrl: './evaluations-list.page.html',
@@ -88,12 +89,17 @@ export class EvaluationsListPage implements OnInit {
         const classKey = this.filterSignal().filter((condition: QueryCondition) => condition.field === 'classKey')[0].value;
         const queryConditions: QueryCondition[] = [new QueryCondition('classKey', '==', classKey)];
         const user = this.loggedUser();
-        if (user) {
+        if (user) {// aggiorno le attività per la classe selezionata
           this.$activities.getActivitiesOnRealtime(user.key, (activities: ActivityModel[]) => {
             console.log("activities", activities);
             this.listaAttivita.set(activities);
           }, queryConditions);
         }
+        // aggiorno la lista studenti per classe
+        this.$users.getUsersByClass(classKey, (students: UserModel[]) => {
+          console.log("students", students);
+          this.listaStudenti.set(students);
+        }, [new QueryCondition('role', '==', UsersRole.STUDENT)]);
       }
     })
   }
