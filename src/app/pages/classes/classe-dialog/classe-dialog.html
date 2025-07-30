@@ -21,6 +21,9 @@
         <ion-tab-button tab="annotazioni">
           <ion-label>Annotazioni</ion-label>
         </ion-tab-button>
+        <ion-tab-button tab="attivita">
+          <ion-label>Attività</ion-label>
+        </ion-tab-button>
       </ion-tab-bar>
 
       <ion-tab tab="generalita">
@@ -62,7 +65,7 @@
         <ion-content>
           <ion-card>
             <ion-card-content>
-          <app-list-student4class [classkey]="classKey()"></app-list-student4class>
+          <app-list-student4class [classkey]="classkey()"></app-list-student4class>
             </ion-card-content>
           </ion-card>
         </ion-content>
@@ -73,6 +76,16 @@
           <ion-card>
             <ion-card-content>
             <app-reserved-notes4classes [classe]="classe()"></app-reserved-notes4classes>
+            </ion-card-content>
+          </ion-card>
+        </ion-content>
+      </ion-tab>
+
+      <ion-tab tab="attivita">
+        <ion-content>
+          <ion-card>
+            <ion-card-content>
+            <app-list-activities4class [classkey]="classkey()" [teacherkey]="teacherkey()"></app-list-activities4class>
             </ion-card-content>
           </ion-card>
         </ion-content>

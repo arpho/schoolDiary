@@ -7,6 +7,7 @@ import {
    IonTitle,
    IonToolbar,
    IonBackButton } from '@ionic/angular/standalone';
+import { ListActivities4classComponent } from 'pages/classes/components/listActivities4class/list-activities4class/list-activities4class.component';
 
 @Component({
   selector: 'app-class-dialog',
@@ -20,7 +21,9 @@ import {
     IonToolbar,
     CommonModule,
     FormsModule,
-    IonBackButton]
+    IonBackButton,
+    ListActivities4classComponent
+  ]
 })
 export class ClassDialogPage implements OnInit {
 

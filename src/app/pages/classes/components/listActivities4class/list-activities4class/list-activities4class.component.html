@@ -1,0 +1,13 @@
+<ion-list>
+  @for (activity of activitieslist(); track activity.key) {
+    <ion-item>
+      <ion-label>
+        <h2>{{ activity.title }}</h2>
+        <p>{{ activity.description }}</p>
+        <p class="ion-text-small">
+          {{ activity.date | date }}
+        </p>
+      </ion-label>
+    </ion-item>
+  }
+</ion-list>

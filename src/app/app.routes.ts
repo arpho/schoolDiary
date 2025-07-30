@@ -39,7 +39,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/classes/classes-list/classes-list').then( m => m.ClassesListComponent)
   },
   {
-    path: 'class-dialog/:classeKey',
+    path: 'class-dialog/:classkey',
     loadComponent: () => import('./pages/classes/classe-dialog/classe-dialog').then( m => m.ClasseDialogPage)
   },
   {
