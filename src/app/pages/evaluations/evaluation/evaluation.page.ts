@@ -1,26 +1,31 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder } from '@angular/forms';
-import { FormGroup } from '@angular/forms';
-import { FormControl } from '@angular/forms';
-import { IonButtons } from '@ionic/angular/standalone';
-import { IonContent } from '@ionic/angular/standalone';
-import { IonHeader } from '@ionic/angular/standalone';
-import { IonTitle } from '@ionic/angular/standalone';
-import { IonToolbar } from '@ionic/angular/standalone';
-import { IonItem } from '@ionic/angular/standalone';
-import { IonLabel } from '@ionic/angular/standalone';
-import { IonInput } from '@ionic/angular/standalone';
-import { IonSelect } from '@ionic/angular/standalone';
-import { IonSelectOption } from '@ionic/angular/standalone';
-import { IonDatetime } from '@ionic/angular/standalone';
-import { IonButton } from '@ionic/angular/standalone';
-import { IonList } from '@ionic/angular/standalone';
-import { IonTextarea } from '@ionic/angular/standalone';
-import { IonIcon } from '@ionic/angular/standalone';
-import { ModalController } from '@ionic/angular/standalone';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  FormControl
+} from '@angular/forms';
+import {
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonDatetime,
+  IonButton,
+  IonList,
+  IonTextarea,
+  IonIcon,
+  IonBackButton,
+  ModalController
+} from '@ionic/angular/standalone';
 import { signal } from '@angular/core';
 import { inject } from '@angular/core';
 import { OnInit } from '@angular/core';
@@ -65,6 +70,7 @@ import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/
     IonTextarea,
     EvaluateGridComponent,
     IonIcon,
+    IonBackButton,
     
   ]
 })

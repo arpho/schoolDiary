@@ -34,7 +34,10 @@ console.log("setting",indicatore,$event);
 console.log("valore", $event);
 indicatore.voto = Number($event);
 console.log("indicatore", indicatore);
-const voto = this.grid().indicatori.reduce((acc, indicatore) => Number(acc) + Number(indicatore.voto), 0);
+let voto = this.grid().indicatori.reduce((acc, indicatore) => Number(acc) + Number(indicatore.voto), 0);
+if(Number.isNaN(voto)){
+  voto =  Number($event.detail.value);
+}
 console.log("voto", voto);
 this.voto.set(voto);
 }
@@ -44,7 +47,7 @@ this.voto.set(voto);
   ngOnInit() {
     console.log("grid to show", this.grid);
     this.votoMax = this.grid().indicatori.reduce((acc, indicatore) => Number(acc) + Number(indicatore.valore), 0);
-  }
+    }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['grid']) {
