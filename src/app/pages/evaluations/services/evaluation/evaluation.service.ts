@@ -12,6 +12,7 @@ import {
   onSnapshot
 } from '@angular/fire/firestore';
 import { Evaluation } from '../../models/evaluation';
+import { QueryCondition } from 'src/app/shared/models/queryCondition';
 
 @Injectable({
   providedIn: 'root'
@@ -36,14 +37,18 @@ export class EvaluationService {
     return setDoc(docRef, evaluation.serialize());
   }
 
-  getEvaluationsOnRealtime(callback: (evaluations: Evaluation[]) => void) {
+  getEvaluationsOnRealtime(callback: (evaluations: Evaluation[]) => void, queries?: QueryCondition[]) {
     console.log("getEvaluationsOnRealtime")
-    const collectionRef = collection(this.firestore, this.collection);
-    return onSnapshot(collectionRef, (snapshot) => {
+    
+    const collectionRef = collection(this.firestore, this.collection,);
+    const q = !queries ? collectionRef : query(collectionRef, ...queries.map((queryCondition: QueryCondition) => where(queryCondition.field, queryCondition.operator, queryCondition.value)));
+    console.log("queries*", queries )
+    console.log("q*", q)
+    return onSnapshot(q, (snapshot) => {
       const evaluations: Evaluation[] = [];
       snapshot.forEach((doc) => {
         evaluations.push(new Evaluation(doc.data()).setKey(doc.id));
-      });
+      } );
       callback(evaluations);
     });
   }

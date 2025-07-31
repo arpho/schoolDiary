@@ -85,6 +85,7 @@ export class EvaluationsListPage implements OnInit {
     });
 
     effect(() => {
+      console.log("filterSignal updated* ", this.filterSignal());
       if (this.filterSignal().filter((condition: QueryCondition) => condition.field === 'classKey').length > 0) {
         const classKey = this.filterSignal().filter((condition: QueryCondition) => condition.field === 'classKey')[0].value;
         const queryConditions: QueryCondition[] = [new QueryCondition('classKey', '==', classKey)];
@@ -94,6 +95,10 @@ export class EvaluationsListPage implements OnInit {
             console.log("activities", activities);
             this.listaAttivita.set(activities);
           }, queryConditions);
+          this.$service.getEvaluationsOnRealtime((evaluations: Evaluation[]) => {
+            console.log("evaluations*", evaluations);
+            this.evaluationsList.set(evaluations);
+          },this.filterSignal());
         }
         // aggiorno la lista studenti per classe
         this.$users.getUsersByClass(classKey, (students: UserModel[]) => {
