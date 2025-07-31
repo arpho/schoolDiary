@@ -1,0 +1,23 @@
+.upload-students-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+}
+
+.upload-container {
+  margin-bottom: 16px;
+}
+
+.list-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+ion-list {
+  flex: 1;
+  overflow-y: auto;
+}

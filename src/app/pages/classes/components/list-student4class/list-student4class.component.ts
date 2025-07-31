@@ -15,6 +15,8 @@ import {
   } from 'ionicons/icons';
 import { cloudUploadOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
+import { UploadStudentsComponent } from '../uploadStudents/upload-students/upload-students.component';
 
 @Component({
   selector: 'app-list-student4class',
@@ -37,8 +39,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 ]
 })
 export class ListStudent4classComponent  implements OnInit {
-uploadStudents() {
-throw new Error('Method not implemented.');
+  async uploadStudents() {
+const modal = await this.$modalController.create({
+  component: UploadStudentsComponent,
+  componentProps: {
+    classkey: this.classkey
+  }
+});
+await modal.present();
 }
 newEvaluation(studentKey: string) {
   this.router.navigate(['/evaluation',studentKey,this.classkey]);
@@ -47,6 +55,7 @@ newEvaluation(studentKey: string) {
   constructor(
     private $users: UsersService,
     private router: Router,
+    private $modalController: ModalController,
     private route: ActivatedRoute
   ) {
     addIcons({

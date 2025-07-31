@@ -1,3 +1,26 @@
-<p>
-  upload-students works!
-</p>
+<div class="upload-students-container">
+  <div class="upload-container">
+    <ion-input type="file" (change)="onFileChange($event)" accept=".xlsx, .xls"></ion-input>
+  </div>
+  <div class="list-container">
+    @if (alunni().length > 0) {
+      <ion-list>
+        @for(alunno of alunni(); track $index) {
+          <ion-item>
+            @if(alunno && alunno.firstName && alunno.lastName) {
+            <ion-card (click)="fixName(alunno, $index)">
+              <ion-card-header>
+                <ion-card-title>{{alunno.firstName}} {{alunno.lastName}}</ion-card-title>
+                <ion-card-content>
+                  <h2>{{emailFactory(alunno)}}</h2>
+                  <h3>{{alunno.password}}</h3>
+                </ion-card-content>
+              </ion-card-header>
+            </ion-card>
+            }
+          </ion-item>
+        }
+      </ion-list>
+    }
+  </div>
+</div>
