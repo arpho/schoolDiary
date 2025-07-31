@@ -85,15 +85,18 @@ export class EvaluationsListPage implements OnInit {
     });
 
     effect(() => {
+      console.log("filterSignal updated* ", this.filterSignal());
       if (this.filterSignal().filter((condition: QueryCondition) => condition.field === 'classKey').length > 0) {
         const classKey = this.filterSignal().filter((condition: QueryCondition) => condition.field === 'classKey')[0].value;
         const queryConditions: QueryCondition[] = [new QueryCondition('classKey', '==', classKey)];
         const user = this.loggedUser();
         if (user) {// aggiorno le attività per la classe selezionata
           this.$activities.getActivitiesOnRealtime(user.key, (activities: ActivityModel[]) => {
-            console.log("activities", activities);
             this.listaAttivita.set(activities);
           }, queryConditions);
+          this.$service.getEvaluationsOnRealtime((evaluations: Evaluation[]) => {
+            this.evaluationsList.set(evaluations);
+          },this.filterSignal());
         }
         // aggiorno la lista studenti per classe
         this.$users.getUsersByClass(classKey, (students: UserModel[]) => {
