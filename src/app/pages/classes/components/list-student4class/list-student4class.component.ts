@@ -1,18 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-IonList,
-IonItem,
-IonCard,
-IonCardContent,
-IonCardHeader,
-IonCardTitle,
-IonFab,
-IonFabButton,
-IonFabList,
-IonIcon
-} from '@ionic/angular/standalone';
+import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon, IonButton } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
@@ -22,8 +11,9 @@ import {
    sparkles,
    close,
    trash,
-   eye,
+   eye
   } from 'ionicons/icons';
+import { cloudUploadOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -42,10 +32,14 @@ import { ActivatedRoute, Router } from '@angular/router';
     IonFab,
     IonFabButton,
     IonFabList,
-    IonIcon
-  ]
+    IonIcon,
+    IonButton
+]
 })
 export class ListStudent4classComponent  implements OnInit {
+uploadStudents() {
+throw new Error('Method not implemented.');
+}
 newEvaluation(studentKey: string) {
   this.router.navigate(['/evaluation',studentKey,this.classkey]);
 }
@@ -56,11 +50,7 @@ newEvaluation(studentKey: string) {
     private route: ActivatedRoute
   ) {
     addIcons({
-      ellipsisVertical,
-      create,
-      eye,
-      sparkles,
-      close,
+      cloudupload: cloudUploadOutline
     })
   }
 deleteStudent(arg0: string) {

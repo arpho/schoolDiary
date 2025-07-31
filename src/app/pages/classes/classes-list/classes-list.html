@@ -16,7 +16,7 @@
   </ion-header>
   @if (classiList().length >0) {
     <ion-list>
-        @for (classe of classiList(); track classe.key) {
+        @for (classe of sortedClassiList(); track classe.key) {
             <ion-item >
               <ion-card (click)="clickedClass(classe)">
                 <ion-card-header>

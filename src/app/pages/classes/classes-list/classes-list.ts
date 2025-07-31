@@ -1,7 +1,8 @@
 import {
   Component,
   signal,
-  effect
+  effect,
+  computed
 } from '@angular/core';
 import {
   CommonModule
@@ -73,6 +74,13 @@ import {
 ]
 })
 export class ClassesListComponent {
+  sortedClassiList = computed(() => 
+    [...this.classiList()].sort((a, b) => {
+      const keyA = `${a.classe}${a.year}`;
+      const keyB = `${b.classe}${b.year}`;
+      return keyA.localeCompare(keyB);
+    })
+  );
   async clickedClass(arg0: ClasseModel) {
 console.log("clickedClass", arg0);
 const actionSheet = await this.actionSheetController.create({
