@@ -35,7 +35,7 @@
 
         <ion-label position="floating">Attività</ion-label>
         <ion-select formControlName="activityKey" placeholder="Seleziona attività">
-          @for(activity of activities(); track $index){
+          @for(activity of sortedActivities(); track activity.key){
           <ion-select-option [value]="activity.key">
             {{activity.title}}
           </ion-select-option>
@@ -55,7 +55,7 @@
         </ion-select>
       </ion-item>
 
- 
+
         <app-evaluate-grid [grid]="grid()"></app-evaluate-grid>
 
 

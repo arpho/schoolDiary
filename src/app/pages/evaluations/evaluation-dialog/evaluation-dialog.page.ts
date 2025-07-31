@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule,
   ReactiveFormsModule,
@@ -66,6 +66,13 @@ import { ClassiService } from '../../classes/services/classi.service';
 ]
 })
 export class EvaluationDialogPage implements OnInit {
+  sortedActivities = computed(() => 
+    [...this.activities()].sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateB.getTime() - dateA.getTime();
+    })
+  );
   classesList = signal<ClasseModel[]>([]);
 async openActivityDialog() {
   const user = await this.$users.getLoggedUser()
