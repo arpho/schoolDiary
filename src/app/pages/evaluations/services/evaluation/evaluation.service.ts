@@ -42,7 +42,12 @@ export class EvaluationService {
     
     const collectionRef = collection(this.firestore, this.collection,);
     const q = !queries ? collectionRef : query(collectionRef, ...queries.map((queryCondition: QueryCondition) => where(queryCondition.field, queryCondition.operator, queryCondition.value)));
+<<<<<<< HEAD
 
+=======
+    console.log("queries*", queries )
+    console.log("q*", q)
+>>>>>>> origin/main
     return onSnapshot(q, (snapshot) => {
       const evaluations: Evaluation[] = [];
       snapshot.forEach((doc) => {
