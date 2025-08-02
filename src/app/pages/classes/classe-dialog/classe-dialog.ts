@@ -140,8 +140,13 @@ export class ClasseDialogPage  implements OnInit {
     const classeObj = new ClasseModel(this.formClass.value).setKey(this.classkey()!);
     console.log("saving classeObj", classeObj);
     try {
-      await this.service.updateClasse(this.classkey()!, classeObj);
-      this.toaster.presentToast({message:"Classe aggiornata con successo",duration:2000,position:"bottom"});
+      if(this.classkey()){
+        await this.service.updateClasse(this.classkey()!, classeObj);
+      }else{
+        await this.service.addClasse(classeObj);
+      }
+      const toasTest = this.classkey() ? "Classe aggiornata con successo" : "Classe aggiunta con successo";
+      this.toaster.presentToast({message:toasTest,duration:2000,position:"bottom"});
 
     } catch (error) {
       this.toaster.presentToast({message:"Errore durante l'aggiornamento della classe",duration:2000,position:"bottom"});
