@@ -1,3 +1,8 @@
+@if(filter().length > 0){
+<ion-buttons slot="end">
+  <ion-button (click)="resetFilter()"> <ion-icon name="refresh"></ion-icon>reset filtro</ion-button>
+</ion-buttons>
+}
 <form [formGroup]="filterform">
 <ion-list>
   <ion-item>

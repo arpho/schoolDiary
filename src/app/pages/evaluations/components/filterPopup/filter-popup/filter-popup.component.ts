@@ -22,6 +22,8 @@ import {
   
   IonIcon } from '@ionic/angular/standalone';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
+import { addIcons } from 'ionicons';
+import { refreshOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-filter-popup',
   templateUrl: './filter-popup.component.html',
@@ -48,6 +50,18 @@ import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
 ]
 })
 export class FilterPopupComponent implements OnInit {
+resetFilter() {
+this.classKey.set('');
+this.studentKey.set('');
+this.activityKey.set('');
+this.fullText.set('');
+this.filterform.patchValue({
+  classKey: '',
+  studentKey: '',
+  activityKey: '',
+  fullText: '',
+});
+}
   // Usa model invece di input per i parametri
   filter = model<QueryCondition[]>([]);
   listaClassi = model<ClasseModel[]>([]);
@@ -68,6 +82,9 @@ export class FilterPopupComponent implements OnInit {
   });
 
   constructor() { 
+    addIcons({
+      refresh: refreshOutline,
+    })
     effect(() => {
       console.log("listaClassi", this.listaClassi());
       console.log("filter", this.filter());
