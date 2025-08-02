@@ -30,8 +30,12 @@ get classes () {
   }
   set classe(classe: string) {
     this.classKey = classe;
+    
   }
-
+setClassKey(classKey: string) {
+  this.classKey = classKey;
+  return this
+}
   get classe() {
     return this.classKey;
   }

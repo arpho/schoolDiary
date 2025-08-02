@@ -10,15 +10,17 @@ import {
   IonCardTitle,
   IonIcon,
   IonButton,
-  IonFab,
-  IonFabButton,
-  IonFabList,
-  IonBackButton,
+  IonButtons,
 AlertController,
 IonInput } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
+import { UsersService } from '../../../../../shared/services/users.service';
+import { addIcons } from 'ionicons';
+import { pushOutline } from 'ionicons/icons';
+
  class Alunno extends UserModel {
+
   
   constructor(args?: {}) {
     super(args);
@@ -35,20 +37,48 @@ import { UsersRole } from 'src/app/shared/models/usersRole';
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    IonInput
-  ],
+    IonInput,
+      IonButton,
+      IonIcon,
+      IonButtons,
+],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UploadStudentsComponent  implements OnInit {
+push() {
+console.log("push to class", this.classkey)
+this.alunni().forEach((alunno: Alunno) => {
+console.log("alunno", alunno)
+alunno.email = this.emailFactory(alunno)
+
+this.$userService.signupUser(alunno).then((userKey) => {
+  console.log("userKey", userKey)
+const claims = {
+  role: alunno.role,
+  classKey: alunno.classKey,
+}
+this.$userService.setUserClaims2user(userKey, claims)
+
+  console.log("alunno creato", alunno)
+}).catch((error) => {
+  console.log("error", error)
+})
+})
+}
   private _classkey = '';
   set classkey(value: string) { this._classkey = value; }
   get classkey() { return this._classkey; }
   alunni = signal<Alunno[]>([]);
 
   constructor(
-    private alertCtrl: AlertController
-  ) { }
+    private alertCtrl: AlertController,
+    private $userService: UsersService
+  ) {
+    addIcons({
+      push: pushOutline,
+    })
+   }
 
   emailFactory(alunno: Alunno) {
     return `${alunno.firstName.toLowerCase()}.${alunno.lastName.toLowerCase()}.studenti@iiscuriesraffa.it`;
@@ -112,14 +142,12 @@ async fixName(alunno: Alunno, index: number) {
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       this.excelData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-      console.log('Excel data:', this.excelData);
       
       // Resetta la lista degli alunni
       this.alunni.set([]);
       
       // Processa ogni studente
       this.excelData.forEach((student: any) => {
-   console.log("alunno", student['Lista schede alunno'])
       const nomeCognome = student['Lista schede alunno'].split("    ")[3]?.trim();
       const firstName = nomeCognome?.split(" ")[0];
       const lastName = nomeCognome?.split(" ")[1];
@@ -129,13 +157,11 @@ async fixName(alunno: Alunno, index: number) {
         role: UsersRole.STUDENT,
         classKey: this.classkey,
         password: this.generatePassword()
-      });
+      }).setClassKey(this.classkey);
+    
       
       // Aggiungi l'alunno alla lista
       this.alunni.update(current => [...current, alunno])
-   console.log("nome", firstName)
-   console.log("cognome", lastName)
-   console.log("------------------------------------------------------")
 
 
   

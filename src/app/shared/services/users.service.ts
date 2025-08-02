@@ -33,6 +33,9 @@ interface ClaimsResponse {
   providedIn: 'root',
 })
 export class UsersService  implements OnInit{
+  createUser(alunno: UserModel) {
+
+  }
   private usersCache = new Map<string, UserModel>();
 
   updatePassword(user: User, newPassword: string) {
@@ -215,7 +218,27 @@ this.getUsersOnRealTime((users)=>{
     }
   }
 
-  async signupUser(user: UserModel): Promise<void> {
+  /**
+   * Registra un nuovo utente nel sistema con autenticazione Firebase e lo salva nel database Firestore.
+   * @param {UserModel} user - L'oggetto utente da registrare, contenente email e password.
+   * @returns {Promise<string>} Una Promise che si risolve con l'UID dell'utente appena creato.
+   * @throws {Error} Se la creazione dell'utente fallisce o se si verifica un errore durante il salvataggio.
+   * 
+   * @example
+   * const user = new UserModel({
+   *   email: 'esempio@scuola.it',
+   *   password: 'password123',
+   *   // ... altri campi utente
+   * });
+   * 
+   * try {
+   *   const userId = await usersService.signupUser(user);
+   *   console.log('Utente creato con ID:', userId);
+   * } catch (error) {
+   *   console.error('Errore durante la registrazione:', error);
+   * }
+   */
+  async signupUser(user: UserModel): Promise<string> {
     const auth = getAuth();
     const createdUser = await createUserWithEmailAndPassword(
       auth,
@@ -234,6 +257,7 @@ this.getUsersOnRealTime((users)=>{
     console.log('userRef', userRef);
 
     await setDoc(userRef, user.serialize());
+    return createdUser.user.uid;
   }
 
   logout(): Promise<void> {
