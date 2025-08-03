@@ -31,9 +31,6 @@ export class ListActivities4classComponent {
       const currentClassKey = this.classkey();
       const currentTeacherKey = this.teacherkey();
       
-      console.log("updated classkey**", currentClassKey);
-      console.log("updated teacherkey**", currentTeacherKey);
-      
       if (currentClassKey && currentTeacherKey) {
         this.updateActivities();
       }
@@ -41,12 +38,10 @@ export class ListActivities4classComponent {
   }
 
   private updateActivities() {
-    console.log("Updating activities with new keys**");
     const currentClassKey = this.classkey();
     const currentTeacherKey = this.teacherkey();
     
     if (!currentClassKey || !currentTeacherKey) {
-      console.log("Missing required keys - skipping update");
       return;
     }
 
@@ -63,8 +58,6 @@ export class ListActivities4classComponent {
     this.activitiesService.getActivitiesOnRealtime(
       currentTeacherKey,
       (activities: ActivityModel[]) => {
-        console.log("activities**", activities);
-        console.log("query**", query);
         this.activitieslist.set(activities);
       },
       query

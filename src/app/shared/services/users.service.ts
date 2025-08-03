@@ -33,9 +33,7 @@ interface ClaimsResponse {
   providedIn: 'root',
 })
 export class UsersService  implements OnInit{
-  createUser(alunno: UserModel) {
 
-  }
   private usersCache = new Map<string, UserModel>();
 
   updatePassword(user: User, newPassword: string) {
@@ -82,6 +80,7 @@ export class UsersService  implements OnInit{
 
   usersOnCache=signal<UserModel[]>([]);
   getUsersByClass(classKey: string, callback: (users: UserModel[]) => void, queryConditions?: QueryCondition[]) {
+    console.log("getUsersByClass*", classKey);
     const collectionRef = collection(this.firestore, this.collection);
     const queryRef = query(collectionRef, where('classKey', '==', classKey), ...queryConditions?.map((condition) => condition.toWhere()) || []);
     return onSnapshot(queryRef, (snapshot) => {
@@ -145,14 +144,12 @@ this.getUsersOnRealTime((users)=>{
   }
 
   getUsersOnRealTime(cb: (users: UserModel[]) => void) {
-    console.log("UsersService getUsersOnRealTime")
     const collectionRef = collection(this.firestore, this.collection);
     onSnapshot(collectionRef, (snapshot) => {
       const  classes:ClasseModel[] = [];
       const users: UserModel[] = [];
       snapshot.forEach((doc) => {
         const user = new UserModel(doc.data()).setKey(doc.id);
-        console.log("loading user*", user);
         user.classes?.forEach((classKey:string) => {
         const classe = this.$classes.fetchClasseOnCache(classKey);
         if(classe)
@@ -160,6 +157,7 @@ this.getUsersOnRealTime((users)=>{
         });
         user.classi = classes;
         users.push(user);
+        this.usersCache.set(user.key, user);
       });
       cb(users);
     });
@@ -217,6 +215,22 @@ this.getUsersOnRealTime((users)=>{
       throw error;
     }
   }
+
+  async createUser(user: UserModel): Promise<string> {
+    const functions = getFunctions();
+    const createUser = httpsCallable(functions, 'createUser');
+    const result = await createUser(user) as ClaimsResponse;
+    console.log('createUser response:', result);
+    if (result.data?.result !== 'ok') {
+      console.error('createUser failed:', result);
+      console.error('createUser failed:', user);
+      throw new Error('Failed to create user: ' + (result.message || 'Unknown error'));
+    }
+    console.log('createUser successfully set:', result.data);
+    return result.data.userKey;
+  }
+
+  
 
   /**
    * Registra un nuovo utente nel sistema con autenticazione Firebase e lo salva nel database Firestore.

@@ -46,22 +46,26 @@ import { pushOutline } from 'ionicons/icons';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UploadStudentsComponent  implements OnInit {
+  constructor(
+    private alertCtrl: AlertController,
+    private $userService: UsersService
+  ) {
+    addIcons({
+      push: pushOutline,
+    })
+   }
 push() {
 console.log("push to class", this.classkey)
-this.alunni().forEach((alunno: Alunno) => {
-console.log("alunno", alunno)
+this.alunni().filter((alunno: Alunno) => alunno.firstName && alunno.lastName).forEach((alunno: Alunno) => {
 alunno.email = this.emailFactory(alunno)
+console.log("alunno", alunno)
 
-this.$userService.signupUser(alunno).then((userKey) => {
-  console.log("userKey", userKey)
-const claims = {
-  role: alunno.role,
-  classKey: alunno.classKey,
-}
-this.$userService.setUserClaims2user(userKey, claims)
+this.$userService.createUser(alunno).then((userKey) => {
+
 
   console.log("alunno creato", alunno)
 }).catch((error) => {
+  console.log("alunno non creato", alunno)
   console.log("error", error)
 })
 })
@@ -71,14 +75,6 @@ this.$userService.setUserClaims2user(userKey, claims)
   get classkey() { return this._classkey; }
   alunni = signal<Alunno[]>([]);
 
-  constructor(
-    private alertCtrl: AlertController,
-    private $userService: UsersService
-  ) {
-    addIcons({
-      push: pushOutline,
-    })
-   }
 
   emailFactory(alunno: Alunno) {
     return `${alunno.firstName.toLowerCase()}.${alunno.lastName.toLowerCase()}.studenti@iiscuriesraffa.it`;
@@ -149,8 +145,8 @@ async fixName(alunno: Alunno, index: number) {
       // Processa ogni studente
       this.excelData.forEach((student: any) => {
       const nomeCognome = student['Lista schede alunno'].split("    ")[3]?.trim();
-      const firstName = nomeCognome?.split(" ")[0];
-      const lastName = nomeCognome?.split(" ")[1];
+      const firstName = nomeCognome?.split(" ")[1];
+      const lastName = nomeCognome?.split(" ")[0];
       const alunno = new Alunno({
         firstName: firstName || '',
         lastName: lastName || '',
@@ -158,6 +154,7 @@ async fixName(alunno: Alunno, index: number) {
         classKey: this.classkey,
         password: this.generatePassword()
       }).setClassKey(this.classkey);
+      console.log("alunno", alunno)
     
       
       // Aggiungi l'alunno alla lista

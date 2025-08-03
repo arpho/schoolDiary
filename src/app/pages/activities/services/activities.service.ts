@@ -94,13 +94,10 @@ export class ActivitiesService {
     callback: (activities: ActivityModel[]) => void,
     queries?: QueryCondition[]
   ) {
-    console.log("teachersKey", teachersKey);
-    console.log("queries", queries);
     const collectionRef = collection(this.firestore, this.collection);
     let q = query(collectionRef, where('teacherKey', '==', teachersKey));
     if (queries) {
       queries.forEach((condition: QueryCondition) => {
-        console.log("condition", condition);
         q = query(q, where(condition.field, condition.operator, condition.value));
       });
     }

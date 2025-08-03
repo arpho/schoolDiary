@@ -1,6 +1,8 @@
+/* eslint-disable valid-jsdoc */
 /**
  * Enum che definisce i ruoli degli utenti nel sistema.
- * Deve essere mantenuto sincronizzato con il frontend (src/app/shared/models/usersRole.ts)
+ * Deve essere mantenuto sincronizzato con il frontend
+ * (src/app/shared/models/usersRole.ts)
  */
 export enum UsersRole {
   /** Amministratore del sistema */
@@ -13,8 +15,9 @@ export enum UsersRole {
 
 /**
  * Verifica se un valore è un ruolo valido
+ // eslint-disable-next-line valid-jsdoc
  * @param value Valore da verificare
- * @returns true se il valore è un ruolo valido
+ * @return true se il valore è un ruolo valido
  */
 export function isValidRole(value: any): value is UsersRole {
   return Object.values(UsersRole).includes(Number(value));

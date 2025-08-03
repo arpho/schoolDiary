@@ -9,6 +9,8 @@ export interface CreateUserData {
   email: string;
   password: string;
   role: UsersRole; // Ora è un numero (enum)
+  firstName: string;
+  lastName: string;
   classKey?: string;
   additionalData?: {
     displayName?: string;
@@ -90,14 +92,21 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
     userRecord = await auth.createUser({
       email,
       password,
-      ...additionalData,
       emailVerified: false,
+      displayName: `${
+        data.firstName || additionalData.firstName || ""
+      } ${
+        data.lastName || additionalData.lastName || ""
+      }`.trim(),
     });
 
     logger.info(`Utente creato con successo: ${userRecord.uid}`);
 
     // 2. Prepara i dati per il profilo utente
     const userProfileData = {
+      firstName: data.firstName || additionalData.firstName || "",
+      lastName: data.lastName || additionalData.lastName || "",
+      classKey: data.classKey || additionalData.classKey || "",
       uid: userRecord.uid,
       email,
       role,
@@ -107,9 +116,20 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
       updatedAt: new Date().toISOString(),
       // Filtra eventuali valori undefined da additionalData
       ...Object.fromEntries(
-        Object.entries(additionalData).filter(([_, v]) => v !== undefined)
+        Object.entries(additionalData)
+          .filter(([_, v]) => v !== undefined)
+          .filter(([k]) => !["firstName", "lastName"].includes(k)
+          ) // Rimuovi firstName e lastName da additionalData se presenti
       ),
     };
+
+    // Validazione dei campi obbligatori
+    if (!userProfileData.firstName || !userProfileData.lastName) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Nome e cognome sono obbligatori"
+      );
+    }
 
     // 3. Crea il documento nella collezione userProfiles
     await db.collection("userProfile").doc(userRecord.uid).set(userProfileData);

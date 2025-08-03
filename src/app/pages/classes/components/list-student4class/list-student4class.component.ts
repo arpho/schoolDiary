@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, computed } from '@angular/core';
+import { Component, OnInit, Input, computed, OnChanges, SimpleChanges } from '@angular/core';
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon, IonButton,  IonTextarea  } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
@@ -24,7 +24,6 @@ import { UploadStudentsComponent } from '../uploadStudents/upload-students/uploa
   styleUrls: ['./list-student4class.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     IonList,
     IonItem,
     IonCard,
@@ -35,10 +34,21 @@ import { UploadStudentsComponent } from '../uploadStudents/upload-students/uploa
     IonFabButton,
     IonFabList,
     IonIcon,
-    IonButton
+    IonButton,
+  
 ]
 })
-export class ListStudent4classComponent  implements OnInit {
+export class ListStudent4classComponent implements OnInit, OnChanges {
+  @Input() set classkey(value: string) {
+    this._classkey = value;
+    if (value) {
+      this.loadStudents();
+    }
+  }
+  get classkey(): string {
+    return this._classkey;
+  }
+  private _classkey: string = '';
   async uploadStudents() {
 const modal = await this.$modalController.create({
   component: UploadStudentsComponent,
@@ -68,7 +78,7 @@ throw new Error('Method not implemented.');
 editStudent(arg0: string) {
 this.router.navigate(['/user-dialog',arg0]);
 }
-  @Input() classkey!: string;
+
   readonly _students = signal<UserModel[]>([]);
   sortedStudents = computed(() => {
     const makeFullName = (user: UserModel) => `${user.lastName} ${user.firstName}`;
@@ -80,12 +90,26 @@ this.router.navigate(['/user-dialog',arg0]);
   }
 
   private setStudents(users: UserModel[]): void {
+    console.log("setStudents*", users, "for class", this.classkey);
     this._students.set(users);
   }
 
   ngOnInit() {
+    if (this.classkey) {
+      this.loadStudents();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['classkey'] && !changes['classkey'].firstChange) {
+      this.loadStudents();
+    }
+  }
+
+  private loadStudents() {
+    console.log("Loading students for class:", this.classkey);
     this.$users.getUsersByClass(this.classkey, (users: UserModel[]) => {
-        this.setStudents(users);
+      this.setStudents(users);
     });
   }
 

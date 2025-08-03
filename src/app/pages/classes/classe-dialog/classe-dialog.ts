@@ -105,17 +105,19 @@ export class ClasseDialogPage  implements OnInit {
     if (user && typeof user === 'object' && 'key' in user) {
 
       this.teacherkey.set(user.key);
-      console.log("teacherkey**", this.teacherkey());
     }
     console.log("ngOnInit classe dialog**")
     const classkey = this.route.snapshot.paramMap.get('classkey');
     console.log("classkey**", classkey);
+    if(classkey){
+    this.classkey.set(classkey);
+    }
   
     if (classkey) {
-      this.classkey.set(classkey);
       if (this.classkey()) {
         this.isEditMode = true;
         const editingClasse = await this.service.fetchClasse(this.classkey()!);
+        console.log("editingClasse *", editingClasse)
         this.classe.set(editingClasse);
         this.formClass.setValue({
           classe: editingClasse.classe,
