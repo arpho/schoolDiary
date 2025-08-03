@@ -5,6 +5,9 @@
     defaultHref="/dashboard"></ion-back-button>
   <ion-toolbar>
     <ion-title>Classi</ion-title>
+    <ion-fab vertical="bottom" horizontal="end">
+      <ion-fab-button shape="round" size="small" (click)="go2ClasseDialog('')"><ion-icon name="add"></ion-icon></ion-fab-button>
+    </ion-fab>
   </ion-toolbar>
 </ion-header>
 
@@ -49,7 +52,5 @@
     <p>Non ci sono classi, creane una</p>
   }
 
-      <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button shape="round" size="small" (click)="go2ClasseDialog('')"><ion-icon name="add"></ion-icon></ion-fab-button>
-  </ion-fab>
+   
 </ion-content>
