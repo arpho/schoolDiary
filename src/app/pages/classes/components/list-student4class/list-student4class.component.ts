@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, computed } from '@angular/core';
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon, IonButton } from '@ionic/angular/standalone';
@@ -70,6 +70,10 @@ this.router.navigate(['/user-dialog',arg0]);
 }
   @Input() classkey!: string;
   readonly _students = signal<UserModel[]>([]);
+  sortedStudents = computed(() => {
+    const makeFullName = (user: UserModel) => `${user.lastName} ${user.firstName}`;
+    return this._students().sort((a, b) => makeFullName(a).localeCompare(makeFullName(b)));
+  });
 
   get students(): UserModel[] {
     return this._students();

@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true">
     <ion-title size="large" align="center">Studenti</ion-title>
   <ion-list>
-    @for(student of students(); track student.key) {
+    @for(student of sortedStudents(); track student.key) {
       <ion-item>
         <ion-card>
           <ion-card-header>
