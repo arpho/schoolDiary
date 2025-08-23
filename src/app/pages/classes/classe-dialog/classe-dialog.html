@@ -57,6 +57,10 @@
                 <ion-label slot="floating" class="custom-label">Descrizione</ion-label>
               </ion-textarea>
             </ion-card-content>
+            <div class="ion-padding">
+              <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
+              <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
+            </div>
           </ion-card>
         </ion-content>
       </ion-tab>
@@ -92,10 +96,7 @@
       </ion-tab>
 
       <!-- Pulsanti fuori dai tab ma all'interno del form -->
-      <div class="ion-padding">
-        <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
-        <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
-      </div>
+      
     </ion-tabs>
   </form>
 </ion-content>
