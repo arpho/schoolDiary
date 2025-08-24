@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {getAuth, UserRecord} from "firebase-admin/auth";
 import {getFirestore} from "firebase-admin/firestore";
 import {onCall} from "firebase-functions/v2/https";
@@ -12,11 +13,12 @@ export interface CreateUserData {
   firstName: string;
   lastName: string;
   classKey?: string;
-  additionalData?: {
-    displayName?: string;
-    photoURL?: string;
-    [key: string]: any;
-  };
+  additionalData?: Partial<{
+    displayName: string;
+    photoURL: string;
+    classKey: string;
+    [key: string]: unknown;
+  }>;
 }
 
 /**
@@ -42,6 +44,7 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
   const auth = getAuth();
   const db = getFirestore();
   let userRecord: UserRecord | null = null;
+  let isNewUser = false;
 
   // Validazione dei campi obbligatori
   if (!email || !password || !role) {
@@ -73,53 +76,75 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
   try {
     // 0. Verifica se l'utente esiste già
     try {
-      const existingUser = await auth.getUserByEmail(email);
-      if (existingUser) {
-        throw new functions.https.HttpsError(
-          "already-exists",
-          "Un utente con questa email esiste già"
-        );
+      userRecord = await auth.getUserByEmail(email);
+      // Se arriviamo qui, l'utente esiste già
+      if (userRecord) {
+        logger.info(`Utente con email ${email} già esistente, procedo con l'aggiornamento`);
+        // Prepara i dati di aggiornamento
+        const updateData: {
+        password: string;
+        displayName: string;
+        email?: string;
+      } = {
+        password,
+        displayName: `${data.firstName || additionalData?.firstName || ""} ${
+          data.lastName || additionalData?.lastName || ""
+        }`.trim(),
+      };
+        userRecord = await auth.updateUser(userRecord.uid, updateData);
+      } else {
+        logger.info(`Utente con email ${email} non esistente, procedo con la creazione`);
+        userRecord = await auth.createUser({
+          email,
+          password,
+          emailVerified: false,
+          displayName: `${data.firstName || additionalData?.firstName || ""} ${
+            data.lastName || additionalData?.lastName || ""
+          }`.trim(),
+        });
+        isNewUser = true;
+        logger.info(`Nuovo utente creato: ${userRecord.uid}`);
       }
-    } catch (error: any) {
-      // Se l'errore è diverso da "user-not-found", rilanciamo l'errore
-      if (error.code !== "auth/user-not-found") {
+
+
+      // Aggiorna i dati dell'utente esistente
+    } catch (error: unknown) {
+      // Se l'utente non esiste, creane uno nuovo
+      const firebaseError = error as { code?: string; message?: string };
+      if (firebaseError.code === "auth/user-not-found") {
+        userRecord = await auth.createUser({
+          email,
+          password,
+          emailVerified: false,
+          displayName: `${data.firstName || additionalData?.firstName || ""} ${
+            data.lastName || additionalData?.lastName || ""
+          }`.trim(),
+        });
+        isNewUser = true;
+        logger.info(`Nuovo utente creato: ${userRecord.uid}`);
+      } else {
+        // Se c'è un altro errore, rillancialo
         throw error;
       }
-      // Se l'errore è "user-not-found", procediamo con la creazione
     }
 
-    // 1. Crea l'utente in Authentication
-    userRecord = await auth.createUser({
-      email,
-      password,
-      emailVerified: false,
-      displayName: `${
-        data.firstName || additionalData.firstName || ""
-      } ${
-        data.lastName || additionalData.lastName || ""
-      }`.trim(),
-    });
-
-    logger.info(`Utente creato con successo: ${userRecord.uid}`);
-
-    // 2. Prepara i dati per il profilo utente
+    // 1. Prepara i dati per il profilo utente
     const userProfileData = {
-      firstName: data.firstName || additionalData.firstName || "",
-      lastName: data.lastName || additionalData.lastName || "",
-      classKey: data.classKey || additionalData.classKey || "",
-      uid: userRecord.uid,
+      firstName: data.firstName || additionalData?.firstName || "",
+      lastName: data.lastName || additionalData?.lastName || "",
+      classKey: data.classKey || additionalData?.classKey || "",
+      key: userRecord.uid,
       email,
       role,
       // Includi classKey solo se definito
       ...(classKey && {classKey}),
-      createdAt: new Date().toISOString(),
+      createdAt: isNewUser ? new Date().toISOString() : undefined,
       updatedAt: new Date().toISOString(),
       // Filtra eventuali valori undefined da additionalData
       ...Object.fromEntries(
         Object.entries(additionalData)
-          .filter(([_, v]) => v !== undefined)
-          .filter(([k]) => !["firstName", "lastName"].includes(k)
-          ) // Rimuovi firstName e lastName da additionalData se presenti
+          .filter(([, value]) => value !== undefined)
+          .filter(([key]) => !["firstName", "lastName"].includes(key))
       ),
     };
 
@@ -131,8 +156,9 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
       );
     }
 
-    // 3. Crea il documento nella collezione userProfiles
-    await db.collection("userProfile").doc(userRecord.uid).set(userProfileData);
+    // 3. Crea o aggiorna il documento nella collezione userProfiles
+    // eslint-disable-next-line max-len
+    await db.collection("userProfile").doc(userRecord.uid).set(userProfileData, {merge: true});
 
     // 4. Prepara i custom claims
     const customClaims = {
@@ -146,7 +172,7 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
 
     // 6. Restituisci i dati dell'utente creato
     return {
-      uid: userRecord.uid,
+      key: userRecord.uid,
       email: userRecord.email,
       role,
       classKey: role === UsersRole.STUDENT ? classKey : null,
@@ -155,12 +181,12 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
       photoURL: userRecord.photoURL || "",
       customClaims,
     };
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Errore nella creazione utente:", error);
 
     // Se l'utente è stato creato ma si è verificato un errore dopo,
     // prova a eliminarlo per mantenere la coerenza
-    if (userRecord) {
+    if (userRecord && isNewUser) {
       try {
         await auth.deleteUser(userRecord.uid);
         logger.info(`Utente ${userRecord.uid} eliminato a causa di un errore`);
@@ -170,13 +196,11 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
     }
 
     // Gestisci i diversi tipi di errore
-    const errorCode = (error as any).code;
-    if (errorCode === "auth/email-already-exists") {
-      throw new functions.https.HttpsError(
-        "already-exists",
-        "Un utente con questa email esiste già"
-      );
-    } else if (errorCode === "auth/invalid-email") {
+    const firebaseError = error as { code?: string; message?: string };
+    const errorCode = firebaseError.code || "unknown-error";
+    const errorMessage = firebaseError.message || "Errore sconosciuto";
+
+    if (errorCode === "auth/invalid-email") {
       throw new functions.https.HttpsError(
         "invalid-argument",
         "Formato email non valido"
@@ -196,8 +220,8 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
     // Per altri errori non gestiti
     throw new functions.https.HttpsError(
       "internal",
-      "Si è verificato un errore durante la creazione dell'utente",
-      {message: (error as Error).message, code: errorCode}
+      `Si è verificato un errore durante la creazione dell'utente: ${errorMessage}`,
+      {code: errorCode, message: errorMessage}
     );
   }
 });

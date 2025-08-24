@@ -11,12 +11,7 @@ initializeApp();
 
 const setCustomClaims = onCall({enforceAppCheck: false}, async (request) => {
   const data = request.data as { userKey: string; claims: Record<string, any> };
-  logger.debug("data ", data);
-  logger.debug("auth ", request.auth);
-  logger.info("***************************************************");
-  logger.debug(data.claims);
-  logger.debug(data);
-  logger.info("***************************************************");
+
 
   // Verifica che i dati siano un oggetto JSON valido
   if (!data || typeof data !== "object") {
@@ -28,9 +23,6 @@ const setCustomClaims = onCall({enforceAppCheck: false}, async (request) => {
   const claims = data.claims;
 
   try {
-    logger.debug("Setting custom claims for user:", userKey);
-    logger.debug("Claims to set:", claims);
-
     await getAuth().setCustomUserClaims(userKey, claims);
     return {result: "ok", data: {userKey, claims}};
   } catch (error) {
