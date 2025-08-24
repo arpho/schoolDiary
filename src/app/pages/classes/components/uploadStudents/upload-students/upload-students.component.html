@@ -10,7 +10,7 @@
             @if(alunno && alunno.firstName && alunno.lastName) {
             <ion-card (click)="fixName(alunno, $index)">
               <ion-card-header>
-                <ion-card-title>{{alunno.firstName}} {{alunno.lastName}}</ion-card-title>
+                <ion-card-title>{{alunno.lastName}}, {{alunno.firstName}}</ion-card-title>
                 <ion-card-content>
                   <h2>{{emailFactory(alunno)}}</h2>
                   <h3>{{alunno.password}}</h3>
