@@ -5,6 +5,7 @@ import {getAuth} from "firebase-admin/auth";
 import {onCall} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import {createUser} from "./bussines/createUser";
+import {createUserPlus} from "./bussines/createUserPlus";
 
 
 initializeApp();
@@ -31,4 +32,5 @@ const setCustomClaims = onCall({enforceAppCheck: false}, async (request) => {
   }
 });
 
-export {setCustomClaims, createUser};
+// Esporta tutte le funzioni
+export {setCustomClaims, createUser, createUserPlus};
