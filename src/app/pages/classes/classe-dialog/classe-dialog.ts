@@ -44,6 +44,7 @@ import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { ReservedNotes4ClassesComponent } from '../components/reserved-notes4classes/reserved-notes4classes.component';
 import { ListActivities4classComponent } from  "../components/listActivities4class/list-activities4class/list-activities4class.component"
 import { UsersService } from 'src/app/shared/services/users.service';
+import { GroupsManagerComponent } from '../components/groups-manager/groups-manager.component';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -68,7 +69,8 @@ import { UsersService } from 'src/app/shared/services/users.service';
     ReactiveFormsModule,
     ListStudent4classComponent,
     ReservedNotes4ClassesComponent,
-    ListActivities4classComponent
+    ListActivities4classComponent,
+    GroupsManagerComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

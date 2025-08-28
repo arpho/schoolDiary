@@ -1,0 +1,25 @@
+<div class="groups-container">
+  <h3>Gestione Gruppi</h3>
+  
+  <div *ngIf="!classkey()" class="alert alert-warning">
+    Nessuna classe selezionata
+  </div>
+
+  <div *ngIf="classkey()">
+    <p>Classe: <strong>{{classe()?.classe}}</strong></p>
+    
+    <div *ngIf="groupslist().length > 0; else noGroups">
+      <h4>Gruppi disponibili:</h4>
+      <ul>
+        <li *ngFor="let group of groupslist()">
+          {{group.nome}} ({{group.studentsList.length}} studenti)
+        </li>
+      </ul>
+    </div>
+
+    <ng-template #noGroups>
+      <p>Nessun gruppo trovato per questa classe.</p>
+    </ng-template>
+  </div>
+  <ion-button (click)="addGroup()">Crea Gruppo<ion-icon name="medkit"></ion-icon></ion-button>
+</div>

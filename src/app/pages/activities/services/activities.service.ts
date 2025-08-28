@@ -103,10 +103,7 @@ export class ActivitiesService {
     }
       const activities: ActivityModel[] = [];
     onSnapshot(q, (snapshot) => {
-      console.log("snapshot", snapshot);
-      console.log("snapshot.docs", snapshot.docs);
       snapshot.forEach((docSnap) => {
-        console.log("docSnap", docSnap);
         activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
         });
         callback(activities);

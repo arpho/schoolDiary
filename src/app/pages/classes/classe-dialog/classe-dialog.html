@@ -24,6 +24,9 @@
         <ion-tab-button tab="attivita">
           <ion-label>Attività</ion-label>
         </ion-tab-button>
+        <ion-tab-button tab="gruppi">
+          <ion-label>Gruppi</ion-label>
+        </ion-tab-button>
       </ion-tab-bar>
 
       <ion-tab tab="generalita">
@@ -90,6 +93,16 @@
           <ion-card>
             <ion-card-content>
             <app-list-activities4class [classkey]="classkey()" [teacherkey]="teacherkey()"></app-list-activities4class>
+            </ion-card-content>
+          </ion-card>
+        </ion-content>
+      </ion-tab>
+
+      <ion-tab tab="gruppi">
+        <ion-content>
+          <ion-card>
+            <ion-card-content>
+      <app-groups-manager [classkey]="classkey()"></app-groups-manager>
             </ion-card-content>
           </ion-card>
         </ion-content>
