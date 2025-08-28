@@ -15,7 +15,6 @@ import { ClasseModel } from '../../models/classModel';
     CommonModule,
     IonButton,
     IonIcon,
-
   ],
   templateUrl: './groups-manager.component.html',
   styleUrls: ['./groups-manager.component.scss'],
@@ -34,27 +33,36 @@ console.log("addGroup")
   classe = signal<ClasseModel | null>(null);
   private unsubscribeFn: (() => void) | null = null;
 
+  rowData = [
+    { make: "Tesla", model: "Model Y", price: 64950, electric: true },
+    { make: "Ford", model: "F-Series", price: 33850, electric: false },
+    { make: "Toyota", model: "Corolla", price: 29600, electric: false },
+];
+    
+
   constructor() {
     addIcons({medkit});
     // Effetto reattivo che si attiva quando classkey cambia
     effect(async () => {
       const key = this.classkey();
-      console.log('classkey changed to#:', key);
       const classe = await this.classi.fetchClasse(key);
-      console.log("classe#", classe);
       this.classe.set(classe);
       this.loadGroups(key);
+    });
+    effect(() => {
+this.groupslist().forEach(group => {
+  console.log(group);
+}); 
     });
   }
 
   async ngOnInit() {
 
+
 }
 
   private loadGroups(classKey: string) {
-    console.log("loadGroups #", classKey);
     this.service.fetchGroups4class(classKey, (groups) => {
-      console.log('Gruppi ricevuti:', groups);
       this.groupslist.set(groups);
     });
     // Annulla la sottoscrizione precedente se esiste
@@ -68,9 +76,7 @@ console.log("addGroup")
 
     }
 
-    console.log('Caricamento gruppi per classKey:', classKey);
     this.unsubscribeFn = this.service.fetchGroups4class(classKey, (groups) => {
-      console.log('Gruppi ricevuti:', groups);
       this.groupslist.set(groups);
     });
   }

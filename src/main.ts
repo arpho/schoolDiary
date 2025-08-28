@@ -65,6 +65,7 @@ import {
   ribbonOutline
 } from 'ionicons/icons';
 
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

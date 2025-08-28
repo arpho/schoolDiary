@@ -59,10 +59,8 @@ export class ClassiService {
   }
 
   async fetchClasse(classeKey: string) {
-    console.log("fetchClasse #", classeKey);
     const docRef = doc(this.firestore, this.collection, classeKey);
     const rawClasse = await getDoc(docRef);
-    console.log("rawClasse #", rawClasse.data());
     return new ClasseModel(rawClasse.data()).setKey(rawClasse.id);
   }
 

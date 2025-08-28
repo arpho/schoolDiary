@@ -29,7 +29,6 @@ export class GroupsService {
    * @param callback Callback function that receives the array of groups
    */
   fetchGroups4class(classKey: string, callback: (groups: GroupModel[]) => void): () => void {
-    console.log("fetchGroups4class#", classKey);
     const q = query(
       collection(this.firestore, this.collection),
       where('classKey', '==', classKey)
