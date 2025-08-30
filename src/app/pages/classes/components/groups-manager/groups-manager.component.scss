@@ -16,6 +16,11 @@
   max-width: 100%;  // Assicura che non superi la larghezza del genitore
   box-sizing: border-box;  // Include padding e border nella larghezza
 }
+h4 {
+  display: flex
+;
+  justify-content: center;
+}
 
 .drop-list {
   min-height: 60px;

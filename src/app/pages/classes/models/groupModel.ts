@@ -1,35 +1,47 @@
-import { inject } from "@angular/core";
 import { UserModel } from "src/app/shared/models/userModel";
 import { UsersService } from "src/app/shared/services/users.service";
 
 export class GroupModel {
-    nome: string="";
-    key: string="";
-    classKey: string="";
-    note: string="";
-    studentsKeyList: string[]=[];
-    studentsList: UserModel[]=[];
-    private $usersService = inject(UsersService);
+    nome: string = "";
+    key: string = "";
+    classKey: string = "";
+    note: string = "";
+    studentsKeyList: string[] = [];
+    studentsList: UserModel[] = [];
+    private $usersService: UsersService | undefined;
+    createdAt: string = new Date().toISOString();
+    updatedAt: string = new Date().toISOString();
 
-    constructor(data?:{}){
-        
+    constructor(data?: any, usersService?: UsersService) {
+        if(usersService){
+        this.$usersService = usersService;
+        }
         this.build(data);
     }
 
-    async fetchStudents(){
-    this.studentsKeyList.forEach((key) => {
-        this.$usersService.getUser(key).then((user) => {
-            if(user){
-            this.studentsList.push(user);
-            }
-        });
-    });
+    async fetchStudents() {
+        if (!this.$usersService) {
+            throw new Error('UsersService is required to fetch students');
+        }
+        
+        const students = await Promise.all(
+            this.studentsKeyList.map(key => this.$usersService?.getUser(key))
+        );
+        
+        this.studentsList = students.filter((user): user is UserModel => user !== null);
     }
 
-    build(data?:{}){
-     Object.assign(this, data);
-
-     return this
+    build(data?: any) {
+        if (data) {
+            this.nome = data.nome || this.nome;
+            this.key = data.key || this.key;
+            this.classKey = data.classKey || this.classKey;
+            this.note = data.note || this.note;
+            this.studentsKeyList = data.studentsKeyList || this.studentsKeyList;
+            this.createdAt = data.createdAt || this.createdAt;
+            this.updatedAt = data.updatedAt || this.updatedAt;
+        }
+        return this;
     }
     serialize(){
         return {

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal, effe
 import { CommonModule } from '@angular/common';
 import { GroupsService } from '../../services/groups/groups.service';
 import { GroupModel } from '../../models/groupModel';
-import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { IonButton, IonIcon,IonAlert,AlertController } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { add, medkit } from 'ionicons/icons';
 import { ClassiService } from '../../services/classi.service';
@@ -25,14 +25,46 @@ import {
     IonIcon,
     CdkDrag,
     CdkDropList,
+    IonAlert
   ],
   templateUrl: './groups-manager.component.html',
   styleUrls: ['./groups-manager.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GroupsManagerComponent implements OnInit {
-addGroup() {
+  alertController = inject(AlertController);
+async addGroup() {
 console.log("addGroup")
+const alert = await this.alertController.create({
+  header: 'Crea Gruppo',
+  message: 'Inserisci il nome del gruppo',
+  inputs: [
+    {
+      name: 'name',
+      type: 'text',
+      placeholder: 'Nome del gruppo',
+      value: `gruppo ${this.groupslist().length + 1}`
+    },
+    {name: 'description',type: 'text',placeholder: 'description',value: ''}
+  ],
+  buttons: [
+    {
+      text: 'Cancel',
+      role: 'cancel',
+      cssClass: 'secondary'
+    },
+    {
+      text: 'Create',
+      handler: (data: { name: string, description: string }) => {
+        console.log('Creating group', data);
+         const group = new GroupModel({...data,classKey:this.classkey()})
+         console.log("group",group)
+
+        }
+    }
+  ]
+});
+await alert.present();
 }
   // Usiamo input.required per assicurarci che il valore sia sempre fornito
   classkey = input.required<string>();
