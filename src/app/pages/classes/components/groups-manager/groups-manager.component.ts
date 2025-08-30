@@ -7,7 +7,15 @@ import { addIcons } from 'ionicons';
 import { add, medkit } from 'ionicons/icons';
 import { ClassiService } from '../../services/classi.service';
 import { ClasseModel } from '../../models/classModel';
-
+import { UserModel } from 'src/app/shared/models/userModel';
+import { UsersService } from 'src/app/shared/services/users.service';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  moveItemInArray,
+  transferArrayItem
+} from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-groups-manager',
   standalone: true,
@@ -15,6 +23,8 @@ import { ClasseModel } from '../../models/classModel';
     CommonModule,
     IonButton,
     IonIcon,
+    CdkDrag,
+    CdkDropList,
   ],
   templateUrl: './groups-manager.component.html',
   styleUrls: ['./groups-manager.component.scss'],
@@ -26,11 +36,13 @@ console.log("addGroup")
 }
   // Usiamo input.required per assicurarci che il valore sia sempre fornito
   classkey = input.required<string>();
-  
+   students = signal<UserModel[]>([]);
+   private $users = inject(UsersService);
   private service = inject(GroupsService);
   private classi= inject(ClassiService);
   groupslist = signal<GroupModel[]>([]);
   classe = signal<ClasseModel | null>(null);
+  availableStudents = signal<UserModel[]>([]);
   private unsubscribeFn: (() => void) | null = null;
 
   rowData = [
@@ -48,6 +60,14 @@ console.log("addGroup")
       const classe = await this.classi.fetchClasse(key);
       this.classe.set(classe);
       this.loadGroups(key);
+      try {
+        this.$users.getUsersByClass(key, (users: UserModel[]) => {
+          console.log("students ", users);
+          this.availableStudents.set(users);
+        });
+      } catch (error) {
+        console.error("Errore durante la recupero degli studenti", error);
+      }
     });
     effect(() => {
 this.groupslist().forEach(group => {
@@ -57,9 +77,24 @@ this.groupslist().forEach(group => {
   }
 
   async ngOnInit() {
+    // Initialize with all students as available
+    this.availableStudents.set([...this.students()]);
+  }
 
-
-}
+  drop(event: CdkDragDrop<UserModel[]>) {
+    console.log("drop", event);
+    if (event.previousContainer === event.container) {
+      console.log("moveItemInArray",event.previousContainer);
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
+    }
+  }
 
   private loadGroups(classKey: string) {
     this.service.fetchGroups4class(classKey, (groups) => {

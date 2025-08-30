@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, OnInit, signal } from '@angular/core';
 import { GroupModel } from '../../../models/groupModel';
 
 @Component({
@@ -9,6 +9,7 @@ import { GroupModel } from '../../../models/groupModel';
 })
 export class GroupViewerComponent  implements OnInit {
   group = input.required<GroupModel>();
+  linkedList = input.required<string[]>();
 
   constructor() { }
 

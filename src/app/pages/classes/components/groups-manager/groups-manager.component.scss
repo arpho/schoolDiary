@@ -1,0 +1,65 @@
+#studentslist {
+  max-width: 400px;  // Limita la larghezza massima
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.drag-container {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  max-width: 100%;  // Assicura che non superi la larghezza del genitore
+  box-sizing: border-box;  // Include padding e border nella larghezza
+}
+
+.drop-list {
+  min-height: 60px;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+  background: white;
+  min-height: 100px;
+}
+
+.drag-item {
+  padding: 8px 10px;
+  margin: 4px 0;
+  background: #e0e0e0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: move;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    background: #d0d0d0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &.cdk-drag-preview {
+    background: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  &.cdk-drag-placeholder {
+    opacity: 0.5;
+    background: #f0f0f0;
+  }
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.drop-list.cdk-drop-list-dragging .drag-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
