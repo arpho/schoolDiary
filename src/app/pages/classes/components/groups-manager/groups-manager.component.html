@@ -19,30 +19,47 @@
   <div id="groupslist">
     <div>
       <p>Classe: <strong>{{classe()?.classe}}</strong></p>
-      <p>Studenti: <strong>{{availableStudents().length}}</strong></p>
-      <div class="drag-container"
-          id="studentslist">
-        <h4>Studenti disponibili</h4>
-        <div
-          cdkDropList
-          #studentsList="cdkDropList"
-          [cdkDropListData]="availableStudents()"
-          class="drop-list"
-          (cdkDropListDropped)="drop($event)">
-          @for (student of availableStudents(); track student.key) {
-            @if(student.firstName && student.lastName) {
-            <div class="drag-item" cdkDrag>
-              {{ student.lastName }} {{ student.firstName }}
+      <div class="content-wrapper">
+        <div class="students-container">
+          <p>Studenti: <strong>{{availableStudents().length}}</strong></p>
+          <div class="drag-container" id="studentslist">
+            <h4>Studenti disponibili</h4>
+            <div
+              cdkDropList
+              #studentsList="cdkDropList"
+              [cdkDropListData]="availableStudents()"
+              class="drop-list"
+              [cdkDropListConnectedTo]="connectedLists()"
+              (cdkDropListDropped)="drop($event,'')">
+              @for (student of availableStudents(); track student.key) {
+                @if(student.firstName && student.lastName) {
+                <div class="drag-item" cdkDrag
+                [cdkDragData]="student"
+                >
+                  {{ student.lastName }} {{ student.firstName }}
+                </div>
+                }
+              }
             </div>
-            }
-          }
-        </div>
-        @for(group of groupsList(); track group.key) {
-          <div class="group-item" cdkDrag>
-            <h4>{{ group.nome }}</h4>
-            <p>{{ group.description }}</p>
           </div>
-        }
+        </div>
+
+        <div class="groups-container">
+          <h4>Gruppi</h4>
+          <div id="groupslist">
+            @for(group of groupsList(); track group.key) {
+              <div class="group-item"
+               cdkDropList
+               [cdkDropListData]="group.studentsList"
+               id="group-{{group.key}}"
+               (cdkDropListDropped)="drop($event,group.key)"
+               [cdkDropListConnectedTo]="connectedLists()">
+                <h4>{{ group.nome }}</h4>
+                <p>{{ group.description }}</p>
+              </div>
+            }
+          </div>
+        </div>
       </div>
       </div>
       

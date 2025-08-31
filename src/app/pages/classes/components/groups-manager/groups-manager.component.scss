@@ -1,10 +1,61 @@
+.content-wrapper {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.students-container {
+  flex: 0 0 300px;
+  
+  .drag-container {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+}
+
+.groups-container {
+  flex: 1;
+  min-width: 0; // Permette al contenitore di ridursi oltre il contenuto
+  
+  #groupslist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 0;
+    overflow-x: auto;
+    
+    .group-item {
+      min-width: 200px;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      min-height: 100px;
+      
+      h4 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+      }
+      
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9em;
+      }
+    }
+  }
+}
+
 #studentslist {
-  max-width: 400px;  // Limita la larghezza massima
-  margin: 1rem 0;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
 }
 
 .drag-container {

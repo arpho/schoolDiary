@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GroupsService } from '../../services/groups/groups.service';
 import { GroupModel } from '../../models/groupModel';
@@ -40,6 +40,7 @@ export class GroupsManagerComponent implements OnInit {
   groupsList = signal<GroupModel[]>([]);
   toast = inject(ToasterService);
   $users = inject(UsersService);
+connectedLists: any;
 async addGroup() {
 console.log("addGroup")
 const alert = await this.alertController.create({
@@ -102,6 +103,9 @@ await alert.present();
 
   constructor() {
     addIcons({medkit});
+    this.connectedLists= computed(() => {
+      return[ "studentsList",...this.groupsList().map(group => group.key)];
+    });
     // Effetto reattivo che si attiva quando classkey cambia
     effect(async () => {
       const key = this.classkey();
@@ -130,13 +134,17 @@ this.groupsList().forEach(group => {
     this.availableStudents.set([...this.availableStudents()]);
   }
 
-  drop(event: CdkDragDrop<UserModel[]>) {
+  drop(event: CdkDragDrop<UserModel[]>,groupKey:string) {
     console.log("drop", event);
+    console.log("inserire studente", event.item.data," in gruppo",groupKey)
+    console.log("groupKey",groupKey)
     if (event.previousContainer === event.container) {
-      console.log("moveItemInArray",event.previousContainer);
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      console.log("moveItemInArray previous",event.previousContainer);
+      console.log("moveItemInArray container",event.container.id);
+
+        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      transferArrayItem(
+            transferArrayItem(
         event.previousContainer.data,
         event.container.data,
         event.previousIndex,
