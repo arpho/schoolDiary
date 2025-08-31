@@ -9,6 +9,7 @@ import { ClassiService } from '../../services/classi.service';
 import { ClasseModel } from '../../models/classModel';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
+import { ToasterService } from '../../../../shared/services/toaster.service';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -32,7 +33,13 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GroupsManagerComponent implements OnInit {
+  private service = inject(GroupsService); 
+  private classi = inject(ClassiService);
   alertController = inject(AlertController);
+  classkey = input<string>();
+  groupsList = signal<GroupModel[]>([]);
+  toast = inject(ToasterService);
+  $users = inject(UsersService);
 async addGroup() {
 console.log("addGroup")
 const alert = await this.alertController.create({
@@ -40,10 +47,10 @@ const alert = await this.alertController.create({
   message: 'Inserisci il nome del gruppo',
   inputs: [
     {
-      name: 'name',
+      name: 'nome',
       type: 'text',
       placeholder: 'Nome del gruppo',
-      value: `gruppo ${this.groupslist().length + 1}`
+      value: `gruppo ${this.groupsList().length + 1}`
     },
     {name: 'description',type: 'text',placeholder: 'description',value: ''}
   ],
@@ -55,24 +62,33 @@ const alert = await this.alertController.create({
     },
     {
       text: 'Create',
-      handler: (data: { name: string, description: string }) => {
+      handler: (data: { nome: string, description: string }) => {
         console.log('Creating group', data);
          const group = new GroupModel({...data,classKey:this.classkey()})
-         console.log("group",group)
+         console.log("group aggiunto",group)
+         try{
+           this.service.createGroup(group).then((groupKey:string) => {
+            this.toast.showToast({message:"Gruppo aggiunto con successo",duration:2000,position:"bottom"});
+            console.log("gruppo creato", group);
+            group.setKey(groupKey);
+          }).catch((error) => {
+            this.toast.showToast({message:"Errore durante l'aggiunta del gruppo",duration:2000,position:"bottom"});
+            console.log("errore durante l'aggiunta del gruppo", error);
+          });
+         }
 
+
+
+        
+        catch (error) {
+          console.error("Errore durante la creazione del gruppo", error);
         }
     }
+  } 
   ]
 });
 await alert.present();
 }
-  // Usiamo input.required per assicurarci che il valore sia sempre fornito
-  classkey = input.required<string>();
-   students = signal<UserModel[]>([]);
-   private $users = inject(UsersService);
-  private service = inject(GroupsService);
-  private classi= inject(ClassiService);
-  groupslist = signal<GroupModel[]>([]);
   classe = signal<ClasseModel | null>(null);
   availableStudents = signal<UserModel[]>([]);
   private unsubscribeFn: (() => void) | null = null;
@@ -89,20 +105,21 @@ await alert.present();
     // Effetto reattivo che si attiva quando classkey cambia
     effect(async () => {
       const key = this.classkey();
+      if(key){
       const classe = await this.classi.fetchClasse(key);
       this.classe.set(classe);
-      this.loadGroups(key);
+      this.loadGroups4class(key);
       try {
         this.$users.getUsersByClass(key, (users: UserModel[]) => {
-          console.log("students ", users);
           this.availableStudents.set(users);
         });
       } catch (error) {
         console.error("Errore durante la recupero degli studenti", error);
       }
+    }
     });
     effect(() => {
-this.groupslist().forEach(group => {
+this.groupsList().forEach(group => {
   console.log(group);
 }); 
     });
@@ -110,7 +127,7 @@ this.groupslist().forEach(group => {
 
   async ngOnInit() {
     // Initialize with all students as available
-    this.availableStudents.set([...this.students()]);
+    this.availableStudents.set([...this.availableStudents()]);
   }
 
   drop(event: CdkDragDrop<UserModel[]>) {
@@ -128,24 +145,19 @@ this.groupslist().forEach(group => {
     }
   }
 
-  private loadGroups(classKey: string) {
+  private loadGroups4class(classKey: string) {
     this.service.fetchGroups4class(classKey, (groups) => {
-      this.groupslist.set(groups);
+      console.log("groups 4 class ",classKey, groups);
+      this.groupsList.set(groups);
     });
-    // Annulla la sottoscrizione precedente se esiste
-    if (this.unsubscribeFn) {
-      this.unsubscribeFn();
-      this.unsubscribeFn = null;
-    }
+
 
     if (!classKey) {
       console.warn('Nessun classKey fornito');
 
     }
 
-    this.unsubscribeFn = this.service.fetchGroups4class(classKey, (groups) => {
-      this.groupslist.set(groups);
-    });
+
   }
 
   ngOnDestroy() {

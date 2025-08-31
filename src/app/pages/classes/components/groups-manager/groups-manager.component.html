@@ -7,7 +7,7 @@
     </div>
   } @else {
       
-      @if (groupslist().length > 0) {
+      @if (groupsList().length > 0) {
         <h4>Gruppi disponibili:</h4>
         <ul>
 
@@ -37,6 +37,12 @@
             }
           }
         </div>
+        @for(group of groupsList(); track group.key) {
+          <div class="group-item" cdkDrag>
+            <h4>{{ group.nome }}</h4>
+            <p>{{ group.description }}</p>
+          </div>
+        }
       </div>
       </div>
       

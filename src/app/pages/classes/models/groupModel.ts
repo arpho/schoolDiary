@@ -6,6 +6,7 @@ export class GroupModel {
     key: string = "";
     classKey: string = "";
     note: string = "";
+    description: string = "";
     studentsKeyList: string[] = [];
     studentsList: UserModel[] = [];
     private $usersService: UsersService | undefined;
@@ -30,6 +31,10 @@ export class GroupModel {
         
         this.studentsList = students.filter((user): user is UserModel => user !== null);
     }
+    setKey(key: string){
+        this.key = key
+        return this
+    }
 
     build(data?: any) {
         if (data) {
@@ -37,7 +42,7 @@ export class GroupModel {
             this.key = data.key || this.key;
             this.classKey = data.classKey || this.classKey;
             this.note = data.note || this.note;
-            this.studentsKeyList = data.studentsKeyList || this.studentsKeyList;
+                this.studentsKeyList = data.studentsKeyList || this.studentsKeyList;
             this.createdAt = data.createdAt || this.createdAt;
             this.updatedAt = data.updatedAt || this.updatedAt;
         }
@@ -49,6 +54,7 @@ export class GroupModel {
             key: this.key,
             classKey: this.classKey,
             note: this.note,
+            description: this.description,
             studentsKeyList: this.studentsKeyList,
         }
     }

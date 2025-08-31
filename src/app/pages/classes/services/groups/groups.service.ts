@@ -13,6 +13,7 @@ import {
   deleteDoc
 } from '@angular/fire/firestore';
 import { GroupModel } from '../../models/groupModel';
+import { UsersService } from 'src/app/shared/services/users.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ import { GroupModel } from '../../models/groupModel';
 export class GroupsService {
   private collection = 'groups';
   private firestore = inject(Firestore);
+  private $usersService = inject(UsersService);
 
   constructor() {}
 
@@ -28,24 +30,21 @@ export class GroupsService {
    * @param classKey The key of the class
    * @param callback Callback function that receives the array of groups
    */
-  fetchGroups4class(classKey: string, callback: (groups: GroupModel[]) => void): () => void {
+  fetchGroups4class(classKey: string, callback: (groups: GroupModel[]) => void) {
     const q = query(
       collection(this.firestore, this.collection),
       where('classKey', '==', classKey)
     );
 
-    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+onSnapshot(q, async (querySnapshot) => {
       const groups: GroupModel[] = [];
       for (const doc of querySnapshot.docs) {
-        const group = new GroupModel({ ...doc.data(), key: doc.id });
+        const group = new GroupModel({ ...doc.data(), key: doc.id },this.$usersService);
         await group.fetchStudents();
         groups.push(group);
       }
       callback(groups);
     });
-
-    // Return unsubscribe function
-    return () => unsubscribe();
   }
 
   /**
@@ -90,6 +89,7 @@ export class GroupsService {
    * @returns Promise that resolves with the created group's ID
    */
   async createGroup(group: GroupModel): Promise<string> {
+    console.log("creazione gruppo",group)
     const docRef = await addDoc(collection(this.firestore, this.collection), group.serialize());
     return docRef.id;
   }
