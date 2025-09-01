@@ -32,7 +32,7 @@
               class="drop-list"
               [cdkDropListConnectedTo]="connectedLists()"
               (cdkDropListDropped)="drop($event,'')">
-              @for (student of availableStudents(); track student.key) {
+              @for (student of availableStudents().filter(filterStudents()); track student.key) {
                 @if(student.firstName && student.lastName) {
                 <div class="drag-item" cdkDrag
                 [cdkDragData]="student"

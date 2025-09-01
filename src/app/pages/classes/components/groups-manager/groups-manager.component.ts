@@ -48,6 +48,8 @@ groupidfactory(group: GroupModel) {
   groupsList = signal<GroupModel[]>([]);
   toast = inject(ToasterService);
   $users = inject(UsersService);
+  filterStudents = signal<(user:UserModel) => boolean>((user:UserModel) => true);
+
 connectedLists: any;
 async addGroup() {
 console.log("addGroup")
@@ -121,6 +123,10 @@ await alert.present();
       const classe = await this.classi.fetchClasse(key);
       this.classe.set(classe);
       this.loadGroups4class(key);
+      this.filterStudents.set((user:UserModel) => {
+        const studentsKeyInGroups = this.groupsList().map(group => group.studentsKeyList).reduce((a, b) => a.concat(b), []);
+        return !studentsKeyInGroups.includes(user.key);
+      });
       try {
         this.$users.getUsersByClass(key, (users: UserModel[]) => {
           this.availableStudents.set(users);
