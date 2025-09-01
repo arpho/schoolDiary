@@ -26,6 +26,7 @@
             <h4>Studenti disponibili</h4>
             <div
               cdkDropList
+              id="studentslist"
               #studentsList="cdkDropList"
               [cdkDropListData]="availableStudents()"
               class="drop-list"
@@ -47,15 +48,16 @@
         <div class="groups-container">
           <h4>Gruppi</h4>
           <div id="groupslist">
-            @for(group of groupsList(); track group.key) {
+            @for(group of groupsList().reverse(); track group.key) {
               <div class="group-item"
-               cdkDropList
-               [cdkDropListData]="group.studentsList"
-               id="group-{{group.key}}"
-               (cdkDropListDropped)="drop($event,group.key)"
-               [cdkDropListConnectedTo]="connectedLists()">
+              id={{groupidfactory(group)}}
+     cdkDropList
+     [cdkDropListData]="group.studentsList"
+     [cdkDropListConnectedTo]="connectedLists()"
+     (cdkDropListDropped)="drop($event, group.key)">
                 <h4>{{ group.nome }}</h4>
                 <p>{{ group.description }}</p>
+     
               </div>
             }
           </div>

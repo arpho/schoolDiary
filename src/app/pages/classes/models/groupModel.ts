@@ -55,7 +55,7 @@ export class GroupModel {
             classKey: this.classKey,
             note: this.note,
             description: this.description,
-            studentsKeyList: this.studentsKeyList,
+            studentsKeyList: this.studentsList.map(user => user.key),
         }
     }
 }

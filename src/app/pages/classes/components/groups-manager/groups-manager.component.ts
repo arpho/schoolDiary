@@ -1,3 +1,4 @@
+import { ViewChildren, QueryList } from '@angular/core';
 import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GroupsService } from '../../services/groups/groups.service';
@@ -10,6 +11,8 @@ import { ClasseModel } from '../../models/classModel';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { ToasterService } from '../../../../shared/services/toaster.service';
+
+
 import {
   CdkDrag,
   CdkDragDrop,
@@ -33,6 +36,11 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GroupsManagerComponent implements OnInit {
+groupidfactory(group: GroupModel) {
+  return `group-${group.key}`;
+}
+@ViewChildren(CdkDropList) dropLists!: QueryList<CdkDropList>;
+
   private service = inject(GroupsService); 
   private classi = inject(ClassiService);
   alertController = inject(AlertController);
@@ -104,7 +112,7 @@ await alert.present();
   constructor() {
     addIcons({medkit});
     this.connectedLists= computed(() => {
-      return[ "studentsList",...this.groupsList().map(group => group.key)];
+      return[ "studentsList",...this.groupsList().map(group => `group-${group.key}`)];
     });
     // Effetto reattivo che si attiva quando classkey cambia
     effect(async () => {
@@ -133,13 +141,35 @@ this.groupsList().forEach(group => {
     // Initialize with all students as available
     this.availableStudents.set([...this.availableStudents()]);
   }
+  getDropList(groupKey: string): CdkDropList | undefined {
+    return this.dropLists.find(dl => dl.id === `group-${groupKey}`);
+  }
 
   drop(event: CdkDragDrop<UserModel[]>,groupKey:string) {
     console.log("drop", event);
     console.log("inserire studente", event.item.data," in gruppo",groupKey)
+
+    const group = this.groupsList().find(group => group.key === groupKey);
+    if (!group) {
+      console.error("Gruppo non trovato");
+      return;
+    }
+    else{
+      console.log("gruppo aggiornato",group)
+      try{
+        this.service.updateGroup(group).then(() => { 
+          this.toast.showToast({message:"Gruppo aggiornato con successo",duration:2000,position:"top"});
+          console.log("gruppo aggiornato", group);
+        })
+      }
+      catch (error) {
+        this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
+        console.error("Errore durante l'aggiornamento del gruppo", error);
+      }
+    }
     console.log("groupKey",groupKey)
     if (event.previousContainer === event.container) {
-      console.log("moveItemInArray previous",event.previousContainer);
+      console.log("moveItemInArray previous",event.previousContainer.id);
       console.log("moveItemInArray container",event.container.id);
 
         moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
