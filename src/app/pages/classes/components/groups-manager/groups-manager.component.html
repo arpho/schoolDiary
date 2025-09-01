@@ -57,6 +57,13 @@
      (cdkDropListDropped)="drop($event, group.key)">
                 <h4>{{ group.nome }}</h4>
                 <p>{{ group.description }}</p>
+                @for(student of group.studentsList; track student.key) {
+                  <div class="drag-item" cdkDrag
+                  [cdkDragData]="student"
+                  >
+                    {{ student.lastName }} {{ student.firstName }}
+                  </div>
+                }
      
               </div>
             }
