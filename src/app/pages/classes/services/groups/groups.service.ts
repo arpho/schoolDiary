@@ -80,6 +80,7 @@ onSnapshot(q, async (querySnapshot) => {
    */
   async updateGroup(group: GroupModel): Promise<void> {
     const groupRef = doc(this.firestore, `${this.collection}/${group.key}`);
+    console.log("updating Group",group, group.serialize())
     await setDoc(groupRef, group.serialize(), { merge: true });
   }
 

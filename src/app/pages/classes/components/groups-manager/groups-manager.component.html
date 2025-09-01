@@ -48,7 +48,7 @@
         <div class="groups-container">
           <h4>Gruppi</h4>
           <div id="groupslist">
-            @for(group of groupsList().reverse(); track group.key) {
+            @for(group of groupsList(); track group.key) {
               <div class="group-item"
               id={{groupidfactory(group)}}
      cdkDropList

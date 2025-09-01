@@ -155,14 +155,15 @@ this.groupsList().forEach(group => {
       return;
     }
     else{
-      console.log("gruppo aggiornato",group)
+      console.log("gruppo aggiornato",group,group.serialize())
       try{
         this.service.updateGroup(group).then(() => { 
           this.toast.showToast({message:"Gruppo aggiornato con successo",duration:2000,position:"top"});
-          console.log("gruppo aggiornato", group);
+          console.log("gruppo aggiornato", group,group.serialize());
         })
       }
       catch (error) {
+        console.log("errore durante l'aggiornamento del gruppo", error)
         this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
         console.error("Errore durante l'aggiornamento del gruppo", error);
       }
