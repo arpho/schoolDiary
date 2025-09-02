@@ -25,8 +25,16 @@ export class GroupsService {
   private $usersService = inject(UsersService);
 
   constructor() {}
-
+/**
+ * Aggiorna in modo atomico i dati di due gruppi (origine e destinazione)
+ * utilizzando una transazione batch di Firestore.
+ * 
+ * @param originGroup Il gruppo di origine da aggiornare
+ * @param destinationGroup Il gruppo di destinazione da aggiornare
+ * @returns Promise che si risolve quando l'operazione batch è completata
+ */
   UpdateOriginAndDestinationGroups(originGroup:GroupModel,destinationGroup:GroupModel) {
+      // Crea un'operazione batch per eseguire più operazioni atomicamente
     const batch = writeBatch(this.firestore);
     batch.update(doc(this.firestore, `${this.collection}/${originGroup.key}`), originGroup.serialize());
     batch.update(doc(this.firestore, `${this.collection}/${destinationGroup.key}`), destinationGroup.serialize());
