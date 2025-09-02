@@ -149,19 +149,64 @@ this.groupsList().forEach(group => {
   drop(event: CdkDragDrop<UserModel[]>,groupKey:string) {
     console.log("drop", event);
     console.log("inserire studente", event.item.data," in gruppo",groupKey)
+    const previouscontainerId = event.previousContainer.id.split("-")[1];
+    console.log("previouscontainerId",previouscontainerId)
+const originGroup = this.groupsList().find(group => group.key === previouscontainerId);
+if(originGroup){
+  console.log("rimuovere studente",event.item.data," da gruppo",originGroup)
+  originGroup.studentsList = originGroup.studentsList.filter(student => student.key !== event.item.data.key);
+  console.log("gruppo aggiornato",originGroup,originGroup.serialize())
+}
+const destinationGroup = this.groupsList().find(group => group.key === groupKey);
 
-    const group = this.groupsList().find(group => group.key === groupKey);
-    if (!group) {
+if (event.previousContainer === event.container) {
+  console.log("moveItemInArray previous",event.previousContainer.id);
+  console.log("moveItemInArray container",event.container.id);
+
+    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+} else {
+        transferArrayItem(
+    event.previousContainer.data,
+    event.container.data,
+    event.previousIndex,
+    event.currentIndex,
+  );
+}
+if(originGroup ){
+  if(destinationGroup){// studente spostato in un altro gruppo
+    try{
+      this.service.UpdateOriginAndDestinationGroups(originGroup,destinationGroup)
+      this.toast.showToast({message:`Studente ${event.item.data.lastName} ${event.item.data.firstName} aggiunto con successo al gruppo ${destinationGroup.nome}`,duration:2000,position:"top"});
+    }
+    catch (error) {
+      console.log("errore durante l'aggiornamento del gruppo", error)
+      this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
+      console.error("Errore durante l'aggiornamento del gruppo", error);
+    }
+
+  }
+  else{// studente rimosso dal gruppo e spostato nella lista degli studenti disponibili
+    this.service.updateGroup(originGroup).then(() => {
+      this.toast.showToast({message:"Studente rimosso con successo dal gruppo",duration:2000,position:"top"});
+      console.log("studente rimosso", originGroup,originGroup.serialize());
+    })
+    .catch((error) => {
+      console.log("errore durante l'aggiornamento del gruppo", error)
+      this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
+      console.error("Errore durante l'aggiornamento del gruppo", error);
+    })
+    
+}
+    if (!destinationGroup) {
       console.error("Gruppo non trovato");
       return;
     }
     else{
-      console.log("gruppo aggiornato",group,group.serialize())
+      console.log("gruppo aggiornato",destinationGroup,destinationGroup.serialize())
       try{
-        this.service.updateGroup(group).then(() => { 
-          this.toast.showToast({message:"Gruppo aggiornato con successo",duration:2000,position:"top"});
-          console.log("gruppo aggiornato", group,group.serialize());
-        })
+        console.log("updating group",destinationGroup)
+        console.log("updating origin group",originGroup)
+
       }
       catch (error) {
         console.log("errore durante l'aggiornamento del gruppo", error)
@@ -170,19 +215,26 @@ this.groupsList().forEach(group => {
       }
     }
     console.log("groupKey",groupKey)
-    if (event.previousContainer === event.container) {
-      console.log("moveItemInArray previous",event.previousContainer.id);
-      console.log("moveItemInArray container",event.container.id);
-
-        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-            transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
+  }
+  else{// studente preso dalla lista degli studenti disponibili e spostato in un gruppo
+    console.log("studente preso dalla lista degli studenti disponibili e spostato in un gruppo",event.item.data,groupKey)
+    if(destinationGroup){
+      destinationGroup.studentsList.push(event.item.data)
+      console.log("studente aggiunto al gruppo",destinationGroup,destinationGroup.serialize())
+      try{
+        this.service.updateGroup(destinationGroup).then(() => { 
+          this.toast.showToast({message:"Studente aggiunto con successo al gruppo",duration:2000,position:"top"});
+          console.log("studente aggiunto", destinationGroup,destinationGroup.serialize());
+        })
+      }
+      catch (error) {
+        console.log("errore durante l'aggiornamento del gruppo", error)
+        this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
+        console.error("Errore durante l'aggiornamento del gruppo", error);
+      }
     }
+    return;
+}
   }
 
   private loadGroups4class(classKey: string) {

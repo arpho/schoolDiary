@@ -10,7 +10,8 @@ import {
   onSnapshot,
   getDoc,
   addDoc,
-  deleteDoc
+  deleteDoc,
+  writeBatch
 } from '@angular/fire/firestore';
 import { GroupModel } from '../../models/groupModel';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -24,6 +25,13 @@ export class GroupsService {
   private $usersService = inject(UsersService);
 
   constructor() {}
+
+  UpdateOriginAndDestinationGroups(originGroup:GroupModel,destinationGroup:GroupModel) {
+    const batch = writeBatch(this.firestore);
+    batch.update(doc(this.firestore, `${this.collection}/${originGroup.key}`), originGroup.serialize());
+    batch.update(doc(this.firestore, `${this.collection}/${destinationGroup.key}`), destinationGroup.serialize());
+    return batch.commit();
+  }
 
   /**
    * Fetches all groups for a specific class
