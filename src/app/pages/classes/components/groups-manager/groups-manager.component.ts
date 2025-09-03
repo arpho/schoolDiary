@@ -109,7 +109,7 @@ await alert.present();
   constructor() {
     addIcons({medkit});
     this.connectedLists= computed(() => {
-      return[ "studentsList",...this.groupsList().map(group => `group-${group.key}`)];
+      return[ "studentslist",...this.groupsList().map(group => `group-${group.key}`)];
     });
     // Effetto reattivo che si attiva quando classkey cambia
     effect(async () => {
