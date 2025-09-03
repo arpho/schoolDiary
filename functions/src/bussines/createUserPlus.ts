@@ -33,7 +33,7 @@ async function sendActivationEmail(email: string) {
   try {
     // Genera il link di accesso una tantum
     const actionCodeSettings = {
-      url: `${process.env.APP_URL || "https://your-app-url.com"}/login`,
+      url: `${process.env.APP_URL || "https://schooldiary-b8434.web.app"}/login`,
       handleCodeInApp: true,
     };
 
