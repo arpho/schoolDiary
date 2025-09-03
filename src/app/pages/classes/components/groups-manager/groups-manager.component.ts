@@ -172,69 +172,32 @@ if (event.previousContainer === event.container) {
     event.currentIndex,
   );
 }
-if(originGroup ){
-  if(destinationGroup){// studente spostato in un altro gruppo
-    try{
-      this.service.UpdateOriginAndDestinationGroups(originGroup,destinationGroup)
-      this.toast.showToast({message:`Studente ${event.item.data.lastName} ${event.item.data.firstName} aggiunto con successo al gruppo ${destinationGroup.nome}`,duration:2000,position:"top"});
-    }
-    catch (error) {
-      console.log("errore durante l'aggiornamento del gruppo", error)
-      this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
-      console.error("Errore durante l'aggiornamento del gruppo", error);
-    }
 
+
+try{ 
+  if(originGroup && destinationGroup){
+    this.service.UpdateOriginAndDestinationGroups(originGroup,destinationGroup)
+    this.toast.showToast({message:`Studente ${event.item.data.lastName} ${event.item.data.firstName} aggiunto con successo al gruppo ${destinationGroup.nome}`,duration:2000,position:"top"});
   }
-  else{// studente rimosso dal gruppo e spostato nella lista degli studenti disponibili
+  else if(originGroup && !destinationGroup){
     this.service.updateGroup(originGroup).then(() => {
       this.toast.showToast({message:"Studente rimosso con successo dal gruppo",duration:2000,position:"top"});
       console.log("studente rimosso", originGroup,originGroup.serialize());
     })
-    .catch((error) => {
-      console.log("errore durante l'aggiornamento del gruppo", error)
-      this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
-      console.error("Errore durante l'aggiornamento del gruppo", error);
-    })
-    
-}
-    if (!destinationGroup) {
-      console.error("Gruppo non trovato");
-      return;
-    }
-    else{
-      console.log("gruppo aggiornato",destinationGroup,destinationGroup.serialize())
-      try{
-        console.log("updating group",destinationGroup)
-        console.log("updating origin group",originGroup)
-
-      }
-      catch (error) {
-        console.log("errore durante l'aggiornamento del gruppo", error)
-        this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
-        console.error("Errore durante l'aggiornamento del gruppo", error);
-      }
-    }
-    console.log("groupKey",groupKey)
   }
-  else{// studente preso dalla lista degli studenti disponibili e spostato in un gruppo
-    console.log("studente preso dalla lista degli studenti disponibili e spostato in un gruppo",event.item.data,groupKey)
-    if(destinationGroup){
-      destinationGroup.studentsList.push(event.item.data)
-      console.log("studente aggiunto al gruppo",destinationGroup,destinationGroup.serialize())
-      try{
-        this.service.updateGroup(destinationGroup).then(() => { 
-          this.toast.showToast({message:"Studente aggiunto con successo al gruppo",duration:2000,position:"top"});
-          console.log("studente aggiunto", destinationGroup,destinationGroup.serialize());
-        })
-      }
-      catch (error) {
-        console.log("errore durante l'aggiornamento del gruppo", error)
-        this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
-        console.error("Errore durante l'aggiornamento del gruppo", error);
-      }
-    }
-    return;
+  if(!originGroup && destinationGroup){
+    this.service.updateGroup(destinationGroup).then(() => {
+      this.toast.showToast({message:"Studente aggiunto con successo al gruppo",duration:2000,position:"top"});
+      console.log("studente aggiunto", destinationGroup,destinationGroup.serialize());
+    })
+  }    
+ }
+catch (error) {
+  console.log("errore durante l'aggiornamento del gruppo", error)
+  this.toast.showToast({message:"Errore durante l'aggiornamento del gruppo",duration:2000,position:"top"});
+  console.error("Errore durante l'aggiornamento del gruppo", error);
 }
+
   }
 
   private loadGroups4class(classKey: string) {
