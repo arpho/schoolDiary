@@ -151,27 +151,35 @@ this.groupsList().forEach(group => {
     console.log("inserire studente", event.item.data," in gruppo",groupKey)
     const previouscontainerId = event.previousContainer.id.split("-")[1];
     console.log("previouscontainerId",previouscontainerId)
+    const destinationcontainerId = event.container.id.split("-")[1];
+    
+const destinationGroup = this.groupsList().find(group => group.key === destinationcontainerId);
+console.log("destinationGroup",destinationGroup)
+     
 const originGroup = this.groupsList().find(group => group.key === previouscontainerId);
-if(originGroup){
-  console.log("rimuovere studente",event.item.data," da gruppo",originGroup)
-  originGroup.studentsList = originGroup.studentsList.filter(student => student.key !== event.item.data.key);
-  console.log("gruppo aggiornato",originGroup,originGroup.serialize())
+console.log("originGroup",originGroup)
+console.log("destinationGroup",destinationGroup);
+if(originGroup && destinationGroup && event.previousContainer === event.container){// se lo studente viene spostato all'interno dello stesso gruppo
+  moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 }
-const destinationGroup = this.groupsList().find(group => group.key === groupKey);
-
-if (event.previousContainer === event.container) {
-  console.log("moveItemInArray previous",event.previousContainer.id);
-  console.log("moveItemInArray container",event.container.id);
-
-    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-} else {
-        transferArrayItem(
+else if(originGroup && destinationGroup && event.previousContainer !== event.container){// se lo studente viene spostato da un gruppo ad un altro
+  transferArrayItem(
     event.previousContainer.data,
     event.container.data,
     event.previousIndex,
     event.currentIndex,
   );
 }
+
+if(!originGroup && destinationGroup){// studente inserito in un gruppo dalla lista degli studenti disponibili 
+  destinationGroup.studentsList.splice(event.currentIndex, 0, event.item.data);
+
+}
+if(originGroup && !destinationGroup){// studente rimosso da un gruppo
+  originGroup.studentsList.splice(event.previousIndex, 1);
+}
+
+
 
 
 try{ 
