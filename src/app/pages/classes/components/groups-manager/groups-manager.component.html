@@ -50,13 +50,14 @@
           <div id="groupslist">
             @for(group of groupsList(); track group.key) {
               <div class="group-item"
+              (click)="editGroup(group)"
               id="{{groupidfactory(group)}}"
      cdkDropList
      [cdkDropListData]="group.studentsList"
      [cdkDropListConnectedTo]="connectedLists()"
      (cdkDropListDropped)="drop($event, group.key)">
                 <h4>{{ group.nome }}</h4>
-                <p>{{ group.description }}</p>
+                <h2>{{ group.description }}</h2>
                 @for(student of group.studentsList; track student.key) {
                   @if(student.firstName && student.lastName) {
                   <div class="drag-item" cdkDrag

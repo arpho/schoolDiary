@@ -45,6 +45,7 @@ export class GroupModel {
                 this.studentsKeyList = data.studentsKeyList || this.studentsKeyList;
             this.createdAt = data.createdAt || this.createdAt;
             this.updatedAt = data.updatedAt || this.updatedAt;
+            this.description = data.description || this.description;
         }
         return this;
     }

@@ -36,6 +36,55 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GroupsManagerComponent implements OnInit {
+async editGroup(group: GroupModel) {
+console.log("editGroup",group)
+const alert =await this.alertController.create({
+  header: 'Edit Group',
+  message: `Modifica il gruppo ${group.nome}`,
+  inputs: [
+    {
+      name: 'nome',
+      type: 'text',
+      placeholder: 'Nome del gruppo',
+      value: group.nome
+    },
+    {name: 'description',type: 'text',placeholder: 'descrizione',value: group.description}
+  ],
+  buttons: [
+    {
+      text: 'Cancel',
+      role: 'cancel',
+      cssClass: 'secondary'
+    },
+    {
+      text: 'salva',
+      handler: (data: { nome: string, description: string }) => {
+        console.log('updating group', data);
+        group.nome = data.nome;
+        group.description = data.description;
+         console.log("group modificato",group)
+          try{
+            this.service.updateGroup(group).then(() => {
+             this.toast.showToast({message:"Gruppo modificato con successo",duration:2000,position:"bottom"});
+             console.log("gruppo modificato", group,group.serialize());
+           }).catch((error) => {
+             this.toast.showToast({message:"Errore durante la modifica del gruppo",duration:2000,position:"bottom"});
+             console.log("errore durante la modifica del gruppo", error);
+           });
+          }
+
+
+
+        
+         catch (error) {
+           console.error("Errore durante la modifica del gruppo", error);
+         }
+    }
+  }
+  ]
+});
+await alert.present();
+}
 groupidfactory(group: GroupModel) {
   return `group-${group.key}`;
 }
