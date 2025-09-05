@@ -16,7 +16,7 @@
         <p>Nessun gruppo trovato per questa classe.</p>
       }
   <ion-button (click)="addGroup()">Crea Gruppo<ion-icon name="medkit"></ion-icon></ion-button>
-  <div id="groupslist">
+  <div >
     <div>
       <p>Classe: <strong>{{classe()?.classe}}</strong></p>
       <div class="content-wrapper">
@@ -50,7 +50,7 @@
           <div id="groupslist">
             @for(group of groupsList(); track group.key) {
               <div class="group-item"
-              id={{groupidfactory(group)}}
+              id="{{groupidfactory(group)}}"
      cdkDropList
      [cdkDropListData]="group.studentsList"
      [cdkDropListConnectedTo]="connectedLists()"
