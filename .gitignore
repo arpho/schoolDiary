@@ -76,3 +76,5 @@ src/environments/
 src/assets/excel/
 
 src/assets/token/
+
+functions/.env

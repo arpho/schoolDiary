@@ -4,7 +4,8 @@ import {getFirestore} from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import * as functions from "firebase-functions";
 import {UsersRole} from "../shared/models/UsersRole";
-import {emailService} from '../services/email.service';
+import {emailService} from "../services/email.service";
+import { onCall } from "firebase-functions/https";
 
 /**
  * Verifica se un utente esiste
