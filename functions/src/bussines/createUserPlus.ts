@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 import {getAuth, UserRecord} from "firebase-admin/auth";
 import {getFirestore} from "firebase-admin/firestore";
-import {onCall} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as functions from "firebase-functions";
 import {UsersRole} from "../shared/models/UsersRole";
+import {emailService} from '../services/email.service';
 
 /**
  * Verifica se un utente esiste
@@ -28,24 +28,18 @@ async function checkUserExists(email: string): Promise<boolean> {
 /**
  * Invia una mail di attivazione all'utente
  * @param {string} email - L'email a cui inviare il link di attivazione
+ * @param {string} activationLink - Il link di attivazione da inviare
  */
-async function sendActivationEmail(email: string) {
+async function sendActivationEmail(email: string, activationLink: string) {
   try {
-    // Genera il link di accesso una tantum
-    const actionCodeSettings = {
-      url: `${process.env.APP_URL || "https://schooldiary-b8434.web.app"}/login`,
-      handleCodeInApp: true,
-    };
-
-    const link = await getAuth().generatePasswordResetLink(email, actionCodeSettings);
-    logger.info(`Link di attivazione per ${email}: ${link}`);
-
-    // TODO: Implementa la logica di invio email qui
-    // Esempio con il tuo sistema di invio email:
-    // await emailService.sendActivationEmail(email, link);
+    const success = await emailService.sendActivationEmail(email, activationLink);
+    if (success) {
+      logger.info(`Email di attivazione inviata con successo a ${email}`);
+    } else {
+      logger.error(`Invio email di attivazione fallito per ${email}`);
+    }
   } catch (error) {
-    logger.error("Errore nella generazione del link di attivazione:", error);
-    // Non interrompiamo il flusso principale se fallisce la generazione del link
+    logger.error("Errore nell'invio dell'email di attivazione:", error);
   }
 }
 
@@ -217,7 +211,13 @@ export const createUserPlus = onCall(
       }
 
       // Invia la mail di attivazione in entrambi i casi
-      await sendActivationEmail(userEmail);
+      const actionCodeSettings = {
+        url: `${process.env.APP_URL || "https://schooldiary-b8434.web.app"}/login`,
+        handleCodeInApp: true,
+      };
+
+      const activationLink = await getAuth().generatePasswordResetLink(userEmail, actionCodeSettings);
+      await sendActivationEmail(userEmail, activationLink);
 
       return {
         success: true,
