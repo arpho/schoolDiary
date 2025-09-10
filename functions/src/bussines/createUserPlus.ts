@@ -213,7 +213,7 @@ export const createUserPlus = onCall(
 
       // Invia la mail di attivazione in entrambi i casi
       const actionCodeSettings = {
-        url: `${process.env.APP_URL || "https://schooldiary-b8434.web.app"}/login`,
+        url: `${process.env.APP_URL || "https://schooldiary-b8434.web.app"}`,
         handleCodeInApp: true,
       };
 
