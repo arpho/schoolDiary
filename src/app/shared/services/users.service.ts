@@ -218,7 +218,7 @@ this.getUsersOnRealTime((users)=>{
 
   async createUser(user: UserModel): Promise<string> {
     const functions = getFunctions();
-    const createUser = httpsCallable(functions, 'createUser');
+    const createUser = httpsCallable(functions, 'createUserPlus');
     const result = await createUser(user) as ClaimsResponse;
     console.log('createUser response:', result);
     if (result.data?.result !== 'ok') {
