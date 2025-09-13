@@ -17,16 +17,18 @@ export class EmailService {
 
   constructor() {
     const apiKey = process.env.MAILERSEND_API_KEY;
+    this.sender = process.env.EMAIL_SENDER || "noreply@yourdomain.com";
+    this.senderName = process.env.EMAIL_SENDER_NAME || "SchoolDiary";
+
     if (!apiKey) {
-      throw new Error("MAILERSEND_API_KEY environment variable is not set");
+      throw new Error(
+        "MailerSend API key non configurata. Imposta la variabile d'ambiente MAILERSEND_API_KEY nel file .env"
+      );
     }
 
     this.mailerSend = new MailerSend({
       apiKey: apiKey,
     });
-
-    this.sender = process.env.EMAIL_SENDER || "noreply@yourdomain.com";
-    this.senderName = process.env.EMAIL_SENDER_NAME || "SchoolDiary";
   }
 
   async sendEmail(options: EmailOptions): Promise<boolean> {

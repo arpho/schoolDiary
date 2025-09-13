@@ -11,3 +11,6 @@ node_modules/
 
 # Firebase environment variables
 .env.*
+
+# Token directory
+src/assets/token/
