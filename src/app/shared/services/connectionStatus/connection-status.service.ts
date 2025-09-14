@@ -1,45 +1,63 @@
-import { Injectable } from '@angular/core';
-import { fromEvent, Observable, Subscription, BehaviorSubject } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { fromEvent, Observable, BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ConnectionStatus } from '../../models/connectionStatus';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConnectionStatusService {
-  onlineEvent: Observable<Event> | undefined;
-  offlineEvent!: Observable<Event>;
-  subscriptions: Subscription[] = [];
-  connectionStatusMessage = 'Checking connection...';
-  private connectionStatusSubject = new BehaviorSubject<ConnectionStatus>(navigator.onLine ? ConnectionStatus.Online : ConnectionStatus.Offline);
-  connectionStatus$ = this.connectionStatusSubject.asObservable();
+export class ConnectionStatusService implements OnDestroy {
+  private destroy$ = new Subject<void>();
+  connectionStatusSubject = new BehaviorSubject<ConnectionStatus>(
+    navigator.onLine ? ConnectionStatus.Online : ConnectionStatus.Offline
+  );
   
+  connectionStatus$ = this.connectionStatusSubject.asObservable();
+  connectionStatusMessage = 'Checking connection...';
+
+  constructor() {
+    console.log('ConnectionStatusService - Initial status:', this.connectionStatus);
+    this.initializeConnectionEvents();
+  }
+
+  private initializeConnectionEvents(): void {
+    // Inizializza con lo stato corrente
+    this.updateConnectionStatus(navigator.onLine);
+    
+    // Gestione evento online
+    fromEvent(window, 'online').pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      console.log('ConnectionStatusService - Online event received');
+      this.updateConnectionStatus(true);
+    });
+
+    // Gestione evento offline
+    fromEvent(window, 'offline').pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      console.log('ConnectionStatusService - Offline event received');
+      this.updateConnectionStatus(false);
+    });
+  }
+  
+  private updateConnectionStatus(isOnline: boolean): void {
+    const status = isOnline ? ConnectionStatus.Online : ConnectionStatus.Offline;
+    this.connectionStatusMessage = isOnline 
+      ? 'Back to online' 
+      : 'Connection lost! You are not connected to internet';
+      
+    console.log(`ConnectionStatusService - Updating status to: ${status === ConnectionStatus.Online ? 'Online' : 'Offline'}`);
+    this.connectionStatusSubject.next(status);
+  }
+
   get connectionStatus(): ConnectionStatus {
     return this.connectionStatusSubject.value;
   }
 
-  constructor() {
-
-        /**
-    * Get the online/offline status from browser window
-    */
-        this.onlineEvent = fromEvent(window, 'online');
-        this.offlineEvent = fromEvent(window, 'offline');
-        /**
-        * Get the online status as observable
-        */
-        this.subscriptions.push(this.onlineEvent.subscribe(e => {
-          this.connectionStatusMessage = 'Back to online';
-          this.connectionStatusSubject.next(ConnectionStatus.Online);
-          console.log('#Online...');
-        }));
-    
-        /**
-        * Get the offline status as observable
-        */
-        this.subscriptions.push(this.offlineEvent.subscribe(e => {
-          this.connectionStatusMessage = 'Connection lost! You are not connected to internet';
-          this.connectionStatusSubject.next(ConnectionStatus.Offline);
-          console.log('#Offline...');
-        }));
-   }
+  ngOnDestroy(): void {
+    console.log('ConnectionStatusService - Destroying service');
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

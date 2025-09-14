@@ -1,7 +1,7 @@
 
-@if($connectionStatus() === _connectionStatus.Online){
+@if($connectionStatus() === ConnectionStatus.online){
   <ion-icon name="online"></ion-icon>
 }
-@if($connectionStatus() === _connectionStatus.Offline){
+@if($connectionStatus() === ConnectionStatus.offline){
   <ion-icon name="offline"></ion-icon>
 }
