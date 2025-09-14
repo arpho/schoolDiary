@@ -2,6 +2,29 @@
 /* eslint-disable max-len */
 import {logger} from "firebase-functions/v2";
 import {MailerSend, EmailParams, Sender, Recipient} from "mailersend";
+import * as dotenv from "dotenv";
+import {resolve} from "path";
+
+// Carica le variabili d'ambiente dal file .env
+const envPaths = [
+  resolve(__dirname, "../../.env"), // Sviluppo locale
+  resolve(__dirname, "../.env"), // Produzione (dopo il build)
+];
+
+// Prova a caricare da ciascun percorso finché non ne trova uno valido
+let loadedEnvPath = "";
+for (const path of envPaths) {
+  try {
+    dotenv.config({path});
+    if (process.env.MAILERSEND_API_KEY) {
+      loadedEnvPath = path;
+      logger.info(`Variabili d'ambiente caricate da: ${path}`);
+      break;
+    }
+  } catch (error) {
+    logger.warn(`Impossibile caricare il file .env da ${path}:`, error);
+  }
+}
 
 interface EmailOptions {
   to: string;
@@ -16,14 +39,18 @@ export class EmailService {
   private senderName: string;
 
   constructor() {
+    // Carica le variabili d'ambiente
     const apiKey = process.env.MAILERSEND_API_KEY;
     this.sender = process.env.EMAIL_SENDER || "noreply@yourdomain.com";
     this.senderName = process.env.EMAIL_SENDER_NAME || "SchoolDiary";
 
+    // Verifica la presenza della chiave API
     if (!apiKey) {
-      throw new Error(
-        "MailerSend API key non configurata. Imposta la variabile d'ambiente MAILERSEND_API_KEY nel file .env"
-      );
+      const errorMsg = "MailerSend API key non configurata. " +
+        "Assicurati di aver impostato la variabile MAILERSEND_API_KEY " +
+        (loadedEnvPath ? `nel file .env in ${loadedEnvPath}` : "nel file .env");
+      logger.error(errorMsg);
+      throw new Error(errorMsg);
     }
 
     this.mailerSend = new MailerSend({

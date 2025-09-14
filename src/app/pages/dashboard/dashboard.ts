@@ -9,6 +9,7 @@ import { UsersRole } from 'src/app/shared/models/usersRole';
 import { DashboardTeacherComponent } from 'src/app/shared/components/dashboard-teacher/dashboard-teacher';
 import { DashboardStudentComponent } from 'src/app/shared/components/dashboard-student/dashboard-student';
 import { LogoutComponent } from 'src/app/shared/components/logout/logout.component';
+import { ConnectionStatusComponent } from "src/app/shared/components/connectionStatus/connection-status/connection-status.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -22,8 +23,9 @@ import { LogoutComponent } from 'src/app/shared/components/logout/logout.compone
     IonToolbar,
     CommonModule,
     FormsModule,
-    LogoutComponent
-    ]
+    LogoutComponent,
+    ConnectionStatusComponent
+]
 })
 export class DashboardPage implements OnInit {
   private Users = inject(UsersService);
