@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { fromEvent, Observable, Subscription } from 'rxjs';
+import { fromEvent, Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { ConnectionStatus } from '../../models/connectionStatus';
 
 @Injectable({
@@ -9,8 +9,13 @@ export class ConnectionStatusService {
   onlineEvent: Observable<Event> | undefined;
   offlineEvent!: Observable<Event>;
   subscriptions: Subscription[] = [];
-  connectionStatusMessage!: string;
-  connectionStatus!: ConnectionStatus ;
+  connectionStatusMessage = 'Checking connection...';
+  private connectionStatusSubject = new BehaviorSubject<ConnectionStatus>(navigator.onLine ? ConnectionStatus.Online : ConnectionStatus.Offline);
+  connectionStatus$ = this.connectionStatusSubject.asObservable();
+  
+  get connectionStatus(): ConnectionStatus {
+    return this.connectionStatusSubject.value;
+  }
 
   constructor() {
 
@@ -24,8 +29,8 @@ export class ConnectionStatusService {
         */
         this.subscriptions.push(this.onlineEvent.subscribe(e => {
           this.connectionStatusMessage = 'Back to online';
-          this.connectionStatus = ConnectionStatus.Online;
-          console.log('Online...');
+          this.connectionStatusSubject.next(ConnectionStatus.Online);
+          console.log('#Online...');
         }));
     
         /**
@@ -33,8 +38,8 @@ export class ConnectionStatusService {
         */
         this.subscriptions.push(this.offlineEvent.subscribe(e => {
           this.connectionStatusMessage = 'Connection lost! You are not connected to internet';
-          this.connectionStatus = ConnectionStatus.Offline;
-          console.log('Offline...');
+          this.connectionStatusSubject.next(ConnectionStatus.Offline);
+          console.log('#Offline...');
         }));
    }
 }

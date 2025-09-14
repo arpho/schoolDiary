@@ -1,1 +1,17 @@
 /* Stili della dashboard */
+
+ion-toolbar {
+  --padding-end: 8px;
+  --padding-start: 16px;
+}
+
+.toolbar-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
