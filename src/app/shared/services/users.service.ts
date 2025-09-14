@@ -104,7 +104,7 @@ export class UsersService  implements OnInit{
   private auth = inject(Auth);
   private firestore = inject(Firestore);
   private MyAuth = inject(AuthService);
-  private collection = 'userProfile';
+  private collection = 'userProfiles';
 
   constructor(
     private $classes: ClassiService
@@ -125,7 +125,7 @@ this.getUsersOnRealTime((users)=>{
   }
 
   fetchUser(userKey: string): Promise<UserModel | null> {
-    const userRef = doc(this.firestore, `userProfile/${userKey}`);
+    const userRef = doc(this.firestore, `userProfiles/${userKey}`);
     return getDoc(userRef).then((doc) => {
       if (doc.exists()) {
         const data = doc.data();
@@ -138,7 +138,7 @@ this.getUsersOnRealTime((users)=>{
   } 
 
   updateUser(userKey: string, user: UserModel): Promise<void> {
-    const userRef = doc(this.firestore, `userProfile/${userKey}`);
+    const userRef = doc(this.firestore, `userProfiles/${userKey}`);
     console.log("serialized user", user.serialize());
     return setDoc(userRef, user.serialize());
   }
@@ -281,7 +281,7 @@ this.getUsersOnRealTime((users)=>{
   }
 
   getUserByUid(uid: string): Promise<UserModel | null> {
-    const userRef = doc(this.firestore, `userProfile/${uid}`);
+    const userRef = doc(this.firestore, `userProfiles/${uid}`);
     return new Promise((resolve) => {
       onSnapshot(userRef, (snapshot) => {
         if (snapshot.exists()) {

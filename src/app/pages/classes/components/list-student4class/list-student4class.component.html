@@ -1,6 +1,6 @@
 <h1>Lista Studenti</h1>
 <ion-list>
-    @for(student of _students(); track student.key) {
+    @for(student of sortedStudents(); track student.key) {
         <ion-item>
             <ion-card>
                 <ion-card-header>
