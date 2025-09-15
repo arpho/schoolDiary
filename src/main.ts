@@ -45,9 +45,12 @@ import {
   getFirestore,
   provideFirestore
 } from '@angular/fire/firestore';
-import {
-  addIcons
-} from 'ionicons';
+import { addIcons } from 'ionicons';
+import { 
+  wifi, 
+  wifiOutline 
+} from 'ionicons/icons';
+import { IconService } from './app/core/services/icon.service';
 import {
   addCircle,
   filter,
@@ -66,11 +69,18 @@ import {
 } from 'ionicons/icons';
 
 
+// Registra le icone globalmente
+addIcons({
+  wifi,
+  'wifi-outline': wifiOutline
+});
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideHttpClient(),
+    IconService,
     provideRouter(routes, withPreloading(PreloadAllModules)),
     importProvidersFrom(IonicModule.forRoot()),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),

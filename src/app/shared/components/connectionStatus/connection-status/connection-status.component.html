@@ -1,7 +1,10 @@
 
-@if($connectionStatus() === ConnectionStatus.online){
-  <ion-icon name="online"></ion-icon>
-}
-@if($connectionStatus() === ConnectionStatus.offline){
-  <ion-icon name="offline"></ion-icon>
-}
+<div class="status-container"
+     [class.ion-color-primary]="$connectionStatus() === ConnectionStatus.Online"
+     [class.ion-color-danger]="$connectionStatus() === ConnectionStatus.Offline">
+  @if($connectionStatus() === ConnectionStatus.Online) {
+    <ion-icon name="wifi"></ion-icon>
+  } @else {
+    <ion-icon name="wifi-outline"></ion-icon>
+  }
+</div>

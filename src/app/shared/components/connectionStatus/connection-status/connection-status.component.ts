@@ -1,17 +1,15 @@
 import { 
   Component, 
-  inject, 
   OnInit, 
   OnDestroy, 
   ChangeDetectionStrategy,
   ChangeDetectorRef, 
-  signal
+  signal,
+  inject
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConnectionStatus } from 'src/app/shared/models/connectionStatus';
 import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { wifi, wifiOutline } from 'ionicons/icons';
 import { ConnectionStatusService } from 'src/app/shared/services/connectionStatus/connection-status.service';
 
 @Component({
@@ -35,29 +33,39 @@ import { ConnectionStatusService } from 'src/app/shared/services/connectionStatu
       width: 24px;
       height: 24px;
       border: 1px solid transparent;
+      border-radius: 50%;
+      background: rgba(var(--ion-color-primary-rgb), 0.1);
     }
     ion-icon {
       font-size: 20px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: var(--ion-color-primary);
     }
+    
+    /* Stile per lo stato offline */
+    :host-context(.ion-color-danger) ion-icon {
+      color: var(--ion-color-danger);
+    }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConnectionStatusComponent implements OnInit, OnDestroy {
+  // Esponi l'enum al template
+  readonly ConnectionStatus = ConnectionStatus;
   private connectionStatusService = inject(ConnectionStatusService);
-  $connectionStatus = signal<ConnectionStatus>(this.connectionStatusService.connectionStatus);
   private cdr = inject(ChangeDetectorRef);
   
   isOnline = navigator.onLine;
+  $connectionStatus = signal<ConnectionStatus>(
+    this.isOnline ? ConnectionStatus.Online : ConnectionStatus.Offline
+  );
   
   constructor() {
     console.log('ConnectionStatusComponent - Constructor');
-    
-    // Registra le icone
-    addIcons({ 
-      'wifi': wifi, 
-      'wifi-outline': wifiOutline 
-    });
   }
   
   ngOnInit() {
@@ -70,16 +78,15 @@ export class ConnectionStatusComponent implements OnInit, OnDestroy {
     // Sottoscrizione al servizio come fallback
     this.connectionStatusService.connectionStatus$.subscribe(status => {
       this.isOnline = status === ConnectionStatus.Online;
+      this.$connectionStatus.set(status);
       this.cdr.detectChanges();
     });
   }
   
   private handleConnectionChange = (event: Event) => {
     this.isOnline = event.type === 'online';
-    console.log('Connection changed:', this.isOnline ? 'Online' : 'Offline');
-    console.log("connesssione",this.connectionStatusService.connectionStatus)
-    this.$connectionStatus.set(this.connectionStatusService.connectionStatus);
-    console.log("segnale di connessione",this.$connectionStatus())
+    const newStatus = this.isOnline ? ConnectionStatus.Online : ConnectionStatus.Offline;
+    this.$connectionStatus.set(newStatus);
     this.cdr.detectChanges();
   };
   
