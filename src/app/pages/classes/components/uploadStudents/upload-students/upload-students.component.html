@@ -8,7 +8,10 @@
         @for(alunno of alunni(); track $index) {
           <ion-item>
             @if(alunno && alunno.firstName && alunno.lastName) {
-            <ion-card (click)="fixName(alunno, $index)">
+            <ion-card 
+              (click)="fixName(alunno, $index)"
+              [class.invalid-email]="!isEmailValid(emailFactory(alunno))"
+            >
               <ion-card-header>
                 <ion-card-title>{{alunno.lastName}}, {{alunno.firstName}}</ion-card-title>
                 <ion-card-content>

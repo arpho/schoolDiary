@@ -54,6 +54,11 @@ export class UploadStudentsComponent  implements OnInit {
       push: pushOutline,
     })
    }
+
+   isEmailValid(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
 push() {
 console.log("push to class", this.classkey)
 this.alunni().filter((alunno: Alunno) => alunno.firstName && alunno.lastName).forEach((alunno: Alunno) => {
