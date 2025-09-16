@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, input, signal, computed } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { 
   IonList,
@@ -11,8 +11,10 @@ import {
   IonIcon,
   IonButton,
   IonButtons,
-AlertController,
-IonInput } from '@ionic/angular/standalone';
+  IonText,
+  AlertController,
+  IonInput 
+} from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UsersService } from '../../../../../shared/services/users.service';
@@ -30,6 +32,8 @@ import { pushOutline } from 'ionicons/icons';
   selector: 'app-upload-students',
   templateUrl: './upload-students.component.html',
   styleUrls: ['./upload-students.component.scss'],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonList,
     IonItem,
@@ -38,12 +42,11 @@ import { pushOutline } from 'ionicons/icons';
     IonCardHeader,
     IonCardTitle,
     IonInput,
-      IonButton,
-      IonIcon,
-      IonButtons,
-],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    IonButton,
+    IonIcon,
+    IonButtons,
+    IonText
+  ]
 })
 export class UploadStudentsComponent  implements OnInit {
   constructor(
@@ -79,7 +82,26 @@ this.$userService.createUser(alunno).then((userKey) => {
   set classkey(value: string) { this._classkey = value; }
   get classkey() { return this._classkey; }
   alunni = signal<Alunno[]>([]);
+  
+  // Check if any email is invalid
+  hasInvalidEmails = computed(() => {
+    return this.alunni().some(alunno => 
+      alunno.firstName && 
+      alunno.lastName && 
+      !this.isEmailValid(this.emailFactory(alunno))
+    );
+  });
 
+  // Get list of invalid emails for display
+  invalidEmailsList = computed(() => {
+    return this.alunni()
+      .filter(alunno => 
+        alunno.firstName && 
+        alunno.lastName && 
+        !this.isEmailValid(this.emailFactory(alunno))
+      )
+      .map(alunno => this.emailFactory(alunno));
+  });
 
   emailFactory(alunno: Alunno) {
     return `${alunno.firstName.toLowerCase()}.${alunno.lastName.toLowerCase()}.studenti@iiscuriesraffa.it`;

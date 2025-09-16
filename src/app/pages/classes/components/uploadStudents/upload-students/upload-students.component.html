@@ -24,8 +24,26 @@
           </ion-item>
         }
       </ion-list>
+
+      @if (hasInvalidEmails()) {
+        <ion-text color="danger" class="error-message">
+          <p>Attenzione: Ci sono indirizzi email non validi. Correggi i seguenti indirizzi:</p>
+          <ul>
+            @for (email of invalidEmailsList(); track $index) {
+              <li>{{ email }}</li>
+            }
+          </ul>
+        </ion-text>
+      }
+
       <ion-buttons slot="end">
-        <ion-button (click)="push()"><ion-icon name="push"></ion-icon></ion-button>
+        <ion-button 
+          (click)="push()" 
+          [disabled]="hasInvalidEmails()"
+          [title]="hasInvalidEmails() ? 'Correggi gli indirizzi email non validi prima di procedere' : 'Salva gli studenti'"
+        >
+          <ion-icon name="push"></ion-icon>
+        </ion-button>
       </ion-buttons>
     }
   </div>

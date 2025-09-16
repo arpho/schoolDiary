@@ -3,6 +3,28 @@
   flex-direction: column;
   height: 100%;
   padding: 16px;
+  
+  .error-message {
+    margin: 16px 0;
+    padding: 12px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    color: #721c24;
+    
+    ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+    
+    li {
+      margin-bottom: 4px;
+    }
+  }
+  
+  .invalid-email {
+    border-left: 4px solid #dc3545;
+  }
 }
 
 .upload-container {
