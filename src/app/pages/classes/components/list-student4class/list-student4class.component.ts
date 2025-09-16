@@ -11,12 +11,14 @@ import {
    sparkles,
    close,
    trash,
-   eye
+   eye,
+   add
   } from 'ionicons/icons';
 import { cloudUploadOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { UploadStudentsComponent } from '../uploadStudents/upload-students/upload-students.component';
+import { UserDialogPage } from '../../../users/user-dialog/user-dialog.page';
 
 @Component({
   selector: 'app-list-student4class',
@@ -39,6 +41,21 @@ import { UploadStudentsComponent } from '../uploadStudents/upload-students/uploa
 ]
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
+async addStudent() {
+  const modal = await this.$modalController.create({
+    component: UserDialogPage,
+    componentProps: {
+      classKey: this.classkey
+    }
+  });
+  
+  await modal.present();
+  
+  const { data } = await modal.onWillDismiss();
+  if (data) {
+    this.loadStudents(); // Ricarica gli studenti se ne è stato aggiunto uno nuovo
+  }
+}
   @Input() set classkey(value: string) {
     this._classkey = value;
     if (value) {
@@ -69,7 +86,7 @@ newEvaluation(studentKey: string) {
     private route: ActivatedRoute
   ) {
     addIcons({
-      cloudupload: cloudUploadOutline
+      cloudupload: cloudUploadOutline,add
     })
   }
 deleteStudent(arg0: string) {
