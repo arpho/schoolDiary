@@ -54,21 +54,24 @@ export class ClassReservedNotesService {
   }
 
   addNote(note: ReservedNotes4class) {
+    console.log("creaing note", note.serialize())
     const collectionRef = collection(this.firestore, this.collection);
-    return addDoc(collectionRef, { ...note });
+    return addDoc(collectionRef, note.serialize());
   }
 
   updateNote(noteKey: string, note: ReservedNotes4class) {
     const docRef = doc(this.firestore, this.collection, noteKey);
-    return setDoc(docRef, { ...note });
+    return setDoc(docRef, note.serialize());
   }
 
-  getNotesOnRealtime(ownerKey: string, key: string, callback: (notes: ReservedNotes4class[]) => void) {
+  getNotesOnRealtime(ownerKey: string, classKey: string, callback: (notes: ReservedNotes4class[]) => void) {
     console.log("ownerKey", ownerKey);
+    console.log("getting notes for class", classKey, "for user", ownerKey);
     const collectionRef = collection(this.firestore, this.collection);
-    const q = query(collectionRef, where('ownerKey', '==', ownerKey),where('classKey', '==', key));
+    const q = query(collectionRef, where('ownerKey', '==', ownerKey),where('classKey', '==', classKey));
     return onSnapshot(q, (snapshot) => {
       const notes: ReservedNotes4class[] = [];
+      console.log(`notes for class ${classKey} for user ${ownerKey}`, snapshot);
       snapshot.forEach((docSnap) => {
         notes.push(new ReservedNotes4class(docSnap.data()).setKey(docSnap.id));
       });

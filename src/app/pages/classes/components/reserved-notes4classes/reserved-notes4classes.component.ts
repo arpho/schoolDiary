@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { AlertController, IonButton, IonContent, IonHeader, IonToolbar, IonTitle, IonList, IonItem, IonLabel, IonCard, IonFab, IonFabButton, IonIcon, IonFabList } from '@ionic/angular/standalone';
@@ -36,7 +36,8 @@ import { addIcons } from 'ionicons';
 })
 export class ReservedNotes4ClassesComponent implements OnInit {
 
-  @Input() classe!: ClasseModel;
+  classe = input.required<ClasseModel>();
+  classkey = computed(() => this.classe().key);
   notes = signal<ReservedNotes4class[]>([]);
   private classReservedNotesService = inject(ClassReservedNotesService);
   private usersService = inject(UsersService);
@@ -56,13 +57,17 @@ export class ReservedNotes4ClassesComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("note per classe", this.classe());
     this.initializeNotes();
   }
 
   private async initializeNotes() {
-    const user = await this.usersService.getLoggedUser();
-    if (user && typeof user === 'object' && 'key' in user) {
-      this.classReservedNotesService.getNotesOnRealtime(user.key,this.classe.key, (notes) => {
+    const loggedUser = await this.usersService.getLoggedUser();
+    console.log("logged user", loggedUser);
+    console.log(`classKey ${this.classkey()}`)
+    if (loggedUser && typeof loggedUser === 'object' && 'key' in loggedUser) {
+      this.classReservedNotesService.getNotesOnRealtime(loggedUser.key,this.classkey(), (notes) => {
+        console.log(`notes per classe ${this.classkey()} per utente ${loggedUser.key}`, notes);
         this.notes.set(notes);
       });
     }
@@ -93,7 +98,7 @@ export class ReservedNotes4ClassesComponent implements OnInit {
               const note = new ReservedNotes4class()
                 .setOwner(loggedUser?.key?loggedUser.key:"")
                 .setNote(data.note)
-                .setClassKey(this.classe.key)
+                .setClassKey(this.classkey())
                 .setDate(new Date().toISOString());
                 console.log("note", note);
               

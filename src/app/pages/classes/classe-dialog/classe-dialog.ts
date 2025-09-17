@@ -128,13 +128,7 @@ export class ClasseDialogPage  implements OnInit {
           note: editingClasse.note
         });
         console.log("editingClasse", this.classe());
-        // Ensure the model is properly initialized
-        this.classe.set(new ClasseModel({
-          year: editingClasse.year,
-          classe: editingClasse.classe,
-          descrizione: editingClasse.descrizione,
-          note: editingClasse.note
-        }));
+
       }
     }
   }

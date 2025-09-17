@@ -1,6 +1,6 @@
 import { Injectable, OnInit, inject, signal } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
-import { collection, doc, Firestore, setDoc, where,query, getDocs, addDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
+import { collection, doc, Firestore, setDoc, where, query, getDocs, addDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
 import {
   Auth,
   authState,
@@ -20,10 +20,11 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { ClassiService } from '../../../app/pages/classes/services/classi.service';  
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { QueryCondition } from '../models/queryCondition';
+
 interface ClaimsResponse {
   message?: string;
   data?: {
-  result: 'ok' | 'error';
+    result: 'ok' | 'error';
     userKey: string;
     claims: object;
   };
@@ -32,13 +33,25 @@ interface ClaimsResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class UsersService  implements OnInit{
-
+export class UsersService implements OnInit {
   private usersCache = new Map<string, UserModel>();
+  usersOnCache = signal<UserModel[]>([]);
+  private auth = inject(Auth);
+  private firestore = inject(Firestore);
+  private MyAuth = inject(AuthService);
+  private collection = 'userProfiles';
+
+  constructor(
+    private $classes: ClassiService
+  ) {
+    console.log("UsersService constructor");
+    this.getUsersOnRealTime((users) => {
+      this.usersOnCache.set(users);
+    });
+  }
 
   updatePassword(user: User, newPassword: string) {
-    return updatePassword(user, newPassword)
-
+    return updatePassword(user, newPassword);
   }
 
   async getUser(userKey: string): Promise<UserModel | null> {
@@ -78,7 +91,6 @@ export class UsersService  implements OnInit{
       });
   }
 
-  usersOnCache=signal<UserModel[]>([]);
   getUsersByClass(classKey: string, callback: (users: UserModel[]) => void, queryConditions?: QueryCondition[]) {
     console.log("getUsersByClass*", classKey);
     const collectionRef = collection(this.firestore, this.collection);
@@ -87,33 +99,23 @@ export class UsersService  implements OnInit{
       const users: UserModel[] = [];
       snapshot.forEach((doc) => {
         const user = new UserModel(doc.data()).setKey(doc.id);
-        const  classes:ClasseModel[] = [];
-        user.classes?.forEach((classKey:string) => {
+        const classes: ClasseModel[] = [];
+        user.classes?.forEach((classKey: string) => {
           console.log("fetching classModel in usersService", classKey);
-        const classe = this.$classes.fetchClasseOnCache(classKey);
-        if(classe){
-          classes.push(classe);
-        }
+          const classe = this.$classes.fetchClasseOnCache(classKey);
+          if (classe) {
+            classes.push(classe);
+          }
         });
+        
         user.classi = classes;
         users.push(user);
       });
+      
       callback(users);
     });
   }
-  private auth = inject(Auth);
-  private firestore = inject(Firestore);
-  private MyAuth = inject(AuthService);
-  private collection = 'userProfiles';
 
-  constructor(
-    private $classes: ClassiService
-  ) {
-    console.log("UsersService constructor");
-this.getUsersOnRealTime((users)=>{
-  this.usersOnCache.set(users);
-})
-  }
   ngOnInit(): void {
     this.getUsersOnRealTime((users)=>{
       this.usersOnCache.set(users);
@@ -124,43 +126,44 @@ this.getUsersOnRealTime((users)=>{
     return this.usersOnCache().find(user => user.key === userKey);
   }
 
-  fetchUser(userKey: string): Promise<UserModel | null> {
-    const userRef = doc(this.firestore, `userProfiles/${userKey}`);
-    return getDoc(userRef).then((doc) => {
-      if (doc.exists()) {
-        const data = doc.data();
-        return new UserModel(data).setKey(userKey);
-      } else {
-        console.log('No user found');
-        return null;
+  async fetchUser(userKey: string): Promise<UserModel | null> {
+    try {
+      const docRef = doc(this.firestore, 'userProfiles', userKey);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data() as UserModel;
+        return new UserModel(data).setKey(docSnap.id);
       }
-    });
-  } 
+      return null;
+    } catch (error) {
+      console.error('Errore nel recupero dell\'utente:', error);
+      return null;
+    }
+  }
 
-  updateUser(userKey: string, user: UserModel): Promise<void> {
-    const userRef = doc(this.firestore, `userProfiles/${userKey}`);
-    console.log("serialized user", user.serialize());
-    return setDoc(userRef, user.serialize());
+  async updateUser(userKey: string, user: UserModel): Promise<void> {
+    try {
+      const userRef = doc(this.firestore, 'userProfiles', userKey);
+      console.log("serialized user", user.serialize());
+      await setDoc(userRef, user.serialize(), { merge: true });
+    } catch (error) {
+      console.error('Errore durante l\'aggiornamento dell\'utente:', error);
+      throw error;
+    }
   }
 
   getUsersOnRealTime(cb: (users: UserModel[]) => void) {
-    const collectionRef = collection(this.firestore, this.collection);
-    onSnapshot(collectionRef, (snapshot) => {
-      const  classes:ClasseModel[] = [];
+    const q = query(collection(this.firestore, this.collection));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const users: UserModel[] = [];
-      snapshot.forEach((doc) => {
+      querySnapshot.forEach((doc) => {
         const user = new UserModel(doc.data()).setKey(doc.id);
-        user.classes?.forEach((classKey:string) => {
-        const classe = this.$classes.fetchClasseOnCache(classKey);
-        if(classe)
-        classes.push(classe);
-        });
-        user.classi = classes;
         users.push(user);
-        this.usersCache.set(user.key, user);
       });
       cb(users);
     });
+    return unsubscribe;
   }
 
   isUserAuthenticated(): Promise<boolean> {
@@ -229,8 +232,6 @@ this.getUsersOnRealTime((users)=>{
     console.log('createUser successfully set:', result.data);
     return result.data.userKey;
   }
-
-  
 
   /**
    * Registra un nuovo utente nel sistema con autenticazione Firebase e lo salva nel database Firestore.
