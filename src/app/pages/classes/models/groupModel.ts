@@ -9,7 +9,7 @@ export class GroupModel {
     description: string = "";
     studentsKeyList: string[] = [];
     studentsList: UserModel[] = [];
-    private $usersService: UsersService | undefined;
+    readonly $usersService: UsersService | undefined;
     createdAt: string = new Date().toISOString();
     updatedAt: string = new Date().toISOString();
 

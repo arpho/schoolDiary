@@ -34,7 +34,7 @@ interface ClaimsResponse {
   providedIn: 'root',
 })
 export class UsersService implements OnInit {
-  private usersCache = new Map<string, UserModel>();
+  readonly usersCache = new Map<string, UserModel>();
   usersOnCache = signal<UserModel[]>([]);
   private auth = inject(Auth);
   private firestore = inject(Firestore);
@@ -45,8 +45,15 @@ export class UsersService implements OnInit {
     private $classes: ClassiService
   ) {
     console.log("UsersService constructor");
+    // Initialize usersCache with all users
     this.getUsersOnRealTime((users) => {
       this.usersOnCache.set(users);
+      // Populate the usersCache Map
+      users.forEach(user => {
+        if (user.key) {
+          this.usersCache.set(user.key, user);
+        }
+      });
     });
   }
 
@@ -55,20 +62,20 @@ export class UsersService implements OnInit {
   }
 
   async getUser(userKey: string): Promise<UserModel | null> {
-    // Prima verifica nella cache
+    // Check in cache first
     const cachedUser = this.usersCache.get(userKey);
     if (cachedUser) {
       return cachedUser;
     }
 
+    // If not in cache, fetch from Firestore
     try {
-      const docRef = doc(this.firestore, 'users', userKey);
+      const docRef = doc(this.firestore, 'userProfiles', userKey);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        const userData = docSnap.data() as UserModel;
-        userData.key = userKey;
-        // Aggiungi alla cache
+        const userData = new UserModel(docSnap.data()).setKey(docSnap.id);
+        // Add to cache
         this.usersCache.set(userKey, userData);
         return userData;
       }

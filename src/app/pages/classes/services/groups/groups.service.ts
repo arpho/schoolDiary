@@ -20,9 +20,9 @@ import { UsersService } from 'src/app/shared/services/users.service';
   providedIn: 'root'
 })
 export class GroupsService {
-  private collection = 'groups';
-  private firestore = inject(Firestore);
-  private $usersService = inject(UsersService);
+  readonly collection = 'groups';
+  readonly firestore = inject(Firestore);
+  readonly $usersService = inject(UsersService);
 
   constructor() {}
 /**
