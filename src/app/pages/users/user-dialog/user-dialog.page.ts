@@ -1,7 +1,10 @@
 import {
    Component,
    effect,
-   OnInit } from '@angular/core';
+   OnInit,
+   signal,
+   input } from '@angular/core';
+import { ModalController } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -35,7 +38,6 @@ import {
   } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { UserModel } from 'src/app/shared/models/userModel';
-import { signal } from '@angular/core';
 import {
    FormGroup,
     FormControl
@@ -49,8 +51,8 @@ import { addIcons } from 'ionicons';
 import { save } from 'ionicons/icons';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UserGeneralitiesComponent } from "../components/user-generalities/user-generalities.component";
-import { IonicModule } from "@ionic/angular";
 import { ReservedNotes4studentComponent } from "../components/reserved-notes4student/reserved-notes4student.component";
+import { IonicModule } from "@ionic/angular";
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
@@ -76,11 +78,11 @@ import { ReservedNotes4studentComponent } from "../components/reserved-notes4stu
     IonIcon,
     IonFab,
     UserGeneralitiesComponent,
+    ReservedNotes4studentComponent,
     IonTabs,
     IonTab,
     IonTabBar,
-    IonTabButton,
-    ReservedNotes4studentComponent
+    IonTabButton
 ]
 })
 export class UserDialogPage implements OnInit {
@@ -91,8 +93,24 @@ export class UserDialogPage implements OnInit {
   }
 
   // Variabili di stato
-  userKey: string=""
-  user = signal(new UserModel({ role: UsersRole.STUDENT }));
+  userKey: string = ""
+  user = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
+  
+  // Input con setter personalizzato
+  readonly classKey = input<string | null>(null, { alias: 'classKey' });
+  
+  // Metodo per aggiornare la classe
+  private updateUserClass(classKeyValue: string) {
+    const currentUser = this.user();
+    if (currentUser) {
+      const updatedUser = new UserModel({
+        ...currentUser,
+        classes: [...(currentUser.classes || []), classKeyValue],
+        classKey: classKeyValue
+      });
+      this.user.set(updatedUser);
+    }
+  }
   usersClasses = signal<ClasseModel[]>([]);
   elencoClassi = signal<ClasseModel[]>([]);
   rolesValue: any[] = [];
@@ -110,11 +128,12 @@ export class UserDialogPage implements OnInit {
   });
 
   constructor(
-    private route: ActivatedRoute,
-    private $users: UsersService,
-    private $classes: ClassiService,
-    private toaster: ToasterService,
-    private router: Router
+    private readonly route: ActivatedRoute,
+    private readonly $users: UsersService,
+    private readonly $classes: ClassiService,
+    private readonly toaster: ToasterService,
+    private readonly router: Router,
+    private readonly modalCtrl: ModalController
   ) {
     console.log("UserDialogPage constructor");
     
@@ -128,17 +147,32 @@ export class UserDialogPage implements OnInit {
     addIcons({
       save,
     });
-
     effect(async () => {
-      const classesKeys = this.user()?.classesKey;
       console.log("setting classi", this.user().classi);
       this.usersClasses.set(this.user().classi);
     });
   }
 
+  // Metodo del ciclo di vita di Ionic
+  async ionViewWillEnter() {
+    const modal = await this.modalCtrl.getTop();
+    const classKey = modal?.componentProps?.['classKey'];
+    if (classKey) {
+      console.log("classKey from modal props:", classKey);
+      this.updateUserClass(classKey);
+    }
+  }
+
   async ngOnInit() {
     const userKey = this.route.snapshot.paramMap.get('userKey');
-    console.log("UserDialogPage ngOnInit, userKey:", userKey);
+    console.log("UserDialogPage ngOnInit, userKey:", userKey, "classKey:", this.classKey());
+    
+    // Se classKey è presente, imposta la classe predefinita
+    const classKeyValue = this.classKey();
+    if (classKeyValue) {
+      console.log("current class from input", classKeyValue);
+      this.updateUserClass(classKeyValue);
+    }
     
     // Se userKey esiste, carica l'utente
     if (userKey) {
@@ -175,7 +209,7 @@ export class UserDialogPage implements OnInit {
       classKey: user.classe
     };
     console.log("claims", claims);
-
+    if(user.key){
     this.$users.updateUser(user.key, user).then(() => {
       console.log("user updated");
       this.toaster.presentToast({message: "User aggiornato con successo", duration: 2000, position: "bottom"});
@@ -194,38 +228,10 @@ export class UserDialogPage implements OnInit {
       this.toaster.presentToast({message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom"});
     });
   }
-/*     this.$classes.getClassiOnRealtime((classi) => {
-      this.elencoClassi.set(classi);
-    });
-    const userKey=this.router.snapshot.paramMap.get('userKey');
-    this.userKey = userKey;
-     const rolesKey = Object.keys(UsersRole);
-     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
-    if(userKey){
-      this.$users.fetchUser(userKey).then((user) => {
-        if(user){
-          console.log("user on dialog*", user);
-          this.userSignal.set(user);
-          this.userForm.setValue({
-            firstName: user?.firstName || '',
-            lastName: user?.lastName || '',
-            userName: user?.userName || '',
-            email: user?.email || '',
-            role: user?.role || UsersRole.STUDENT,
-            phoneNumber: user?.phoneNumber || '',
-            birthDate: user?.birthDate || '',
-            classes: user?.classes || [],
-            classe: user?.classKey || ''
-          });
-
-
-        }
-        }
-      )   ;
-    console.log("userSignal*", this.userSignal());
-    const claims =  await this.$users.getCustomClaims4LoggedUser();
-    console.log("claims", claims);
-
-  } */
+  else{
+    console.log("creating user", user);
+    
 }
 
+}
+}

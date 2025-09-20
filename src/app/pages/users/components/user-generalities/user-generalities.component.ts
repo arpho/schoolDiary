@@ -64,6 +64,7 @@ const claims = {
   classKey: user.classe,
 };
 console.log("claims", claims);
+if(user.key){
 this.$users.updateUser(user.key, user).then(() => {
   console.log("user updated");
   this.toaster.presentToast({message: "User aggiornato con successo", duration: 2000, position: "bottom"});
@@ -81,26 +82,31 @@ this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
   console.log("error setting claims", error);
   this.toaster.presentToast({message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom"});
 });
+}
+else{
+  console.log("user key not found, it is a new user");
+
  }
+}
 
  @Output() editeduser= new EventEmitter<UserModel>();
  user = model<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
 rolesValue: any[] = [];
 rolesName: string[] = [];
 elencoClassi= signal<ClasseModel[]>([]);
-userForm: FormGroup= new FormGroup({
-  firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-  lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-  userName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-  email: new FormControl('', [Validators.email]),
-  role: new FormControl(UsersRole.STUDENT),
-  phoneNumber: new FormControl(''),
-  birthDate: new FormControl(''),
-  classes: new FormControl([]),
-  classe: new FormControl('')
-});
-usersClasses= signal<ClasseModel[]>([]);
-$UsersRole = UsersRole;
+  userForm: FormGroup = new FormGroup({
+    firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    userName: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    email: new FormControl('', [Validators.email]),
+    role: new FormControl(UsersRole.STUDENT),
+    phoneNumber: new FormControl(''),
+    birthDate: new FormControl(''),
+    classes: new FormControl([]),
+    classe: new FormControl('')
+  });
+  usersClasses = signal<ClasseModel[]>([]);
+  $UsersRole = UsersRole;
 
   constructor(
     private router: ActivatedRoute,
@@ -116,8 +122,7 @@ $UsersRole = UsersRole;
     const user = new UserModel({...value,
        key: this.user()?.key,
         classi: this.user()?.classi,
-         classesKey: this.user()?.classesKey,
-          classe: this.user()?.classe
+         classesKey: this.user()?.classesKey||value.classe,
         }
       );
     this.user.set(user);
