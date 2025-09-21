@@ -42,6 +42,7 @@ import { UserDialogPage } from '../../../users/user-dialog/user-dialog.page';
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
 async addStudent() {
+  console.log("adding student", this.classkey)
   const modal = await this.$modalController.create({
     component: UserDialogPage,
     componentProps: {

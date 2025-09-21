@@ -1,88 +1,38 @@
-import {
-   Component,
-   effect,
-   OnInit,
-   signal,
-   input } from '@angular/core';
-import { ModalController } from '@ionic/angular/standalone';
+import { Component, OnInit, Input, signal, effect } from '@angular/core';
+import { ModalController, IonBackButton, IonContent, IonHeader, IonIcon, IonTabs, IonTabBar, IonTabButton, IonTitle, IonToolbar, IonTab, IonLabel } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  Validators } from '@angular/forms';
-import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonSelect,
-  IonSelectOption,
-  IonBackButton,
-  IonButton,
-  IonDatetime,
-  IonFooter,
-  IonFabButton,
-  IonIcon,
-  IonButtons,
-  IonFab,
-  IonTabs,
-  IonTab,
-  IonTabBar,
-  IonTabButton } from '@ionic/angular/standalone';
-import {
-   ActivatedRoute,
-   Router
-  } from '@angular/router';
-import { UsersService } from 'src/app/shared/services/users.service';
-import { UserModel } from 'src/app/shared/models/userModel';
-import {
-   FormGroup,
-    FormControl
-  } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UserGeneralitiesComponent } from '../components/user-generalities/user-generalities.component';
 import { UsersRole } from 'src/app/shared/models/usersRole';
-import { ClassesFieldComponent } from '../../classes/components/classes-field/classes-field.component';
+import { UserModel } from 'src/app/shared/models/userModel';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
-import { user } from '@angular/fire/auth';
+import { UsersService } from 'src/app/shared/services/users.service';
 import { ClassiService } from '../../classes/services/classi.service';
-import { addIcons } from 'ionicons';
-import { save } from 'ionicons/icons';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
-import { UserGeneralitiesComponent } from "../components/user-generalities/user-generalities.component";
+import { ActivatedRoute, Router } from '@angular/router';
 import { ReservedNotes4studentComponent } from "../components/reserved-notes4student/reserved-notes4student.component";
-import { IonicModule } from "@ionic/angular";
+
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
   styleUrls: ['./user-dialog.page.scss'],
   standalone: true,
   imports: [
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonSelect,
-    IonSelectOption,
-    FormsModule,
+    CommonModule,
     ReactiveFormsModule,
     IonBackButton,
-    ClassesFieldComponent,
-    IonDatetime,
-    IonFooter,
-    IonFabButton,
+    IonContent,
+    IonHeader,
     IonIcon,
-    IonFab,
+    IonTitle,
+    IonToolbar,
     UserGeneralitiesComponent,
-    ReservedNotes4studentComponent,
     IonTabs,
-    IonTab,
     IonTabBar,
-    IonTabButton
+    IonTabButton,
+    IonTab,
+    ReservedNotes4studentComponent,
+    IonLabel
 ]
 })
 export class UserDialogPage implements OnInit {
@@ -96,11 +46,19 @@ export class UserDialogPage implements OnInit {
   userKey: string = ""
   user = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
   
-  // Input con setter personalizzato
-  readonly classKey = input<string | null>(null, { alias: 'classKey' });
+  @Input() 
+  set classKey(value: string | null) {
+    if (value) {
+      this._updateUserClass(value);
+    }
+  }
   
-  // Metodo per aggiornare la classe
-  private updateUserClass(classKeyValue: string) {
+  get classKey(): string | null {
+    return this.user()?.classKey || null;
+  }
+  
+  // Metodo privato per aggiornare la classe dell'utente
+  private _updateUserClass(classKeyValue: string) {
     const currentUser = this.user();
     if (currentUser) {
       const updatedUser = new UserModel({
@@ -144,10 +102,7 @@ export class UserDialogPage implements OnInit {
       console.log("userSignal updated", this.user());
     });
 
-    addIcons({
-      save,
-    });
-    effect(async () => {
+    effect(() => {
       console.log("setting classi", this.user().classi);
       this.usersClasses.set(this.user().classi);
     });
@@ -159,19 +114,19 @@ export class UserDialogPage implements OnInit {
     const classKey = modal?.componentProps?.['classKey'];
     if (classKey) {
       console.log("classKey from modal props:", classKey);
-      this.updateUserClass(classKey);
+      this._updateUserClass(classKey);
     }
   }
 
   async ngOnInit() {
     const userKey = this.route.snapshot.paramMap.get('userKey');
-    console.log("UserDialogPage ngOnInit, userKey:", userKey, "classKey:", this.classKey());
+    console.log("UserDialogPage ngOnInit, userKey:", userKey, "classKey:", this.classKey);
     
     // Se classKey è presente, imposta la classe predefinita
-    const classKeyValue = this.classKey();
+    const classKeyValue = this.classKey;
     if (classKeyValue) {
       console.log("current class from input", classKeyValue);
-      this.updateUserClass(classKeyValue);
+      this._updateUserClass(classKeyValue);
     }
     
     // Se userKey esiste, carica l'utente
