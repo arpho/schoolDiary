@@ -2,7 +2,7 @@
   <ion-back-button
     text="dashboard"
     class="back-button"
-    defaultHref="/dashboard"></ion-back-button>
+    [attr.default-href]="'/dashboard'"></ion-back-button>
   <ion-toolbar>
     <ion-title size="large" align="center">Utenti</ion-title>
   </ion-toolbar>
@@ -13,10 +13,21 @@
     <ion-searchbar
       formControlName="searchTerm"
       placeholder="Cerca per nome o cognome"
-      animated="true"
-      debounce="300"
-   >
+      [animated]="true"
+      [debounce]="300"
+    >
     </ion-searchbar>
+    <ion-item>
+      <ion-label>Filtra per classe</ion-label>
+      <ion-select formControlName="selectedClass" interface="popover">
+        <ion-select-option [value]="''">Tutte le classi</ion-select-option>
+        @for (classe of classes(); track classe.key) {
+          <ion-select-option [value]="classe.key">
+            {{ classe.classe }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
     <button type="submit" style="display: none" hidden>Cerca</button>
   </form>
 
@@ -32,14 +43,14 @@
                 </ion-card-content>
             </ion-card>
 <ion-fab id="test"  vertical="bottom" horizontal="end" >
-  <ion-fab-button size="small"   color="medium">
+  <ion-fab-button size="small" color="medium" (keydown.enter)="$event.preventDefault()" (keydown.space)="$event.preventDefault()">
     <ion-icon name="ellipsis-vertical"></ion-icon>
   </ion-fab-button>
   <ion-fab-list side="start">
-    <ion-fab-button color="light" (click)="editUser(users.key)">
+    <ion-fab-button color="light" (click)="editUser(users.key)" (keydown.enter)="editUser(users.key)" (keydown.space)="editUser(users.key)">
       <ion-icon name="create"></ion-icon>
     </ion-fab-button>
-    <ion-fab-button color="danger" (click)="deleteUser(users.key)">
+    <ion-fab-button color="danger" (click)="deleteUser(users.key)" (keydown.enter)="deleteUser(users.key)" (keydown.space)="deleteUser(users.key)">
       <ion-icon name="trash"></ion-icon>
     </ion-fab-button>
     <ion-fab-button color="light">

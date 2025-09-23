@@ -1,6 +1,7 @@
-import { Component, computed, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, computed, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {
   IonContent,
@@ -18,13 +19,15 @@ import {
   IonFabButton,
   IonFabList,
   IonBackButton,
-  IonSearchbar
+  IonSearchbar,
+  IonSelect,
+  IonSelectOption,
+  IonLabel
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
 import {
-   add,
    create,
    close,
    save,
@@ -32,6 +35,8 @@ import {
    ellipsisVertical } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { ClassiService } from '../../classes/services/classi.service';
+import { ClasseModel } from '../../classes/models/classModel';
 
 @Component({
   selector: 'app-users-list',
@@ -44,6 +49,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonTitle,
     IonToolbar,
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     IonItem,
     IonCard,
@@ -57,11 +63,14 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonFabButton,
     IonFabList,
     IonBackButton,
-    IonSearchbar
+    IonSearchbar,
+    IonSelect,
+    IonSelectOption,
+    IonLabel
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class UsersListPage implements OnInit {
+export class UsersListPage implements OnInit, OnDestroy {
 deleteUser(userKey: string) {
 console.log("deleteUser", userKey);
 }
@@ -72,14 +81,17 @@ editUser(userKey: string) {
   userList= signal<UserModel[]>([]);
   usersFilter= signal<()=> UserModel[]>(()=>this.userList());
   users2BeShown= computed(()=>this.usersFilter()().sort((a,b)=>this.factoryName(a).localeCompare(this.factoryName(b))));
-
+  classes= signal<ClasseModel[]>([]);
   filterUserForm!: FormGroup;
 
+  private readonly destroy$ = new Subject<void>();
+
   constructor(
-    private usersService: UsersService,
-    private router: Router,
-    private toaster: ToasterService,
-    private readonly fb: FormBuilder
+    private readonly usersService: UsersService,
+    private readonly router: Router,
+    private readonly toaster: ToasterService,
+    private readonly fb: FormBuilder,
+    private readonly classesService: ClassiService
   ) {
     addIcons({
       ellipsisVertical,
@@ -87,6 +99,12 @@ editUser(userKey: string) {
       close,
       save,
       trash,
+    });
+
+    // Sottoscrizione per il caricamento delle classi
+    this.classesService.getClassiOnRealtime((classi) => {
+      console.log('Classi ricevute dal servizio:', classi);
+      this.classes.set(classi);
     });
   }
 
@@ -103,12 +121,19 @@ editUser(userKey: string) {
     this.usersService.getUsersOnRealTime(cb);
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private initializeForm() {
     this.filterUserForm = this.fb.group({
-      searchTerm: ['']
+      searchTerm: [''],
+      selectedClass: ['']
     });
 
-    this.filterUserForm.get('searchTerm')?.valueChanges
+    // Sottoscrizione ai cambiamenti del form
+    this.filterUserForm.valueChanges
       .pipe(
         debounceTime(300),
         distinctUntilChanged()
@@ -116,21 +141,29 @@ editUser(userKey: string) {
       .subscribe((values) => this.applyFilter(values));
   }
 
-  applyFilter(values: string) {
-    const searchTerm = values?.toLowerCase() || '';
+  applyFilter(values: { searchTerm: string; selectedClass: string }) {
+    const searchTerm = values?.searchTerm?.toLowerCase() || '';
+    const selectedClass = values?.selectedClass || '';
     
-    if (!searchTerm) {
-      this.usersFilter.set(() => this.userList().filter(user => this.factoryName(user).toLowerCase().includes(searchTerm)));
-      return;
-    }
-
-    this.usersFilter.set(() => 
-      this.userList().filter(user => 
-        user.firstName?.toLowerCase().includes(searchTerm) || 
-        user.lastName?.toLowerCase().includes(searchTerm) ||
-        this.factoryName(user).toLowerCase().includes(searchTerm)
-      )
-    );
+    this.usersFilter.set(() => {
+      let filteredUsers = this.userList();
+      
+      // Filtro per testo
+      if (searchTerm) {
+        filteredUsers = filteredUsers.filter(user => 
+          user.firstName?.toLowerCase().includes(searchTerm) || 
+          user.lastName?.toLowerCase().includes(searchTerm) ||
+          this.factoryName(user).toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      // Filtro per classe
+      if (selectedClass) {
+        filteredUsers = filteredUsers.filter(user => user.classKey === selectedClass);
+      }
+      
+      return filteredUsers;
+    });
   }
 
 }
