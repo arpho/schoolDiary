@@ -9,7 +9,18 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-<ion-list>
+  <form [formGroup]="filterUserForm" class="ion-padding" (submit)="$event.preventDefault()">
+    <ion-searchbar
+      formControlName="searchTerm"
+      placeholder="Cerca per nome o cognome"
+      animated="true"
+      debounce="300"
+   >
+    </ion-searchbar>
+    <button type="submit" style="display: none" hidden>Cerca</button>
+  </form>
+
+  <ion-list>
     @for(users of users2BeShown(); track users.key) {
         <ion-item>
             <ion-card>

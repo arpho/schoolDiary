@@ -1,6 +1,7 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {
   IonContent,
   IonHeader,
@@ -16,7 +17,8 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
-  IonBackButton
+  IonBackButton,
+  IonSearchbar
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -42,7 +44,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonTitle,
     IonToolbar,
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     IonItem,
     IonCard,
     IonCardContent,
@@ -54,8 +56,10 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonFab,
     IonFabButton,
     IonFabList,
-    IonBackButton
-  ]
+    IonBackButton,
+    IonSearchbar
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class UsersListPage implements OnInit {
 deleteUser(userKey: string) {
@@ -69,10 +73,13 @@ editUser(userKey: string) {
   usersFilter= signal<()=> UserModel[]>(()=>this.userList());
   users2BeShown= computed(()=>this.usersFilter()().sort((a,b)=>this.factoryName(a).localeCompare(this.factoryName(b))));
 
+  filterUserForm!: FormGroup;
+
   constructor(
     private usersService: UsersService,
     private router: Router,
-    private toaster: ToasterService
+    private toaster: ToasterService,
+    private readonly fb: FormBuilder
   ) {
     addIcons({
       ellipsisVertical,
@@ -83,15 +90,47 @@ editUser(userKey: string) {
     });
   }
 
-  factoryName(user: UserModel) {
-    return `${user.lastName} ${user.firstName}`;
+  private factoryName(user: UserModel): string {
+    return `${user.lastName || ''} ${user.firstName || ''}`.trim();
   }
 
   ngOnInit() {
+    this.initializeForm();
+    
     const cb = (users: UserModel[]) => {
       this.userList.set(users);
+    };
+    this.usersService.getUsersOnRealTime(cb);
+  }
+
+  private initializeForm() {
+    this.filterUserForm = this.fb.group({
+      searchTerm: ['']
+    });
+
+    this.filterUserForm.get('searchTerm')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe((values) => this.applyFilter(values));
+  }
+
+  applyFilter(values: string) {
+    const searchTerm = values?.toLowerCase() || '';
+    
+    if (!searchTerm) {
+      this.usersFilter.set(() => this.userList().filter(user => this.factoryName(user).toLowerCase().includes(searchTerm)));
+      return;
     }
-    this.usersService.getUsersOnRealTime(cb)
+
+    this.usersFilter.set(() => 
+      this.userList().filter(user => 
+        user.firstName?.toLowerCase().includes(searchTerm) || 
+        user.lastName?.toLowerCase().includes(searchTerm) ||
+        this.factoryName(user).toLowerCase().includes(searchTerm)
+      )
+    );
   }
 
 }
