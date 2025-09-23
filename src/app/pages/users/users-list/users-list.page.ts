@@ -67,7 +67,7 @@ editUser(userKey: string) {
 
   userList= signal<UserModel[]>([]);
   usersFilter= signal<()=> UserModel[]>(()=>this.userList());
-  users2BeShown= computed(()=>this.usersFilter()());
+  users2BeShown= computed(()=>this.usersFilter()().sort((a,b)=>this.factoryName(a).localeCompare(this.factoryName(b))));
 
   constructor(
     private usersService: UsersService,
@@ -81,6 +81,10 @@ editUser(userKey: string) {
       save,
       trash,
     });
+  }
+
+  factoryName(user: UserModel) {
+    return `${user.lastName} ${user.firstName}`;
   }
 
   ngOnInit() {
