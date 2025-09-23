@@ -27,6 +27,11 @@ import { pushOutline } from 'ionicons/icons';
   constructor(args?: {}) {
     super(args);
   }
+  fullName: string = '';
+  setFullName(fullName: string) {
+    this.fullName = fullName;
+     return this 
+  }
 }
 @Component({
   selector: 'app-upload-students',
@@ -180,8 +185,7 @@ async fixName(alunno: Alunno, index: number) {
         role: UsersRole.STUDENT,
         classKey: this.classkey,
         password: this.generatePassword()
-      }).setClassKey(this.classkey);
-      console.log("alunno", alunno)
+      }).setClassKey(this.classkey).setFullName(student['Lista schede alunno'].split("    ")[3]?.trim() || '');
     
       
       // Aggiungi l'alunno alla lista
