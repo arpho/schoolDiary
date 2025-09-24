@@ -25,6 +25,7 @@ import {
   IonLabel
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
+import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
 import {
@@ -83,6 +84,7 @@ editUser(userKey: string) {
   users2BeShown= computed(()=>this.usersFilter()().sort((a,b)=>this.factoryName(a).localeCompare(this.factoryName(b))));
   classes= signal<ClasseModel[]>([]);
   filterUserForm!: FormGroup;
+  usersRole = UsersRole; // Make UsersRole available in template
 
   private readonly destroy$ = new Subject<void>();
 
@@ -129,7 +131,8 @@ editUser(userKey: string) {
   private initializeForm() {
     this.filterUserForm = this.fb.group({
       searchTerm: [''],
-      selectedClass: ['']
+      selectedClass: [''],
+      selectedRole: ['']
     });
 
     // Sottoscrizione ai cambiamenti del form
@@ -141,9 +144,10 @@ editUser(userKey: string) {
       .subscribe((values) => this.applyFilter(values));
   }
 
-  applyFilter(values: { searchTerm: string; selectedClass: string }) {
+  applyFilter(values: { searchTerm: string; selectedClass: string; selectedRole: string }) {
     const searchTerm = values?.searchTerm?.toLowerCase() || '';
     const selectedClass = values?.selectedClass || '';
+    const selectedRole = values?.selectedRole ? parseInt(values.selectedRole) : null;
     
     this.usersFilter.set(() => {
       let filteredUsers = this.userList();
@@ -160,6 +164,11 @@ editUser(userKey: string) {
       // Filtro per classe
       if (selectedClass) {
         filteredUsers = filteredUsers.filter(user => user.classKey === selectedClass);
+      }
+      
+      // Filtro per ruolo
+      if (selectedRole !== null) {
+        filteredUsers = filteredUsers.filter(user => user.role === selectedRole);
       }
       
       return filteredUsers;

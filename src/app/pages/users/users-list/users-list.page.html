@@ -28,6 +28,15 @@
         }
       </ion-select>
     </ion-item>
+    <ion-item>
+      <ion-label>Filtra per ruolo</ion-label>
+      <ion-select formControlName="selectedRole" interface="popover">
+        <ion-select-option [value]="''">Tutti i ruoli</ion-select-option>
+        <ion-select-option [value]="usersRole.ADMIN">Amministratore</ion-select-option>
+        <ion-select-option [value]="usersRole.TEACHER">Insegnante</ion-select-option>
+        <ion-select-option [value]="usersRole.STUDENT">Studente</ion-select-option>
+      </ion-select>
+    </ion-item>
     <button type="submit" style="display: none" hidden>Cerca</button>
   </form>
 
