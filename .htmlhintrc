@@ -1,0 +1,22 @@
+{
+  "attr-lowercase": false,
+  "attr-case": false,
+  "id-class-style": false,
+  "spec-char-escape": false,
+  "attr-lowercase-regex": {
+    "pattern": "^[a-z0-9-]+$",
+    "selector": "[a-zA-Z][a-zA-Z0-9-]*",
+    "ignore": [
+      "^formControlName$",
+      "^formGroup$",
+      "^ngFor$",
+      "^ngIf$",
+      "^ngClass$",
+      "^ngStyle$",
+      "^routerLink$",
+      "^\\([a-zA-Z0-9-]+\\)$",
+      "^\[[a-zA-Z0-9-]+\\]$",
+      "^[a-zA-Z0-9-]+[A-Z][a-zA-Z0-9-]*$"
+    ]
+  }
+}
