@@ -173,7 +173,7 @@ await alert.present();
       });
       try {
         this.$users.getUsersByClass(key, (users: UserModel[]) => {
-          this.availableStudents.set(users);
+          this.availableStudents.set(users.sort((a, b) => this.makeName(a).localeCompare(this.makeName(b))));
         });
       } catch (error) {
         console.error("Errore durante la recupero degli studenti", error);
@@ -186,10 +186,13 @@ this.groupsList().forEach(group => {
 }); 
     });
   }
+  makeName(user:UserModel){
+    return `${user.lastName} ${user.firstName}`;
+  }
 
   async ngOnInit() {
     // Initialize with all students as available
-    this.availableStudents.set([...this.availableStudents()]);
+    this.availableStudents.set([...this.availableStudents().sort((a, b) => this.makeName(a).localeCompare(this.makeName(b)))]);
   }
   getDropList(groupKey: string): CdkDropList | undefined {
     return this.dropLists.find(dl => dl.id === `group-${groupKey}`);
