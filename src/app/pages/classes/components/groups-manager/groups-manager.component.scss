@@ -125,3 +125,29 @@ h4 {
 .drop-list.cdk-drop-list-dragging .drag-item:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+// Stili per l'evidenziazione durante la ricerca
+.highlight {
+  background-color: rgba(var(--ion-color-primary-rgb), 0.5) !important;
+  border: 2px solid var(--ion-color-primary) !important;
+  border-left: 6px solid var(--ion-color-primary) !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(var(--ion-color-primary-rgb), 0.5);
+  color: var(--ion-color-primary-contrast) !important;
+  font-weight: bold;
+  transform: scale(1.03);
+  z-index: 1;
+  position: relative;
+  padding: 12px 15px !important;
+  margin: 6px 0 !important;
+  border-radius: 6px !important;
+}
+
+// Mantieni l'evidenziazione durante il drag
+.cdk-drag-preview {
+  .highlight {
+    background-color: rgba(var(--ion-color-primary-rgb), 0.7) !important;
+    border: 2px solid var(--ion-color-primary) !important;
+    box-shadow: 0 0 15px rgba(var(--ion-color-primary-rgb), 0.7) !important;
+  }
+}

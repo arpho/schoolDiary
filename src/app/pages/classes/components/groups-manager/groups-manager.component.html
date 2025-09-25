@@ -24,6 +24,20 @@
           <p>Studenti: <strong>{{availableStudents().length}}</strong></p>
           <div class="drag-container" id="studentslist">
             <h4>Studenti disponibili</h4>
+
+
+
+            <ion-searchbar 
+            placeholder="Cerca studenti..."
+            [debounce]="300"
+            (ionInput)="onSearchInput($event)">
+          </ion-searchbar>
+
+
+
+
+
+
             <div
               cdkDropList
               id="studentslist"
@@ -35,6 +49,7 @@
               @for (student of availableStudents().filter(filterStudents()); track student.key) {
                 @if(student.firstName && student.lastName) {
                 <div class="drag-item" cdkDrag
+                [ngClass]="highlightstudent(student)"
                 [cdkDragData]="student"
                 >
                   {{ student.lastName }} {{ student.firstName }}
@@ -61,6 +76,7 @@
                 @for(student of group.studentsList; track student.key) {
                   @if(student.firstName && student.lastName) {
                   <div class="drag-item" cdkDrag
+                  [ngClass]="highlightstudent(student)"
                   [cdkDragData]="student"
                   >
                     {{ student.lastName }} {{ student.firstName }}

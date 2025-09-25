@@ -3,9 +3,9 @@ import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal, effe
 import { CommonModule } from '@angular/common';
 import { GroupsService } from '../../services/groups/groups.service';
 import { GroupModel } from '../../models/groupModel';
-import { IonButton, IonIcon,IonAlert,AlertController } from "@ionic/angular/standalone";
+import { IonButton, IonIcon,AlertController, IonSearchbar } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
-import { add, medkit } from 'ionicons/icons';
+import { medkit } from 'ionicons/icons';
 import { ClassiService } from '../../services/classi.service';
 import { ClasseModel } from '../../models/classModel';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -29,15 +29,25 @@ import {
     IonIcon,
     CdkDrag,
     CdkDropList,
-    IonAlert
-  ],
+    IonSearchbar
+],
   templateUrl: './groups-manager.component.html',
   styleUrls: ['./groups-manager.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GroupsManagerComponent implements OnInit {
+
+highlightstudent(student: UserModel) {
+  return {
+    'highlight': this.searchTerm() && this.makeName(student).toLowerCase().includes(this.searchTerm().toLowerCase())
+  }
+}
+  searchTerm = signal<string>("")
+onSearchInput($event: Event) {
+  this.searchTerm.set(($event.target as HTMLInputElement).value);
+}
 async editGroup(group: GroupModel) {
-console.log("editGroup",group)
+
 const alert =await this.alertController.create({
   header: 'Edit Group',
   message: `Modifica il gruppo ${group.nome}`,
@@ -59,17 +69,17 @@ const alert =await this.alertController.create({
     {
       text: 'salva',
       handler: (data: { nome: string, description: string }) => {
-        console.log('updating group', data);
+        
         group.nome = data.nome;
         group.description = data.description;
-         console.log("group modificato",group)
+         
           try{
             this.service.updateGroup(group).then(() => {
              this.toast.showToast({message:"Gruppo modificato con successo",duration:2000,position:"bottom"});
-             console.log("gruppo modificato", group,group.serialize());
+             
            }).catch((error) => {
              this.toast.showToast({message:"Errore durante la modifica del gruppo",duration:2000,position:"bottom"});
-             console.log("errore durante la modifica del gruppo", error);
+             
            });
           }
 
