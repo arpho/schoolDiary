@@ -20,12 +20,19 @@
 .groups-container {
   flex: 1;
   min-width: 0; // Permette al contenitore di ridursi oltre il contenuto
+  padding: 1rem;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   
   #groupslist {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     padding: 1rem 0;
+    margin: 0;
+    list-style: none;
     overflow-x: auto;
     
     .group-item {
