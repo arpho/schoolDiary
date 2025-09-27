@@ -1,0 +1,11 @@
+.required-field ion-label::after {
+  content: ' *';
+  color: var(--ion-color-danger);
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.required-field {
+  --highlight-color-focused: var(--ion-color-danger);
+  --highlight-color-valid: var(--ion-color-primary);
+}

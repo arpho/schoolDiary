@@ -1,4 +1,4 @@
-import { Component, effect, EventEmitter, Input, input, model, OnInit, Output, signal } from '@angular/core';
+import { Component, computed, effect, EventEmitter, Input, input, model, OnInit, Output, signal } from '@angular/core';
 import { IonContent } from "@ionic/angular/standalone";
 import { IonicModule } from "@ionic/angular";
 import { ClassesFieldComponent } from "src/app/pages/classes/components/classes-field/classes-field.component";
@@ -97,14 +97,17 @@ elencoClassi= signal<ClasseModel[]>([]);
   userForm: FormGroup = new FormGroup({
     firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
     lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    userName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    email: new FormControl('', [Validators.email]),
+    userName: new FormControl('', ),
+    email: new FormControl('', [Validators.email,Validators.required]),
     role: new FormControl(UsersRole.STUDENT),
     phoneNumber: new FormControl(''),
     birthDate: new FormControl(''),
     classes: new FormControl([]),
-    classe: new FormControl('')
+    classe: new FormControl('',[Validators.required])
   });
+
+ 
+    
   usersClasses = signal<ClasseModel[]>([]);
   $UsersRole = UsersRole;
 
@@ -114,11 +117,18 @@ elencoClassi= signal<ClasseModel[]>([]);
     private $classes: ClassiService,
     private toaster: ToasterService
   ) { 
+
     addIcons({
       save,
     });
   this.userForm.valueChanges.subscribe((value) => {
     console.log("  valueChanges on form + ", value);
+    const userFormValid = computed(() => this.userForm.valid);
+    console.log("userForm valid", userFormValid());
+    console.log("userForm errors", this.userForm.errors);
+    console.log("email valida", this.userForm.get('email')?.valid);
+    console.log("email valido", this.userForm.get('email')?.valid);
+
     const user = new UserModel({...value,
        key: this.user()?.key,
         classi: this.user()?.classi,
