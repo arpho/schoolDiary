@@ -273,7 +273,11 @@ catch (error) {
   private loadGroups4class(classKey: string) {
     this.service.fetchGroups4class(classKey, (groups) => {
       console.log("groups 4 class ",classKey, groups);
-      this.groupsList.set(groups);
+      // Sort groups by name before setting them
+      const sortedGroups = [...groups].sort((a, b) => 
+        a.nome.localeCompare(b.nome, 'it', {sensitivity: 'base'})
+      );
+      this.groupsList.set(sortedGroups);
     });
 
 
