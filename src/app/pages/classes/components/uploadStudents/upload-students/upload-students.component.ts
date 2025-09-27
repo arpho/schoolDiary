@@ -15,24 +15,11 @@ import {
   AlertController,
   IonInput 
 } from '@ionic/angular/standalone';
-import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UsersService } from '../../../../../shared/services/users.service';
 import { addIcons } from 'ionicons';
 import { pushOutline } from 'ionicons/icons';
-
- class Alunno extends UserModel {
-
-  
-  constructor(args?: {}) {
-    super(args);
-  }
-  fullName: string = '';
-  setFullName(fullName: string) {
-    this.fullName = fullName;
-     return this 
-  }
-}
+import { Alunno } from '../../../models/alunno.model';
 @Component({
   selector: 'app-upload-students',
   templateUrl: './upload-students.component.html',
