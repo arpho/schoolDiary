@@ -21,6 +21,25 @@ import { signal } from '@angular/core';
   providedIn: 'root'
 })
 export class ReservedNotes4studentsService {
+  getNotesByStudentAndOwner(_studentKey: string, _ownerKey: string) {
+    console.log("getting note by student and owner");
+    console.log("studentKey", _studentKey);
+    console.log("ownerKey", _ownerKey);
+    const collectionRef = collection(this.firestore, this.collection);
+    const q = query(
+      collectionRef,
+      where('ownerKey', '==', _ownerKey),
+      where('studentKey', '==', _studentKey)
+    );
+    return getDocs(q).then((querySnapshot) => {
+      const notes: ReservedNotes4student[] = [];
+      querySnapshot.forEach((docSnap) => {
+        notes.push(new ReservedNotes4student(docSnap.data()).setKey(docSnap.id));
+      });
+      console.log("notes", notes);
+      return notes;
+    });
+  }
   private notesOnCache = signal<ReservedNotes4student[]>([]);
   private collection = 'reservedNotes4Student';
   private firestore = inject(Firestore);

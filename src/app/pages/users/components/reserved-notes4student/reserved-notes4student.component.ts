@@ -36,8 +36,35 @@ import { addIcons } from 'ionicons';
   providers: [AlertController]
 })
 export class ReservedNotes4studentComponent implements OnInit {
-  @Input() studentkey!: string;
-  @Input() ownerkey!: string;
+
+  @Input() 
+  set studentkey(value: string) {
+    console.log('studentKey set to:', value, 'Previous value:', this._studentKey);
+    if (value !== this._studentKey) {
+      this._studentKey = value;
+      console.log('studentKey updated, loading notes...');
+      this.loadNotes();
+    }
+  }
+  get studentkey(): string {
+    return this._studentKey;
+  }
+
+  @Input() 
+  set ownerkey(value: string) {
+    console.log('ownerKey set to:', value, 'Previous value:', this._ownerKey);
+    if (value !== this._ownerKey) {
+      this._ownerKey = value;
+      console.log('ownerKey updated, loading notes...');
+      this.loadNotes();
+    }
+  }
+  get ownerkey(): string {
+    return this._ownerKey;
+  }
+
+  private _studentKey = '';
+  private _ownerKey = '';
   notes = signal<ReservedNotes4student[]>([]);
   constructor(
     private toast: ToasterService,
@@ -56,14 +83,35 @@ export class ReservedNotes4studentComponent implements OnInit {
     })
   }
 
+  private loadNotes() {
+    console.log("loading notes 4 student", this._studentKey, "and owner", this._ownerKey);
+    if (this._studentKey && this._ownerKey) {
+      this.notesService.getNotesByStudentAndOwner(this._studentKey, this._ownerKey)
+        .then(notes => {
+          this.notes.set(notes);
+        });
+    }
+  }
+
   ngOnInit() {
+    console.log("ngOnInit ReservedNotes4studentComponent");
+    console.log("studentkey", this._studentKey);
+    console.log("ownerkey", this._ownerKey);
+    
+    // Load notes if we already have the required keys
+    if (this._studentKey && this._ownerKey) {
+      this.loadNotes();
+    }
+    
+    // Initialize real-time updates
     this.initializeNotes();
   }
 
   private async initializeNotes() {
     const user = await this.usersService.getLoggedUser();
     if (user && typeof user === 'object' && 'key' in user) {
-      this.notesService.getNotesOnRealtime(user.key, this.studentkey, (notes) => {
+      // Use the private fields directly to ensure we have the latest values
+      this.notesService.getNotesOnRealtime(user.key, this._studentKey, (notes) => {
         this.notes.set(notes);
       });
     }

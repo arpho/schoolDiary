@@ -36,6 +36,9 @@ import { ReservedNotes4studentComponent } from "../components/reserved-notes4stu
 ]
 })
 export class UserDialogPage implements OnInit {
+  nomeStudente() {
+return this.user()?.lastName + " " + this.user()?.firstName;
+}
   editedUser($event: UserModel) {
     console.log("editedUser*", $event);
     this.user.set($event);
@@ -71,6 +74,7 @@ export class UserDialogPage implements OnInit {
   }
   usersClasses = signal<ClasseModel[]>([]);
   elencoClassi = signal<ClasseModel[]>([]);
+  loggedUser = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
   rolesValue: any[] = [];
   rolesName: string[] = [];
   userForm: FormGroup = new FormGroup({
@@ -119,8 +123,17 @@ export class UserDialogPage implements OnInit {
   }
 
   async ngOnInit() {
+    const loggedUser = await this.$users.getLoggedUser();
+    if (loggedUser) {
+      this.loggedUser.set(loggedUser);
+    }
     const userKey = this.route.snapshot.paramMap.get('userKey');
     console.log("UserDialogPage ngOnInit, userKey:", userKey, "classKey:", this.classKey);
+    
+    // Imposta la userKey nella proprietà del componente
+    if (userKey) {
+      this.userKey = userKey;
+    }
     
     // Se classKey è presente, imposta la classe predefinita
     const classKeyValue = this.classKey;

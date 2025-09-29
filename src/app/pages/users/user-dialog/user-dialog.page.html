@@ -5,7 +5,7 @@
       class="back-button"
       defaultHref="/users-list"
       autoHide="true"></ion-back-button>
-    <ion-title align="center">editing utente</ion-title>
+    <ion-title align="center">editing utente {{nomeStudente()}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -28,7 +28,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-    <app-reserved-notes4student [studentkey]="userKey" [ownerkey]="userKey"></app-reserved-notes4student>
+    <app-reserved-notes4student [studentkey]="userKey" [ownerkey]="loggedUser().key"></app-reserved-notes4student>
     </ion-content>
   </ion-tab>
   <ion-tab tab="valutazioni">
