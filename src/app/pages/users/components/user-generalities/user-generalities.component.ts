@@ -84,7 +84,7 @@ this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
 });
 }
 else{
-  console.log("user key not found, it is a new user");
+  console.log("user key not found, it is a new user",user); 
 
  }
 }
@@ -122,21 +122,23 @@ elencoClassi= signal<ClasseModel[]>([]);
       save,
     });
   this.userForm.valueChanges.subscribe((value) => {
-    console.log("  valueChanges on form + ", value);
+    console.log("valueChanges on form:", value);
     const userFormValid = computed(() => this.userForm.valid);
     console.log("userForm valid", userFormValid());
     console.log("userForm errors", this.userForm.errors);
     console.log("email valida", this.userForm.get('email')?.valid);
-    console.log("email valido", this.userForm.get('email')?.valid);
 
-    const user = new UserModel({...value,
-       key: this.user()?.key,
-        classi: this.user()?.classi,
-         classesKey: this.user()?.classesKey||value.classe,
-        }
-      );
-    this.user.set(user);
-    console.log("userSignal*", this.user());
+    const currentUser = this.user();
+    const updatedUser = new UserModel({
+      ...currentUser,          // Mantiene tutti i valori esistenti
+      ...value,                // Sovrascrive con i valori del form
+      key: currentUser?.key,   // Mantiene la chiave esistente
+      classi: currentUser?.classi,  // Mantiene le classi esistenti
+      classesKey: value.classe || currentUser?.classesKey  // Aggiorna classesKey solo se c'è un nuovo valore
+    });
+    
+    this.user.set(updatedUser);
+    console.log("userSignal aggiornato:", updatedUser);
   })
     effect(async()=>{
       const classesKeys = this.user()?.classesKey;

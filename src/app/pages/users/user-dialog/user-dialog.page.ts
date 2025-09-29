@@ -64,10 +64,16 @@ return this.user()?.lastName + " " + this.user()?.firstName;
   private _updateUserClass(classKeyValue: string) {
     const currentUser = this.user();
     if (currentUser) {
+      // Crea un nuovo array di classi senza duplicati
+      const updatedClasses = Array.from(new Set([
+        ...(currentUser.classes || []).filter(c => c !== classKeyValue), // Rimuovi il valore se già presente
+        classKeyValue
+      ]));
+      
       const updatedUser = new UserModel({
         ...currentUser,
-        classes: [...(currentUser.classes || []), classKeyValue],
-        classKey: classKeyValue
+        classes: updatedClasses,
+        classKey: classKeyValue  // Sovrascrivi classKey invece di aggiungerlo
       });
       this.user.set(updatedUser);
     }
@@ -144,15 +150,19 @@ return this.user()?.lastName + " " + this.user()?.firstName;
     
     // Se userKey esiste, carica l'utente
     if (userKey) {
+      console.log("editing user", userKey);
       try {
         const user = this.$users.fetchUserOnCache(userKey);
         if (user) {
           this.user.set(user);
           console.log("Utente caricato:", user);
         }
+      
       } catch (error) {
         console.error("Errore nel caricamento dell'utente:", error);
       }
+    }  else{
+      console.log("nuovo studente")
     }
 
     // Inizializza le classi
