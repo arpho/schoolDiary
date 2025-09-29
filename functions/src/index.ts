@@ -1,36 +1,70 @@
-
-
 import {initializeApp} from "firebase-admin/app";
 import {getAuth} from "firebase-admin/auth";
-import {onCall} from "firebase-functions/v2/https";
+import {getFirestore} from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
+import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import {createUser} from "./bussines/createUser";
 import {createUserPlus} from "./bussines/createUserPlus";
+import {sendActivationLink} from "./sendActivationLink";
 
+interface SetCustomClaimsData {
+  userKey: string;
+  claims: Record<string, unknown>;
+}
 
 initializeApp();
 
-const setCustomClaims = onCall({enforceAppCheck: false}, async (request) => {
-  const data = request.data as { userKey: string; claims: Record<string, any> };
+const setCustomClaims = onCall<SetCustomClaimsData>(
+  {enforceAppCheck: false},
+  async (request: CallableRequest<SetCustomClaimsData>) => {
+    const {data} = request;
 
+    // Verifica che i dati siano un oggetto JSON valido
+    if (!data || typeof data !== "object") {
+      throw new Error("Dati non validi");
+    }
 
-  // Verifica che i dati siano un oggetto JSON valido
-  if (!data || typeof data !== "object") {
-    logger.error("Invalid data format");
-    throw new Error("Invalid data format");
+    const {userKey, claims} = data;
+
+    // Verifica che userKey sia una stringa non vuota
+    if (!userKey || typeof userKey !== "string") {
+      throw new Error("userKey è obbligatorio e deve essere una stringa");
+    }
+
+    // Verifica che claims sia un oggetto
+    if (!claims || typeof claims !== "object" || Array.isArray(claims)) {
+      throw new Error("claims è obbligatorio e deve essere un oggetto");
+    }
+
+    try {
+      // Imposta i custom claims per l'utente specificato
+      await getAuth().setCustomUserClaims(userKey, claims);
+
+      // Aggiorna il documento dell'utente in Firestore
+      const userRef = getFirestore().collection("users").doc(userKey);
+      await userRef.set(
+        {
+          customClaims: claims,
+          updatedAt: new Date(),
+        },
+        {merge: true},
+      );
+
+      return {
+        result: "Custom claims aggiornati con successo",
+        data: {userKey, claims},
+      };
+    } catch (error) {
+      logger.error(
+        "Errore durante l'aggiornamento dei custom claims:",
+        error,
+      );
+      throw new Error(
+        "Si è verificato un errore durante l'aggiornamento dei custom claims",
+      );
+    }
   }
-
-  const userKey = data.userKey;
-  const claims = data.claims;
-
-  try {
-    await getAuth().setCustomUserClaims(userKey, claims);
-    return {result: "ok", data: {userKey, claims}};
-  } catch (error) {
-    logger.error("Error processing data:", error);
-    throw new Error("Error processing data: " + (error as Error).message);
-  }
-});
+);
 
 // Esporta tutte le funzioni
-export {setCustomClaims, createUser, createUserPlus};
+export {setCustomClaims, createUser, createUserPlus, sendActivationLink};

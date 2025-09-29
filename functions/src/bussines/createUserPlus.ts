@@ -4,8 +4,8 @@ import {getFirestore} from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import * as functions from "firebase-functions";
 import {UsersRole} from "../shared/models/UsersRole";
-import {emailService} from "../services/email.service";
-import {onCall} from "firebase-functions/https";
+import {onCall} from "firebase-functions/v2/https";
+import {sendUserActivationLink} from "./userActivation";
 
 /**
  * Verifica se un utente esiste
@@ -23,24 +23,6 @@ async function checkUserExists(email: string): Promise<boolean> {
       return false;
     }
     throw error;
-  }
-}
-
-/**
- * Invia una mail di attivazione all'utente
- * @param {string} email - L'email a cui inviare il link di attivazione
- * @param {string} activationLink - Il link di attivazione da inviare
- */
-async function sendActivationEmail(email: string, activationLink: string) {
-  try {
-    const success = await emailService.sendActivationEmail(email, activationLink);
-    if (success) {
-      logger.info(`Email di attivazione inviata con successo a ${email}`);
-    } else {
-      logger.error(`Invio email di attivazione fallito per ${email}`);
-    }
-  } catch (error) {
-    logger.error("Errore nell'invio dell'email di attivazione:", error);
   }
 }
 
@@ -211,14 +193,10 @@ export const createUserPlus = onCall(
         logger.info(`Nuovo utente creato: ${userEmail}`);
       }
 
-      // Invia la mail di attivazione in entrambi i casi
-      const actionCodeSettings = {
-        url: `${process.env.APP_URL || "https://schooldiary-b8434.web.app"}`,
-        handleCodeInApp: true,
-      };
-
-      const activationLink = await getAuth().generatePasswordResetLink(userEmail, actionCodeSettings);
-      await sendActivationEmail(userEmail, activationLink);
+      // Invia la mail di attivazione se l'utente è nuovo o se non è stato ancora verificato
+      if (!userAlreadyExists || !userRecord.emailVerified) {
+        await sendUserActivationLink(userEmail);
+      }
 
       return {
         success: true,
