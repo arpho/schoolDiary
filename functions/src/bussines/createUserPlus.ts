@@ -44,7 +44,7 @@ async function sendActivationEmail(email: string, activationLink: string) {
   }
 }
 
-interface CreateUserPlusData {
+export interface CreateUserPlusData {
   email: string;
   /** Password (obbligatoria solo per nuovi utenti) */
   password?: string;
