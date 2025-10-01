@@ -46,12 +46,13 @@ this.voto.set(voto);
 
   ngOnInit() {
     console.log("grid to show", this.grid);
-    this.votoMax = this.grid().indicatori.reduce((acc, indicatore) => Number(acc) + Number(indicatore.valore), 0);
+
     }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['grid']) {
-      console.log("grid changed", this.grid);
+      this.votoMax = this.grid().indicatori.reduce((acc, indicatore) => Number(acc) + Number(indicatore.valore), 0);
+
     }
   }
 }
