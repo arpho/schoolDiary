@@ -35,6 +35,7 @@ import { ModalController } from '@ionic/angular';
 ],
 })
 export class Evaluation2PdfComponent  implements OnInit {
+  showSpinner= signal(false);
 close() {
 this.modalCtrl.dismiss();
 }
@@ -55,6 +56,7 @@ this.modalCtrl.dismiss();
   }
 generatePdf() {
   this.hideButtons.set(true);
+  this.showSpinner.set(true);
 console.log("generatePdf");
 const data = document.getElementById('contentToConvert');
 if(data){
@@ -63,6 +65,7 @@ html2canvas(data).then(async canvas => {
   const pageHeight = 295;
   const imgHeight = canvas.height * imgWidth / canvas.width;
   const heightLeft = imgHeight;
+
 
   const contentDataURL = canvas.toDataURL('image/png');
   const pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
@@ -85,7 +88,7 @@ const fileName = `evaluation_${userName}_${className}_${this.formatDate(this.eva
     });
 }
 this.hideButtons.set(false);
-
+this.showSpinner.set(false);
 }
 
   evaluation=input<Evaluation>();

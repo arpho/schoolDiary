@@ -11,6 +11,7 @@ import { ClassiService } from '../../classes/services/classi.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReservedNotes4studentComponent } from "../components/reserved-notes4student/reserved-notes4student.component";
+import { Evaluation4StudentComponent } from "../components/evaluation4-student/evaluation4-student.component";
 
 @Component({
   selector: 'app-user-dialog',
@@ -32,7 +33,8 @@ import { ReservedNotes4studentComponent } from "../components/reserved-notes4stu
     IonTabButton,
     IonTab,
     ReservedNotes4studentComponent,
-    IonLabel
+    IonLabel,
+    Evaluation4StudentComponent
 ]
 })
 export class UserDialogPage implements OnInit {

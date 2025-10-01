@@ -1,0 +1,70 @@
+<ion-grid>
+  <ion-row>
+    <ion-col size="12">
+      @if (evaluationsList().length === 0) {
+        <ion-card>
+          <ion-card-content>
+            <p>Nessuna valutazione trovata per questo studente.</p>
+          </ion-card-content>
+        </ion-card>
+      } @else {
+        @for (evaluation of evaluationsList(); track evaluation.key) {
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>{{ evaluation.description }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list>
+                <ion-item>
+                  <ion-label>
+                    <h3>Data</h3>
+                    <p>{{ evaluation.data }}</p>
+                  </ion-label>
+                </ion-item>
+
+                @if (evaluation.note) {
+                  <ion-item>
+                    <ion-label>
+                      <h3>Note</h3>
+                      <p>{{ evaluation.note }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+
+                @if (evaluation.grid && evaluation.grid.nome) {
+                  <ion-item>
+                    <ion-label>
+                      <h3>Griglia di valutazione</h3>
+                      <p>{{ evaluation.grid.nome }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+
+                @if (evaluation.activityKey) {
+                  @if (getActivity(evaluation.activityKey); as activity) {
+                    <ion-item>
+                      <ion-label>
+                        <h3>Attività</h3>
+                        <p><strong>{{ activity.title }}</strong></p>
+                        @if (activity.description) {
+                          <p>{{ activity.description }}</p>
+                        }
+                      </ion-label>
+                    </ion-item>
+                  } @else {
+                    <ion-item>
+                      <ion-label>
+                        <h3>Attività</h3>
+                        <p>Attività non trovata ({{ evaluation.activityKey }})</p>
+                      </ion-label>
+                    </ion-item>
+                  }
+                }
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+        }
+      }
+    </ion-col>
+  </ion-row>
+</ion-grid>

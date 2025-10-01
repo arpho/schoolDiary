@@ -37,6 +37,21 @@ export class EvaluationService {
     return setDoc(docRef, evaluation.serialize());
   }
 
+getEvaluation4studentAndTeacher(studentKey: string, teacherKey: string, callback: (evaluations: Evaluation[]) => void) {
+  console.log("getEvaluation4studentAndTeacher")
+  console.log("studentKey", studentKey)
+  console.log("teacherKey", teacherKey)
+  const collectionRef = collection(this.firestore, this.collection);
+  const q = query(collectionRef, where('studentKey', '==', studentKey), where('teacherKey', '==', teacherKey));
+  return onSnapshot(q, (snapshot) => {
+    const evaluations: Evaluation[] = [];
+    snapshot.forEach((doc) => {
+      evaluations.push(new Evaluation(doc.data()).setKey(doc.id));
+    });
+    callback(evaluations);
+  });
+}
+
   getEvaluationsOnRealtime(callback: (evaluations: Evaluation[]) => void, queries?: QueryCondition[]) {
     console.log("getEvaluationsOnRealtime")
     
