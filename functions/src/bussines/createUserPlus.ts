@@ -4,8 +4,8 @@ import {getFirestore} from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import * as functions from "firebase-functions";
 import {UsersRole} from "../shared/models/UsersRole";
-import {emailService} from "../services/email.service";
-import {onCall} from "firebase-functions/https";
+import {onCall} from "firebase-functions/v2/https";
+import {sendUserActivationLink} from "./userActivation";
 
 /**
  * Verifica se un utente esiste
@@ -211,14 +211,10 @@ export const createUserPlus = onCall(
         logger.info(`Nuovo utente creato: ${userEmail}`);
       }
 
-      // Invia la mail di attivazione in entrambi i casi
-      const actionCodeSettings = {
-        url: `${process.env.APP_URL || "https://schooldiary-b8434.web.app"}`,
-        handleCodeInApp: true,
-      };
-
-      const activationLink = await getAuth().generatePasswordResetLink(userEmail, actionCodeSettings);
-      await sendActivationEmail(userEmail, activationLink);
+      // Invia la mail di attivazione se l'utente è nuovo o se non è stato ancora verificato
+      if (!userAlreadyExists || !userRecord.emailVerified) {
+        await sendUserActivationLink(userEmail);
+      }
 
       return {
         success: true,
