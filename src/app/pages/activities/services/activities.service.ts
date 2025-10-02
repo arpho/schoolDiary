@@ -50,8 +50,32 @@ export class ActivitiesService {
   }
 }
 
-  fetchActivityOnCache(activityKey: string): ActivityModel | undefined {
-    return this.activitiesOnCache().find(activity => activity.key === activityKey);
+  async fetchActivityOnCache(activityKey: string): Promise<ActivityModel | undefined> {
+    // Cerca prima in cache
+    let activity = this.activitiesOnCache().find(activity => activity.key === activityKey);
+    
+    // Se non trovata in cache, recupera da Firebase
+    if (!activity) {
+      try {
+        const docRef = doc(this.firestore, this.collection, activityKey);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          // Crea l'attività dai dati di Firebase
+          activity = new ActivityModel();
+          activity.build(docSnap.data());
+          activity.setKey(docSnap.id);
+          
+          // Aggiorna la cache con la nuova attività
+          this.activitiesOnCache.update(activities => [...activities, activity!]);
+        }
+      } catch (error) {
+        console.error('Error fetching activity from Firebase:', error);
+        throw error;
+      }
+    }
+    
+    return activity;
   }
 
   fetchActivities(teachersKey: string, classKey: string): Promise<ActivityModel[]> {

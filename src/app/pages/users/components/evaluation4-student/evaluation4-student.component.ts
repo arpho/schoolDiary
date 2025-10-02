@@ -94,9 +94,9 @@ export class Evaluation4StudentComponent  implements OnInit {
   }
 
   // Metodo per ottenere l'attività associata a una valutazione
-  getActivity(activityKey: string): ActivityModel | undefined {
+  async getActivity(activityKey: string): Promise<ActivityModel | undefined> {
     if (!activityKey) return undefined;
-    return this.$activities.fetchActivityOnCache(activityKey);
+    return await this.$activities.fetchActivityOnCache(activityKey);
   }
 
 }
