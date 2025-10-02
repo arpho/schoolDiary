@@ -36,6 +36,12 @@ export class Evaluation {
     }
     return this;
   }
+  get voto() {
+    return this.grid.voto;
+  }
+  get votoMax() {
+    return this.grid.votoMax;
+  }
 
   serialize() {
     return {

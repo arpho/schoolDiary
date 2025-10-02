@@ -62,6 +62,12 @@ import { UsersRole } from 'src/app/shared/models/usersRole';
 ]
 })
 export class EvaluationsListPage implements OnInit {
+userCanEdit(evaluation: Evaluation) {
+return this.loggedUser()?.role === UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
+}
+viewEvaluation(evaluation: Evaluation) {
+console.log("viewEvaluation", evaluation);
+}
   filterSignal = signal<QueryCondition[]>([])
   listaClassi = signal<ClasseModel[]>([])
   listaStudenti = signal<UserModel[]>([])

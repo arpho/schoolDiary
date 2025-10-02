@@ -43,12 +43,51 @@
                 @if (evaluation.activityKey) {
                   @if (getActivity(evaluation.activityKey); as activity) {
                     <ion-item>
+                      <ion-fab vertical="bottom" horizontal="end">
+                        <ion-fab-button size="small" color="medium">
+                          <ion-icon name="ellipsis-vertical"></ion-icon>
+                        </ion-fab-button>
+                        <ion-fab-list side="start">
+                          @if(userCanEdit(evaluation)){
+                          <ion-fab-button color="light" (click)="editEvaluation(evaluation)">
+                            <ion-icon name="create"></ion-icon>
+                          </ion-fab-button>
+                          }
+                          <ion-fab-button color="light" (click)="viewEvaluation(evaluation)">
+                            <ion-icon name="eye"></ion-icon>
+                          </ion-fab-button>
+                          @if(userCanEdit(evaluation)){
+                          <ion-fab-button color="light" (click)="archiveEvaluation(evaluation)">
+                            <ion-icon name="archive"></ion-icon>
+                          </ion-fab-button>
+                          }
+                          @if(userCanEdit(evaluation)){
+                          <ion-fab-button color="danger" (click)="deleteEvaluation(evaluation)">
+                            <ion-icon name="trash"></ion-icon>
+                          </ion-fab-button>
+                          }
+                          <ion-fab-button color="light">
+                            <ion-icon name="close"></ion-icon>
+                          </ion-fab-button>
+                          <ion-fab-button color="light" (click)="evaluationPdf(evaluation)">
+                            <ion-icon name="print"></ion-icon>
+                          </ion-fab-button>
+                        </ion-fab-list>
+                      </ion-fab>
                       <ion-label>
                         <h3>Attività</h3>
                         <p><strong>{{ activity.title }}</strong></p>
                         @if (activity.description) {
                           <p>{{ activity.description }}</p>
                         }
+                      </ion-label>
+                    </ion-item>
+
+                    <!-- Sezione voto separata -->
+                    <ion-item>
+                      <ion-label>
+                        <h3>Voto</h3>
+                        <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0 ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' : evaluation.votoMax) : 'N/A' }}</strong></p>
                       </ion-label>
                     </ion-item>
                   } @else {
@@ -58,7 +97,31 @@
                         <p>Attività non trovata ({{ evaluation.activityKey }})</p>
                       </ion-label>
                     </ion-item>
+
+                    <!-- Sezione voto anche se attività non trovata -->
+                    <ion-item>
+                      <ion-label>
+                        <h3>Voto</h3>
+                        <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0 ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' : evaluation.votoMax) : 'N/A' }}</strong></p>
+                      </ion-label>
+                    </ion-item>
                   }
+                } @else {
+                  <!-- Valutazione senza attività -->
+                  <ion-item>
+                    <ion-label>
+                      <h3>Valutazione</h3>
+                      <p>{{ evaluation.description }}</p>
+                    </ion-label>
+                  </ion-item>
+
+                  <!-- Sezione voto anche senza activityKey -->
+                  <ion-item>
+                    <ion-label>
+                      <h3>Voto</h3>
+                      <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0 ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' : evaluation.votoMax) : 'N/A' }}</strong></p>
+                    </ion-label>
+                  </ion-item>
                 }
               </ion-list>
             </ion-card-content>

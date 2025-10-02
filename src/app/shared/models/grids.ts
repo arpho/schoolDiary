@@ -7,6 +7,12 @@ export class Grids {
   descrizione: string = '';
   indicatori: Indicatore[] = [];
   ownerKey: string = '';
+  get votoMax(): any {
+    return this.indicatori.reduce((acc, indicator) => acc + Number(indicator.valore), 0);
+  }
+   get voto(): any {
+    return this.indicatori.reduce((acc, indicator) => acc + Number(indicator.voto), 0);
+  }
 
   constructor(args?: any) {
     this.build(args);
