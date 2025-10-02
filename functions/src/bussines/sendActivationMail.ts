@@ -1,11 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {getAuth, UserRecord} from "firebase-admin/auth";
-import {getFirestore} from "firebase-admin/firestore";
+import {getAuth} from "firebase-admin/auth";
 import * as logger from "firebase-functions/logger";
 import * as functions from "firebase-functions";
-import {UsersRole} from "../shared/models/UsersRole";
 import {emailService} from "../services/email.service";
 import {onCall} from "firebase-functions/https";
 import {CreateUserPlusData} from "./createUserPlus";
@@ -15,7 +13,7 @@ import {CreateUserPlusData} from "./createUserPlus";
  * @param {string} email - L'email a cui inviare il link di attivazione
  * @param {string} activationLink - Il link di attivazione da inviare
  */
-async function sendActivationEmail(email: string, activationLink: string) {
+export async function sendActivationEmail(email: string, activationLink: string) {
   try {
     const success = await emailService.sendActivationEmail(email, activationLink);
     if (success) {
@@ -55,7 +53,7 @@ export const sendActivationMail = onCall(
       handleCodeInApp: true,
     };
 
-    const activationLink = await getAuth().generatePasswordResetLink(email, actionCodeSettings);
+    const activationLink = await auth.generatePasswordResetLink(email, actionCodeSettings);
     await sendActivationEmail(email, activationLink);
     return {
       success: true,

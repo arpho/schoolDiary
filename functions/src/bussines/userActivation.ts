@@ -2,7 +2,7 @@
 /* eslint-disable valid-jsdoc */
 import * as functions from "firebase-functions";
 import {getAuth} from "firebase-admin/auth";
-import {sendActivationLink} from "../sendActivationLink";
+import {sendActivationEmail} from "./sendActivationMail";
 
 /**
  * Invia il link di attivazione all'utente
@@ -24,7 +24,7 @@ export const sendUserActivationLink = async (email: string): Promise<{
     const activationLink = await getAuth().generatePasswordResetLink(email, actionCodeSettings);
 
     // Invia l'email di attivazione
-    await sendActivationLink(email, activationLink);
+    await sendActivationEmail(email, activationLink);
 
     return {
       success: true,

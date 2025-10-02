@@ -6,6 +6,7 @@ import * as functions from "firebase-functions";
 import {UsersRole} from "../shared/models/UsersRole";
 import {onCall} from "firebase-functions/v2/https";
 import {sendUserActivationLink} from "./userActivation";
+import {emailService} from "../services/email.service";
 
 /**
  * Verifica se un utente esiste
@@ -31,7 +32,7 @@ async function checkUserExists(email: string): Promise<boolean> {
  * @param {string} email - L'email a cui inviare il link di attivazione
  * @param {string} activationLink - Il link di attivazione da inviare
  */
-async function sendActivationEmail(email: string, activationLink: string) {
+export async function sendActivationEmail(email: string, activationLink: string) {
   try {
     const success = await emailService.sendActivationEmail(email, activationLink);
     if (success) {
