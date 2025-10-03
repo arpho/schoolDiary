@@ -35,6 +35,7 @@ import { UsersRole } from 'functions/src/shared/models/UsersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { Evaluation2PdfComponent } from 'src/app/pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component';
+import { EvaluationPage } from 'src/app/pages/evaluations/evaluation/evaluation.page';
 
 @Component({
   selector: 'app-evaluation4-student',
@@ -64,10 +65,7 @@ export class Evaluation4StudentComponent  implements OnInit {
 loggedUser = signal<UserModel | null>(null)
   $users = inject(UsersService);
 userCanEdit(evaluation: Evaluation) {
-console.log("userCanEdit chiamato", evaluation);
-console.log("loggedUser", this.loggedUser());
-console.log("evaluation teacherKey", evaluation.teacherKey);
-console.log("this.loggedUser()?.key", this.loggedUser()?.key);
+
 return this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
 }
 viewEvaluation(_t12: Evaluation) {
@@ -90,8 +88,17 @@ console.log("deleteEvaluation chiamato", valutazione);
 archiveEvaluation(valutazione: Evaluation) {
 console.log("archiveEvaluation chiamato", valutazione);
 }
-editEvaluation(valutazione: Evaluation) {
+async editEvaluation(valutazione: Evaluation) {
 console.log("editEvaluation chiamato", valutazione);
+const modal = await this.modalCtrl.create({
+  component: EvaluationPage,
+  componentProps: {
+    evaluationParam: valutazione
+  },
+  cssClass: "fullscreen"
+});
+await modal.present(); 
+
 }
   private $evaluation = inject(EvaluationService);
   private $activities = inject(ActivitiesService);
@@ -129,19 +136,7 @@ console.log("editEvaluation chiamato", valutazione);
             console.log("evaluations ricevute:", evaluations);
             console.log("Numero valutazioni:", evaluations.length);
             evaluations.forEach((evaluation, index) => {
-              console.log(`Valutazione ${index}:`, evaluation);
-              console.log(`  - activityKey: ${evaluation.activityKey}`);
-              console.log(`  - voto: ${evaluation.voto}`);
-              console.log(`  - votoMax: ${evaluation.votoMax}`);
-              console.log(`  - voto type: ${typeof evaluation.voto}`);
-              console.log(`  - votoMax type: ${typeof evaluation.votoMax}`);
-              console.log(`  - voto is 0: ${evaluation.voto === 0}`);
-              console.log(`  - votoMax is 0: ${evaluation.votoMax === 0}`);
-              console.log(`  - grid.voto: ${evaluation.grid.voto}`);
-              console.log(`  - grid.votoMax: ${evaluation.grid.votoMax}`);
-              console.log(`  - grid.key: ${evaluation.grid.key}`);
-              console.log(`  - grid.nome: ${evaluation.grid.nome}`);
-              console.log(`  - grid.indicatori length: ${evaluation.grid.indicatori.length}`);
+       
               if (evaluation.grid.indicatori.length > 0) {
                 console.log(`  - primo indicatore: ${JSON.stringify(evaluation.grid.indicatori[0])}`);
               }

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <ion-header [translucent]="true">
   <ion-back-button
     text="dashboard"
@@ -21,7 +22,7 @@
     <ion-list>
         @for (classe of sortedClassiList(); track classe.key) {
             <ion-item >
-              <ion-card (click)="clickedClass(classe)">
+              <ion-card >
                 <ion-card-header>
                   <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
                 </ion-card-header>

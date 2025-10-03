@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -70,16 +70,55 @@ import { addIcons } from 'ionicons';
     IonButton,
     IonList,
     IonTextarea,
-    EvaluateGridComponent,
     IonIcon,
     IonBackButton,
-    
+    EvaluateGridComponent,
+    ActivityDialogComponent
   ]
 })
 export class EvaluationPage implements OnInit {
-openFilterPopup() {
-console.log("openFilterPopup");
-}
+  evaluationParam = input<Evaluation>(new Evaluation());
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private toaster: ToasterService,
+    private activitiesService: ActivitiesService,
+    private fb: FormBuilder,
+    private $users: UsersService,
+    private gridsService: GridsService,
+    private evaluationService: EvaluationService,
+    private classiService: ClassiService,
+    private modalCtrl: ModalController
+  ) {
+    addIcons({
+      filter
+    });
+
+
+    // 2. Effect - Reagisce ai cambiamenti dell'input parameter
+effect(() => {
+  const evaluationData = this.evaluationParam();
+  if (evaluationData) {
+    console.log("evaluationData", evaluationData);
+    // Aggiorna il form con i dati della valutazione
+    this.evaluationform.patchValue({
+      description: evaluationData.description,
+      // ... altri campi
+    });
+    
+    // Imposta il titolo corretto
+    if (evaluationData.key) {
+      this.title.set("Modifica valutazione");
+    }
+  }
+});
+  }
+
+  openFilterPopup() {
+    console.log("openFilterPopup");
+  }
+
   activities = signal<ActivityModel[]>([]);
   evaluationform: FormGroup = new FormGroup({
     description: new FormControl(''),
@@ -98,25 +137,8 @@ console.log("openFilterPopup");
   griglie = signal<Grids[]>([]);
   classesList = signal<ClasseModel[]>([]);
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private toaster: ToasterService,
-    private activitiesService: ActivitiesService,
-    private fb: FormBuilder,
-    private $users: UsersService,
-    private gridsService: GridsService,
-    private evaluationService: EvaluationService,
-    private classiService: ClassiService,
-    private modalCtrl: ModalController
-  ) { 
-    addIcons({
-      filter
-    });
-  }
-
   async ngOnInit() {
-    // Initialize form controls with URL parameters
+    // Initialize form controls with URL parameters first
     const routeParams = this.route.snapshot.params;
     this.classKey = routeParams['classKey'] || '';
     this.studentKey = routeParams['studentKey'] || '';
@@ -124,7 +146,6 @@ console.log("openFilterPopup");
     console.log("classKey", this.classKey);
     console.log("studentKey", this.studentKey);
     const user = await this.$users.getLoggedUser();
-
 
     if (user) {
       this.activitiesService.getActivitiesOnRealtime(
@@ -136,6 +157,7 @@ console.log("openFilterPopup");
       );
     }
 
+    // Initialize form with default values first
     this.evaluationform = this.fb.group({
       description: [''],
       note: [''],
@@ -145,9 +167,8 @@ console.log("openFilterPopup");
       classKey: [this.classKey],
       studentKey: [this.studentKey]
     });
-   
-    if(this.evaluationform)
-      {
+
+    if (this.evaluationform) {
       this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
         if (gridKey) {
           const grid = this.griglie().find((grid) => grid.key === gridKey);
@@ -156,35 +177,46 @@ console.log("openFilterPopup");
           }
         }
       });
-    /*     this.evaluationform.valueChanges.subscribe((value) => {
-          console.log("value", value);
-   
-          if(value.grid){
-            const grid = this.griglie().find((grid) => grid.key === value.grid);
-            if( grid &&grid.key!=this.grid().key){
-              this.grid.set(grid);
-            }
-          }
-        }); */
-        this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
-          if (activityKey) {
-            const activity = this.activities().find((a: ActivityModel) => a.key === activityKey);
-            console.log("Selected   activity", activityKey);
-            if (activity) {
+
+      this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
+        if (activityKey) {
+          const activity = this.activities().find((a: ActivityModel) => a.key === activityKey);
+          console.log("Selected activity", activityKey);
+          if (activity) {
             this.evaluationform.patchValue({
               description: activity.title
             });
-            }
           }
-        });
-      }
+        }
+      });
+    }
 
     this.gridsService.getGridsOnRealtime((grids: Grids[]) => {
       this.griglie.set(grids);
     });
 
+    // Set title based on whether we have URL parameters
     if (this.classKey) {
       this.title.set("Nuova valutazione");
+    }
+
+    const evaluationData = this.evaluationParam();
+    if (evaluationData) {
+      // Update form with evaluation data
+      this.evaluationform.patchValue({
+        description: evaluationData.description,
+        note: evaluationData.note,
+        data: evaluationData.data ? new Date(evaluationData.data).toISOString() : new Date().toISOString(),
+        grid: evaluationData.gridsKey,
+        activityKey: evaluationData.activityKey,
+        classKey: evaluationData.classKey,
+        studentKey: evaluationData.studentKey
+      });
+
+      // Set title based on whether we're editing an existing evaluation
+      if (evaluationData.key) {
+        this.title.set("Modifica valutazione");
+      }
     }
   }
 
@@ -192,21 +224,30 @@ console.log("openFilterPopup");
     if (this.evaluationform.valid) {
       const evaluationData = this.evaluationform.value;
       try {
-        const evaluation = new Evaluation(evaluationData);
+        const currentEvaluation = this.evaluationParam();
+        const newEvaluation = currentEvaluation ? new Evaluation(currentEvaluation) : new Evaluation(evaluationData);
+
+        // Update with form data
+        newEvaluation.description = evaluationData.description;
+        newEvaluation.note = evaluationData.note;
+        newEvaluation.data = evaluationData.data;
+        newEvaluation.activityKey = evaluationData.activityKey;
+        newEvaluation.gridsKey = evaluationData.grid;
+
         const loggedUser = await this.$users.getLoggedUser();
         if (loggedUser) {
-          evaluation.teacherKey = loggedUser.key;
+          newEvaluation.teacherKey = loggedUser.key;
         }
 
-        evaluation.studentKey = evaluation.studentKey || this.studentKey;
-        evaluation.classKey = evaluation.classKey || this.classKey;
+        newEvaluation.studentKey = evaluationData.studentKey || this.studentKey;
+        newEvaluation.classKey = evaluationData.classKey || this.classKey;
+
         if (this.grid()) {
-          evaluation.grid = this.grid();
-          evaluation.gridsKey = this.grid().key;
+          newEvaluation.grid = this.grid();
         }
 
-        await this.evaluationService.addEvaluation(evaluation);
-        
+        await this.evaluationService.addEvaluation(newEvaluation);
+
         this.toaster.showToast({
           message: 'Valutazione salvata con successo',
           duration: 3000,
