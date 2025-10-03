@@ -93,7 +93,7 @@ console.log("editEvaluation chiamato", valutazione);
 const modal = await this.modalCtrl.create({
   component: EvaluationPage,
   componentProps: {
-    evaluationParam: valutazione
+    evaluationParam: signal(valutazione)
   },
   cssClass: "fullscreen"
 });

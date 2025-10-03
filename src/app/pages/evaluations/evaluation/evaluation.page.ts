@@ -104,6 +104,12 @@ effect(() => {
     // Aggiorna il form con i dati della valutazione
     this.evaluationform.patchValue({
       description: evaluationData.description,
+      note: evaluationData.note,
+      data: evaluationData.data,
+      grid: evaluationData.gridsKey,
+      activityKey: evaluationData.activityKey,
+      classKey: evaluationData.classKey,
+      studentKey: evaluationData.studentKey
       // ... altri campi
     });
     
