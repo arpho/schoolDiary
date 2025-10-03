@@ -4,7 +4,7 @@
     class="back-button"
     defaultHref="/dashboard"></ion-back-button>
   <ion-toolbar>
-    <ion-title>Classi</ion-title>
+    <ion-title align="center">Classi</ion-title>
     <ion-fab vertical="bottom" horizontal="end">
       <ion-fab-button shape="round" size="small" (click)="go2ClasseDialog('')"><ion-icon name="add"></ion-icon></ion-fab-button>
     </ion-fab>
@@ -28,8 +28,7 @@
                 <ion-card-content>
                   <p>{{classe.descrizione}}</p>
                 </ion-card-content>
-            </ion-card>
-            <ion-fab id="test"  vertical="bottom" horizontal="end" >
+            <ion-fab id="test"  vertical="top" horizontal="end" >
               <ion-fab-button size="small"   color="medium">
                 <ion-icon name="ellipsis-vertical"></ion-icon>
               </ion-fab-button>
@@ -45,12 +44,11 @@
                 </ion-fab-button>
               </ion-fab-list>
             </ion-fab>
+            </ion-card>
             </ion-item>
         }
     </ion-list>
   } @else {
     <p>Non ci sono classi, creane una</p>
   }
-
-   
 </ion-content>

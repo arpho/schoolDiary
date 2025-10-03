@@ -1,6 +1,10 @@
 /* Stili base per la lista classi, puoi personalizzare */
 ion-card {
   margin: 8px 0;
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .centered-title {
@@ -8,4 +12,42 @@ ion-card {
   width: 100%;
   display: block;
 }
+
+/* Centratura delle card nella pagina */
+ion-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 16px;
+  width: 100%;
+}
+
+ion-list {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0;
+}
+
+ion-item {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 16px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Stili per il messaggio quando non ci sono classi */
+ion-content p {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 18px;
+  color: #666;
+}
+
+
 
