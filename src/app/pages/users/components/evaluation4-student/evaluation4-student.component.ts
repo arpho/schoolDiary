@@ -7,7 +7,23 @@ import {
   inject,
   signal
 } from '@angular/core';
-import { IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonLabel, IonItem, IonList, IonIcon, IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
+import {
+   IonGrid,
+   IonRow,
+   IonCol,
+   IonCard,
+   IonCardHeader,
+   IonCardTitle,
+   IonCardContent,
+   IonLabel,
+   IonItem,
+   IonList,
+   IonIcon,
+   IonFab,
+   IonFabButton,
+   IonFabList,
+  ModalController
+} from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { EvaluationService } from '../../../../pages/evaluations/services/evaluation/evaluation.service';
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
@@ -18,6 +34,7 @@ import { eyeOutline, print, ellipsisVertical, create, archive, trash, close } fr
 import { UsersRole } from 'functions/src/shared/models/UsersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
+import { Evaluation2PdfComponent } from 'src/app/pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component';
 
 @Component({
   selector: 'app-evaluation4-student',
@@ -56,8 +73,15 @@ return this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey ==
 viewEvaluation(_t12: Evaluation) {
 throw new Error('Method not implemented.');
 }
-evaluationPdf(valutazione: Evaluation) {
-console.log("evaluationPdf chiamato", valutazione);
+  async evaluationPdf(valutazione: Evaluation) {
+console.log("evaluationPdf", valutazione);
+const modal = await this.modalCtrl.create({
+  component: Evaluation2PdfComponent,
+  componentProps: {
+    evaluation: valutazione
+  }
+});
+await modal.present(); 
 }
 deleteEvaluation(valutazione: Evaluation) {
 console.log("deleteEvaluation chiamato", valutazione);
@@ -75,7 +99,7 @@ console.log("editEvaluation chiamato", valutazione);
   teacherkey = input.required<string>();
   evaluationsList = signal<Evaluation[]>([]);
   activitiesMap = signal<Map<string, ActivityModel>>(new Map());
-
+  modalCtrl = inject(ModalController);  
   constructor() { 
     console.log("Evaluation4StudentComponent constructor chiamato");
     this.ngOnInit()
