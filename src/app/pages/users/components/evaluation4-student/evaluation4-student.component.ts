@@ -79,7 +79,8 @@ const modal = await this.modalCtrl.create({
   component: Evaluation2PdfComponent,
   componentProps: {
     evaluation: valutazione
-  }
+  },
+  cssClass: "fullscreen"
 });
 await modal.present(); 
 }
