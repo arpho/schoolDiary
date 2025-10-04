@@ -97,7 +97,10 @@ const modal = await this.modalCtrl.create({
   component: EvaluationPage,
   componentProps: {
     evaluationParam: signal(valutazione),
+<<<<<<< HEAD
     isModal: signal(true)
+=======
+>>>>>>> origin/sendActivationMail
     
   },
   cssClass: "fullscreen"
@@ -144,22 +147,18 @@ await modal.present();
             // Pre-carica tutte le attività associate alle valutazioni
             await this.loadActivitiesForEvaluations(evaluations);
           });
-        } else {
-          console.log("studentKey o teacherKey non ancora valorizzati");
-        }
-      });
-      console.log("Effect registrato con successo");
-    } catch (error) {
-      console.error("Errore nella registrazione dell'effect:", error);
-    }
+         } else {
+           // Situazione normale - chiavi non ancora valorizzate
+         }
+       });
+     } catch (error) {
+       console.error("Errore nella registrazione dell'effect:", error);
+     }
   }
 
   async ngOnInit() {
-    console.log("ngOnInit - studentKey", this.studentkey());
-    console.log("ngOnInit - teacherKey", this.teacherkey());
     const user = await this.$users.getLoggedUser();
     this.loggedUser.set(user);
-    console.log("ngOnInit - loggedUser", this.loggedUser());
     
     // Prova anche con setTimeout
 

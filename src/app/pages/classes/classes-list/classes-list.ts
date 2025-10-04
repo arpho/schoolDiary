@@ -82,46 +82,47 @@ export class ClassesListComponent {
     })
   );
   async clickedClass(arg0: ClasseModel) {
-console.log("clickedClass", arg0);
-const actionSheet = await this.actionSheetController.create({
-  header: 'Select an option',
-  buttons: [
-    {
-      text: 'Delete',
-      role: 'destructive',
-      icon: 'trash',
-      handler: () => {
-       this.deleteClass(arg0);
-      },
-    },
-    {
-      text: 'Edit',
-      icon: 'create',
-      handler: () => {
-        this.editClass(arg0.key);
-      },
-    },
-    {
-      text: 'Archivia',
-      icon: 'archive',
-      handler: () => {
-        this.archives(arg0.key);
-      },
-    },
-    {
-      text: 'Cancel',
-      icon: 'close',
-      role: 'cancel',
-      handler: () => {
-        console.log('Cancel clicked');
-      },
-    },
-  ],
-});
-await actionSheet.present();
-}
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Select an option',
+      buttons: [
+        {
+          text: 'Delete',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            this.deleteClass(arg0);
+          },
+        },
+        {
+          text: 'Edit',
+          role: 'edit',
+          icon: 'create',
+          handler: () => {
+            this.editClass(arg0.key);
+          },
+        },
+        {
+          text: 'Archive',
+          role: 'archive',
+          icon: 'archive',
+          handler: () => {
+            this.archives(arg0.key);
+          },
+        },
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel',
+          handler: () => {
+            // Cancel clicked
+          },
+        },
+      ],
+    });
+    await actionSheet.present();
+  }
   archives(key: string) {
-console.log("Archivia", key)
+    // Implementa la logica di archiviazione
   }
   editClass(arg0: string) {
     this.go2ClasseDialog(arg0);

@@ -67,36 +67,31 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ActivityDialogComponent implements OnInit {
-saveActivity() {
-console.log("activity ", this.activity());
-this.modalController.dismiss(this.activity()); 
-}
+  saveActivity() {
+    this.modalController.dismiss(this.activity()); 
+  }
 
-closeDialog() {
-  console.log("activity ", this.activity());
-this.modalController.dismiss();
-}
-onClassChange($event: any) {
-console.log("class changed ", $event.target.value);
-this.activity.set(new ActivityModel({
-  ...this.activity(),
-  classKey: $event.target.value
-}));
-}
-onDescriptionChange($event: any) {
-console.log("description changed ", $event.target.value);
-this.activity.set(new ActivityModel({
-  ...this.activity(),
-  description: $event.target.value
-}));
-}
-onTitleChange($event: any) {
-console.log("title changed ", $event.target.value);
-this.activity.set(new ActivityModel({
-  ...this.activity(),
-  title: $event.target.value
-}));
-}
+  closeDialog() {
+    this.modalController.dismiss();
+  }
+  onClassChange($event: any) {
+    this.activity.set(new ActivityModel({
+      ...this.activity(),
+      classKey: $event.target.value
+    }));
+  }
+  onDescriptionChange($event: any) {
+    this.activity.set(new ActivityModel({
+      ...this.activity(),
+      description: $event.target.value
+    }));
+  }
+  onTitleChange($event: any) {
+    this.activity.set(new ActivityModel({
+      ...this.activity(),
+      title: $event.target.value
+    }));
+  }
   activity = model<ActivityModel>(new ActivityModel());
   activityForm: FormGroup = new FormGroup({
     title: new FormControl(''),
@@ -112,10 +107,7 @@ this.activity.set(new ActivityModel({
     private modalController: ModalController
   ){}
   ngOnInit() {
-    console.log("activity ", this.activity());
-    console.log("listaClassi ", this.listaClassi);
     const activityValue = this.activity();
-    console.log("Activity value:", activityValue); 
 
     // Inizializza il form con i valori dell'activity
     this.activityForm = this.fb.group({
@@ -127,9 +119,7 @@ this.activity.set(new ActivityModel({
 
     // Sincronizza il form con l'oggetto activity
     this.activityForm.valueChanges.subscribe((value) => {
-      console.log("Form value changed:", value);
       this.activity.set(new ActivityModel(value).setKey(this.activity().key).setTeacherKey(this.activity().teacherKey));
-      console.log("Updated activity:", this.activity());
     });
   }
 

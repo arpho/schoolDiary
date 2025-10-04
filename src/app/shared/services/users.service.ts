@@ -44,7 +44,6 @@ export class UsersService implements OnInit {
   constructor(
     private $classes: ClassiService
   ) {
-    console.log("UsersService constructor");
     // Initialize usersCache with all users
     this.getUsersOnRealTime((users) => {
       this.usersOnCache.set(users);
@@ -99,7 +98,6 @@ export class UsersService implements OnInit {
   }
 
   getUsersByClass(classKey: string, callback: (users: UserModel[]) => void, queryConditions?: QueryCondition[]) {
-    console.log("getUsersByClass*", classKey);
     const collectionRef = collection(this.firestore, this.collection);
     const queryRef = query(collectionRef, where('classKey', '==', classKey), ...queryConditions?.map((condition) => condition.toWhere()) || []);
     return onSnapshot(queryRef, (snapshot) => {
