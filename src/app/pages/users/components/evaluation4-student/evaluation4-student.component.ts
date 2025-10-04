@@ -62,6 +62,7 @@ import { EvaluationPage } from 'src/app/pages/evaluations/evaluation/evaluation.
 ]
 })
 export class Evaluation4StudentComponent  implements OnInit {
+  classKey = signal<string>('');
 loggedUser = signal<UserModel | null>(null)
   $users = inject(UsersService);
 userCanEdit(evaluation: Evaluation) {
@@ -90,10 +91,13 @@ console.log("archiveEvaluation chiamato", valutazione);
 }
 async editEvaluation(valutazione: Evaluation) {
 console.log("editEvaluation chiamato", valutazione);
+this.classKey.set(valutazione.classKey);
+
 const modal = await this.modalCtrl.create({
   component: EvaluationPage,
   componentProps: {
-    evaluationParam: signal(valutazione)
+    evaluationParam: signal(valutazione),
+    
   },
   cssClass: "fullscreen"
 });
@@ -187,6 +191,7 @@ await modal.present();
     );
     
     this.activitiesMap.set(activitiesMap);
+    console.log("activitiesMap", this.activitiesMap());
   }
 
   // Metodo sincrono per ottenere l'attività dalla cache locale

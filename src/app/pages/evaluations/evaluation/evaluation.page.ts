@@ -78,6 +78,7 @@ import { addIcons } from 'ionicons';
 })
 export class EvaluationPage implements OnInit {
   evaluationParam = input<Evaluation>(new Evaluation());
+  teacherKey = signal<string>("");
 
   constructor(
     private route: ActivatedRoute,
@@ -102,6 +103,9 @@ effect(() => {
   if (evaluationData) {
     console.log("evaluationData", evaluationData);
     // Aggiorna il form con i dati della valutazione
+    this.classKey = evaluationData.classKey;
+    this.teacherKey.set(evaluationData.teacherKey);
+    this.loadActivitiesForClass(this.classKey, this.teacherKey());
     this.evaluationform.patchValue({
       description: evaluationData.description,
       note: evaluationData.note,
@@ -120,6 +124,17 @@ effect(() => {
   }
 });
   }
+  loadActivitiesForClass(classKey: string, teacherKey: string) {
+    console.log("loadActivitiesForClass", classKey);
+    this.activitiesService.getActivitiesOnRealtime(
+      teacherKey,
+      (activities: ActivityModel[]) => {
+        console.log("activities", activities);
+        this.activities.set(activities);
+      },
+      [new QueryCondition('classKey', '==', classKey)]
+    );
+  }
 
   openFilterPopup() {
     console.log("openFilterPopup");
@@ -136,6 +151,7 @@ effect(() => {
     studentKey: new FormControl("")
   });
   title = signal('');
+  
   classKey: string = '';
   studentKey: string = '';
   activityKey: string = '';
