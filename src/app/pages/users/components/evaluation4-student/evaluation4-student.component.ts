@@ -97,7 +97,10 @@ const modal = await this.modalCtrl.create({
   component: EvaluationPage,
   componentProps: {
     evaluationParam: signal(valutazione),
+<<<<<<< HEAD
     isModal: signal(true)
+=======
+>>>>>>> origin/sendActivationMail
     
   },
   cssClass: "fullscreen"
