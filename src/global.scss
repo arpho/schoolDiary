@@ -41,7 +41,7 @@ body {
   --border-radius: 0;
   --padding: 0;
   --margin: 0;
-  --overflow: hidden;
+  --overflow: visible;
 }
 
 .fullscreen .modal-wrapper {
@@ -50,7 +50,14 @@ body {
   border-radius: 0;
   padding: 0;
   margin: 0;
-  overflow: hidden;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.fullscreen .modal-wrapper ion-content {
+  flex: 1;
+  overflow: auto;
 }
 
 :root {
