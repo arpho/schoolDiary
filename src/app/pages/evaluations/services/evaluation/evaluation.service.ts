@@ -31,7 +31,9 @@ export class EvaluationService {
     const collectionRef = collection(this.firestore, this.collection);
     return addDoc(collectionRef, evaluation.serialize());
   }
-
+ editEvaluation(evaluation: Evaluation) {
+    return this.updateEvaluation(evaluation.key, evaluation);
+  }
   updateEvaluation(evaluationKey: string, evaluation: Evaluation) {
     const docRef = doc(this.firestore, this.collection, evaluationKey);
     return setDoc(docRef, evaluation.serialize());

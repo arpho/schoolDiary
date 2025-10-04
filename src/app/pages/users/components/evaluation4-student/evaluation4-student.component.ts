@@ -62,6 +62,7 @@ import { EvaluationPage } from 'src/app/pages/evaluations/evaluation/evaluation.
 ]
 })
 export class Evaluation4StudentComponent  implements OnInit {
+  classKey = signal<string>('');
 loggedUser = signal<UserModel | null>(null)
   $users = inject(UsersService);
 userCanEdit(evaluation: Evaluation) {
@@ -76,7 +77,7 @@ console.log("evaluationPdf", valutazione);
 const modal = await this.modalCtrl.create({
   component: Evaluation2PdfComponent,
   componentProps: {
-    evaluation: valutazione
+    evaluation: valutazione,
   },
   cssClass: "fullscreen"
 });
@@ -90,10 +91,14 @@ console.log("archiveEvaluation chiamato", valutazione);
 }
 async editEvaluation(valutazione: Evaluation) {
 console.log("editEvaluation chiamato", valutazione);
+this.classKey.set(valutazione.classKey);
+
 const modal = await this.modalCtrl.create({
   component: EvaluationPage,
   componentProps: {
-    evaluationParam: signal(valutazione)
+    evaluationParam: signal(valutazione),
+    isModal: signal(true)
+    
   },
   cssClass: "fullscreen"
 });
@@ -133,14 +138,7 @@ await modal.present();
         if (studentKey && teacherKey) {
           console.log("Chiamata a getEvaluation4studentAndTeacher con:", studentKey, teacherKey);
           this.$evaluation.getEvaluation4studentAndTeacher(studentKey, teacherKey, async (evaluations: Evaluation[]) => {
-            console.log("evaluations ricevute:", evaluations);
-            console.log("Numero valutazioni:", evaluations.length);
-            evaluations.forEach((evaluation, index) => {
-       
-              if (evaluation.grid.indicatori.length > 0) {
-                console.log(`  - primo indicatore: ${JSON.stringify(evaluation.grid.indicatori[0])}`);
-              }
-            });
+
             this.evaluationsList.set(evaluations);
             
             // Pre-carica tutte le attività associate alle valutazioni
@@ -187,6 +185,7 @@ await modal.present();
     );
     
     this.activitiesMap.set(activitiesMap);
+    console.log("activitiesMap", this.activitiesMap());
   }
 
   // Metodo sincrono per ottenere l'attività dalla cache locale

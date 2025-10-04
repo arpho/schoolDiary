@@ -78,7 +78,9 @@ import { addIcons } from 'ionicons';
 })
 export class EvaluationPage implements OnInit {
   evaluationParam = input<Evaluation>(new Evaluation());
-
+  teacherKey = signal<string>("");
+  evaluationKey = signal<string>("");
+isModal = input<boolean>(false);
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -99,9 +101,16 @@ export class EvaluationPage implements OnInit {
     // 2. Effect - Reagisce ai cambiamenti dell'input parameter
 effect(() => {
   const evaluationData = this.evaluationParam();
+  const isModal = this.isModal();
   if (evaluationData) {
     console.log("evaluationData", evaluationData);
-    // Aggiorna il form con i dati della valutazione
+    console.log(" è modal", isModal);
+    this.evaluationKey.set(evaluationData.key);
+    this.grid.set(evaluationData.grid);
+      // Aggiorna il form con i dati della valutazione
+    this.classKey = evaluationData.classKey;
+    this.teacherKey.set(evaluationData.teacherKey);
+    this.loadActivitiesForClass(this.classKey, this.teacherKey());
     this.evaluationform.patchValue({
       description: evaluationData.description,
       note: evaluationData.note,
@@ -120,6 +129,17 @@ effect(() => {
   }
 });
   }
+  loadActivitiesForClass(classKey: string, teacherKey: string) {
+    console.log("loadActivitiesForClass", classKey);
+    this.activitiesService.getActivitiesOnRealtime(
+      teacherKey,
+      (activities: ActivityModel[]) => {
+        console.log("activities", activities);
+        this.activities.set(activities);
+      },
+      [new QueryCondition('classKey', '==', classKey)]
+    );
+  }
 
   openFilterPopup() {
     console.log("openFilterPopup");
@@ -136,6 +156,7 @@ effect(() => {
     studentKey: new FormControl("")
   });
   title = signal('');
+  
   classKey: string = '';
   studentKey: string = '';
   activityKey: string = '';
@@ -251,15 +272,27 @@ effect(() => {
         if (this.grid()) {
           newEvaluation.grid = this.grid();
         }
-
-        await this.evaluationService.addEvaluation(newEvaluation);
+if (this.evaluationKey()) {
+  console.log("edited evaluation");
+          newEvaluation.key = this.evaluationKey();
+          await this.evaluationService.editEvaluation(newEvaluation);
+        } else {
+          console.log("new evaluation");
+          await this.evaluationService.addEvaluation(newEvaluation);
+        }
 
         this.toaster.showToast({
           message: 'Valutazione salvata con successo',
           duration: 3000,
           position: 'bottom'
         });
-        this.router.navigate(['/evaluations-list']);
+        if (this.isModal()) {
+          console.log("dismiss");
+          this.modalCtrl.dismiss();
+        } else {
+          console.log("navigate");
+          this.router.navigate(['/evaluations-list']);
+        }
       } catch (error) {
         console.error('Error saving evaluation:', error);
         this.toaster.showToast({
