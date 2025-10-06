@@ -79,3 +79,7 @@ src/assets/token/
 
 functions/.env
 functions/lib/.env
+
+functions/test-sendActivationLink.js
+
+functions/test-sendActivationLink-http.js

@@ -85,6 +85,13 @@ this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
 }
 else{
   console.log("user key not found, it is a new user",user); 
+  this.$users.createUser(user).then((data: any) => {
+    console.log("user created", data);
+    this.toaster.presentToast({message: "User creato con successo", duration: 2000, position: "bottom"});
+  }).catch((error: any) => {
+    console.log("error creating user", error);
+    this.toaster.presentToast({message: "Errore durante la creazione del user", duration: 2000, position: "bottom"});
+  });
 
  }
 }

@@ -5,13 +5,16 @@
       <ion-button size="small" shape="round" (click)="openFilterPopup()"><ion-icon name="filter"></ion-icon></ion-button>
     </ion-buttons>
     <ion-title align="center">{{title()}}</ion-title>
-
+    <ion-button type="submit" expand="block" [disabled]="!evaluationform.valid">
+      Salva Valutazione
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen="true">
   <ion-list>
     <form [formGroup]="evaluationform" (ngSubmit)="saveEvaluation()">
+ 
       <ion-item>
         <ion-label position="floating">Descrizione</ion-label>
         <ion-input type="text" formControlName="description"></ion-input>
@@ -52,9 +55,7 @@
         </ion-select>
       </ion-item>
         <app-evaluate-grid [grid]="grid()!"></app-evaluate-grid>
-      <ion-button type="submit" expand="block" [disabled]="!evaluationform.valid">
-        Salva Valutazione
-      </ion-button>
+
     </form>
   </ion-list>
 </ion-content>
