@@ -157,6 +157,7 @@ editUser(userKey: string) {
         filteredUsers = filteredUsers.filter(user => 
           user.firstName?.toLowerCase().includes(searchTerm) || 
           user.lastName?.toLowerCase().includes(searchTerm) ||
+          user.email?.toLowerCase().includes(searchTerm) ||
           this.factoryName(user).toLowerCase().includes(searchTerm)
         );
       }

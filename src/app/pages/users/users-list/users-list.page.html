@@ -12,7 +12,7 @@
   <form [formGroup]="filterUserForm" class="ion-padding" (submit)="$event.preventDefault()">
     <ion-searchbar
       formControlName="searchTerm"
-      placeholder="Cerca per nome o cognome"
+      placeholder="Cerca per nome o cognome o email"
       [animated]="true"
       [debounce]="300"
     >
