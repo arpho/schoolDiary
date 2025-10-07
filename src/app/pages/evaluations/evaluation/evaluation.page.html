@@ -1,13 +1,11 @@
 <ion-header>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button [defaultHref]="'/evaluations'" text="Indietro"></ion-back-button>
       <ion-button size="small" shape="round" (click)="openFilterPopup()"><ion-icon name="filter"></ion-icon></ion-button>
     </ion-buttons>
     <ion-title align="center">{{title()}}</ion-title>
-    <ion-button type="submit" expand="block" [disabled]="!evaluationform.valid">
-      Salva Valutazione
-    </ion-button>
   </ion-toolbar>
 </ion-header>
 
@@ -74,6 +72,9 @@
         }
       }
 
+      <ion-button type="submit" expand="block" [disabled]="!isGridValid()">
+        Salva Valutazione
+      </ion-button>
     </form>
   </ion-list>
 </ion-content>
