@@ -5,7 +5,8 @@ import {
   ReactiveFormsModule,
   FormBuilder,
   FormGroup,
-  FormControl
+  FormControl,
+  Validators
 } from '@angular/forms';
 import {
   IonButtons,
@@ -24,6 +25,7 @@ import {
   IonTextarea,
   IonIcon,
   IonBackButton,
+  IonNote,
   ModalController
 } from '@ionic/angular/standalone';
 import { signal } from '@angular/core';
@@ -72,6 +74,7 @@ import { addIcons } from 'ionicons';
     IonTextarea,
     IonIcon,
     IonBackButton,
+    IonNote,
     EvaluateGridComponent,
     ActivityDialogComponent
   ]
@@ -93,6 +96,7 @@ isModal = input<boolean>(false);
     private classiService: ClassiService,
     private modalCtrl: ModalController
   ) {
+    this.initializeForm();
     addIcons({
       filter
     });
@@ -146,15 +150,44 @@ effect(() => {
   }
 
   activities = signal<ActivityModel[]>([]);
-  evaluationform: FormGroup = new FormGroup({
-    description: new FormControl(''),
-    note: new FormControl(''),
-    data: new FormControl(new Date().toISOString()),
-    grid: new FormControl(''),
-    activityKey: new FormControl(''),
-    classKey: new FormControl(""),
-    studentKey: new FormControl("")
-  });
+  // Aggiungo un segnale per tenere traccia della validità della griglia
+  isGridValid = signal<boolean>(false);
+  
+  // Inizializzo il form nel costruttore invece che nella dichiarazione
+  evaluationform!: FormGroup;
+  // Inizializza il form
+  private initializeForm() {
+    this.evaluationform = this.fb.group({
+      description: [''],
+      note: [''],
+      data: [new Date().toISOString()],
+      grid: [''],
+      activityKey: [''],
+      classKey: [this.classKey],
+      studentKey: [this.studentKey]
+    }, { validators: [this.gridValidator()] });
+  }
+
+  // Validatore personalizzato per la griglia
+  private gridValidator() {
+    return (control: any) => {
+      if (!(control instanceof FormGroup)) return null;
+      
+      const gridControl = control.get('grid');
+      if (gridControl?.value && !this.isGridValid()) {
+        return { gridInvalid: true };
+      }
+      return null;
+    };
+  }
+
+  // Gestisce i cambiamenti di validità della griglia
+  onGridValidityChange(isValid: boolean) {
+    this.isGridValid.set(isValid);
+    // Forza il ricalcolo della validità del form
+    this.evaluationform.updateValueAndValidity();
+  }
+
   title = signal('');
   
   classKey: string = '';
