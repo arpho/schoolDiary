@@ -13,6 +13,7 @@ import {
 } from '@angular/fire/firestore';
 import { Evaluation } from '../../models/evaluation';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
+import { orderBy } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,9 @@ getEvaluation4studentAndTeacher(studentKey: string, teacherKey: string, callback
   console.log("studentKey", studentKey)
   console.log("teacherKey", teacherKey)
   const collectionRef = collection(this.firestore, this.collection);
-  const q = query(collectionRef, where('studentKey', '==', studentKey), where('teacherKey', '==', teacherKey));
+  const q = query(collectionRef, where('studentKey', '==', studentKey),
+         where('teacherKey', '==', teacherKey),
+        orderBy('data','desc'));
   return onSnapshot(q, (snapshot) => {
     const evaluations: Evaluation[] = [];
     snapshot.forEach((doc) => {
