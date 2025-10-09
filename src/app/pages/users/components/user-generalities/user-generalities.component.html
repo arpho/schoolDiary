@@ -1,39 +1,42 @@
-<ion-content [fullscreen]="true">
-
+<ion-content [fullscreen]="true" class="ion-padding">
   <form [formGroup]="userForm">
     <ion-item class="required-field" [class.ion-valid]="userForm.get('firstName')?.valid" [class.ion-touched]="userForm.get('firstName')?.touched">
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Nome</ion-label>
-      <ion-input formControlName="firstName" required></ion-input>
+      <ion-label position="floating">Nome</ion-label>
+      <ion-input formControlName="firstName" type="text" required></ion-input>
+      <ion-note slot="error" *ngIf="isFieldInvalid('firstName')">
+        {{ getErrorMessage('firstName') }}
+      </ion-note>
     </ion-item>
     <ion-item class="required-field" [class.ion-valid]="userForm.get('lastName')?.valid" [class.ion-touched]="userForm.get('lastName')?.touched">
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Cognome</ion-label>
+      <ion-label position="floating">Cognome</ion-label>
       <ion-input formControlName="lastName" required></ion-input>
+      <ion-note slot="error" *ngIf="isFieldInvalid('lastName')">
+        {{ getErrorMessage('lastName') }}
+      </ion-note>
     </ion-item>
     <ion-item>
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Nickname</ion-label>
+      <ion-label position="floating">Nickname</ion-label>
       <ion-input formControlName="userName" ></ion-input>
     </ion-item>
     <ion-item class="required-field" [class.ion-valid]="userForm.get('email')?.valid" [class.ion-touched]="userForm.get('email')?.touched">
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Email</ion-label>
+      <ion-label position="floating">Email</ion-label>
       <ion-input formControlName="email" type="email" required></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="floating" style="font-weight: 600; color: var(--ion-color-medium);">Role</ion-label>
+      <ion-label position="floating">Role</ion-label>
       <ion-select formControlName="role">
         @for (role of rolesValue; track $index) {
           <ion-select-option [value]="role">{{$UsersRole[role]}}</ion-select-option>
         }
       </ion-select>
     </ion-item>
-
-
     <ion-item>
       <ion-label position="floating">Classe</ion-label>
- <ion-select formControlName="classe">
-  @for (classe of elencoClassi(); track classe.key) {
-    <ion-select-option [value]="classe.key">{{classe.classe}}</ion-select-option>
-  }
-  </ion-select>
+      <ion-select formControlName="classe">
+        @for (classe of elencoClassi(); track classe.key) {
+          <ion-select-option [value]="classe.key">{{classe.classe}}</ion-select-option>
+        }
+      </ion-select>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Phone Number</ion-label>
@@ -43,16 +46,11 @@
       <ion-label position="floating">Birth Date</ion-label>
       <ion-datetime  presentation="date" formControlName="birthDate"></ion-datetime>
     </ion-item>
-
     <ion-item>
       <ion-label position="floating">Classi</ion-label>
       <app-classes-field [classes]="usersClasses()" (classeschange)="userForm.get('classes')!.setValue($event)"></app-classes-field>
     </ion-item>
-
-
-
   </form>
-
 </ion-content>
 <ion-footer>
   <ion-fab vertical="bottom" horizontal="end">

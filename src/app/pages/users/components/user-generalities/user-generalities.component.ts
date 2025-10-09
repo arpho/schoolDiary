@@ -1,21 +1,20 @@
-import { Subject, takeUntil } from 'rxjs';
-import { Component, effect, EventEmitter, input, model, OnInit, Output, signal } from '@angular/core';
+import { Subject } from 'rxjs';
+import { Component, effect, EventEmitter, input, OnInit, Output, signal } from '@angular/core';
 import { IonContent } from "@ionic/angular/standalone";
 import { ClassesFieldComponent } from "src/app/pages/classes/components/classes-field/classes-field.component";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
-import { ActivatedRoute } from '@angular/router';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
 import { save } from 'ionicons/icons';
 import {
-   IonDatetime,
     IonItem,
     IonLabel,
+    IonNote,
     IonInput,
     IonSelect,
     IonSelectOption,
@@ -25,33 +24,34 @@ import {
     IonFabButton,
     IonIcon,
     IonButtons,
+
     IonFab 
-  } from '@ionic/angular/standalone';  
+  } from '@ionic/angular/standalone';
 @Component({
   selector: 'app-user-generalities',
   templateUrl: './user-generalities.component.html',
   styleUrls: ['./user-generalities.component.scss'],
   imports: [
-    IonContent,
     ClassesFieldComponent,
     ReactiveFormsModule,
     FormsModule,
-    IonDatetime,
+    IonContent, 
     IonItem,
     IonLabel,
+    IonNote,
     IonInput,
     IonSelect,
     IonSelectOption,
     IonBackButton,
     IonButton,
-    IonDatetime,
     IonFooter,
     IonFabButton,
     IonIcon,
     IonButtons,
     IonFab,
-    UserGeneralitiesComponent
-  ],
+    UserGeneralitiesComponent,
+
+],
 })
 export class UserGeneralitiesComponent  implements OnInit {
   private destroy$ = new Subject<void>();
@@ -131,7 +131,7 @@ elencoClassi= signal<ClasseModel[]>([]);
     this.userForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      userName: ['', Validators.required],
+      userName: [''],
       email: ['', [Validators.required, Validators.email]],
       role: [UsersRole.STUDENT, Validators.required],
       phoneNumber: [''],
@@ -157,6 +157,31 @@ elencoClassi= signal<ClasseModel[]>([]);
 
   
 
+
+  getErrorMessage(controlName: string): string {
+    const control = this.userForm.get(controlName);
+    
+    if (!control || !control.errors) return '';
+  
+    if (control.hasError('required')) {
+      return 'Campo obbligatorio';
+    }
+  
+    if (control.hasError('email')) {
+      return 'Inserisci un indirizzo email valido';
+    }
+  
+    if (control.hasError('minlength')) {
+      return `Minimo ${control.getError('minlength').requiredLength} caratteri richiesti`;
+    }
+  
+    return 'Campo non valido';
+  }
+
+  isFieldInvalid(controlName: string): boolean {
+    const control = this.userForm.get(controlName);
+    return control ? control.invalid && (control.dirty || control.touched) : false;
+  }
 
   
 
