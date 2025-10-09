@@ -99,7 +99,7 @@ else{
 }
 
  @Output() editeduser= new EventEmitter<UserModel>();
- user = model<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
+ user = input<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
 rolesValue: any[] = [];
 rolesName: string[] = [];
 elencoClassi= signal<ClasseModel[]>([]);
@@ -121,68 +121,79 @@ elencoClassi= signal<ClasseModel[]>([]);
   $UsersRole = UsersRole;
 
   constructor(
-    private router: ActivatedRoute,
     private $users: UsersService,
     private $classes: ClassiService,
     private toaster: ToasterService
   ) { 
 
-    addIcons({
-      save,
-    });
-  this.userForm.valueChanges.subscribe((value) => {
-    console.log("valueChanges on form:", value);
-    const userFormValid = computed(() => this.userForm.valid);
-    console.log("userForm valid", userFormValid());
-    console.log("userForm errors", this.userForm.errors);
-    console.log("email valida", this.userForm.get('email')?.valid);
+    addIcons({ save });
 
-    const currentUser = this.user();
-    const updatedUser = new UserModel({
-      ...currentUser,          // Mantiene tutti i valori esistenti
-      ...value,                // Sovrascrive con i valori del form
-      key: currentUser?.key,   // Mantiene la chiave esistente
-      classi: currentUser?.classi,  // Mantiene le classi esistenti
-      classesKey: value.classe || currentUser?.classesKey  // Aggiorna classesKey solo se c'è un nuovo valore
+    this.userForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      userName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      role: [UsersRole.STUDENT, Validators.required],
+      phoneNumber: [''],
+      birthDate: [''],
+      classes: [[]],
+      classe: ['']
     });
+
+    effect(() => {
+      const user = this.user();
+      console.log("Effect - Cambiamento user:", user);
+      
+      if (user) {
+        console.log("Aggiornamento usersClasses con classi:", user.classi);
+        this.usersClasses.set(user.classi || []);
+        this.syncFormWithUser();
+      } else {
+        console.log("User è null o undefined");
+      }
+    });
+  
+  }
+
+  
+
+
+  
+
+  private syncFormWithUser() {
+    const user = this.user();
+    if (!user) return;
+  
+    console.log("Sincronizzazione form con utente:", user);
     
-    this.user.set(updatedUser);
-    console.log("userSignal aggiornato:", updatedUser);
-  })
-    effect(async()=>{
-      const classesKeys = this.user()?.classesKey;
-      console.log("setting classi*", this.user());
-    this.usersClasses.set(this.user().classi);
-    })
+    this.userForm.patchValue({
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      userName: user.userName || '',
+      email: user.email || '',
+      role: user.role || UsersRole.STUDENT,
+      phoneNumber: user.phoneNumber || '',
+      birthDate: user.birthDate || '',
+      classes: user.classes || [],
+      classe: user.classKey || ''
+    }, { emitEvent: false });
+    console.log("Form dopo la sincronizzazione:", this.userForm.value)
   }
 
   ngOnInit() {
-    console.log("userkey**", this.user().key)  
-    this.elencoClassi= this.$classes.classesOnCache;
+    console.log("ngOnInit - user:", this.user());
+    
+    this.elencoClassi = this.$classes.classesOnCache;
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
-    console.log("userkey**", this.user().key)  
-      this.usersClasses.set(this.user().classi || []);  
-      console.log("usersClasses*", this.usersClasses());
-      
-        this.userForm.setValue({
-          firstName: this.user()?.firstName || '',
-          lastName: this.user()?.lastName || '',
-          userName: this.user()?.userName || '',
-          email: this.user()?.email || '',
-          role: this.user()?.role || UsersRole.STUDENT,
-          phoneNumber: this.user()?.phoneNumber || '',
-          birthDate: this.user()?.birthDate || '',
-          classes: this.user()?.classes || [],
-          classe: this.user()?.classKey || ''
-        });
-
-console.log("user*", this.user());
-      
-    }   
+    
+    // Sincronizza il form con i valori iniziali
+    this.syncFormWithUser();
+    
+    // Ascolta i cambiamenti del Signal user
+   
   }
 
 
 
-
-
+}
