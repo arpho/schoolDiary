@@ -1,8 +1,8 @@
-import { Component, computed, effect, EventEmitter, Input, input, model, OnInit, Output, signal } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
+import { Component, effect, EventEmitter, input, model, OnInit, Output, signal } from '@angular/core';
 import { IonContent } from "@ionic/angular/standalone";
-import { IonicModule } from "@ionic/angular";
 import { ClassesFieldComponent } from "src/app/pages/classes/components/classes-field/classes-field.component";
-import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
@@ -54,6 +54,8 @@ import {
   ],
 })
 export class UserGeneralitiesComponent  implements OnInit {
+  private destroy$ = new Subject<void>();
+  fb: FormBuilder= new FormBuilder();
 save() {
 console.log("saving",this.user())
   const user = new UserModel(this.user());
