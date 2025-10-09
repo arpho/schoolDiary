@@ -129,8 +129,6 @@ export class UsersService implements OnInit {
   }
 
   fetchUserOnCache(userKey: string): UserModel | undefined {
-    console.log("fetching user on cache*", userKey);
-    console.log("usersOnCache*", this.usersOnCache().find(user => user.key === userKey));
     return this.usersOnCache().find(user => user.key === userKey);
   }
 
@@ -153,7 +151,6 @@ export class UsersService implements OnInit {
   async updateUser(userKey: string, user: UserModel): Promise<void> {
     try {
       const userRef = doc(this.firestore, 'userProfiles', userKey);
-      console.log("serialized user", user.serialize());
       await setDoc(userRef, user.serialize(), { merge: true });
     } catch (error) {
       console.error('Errore durante l\'aggiornamento dell\'utente:', error);

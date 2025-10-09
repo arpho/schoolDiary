@@ -136,7 +136,6 @@ return this.user()?.lastName + " " + this.user()?.firstName;
       this.loggedUser.set(loggedUser);
     }
     const userKey = this.route.snapshot.paramMap.get('userKey');
-    console.log("UserDialogPage ngOnInit, userKey:", userKey, "classKey:", this.classKey);
     
     // Imposta la userKey nella proprietà del componente
     if (userKey) {
@@ -146,19 +145,15 @@ return this.user()?.lastName + " " + this.user()?.firstName;
     // Se classKey è presente, imposta la classe predefinita
     const classKeyValue = this.classKey;
     if (classKeyValue) {
-      console.log("current class from input", classKeyValue);
       this._updateUserClass(classKeyValue);
     }
     
     // Se userKey esiste, carica l'utente
     if (userKey) {
-      console.log("editing user", userKey);
       try {
         const user = this.$users.fetchUserOnCache(userKey);
-        console.log("fetched user *", user)
         if (user) {
           this.user.set(user);
-          console.log("Utente caricato:*", user);
         }
       
       } catch (error) {
@@ -179,17 +174,13 @@ return this.user()?.lastName + " " + this.user()?.firstName;
   }
 
   save() {
-    console.log("save", this.user());
-    console.log("clases on user from userSignal", this.user()?.classes);
     const user = this.user();
     user.key = this.user()?.key;
-    console.log("userSignal", this.user());
     const claims = {
       role: user.role,
       classes: user.classes,
       classKey: user.classe
     };
-    console.log("claims", claims);
     if(user.key){
     this.$users.updateUser(user.key, user).then(() => {
       console.log("user updated");
@@ -200,17 +191,13 @@ return this.user()?.lastName + " " + this.user()?.firstName;
     });
 
     this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
-      console.log("claims set", data);
       const usersClaims = await this.$users.getCustomClaims4LoggedUser();
-      console.log("usersClaims", usersClaims);
       this.toaster.presentToast({message: "Claims aggiornati con successo", duration: 2000, position: "bottom"});
     }).catch((error: any) => {
-      console.log("error setting claims", error);
       this.toaster.presentToast({message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom"});
     });
   }
   else{
-    console.log("user to create", user);
     
 }
 
