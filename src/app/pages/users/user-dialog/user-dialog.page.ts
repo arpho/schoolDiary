@@ -155,9 +155,10 @@ return this.user()?.lastName + " " + this.user()?.firstName;
       console.log("editing user", userKey);
       try {
         const user = this.$users.fetchUserOnCache(userKey);
+        console.log("fetched user *", user)
         if (user) {
           this.user.set(user);
-          console.log("Utente caricato:", user);
+          console.log("Utente caricato:*", user);
         }
       
       } catch (error) {

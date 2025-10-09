@@ -123,11 +123,14 @@ export class UsersService implements OnInit {
 
   ngOnInit(): void {
     this.getUsersOnRealTime((users)=>{
+      console.log("loaded users*",users)
       this.usersOnCache.set(users);
     })
   }
 
   fetchUserOnCache(userKey: string): UserModel | undefined {
+    console.log("fetching user on cache*", userKey);
+    console.log("usersOnCache*", this.usersOnCache().find(user => user.key === userKey));
     return this.usersOnCache().find(user => user.key === userKey);
   }
 
