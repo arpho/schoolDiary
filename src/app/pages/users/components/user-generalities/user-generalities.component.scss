@@ -1,11 +1,55 @@
-.required-field ion-label::after {
-  content: ' *';
-  color: var(--ion-color-danger);
-  font-weight: bold;
-  margin-left: 2px;
+// Base styles for all ion-label elements
+ion-label {
+  font-weight: 600;
+  color: var(--ion-color-medium);
+
+  // Style for required field indicator
+  &::after {
+    content: ' *';
+    color: var(--ion-color-danger);
+    font-weight: bold;
+    margin-left: 2px;
+    opacity: 0;
+  }
 }
 
+// Required field styles
 .required-field {
   --highlight-color-focused: var(--ion-color-danger);
   --highlight-color-valid: var(--ion-color-primary);
+
+  // Show required indicator for required fields
+  ion-label::after {
+    opacity: 1;
+  }
+}
+
+// Error message styles
+ion-note[slot="error"] {
+  color: var(--ion-color-danger);
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+// Form item styles
+ion-item {
+  --highlight-color-valid: var(--ion-color-success);
+  --highlight-color-invalid: var(--ion-color-danger);
+  --highlight-color-focused: var(--ion-color-primary);
+  --border-color: var(--ion-color-medium);
+  --border-radius: 8px;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 16px;
+
+  &.ion-invalid {
+    --border-color: var(--ion-color-danger);
+    --highlight-color: var(--ion-color-danger);
+  }
+
+  &.ion-valid {
+    --border-color: var(--ion-color-success);
+    --highlight-color: var(--ion-color-success);
+  }
 }
