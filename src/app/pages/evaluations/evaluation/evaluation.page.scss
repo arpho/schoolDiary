@@ -34,4 +34,21 @@ ion-datetime {
   --padding-end: 0;
 }
 
+ion-fab {
+  position: fixed;
+  top: auto;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  
+  ion-fab-button {
+    --background: var(--ion-color-primary);
+    --background-activated: var(--ion-color-primary-shade);
+  }
+}
 
+/* Se il pulsante è disabilitato, assicurati che sia comunque visibile */
+ion-fab-button[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+}
