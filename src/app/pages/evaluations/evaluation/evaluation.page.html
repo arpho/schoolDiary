@@ -1,5 +1,4 @@
 <ion-header>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button [defaultHref]="'/evaluations'" text="Indietro"></ion-back-button>
@@ -71,10 +70,12 @@
           </ion-note>
         }
       }
+<ion-fab vertical="top" horizontal="end" >
+      <ion-fab-button type="submit" [disabled]="!isGridValid()">
+        <ion-icon name="save"></ion-icon>
+      </ion-fab-button>
+</ion-fab>
 
-      <ion-button type="submit" expand="block" [disabled]="!isGridValid()">
-        Salva Valutazione
-      </ion-button>
     </form>
   </ion-list>
 </ion-content>

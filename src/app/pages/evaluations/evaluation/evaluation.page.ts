@@ -23,6 +23,8 @@ import {
   IonButton,
   IonList,
   IonTextarea,
+  IonFab,
+  IonFabButton, 
   IonIcon,
   IonBackButton,
   IonNote,
@@ -65,6 +67,7 @@ import { addIcons } from 'ionicons';
     IonToolbar,
     IonItem,
     IonLabel,
+    IonFabButton,
     IonInput,
     IonSelect,
     IonSelectOption,
@@ -75,6 +78,7 @@ import { addIcons } from 'ionicons';
     IonIcon,
     IonBackButton,
     IonNote,
+    IonFab,
     EvaluateGridComponent,
     ActivityDialogComponent
   ]
