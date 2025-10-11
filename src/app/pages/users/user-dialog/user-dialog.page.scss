@@ -43,3 +43,17 @@ ion-label {
         margin-bottom: 2px;
     }
 }
+
+/* Applica al body o all'elemento principale dell'app */
+body {
+    transform: scale(0.4); /* Scala a 40% */
+    transform-origin: top left; /* Assicura che la scalatura parta dall'angolo in alto a sinistra */
+    width: 250%; /* 100% / 0.4 = 250% per mantenere lo scorrimento */
+    height: 250%; /* 100% / 0.4 = 250% */
+    overflow: auto; /* Permette lo scorrimento se necessario */
+}
+
+/* Potrebbe essere necessario sovrascrivere stili Ionic specifici */
+ion-app {
+    transform: none; /* Assicurati che l'elemento Ionic non abbia trasformazioni contrastanti */
+}
