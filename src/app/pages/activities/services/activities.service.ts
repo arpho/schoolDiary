@@ -36,7 +36,7 @@ export class ActivitiesService {
 
   constructor() {
     // Initialize real-time listener with empty parameters
-    this.getActivitiesOnRealtime('', (activities: ActivityModel[]) => {
+    this.getActivities4teacherOnRealtime('', (activities: ActivityModel[]) => {
       this.activitiesOnCache.set(activities);
     });
   }
@@ -44,7 +44,7 @@ export class ActivitiesService {
   async ngOnInit(): Promise<void> {
   const user = await this.$users.getLoggedUser();
   if (user) {
-    this.getActivitiesOnRealtime(user.key, (activities: ActivityModel[]) => {
+    this.getActivities4teacherOnRealtime(user.key, (activities: ActivityModel[]) => {
       this.activitiesOnCache.set(activities);
     });
   }
@@ -113,14 +113,18 @@ export class ActivitiesService {
     return deleteDoc(docRef);
   }
 
-  getActivitiesOnRealtime(
+  getActivities4teacherOnRealtime(
     teachersKey: string,
+
     callback: (activities: ActivityModel[]) => void,
     queries?: QueryCondition[]
   ) {
+    console.log("* fetching activities for teacher", teachersKey);
+    console.log("* fetching activities with queries", queries);
     const collectionRef = collection(this.firestore, this.collection);
     let q = query(collectionRef, where('teacherKey', '==', teachersKey));
-    if (queries) {
+
+    if(queries) {
       queries.forEach((condition: QueryCondition) => {
         q = query(q, where(condition.field, condition.operator, condition.value));
       });

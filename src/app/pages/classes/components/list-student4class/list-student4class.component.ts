@@ -76,8 +76,9 @@ const modal = await this.$modalController.create({
 });
 await modal.present();
 }
-newEvaluation(studentKey: string) {
-  this.router.navigate(['/evaluation',studentKey,this.classkey]);
+async newEvaluation(studentKey: string) {
+  const teacher = await this.$users.getLoggedUser()
+  this.router.navigate(['/evaluation',studentKey,this.classkey,teacher?.key]);
 }
 
   constructor(

@@ -100,7 +100,14 @@ isModal = input<boolean>(false);
     private classiService: ClassiService,
     private modalCtrl: ModalController
   ) {
+    console.log("EvaluationPage constructor *");
     this.initializeForm();
+    effect(() => {
+      const teacherKey = this.teacherKey();
+      console.log("effect   in constructor teacherKey* ", teacherKey);
+      console.log("classkey*", this.classKey);
+      this.loadActivitiesForClass(this.classKey, teacherKey);
+    });
     addIcons({
       filter
     });
@@ -111,8 +118,8 @@ effect(() => {
   const evaluationData = this.evaluationParam();
   const isModal = this.isModal();
   if (evaluationData) {
-    console.log("evaluationData", evaluationData);
-    console.log(" è modal", isModal);
+    console.log("evaluationData*", evaluationData);
+    console.log(" è modal*", isModal);
     this.evaluationKey.set(evaluationData.key);
     this.grid.set(evaluationData.grid);
       // Aggiorna il form con i dati della valutazione
@@ -138,8 +145,9 @@ effect(() => {
 });
   }
   loadActivitiesForClass(classKey: string, teacherKey: string) {
-    console.log("loadActivitiesForClass", classKey);
-    this.activitiesService.getActivitiesOnRealtime(
+    console.log("loadActivitiesForClass*", classKey);
+    console.log("teacherKey*", teacherKey);
+    this.activitiesService.getActivities4teacherOnRealtime(
       teacherKey,
       (activities: ActivityModel[]) => {
         console.log("activities", activities);
@@ -204,17 +212,23 @@ effect(() => {
   async ngOnInit() {
     // Initialize form controls with URL parameters first
     const routeParams = this.route.snapshot.params;
-    this.classKey = routeParams['classKey'] || '';
+    this.classKey = routeParams['classKey'] || this.route.snapshot.paramMap.get('classKey') || '';
     this.studentKey = routeParams['studentKey'] || '';
-
-    console.log("classKey", this.classKey);
-    console.log("studentKey", this.studentKey);
+    const paramClassKey = this.route.snapshot.paramMap.get('classKey');
+    console.log("paramClassKey*", paramClassKey);
+    console.log("classKey*", this.classKey);
+    console.log("studentKey*", this.studentKey);
+//    this.loadActivitiesForClass(this.classKey, this.teacherKey());
     const user = await this.$users.getLoggedUser();
 
     if (user) {
-      this.activitiesService.getActivitiesOnRealtime(
+      // we suppose that only a teacher can 
+      this.teacherKey.set(user.key);
+      this.activitiesService.getActivities4teacherOnRealtime(
         user.key,
         (activities: ActivityModel[]) => {
+          console.log("user*", user)
+          console.log("activities*", activities);
           this.activities.set(activities);
         },
         [new QueryCondition('classKey', '==', this.classKey)]
@@ -312,6 +326,7 @@ effect(() => {
 if (this.evaluationKey()) {
   console.log("edited evaluation");
           newEvaluation.key = this.evaluationKey();
+         
           await this.evaluationService.editEvaluation(newEvaluation);
         } else {
           console.log("new evaluation");

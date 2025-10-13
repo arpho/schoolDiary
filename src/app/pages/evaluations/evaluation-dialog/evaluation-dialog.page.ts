@@ -203,12 +203,15 @@ console.log("printEvaluation");
     private classiService: ClassiService,
     
   ) { 
+    console.log("EvaluationDialogPage constructor");
     const modalCtrl = inject(ModalController);
   }
 
-  async ngOnInit() {
+  async ngOnInit() { 
+    const paramClassKey = this.route.snapshot.paramMap.get('classKey');
+    console.log("paramClassKey", paramClassKey);
     // Initialize form controls with URL parameters
-    this.classKey = this.route.snapshot.queryParams['classKey'] || '';
+    this.classKey = this.route.snapshot.queryParams['classKey'] || this.route.snapshot.paramMap.get('classKey')||'';
     this.studentKey = this.route.snapshot.queryParams['studentKey'] || '';
     this.evaluationKey = this.evaluationSignal().key || this.route.snapshot.queryParams['evaluationKey'] || '';
     console.log("classKey", this.classKey);
@@ -219,7 +222,7 @@ const user = await this.$users.getLoggedUser();
     this.evaluationSignal.set(new Evaluation(this.evaluation))
     if(user){
       console.log(" teacherKey*", user.key)
-      this.activitiesService.getActivitiesOnRealtime( user.key, (activities: ActivityModel[]) => {
+      this.activitiesService.getActivities4teacherOnRealtime( user.key, (activities: ActivityModel[]) => {
         console.log("activities*", activities);
         this.activities.set(activities);
       },

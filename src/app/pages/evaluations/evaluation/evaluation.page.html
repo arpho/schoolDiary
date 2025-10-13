@@ -29,7 +29,7 @@
       <ion-item>
         <ion-label position="floating">Attività</ion-label>
         <ion-select formControlName="activityKey" placeholder="Seleziona attività">
-          @for(activity of activities(); track $index) {
+          @for(activity of activities(); track activity.key) {
             <ion-select-option [value]="activity.key">
               {{activity.title}}
             </ion-select-option>
@@ -46,7 +46,7 @@
           formControlName="grid" 
           placeholder="Seleziona griglia"
           [class.ion-invalid]="evaluationform.get('grid')?.invalid && evaluationform.get('grid')?.touched">
-          @for(grid of griglie(); track $index) {
+          @for(grid of griglie(); track grid.key) {
             <ion-select-option [value]="grid.key">
               {{grid.nome}}
             </ion-select-option>
@@ -62,7 +62,6 @@
           [grid]="grid()!"
           (gridValid)="onGridValidityChange($event)">
         </app-evaluate-grid>
-        
         @if (evaluationform.get('grid')?.value && !isGridValid() && evaluationform.get('grid')?.touched) {
           <ion-note color="danger" class="ion-padding-start">
             La griglia di valutazione non è valida. Assicurati di aver compilato tutti i campi richiesti.

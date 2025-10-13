@@ -55,7 +55,7 @@ export class ListActivities4classComponent {
     ];
 
     // Sottoscrivo al servizio getActivitiesOnRealtime
-    this.activitiesService.getActivitiesOnRealtime(
+    this.activitiesService.getActivities4teacherOnRealtime(
       currentTeacherKey,
       (activities: ActivityModel[]) => {
         this.activitieslist.set(activities);

@@ -108,16 +108,16 @@ this.activitiesService.addActivity(activity());
       this.loggedUser.set(user);
       if (user?.classes) {
         // Get activities for all classes the user is in
-        const classKeys = user.classesKey;
-        console.log("classKeys", classKeys);
+        const classKey = user.classKey;
+        console.log("classKey", classKey);
 
-        this.activitiesService.getActivitiesOnRealtime(
+        this.activitiesService.getActivities4teacherOnRealtime(
           user.key,
           (activities: ActivityModel[]) => {
             console.log("activities", activities);
             this.activitiesList.set(activities);
           },
-           [new QueryCondition('classKey', 'in', classKeys)] 
+           [new QueryCondition('classKey', 'in', classKey)] 
         );
       }
     });

@@ -97,7 +97,7 @@ console.log("viewEvaluation", evaluation);
         const queryConditions: QueryCondition[] = [new QueryCondition('classKey', '==', classKey)];
         const user = this.loggedUser();
         if (user) {// aggiorno le attività per la classe selezionata
-          this.$activities.getActivitiesOnRealtime(user.key, (activities: ActivityModel[]) => {
+          this.$activities.getActivities4teacherOnRealtime(user.key, (activities: ActivityModel[]) => {
             this.listaAttivita.set(activities);
           }, queryConditions);
           this.$service.getEvaluationsOnRealtime((evaluations: Evaluation[]) => {
@@ -157,7 +157,7 @@ await modal.present();
       this.listaClassi.set(classi);
        const activitiesQuery: QueryCondition[] = [];
      
-       this.$activities.getActivitiesOnRealtime(user?.key, (activities: ActivityModel[]) => {
+       this.$activities.getActivities4teacherOnRealtime(user?.key, (activities: ActivityModel[]) => {
         console.log("activities", activities);
         this.listaAttivita.set(activities);
        })
