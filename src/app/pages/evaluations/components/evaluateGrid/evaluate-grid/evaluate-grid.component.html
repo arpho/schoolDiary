@@ -16,10 +16,10 @@
           </ion-row>
           <ion-row class="data-indicatori">
             <ion-col size="4">
-              <ion-card (click)="showCriteri(indicatore)">
+              <ion-card  (click)="showCriteri(indicatore)">
                 {{indicatore.descrizione}}
                 <h3>max {{indicatore.valore}}</h3>
-              </ion-card>
+              </ion-card >
             </ion-col>
             <ion-col size="7">
               <app-criteri [criteri]="indicatore.criteri" (selectedcriterio)="setValue($event,indicatore)"></app-criteri>
@@ -33,7 +33,7 @@
     }
   </ion-list>
   <div class="sticky-footer">
-    <ion-card>
+    <ion-card id="card-voto">
       <ion-card-content>
         Voto: {{voto()}}/{{votoMax}}
       </ion-card-content>
