@@ -120,6 +120,50 @@ export class Evaluation4pagesComponent  implements OnInit {
         console.log("activities", activities);
         this.activities.set(activities);
       },[new QueryCondition("classKey", "==", classKey!)]);
+const student = await this.$users.getUser(studentKey!);
+if(student  != null){
+  this.student.set(student);
+  this.title.set("Valutazione studente " + student.lastName + " " + student.firstName);
+}
+this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
+  if (gridKey) {
+    const grid = this.griglie().find((grid) => grid.key === gridKey);
+    if (grid) {
+      this.grid.set(grid);
+    }
+  }
+});
+
+  }
+  openActivityDialog() {
+    console.log("openActiivityDialog");
+  }
+  saveEvaluation() {
+    console.log("saveEvaluation");
+
+  }
+
+  
+    // Validatore personalizzato per la griglia
+    private gridValidator() {
+      return (control: any) => {
+        if (!(control instanceof FormGroup)) return null;
+        
+        const gridControl = control.get('grid');
+        if (gridControl?.value && !this.isGridValid()) {
+          return { gridInvalid: true };
+        }
+        return null;
+      };
+    }
+  openFilterPopup() {
+    console.log("openFilterPopup");
+  }
+
+  onGridValidityChange(isValid: boolean) {
+    this.isGridValid.set(isValid);
+    // Forza il ricalcolo della validità del form
+    this.evaluationform.updateValueAndValidity();
   }
 
 }

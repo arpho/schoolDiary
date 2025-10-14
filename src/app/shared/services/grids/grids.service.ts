@@ -34,6 +34,7 @@ private firestore = inject(Firestore);
 
 collection = 'grids';
   getGridsOnRealtime(callback: (grids: Grids[]) => void){
+    console.log("getGridsOnRealtime");
     const collectionRef = collection(this.firestore, this.collection)
     return onSnapshot(collectionRef, (snapshot) => {
       const grids: Grids[] = [];
