@@ -112,7 +112,6 @@ export class ReservedNotes4ClassesComponent implements OnInit {
           user.key,
           classKey,
           (notes) => {
-            console.log(`Note caricate per classe ${classKey}:`, notes);
             this.notes.set(notes);
             this.isLoading.set(false);
           }

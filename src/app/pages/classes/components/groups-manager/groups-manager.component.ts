@@ -192,7 +192,6 @@ await alert.present();
     });
     effect(() => {
 this.groupsList().forEach(group => {
-  console.log(group);
 }); 
     });
   }
@@ -272,7 +271,7 @@ catch (error) {
 
   private loadGroups4class(classKey: string) {
     this.service.fetchGroups4class(classKey, (groups) => {
-      console.log("groups 4 class ",classKey, groups);
+
       // Sort groups by name before setting them
       const sortedGroups = [...groups].sort((a, b) => 
         a.nome.localeCompare(b.nome, 'it', {sensitivity: 'base'})
