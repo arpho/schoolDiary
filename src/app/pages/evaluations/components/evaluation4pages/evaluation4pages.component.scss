@@ -1,0 +1,64 @@
+/* Evaluation Page Styles */
+
+ion-content {
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+  
+  ion-list {
+    --padding: 0;
+  }
+  
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+  }
+  
+  ion-button {
+    --padding-start: 16px;
+    --padding-end: 16px;
+  }
+  
+  ion-textarea {
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+  
+  ion-select {
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+  
+  ion-datetime {
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+  
+  ion-fab {
+    position: fixed;
+    top: auto;
+    bottom: 40px;
+    right: 20px;
+    z-index: 9999;
+    
+    ion-fab-button {
+      --background: var(--ion-color-primary);
+      --background-activated: var(--ion-color-primary-shade);
+    }
+  }
+  
+  #card-voto {
+    position: fixed;
+    bottom: 80px;
+    left: 0;
+    right: 0;
+    top:auto;
+    z-index: 9999;
+  }
+  
+  /* Se il pulsante è disabilitato, assicurati che sia comunque visibile */
+  ion-fab-button[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
