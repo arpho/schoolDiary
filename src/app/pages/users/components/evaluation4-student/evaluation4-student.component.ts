@@ -36,6 +36,7 @@ import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { Evaluation2PdfComponent } from 'src/app/pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component';
 import { EvaluationPage } from 'src/app/pages/evaluations/evaluation/evaluation.page';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-evaluation4-student',
@@ -92,17 +93,7 @@ console.log("archiveEvaluation chiamato", valutazione);
 async editEvaluation(valutazione: Evaluation) {
 console.log("editEvaluation chiamato", valutazione);
 this.classKey.set(valutazione.classKey);
-
-const modal = await this.modalCtrl.create({
-  component: EvaluationPage,
-  componentProps: {
-    evaluationParam: signal(valutazione),
-    isModal: signal(true)
-    
-  },
-  cssClass: "fullscreen"
-});
-await modal.present(); 
+this.router.navigate(['/edit-evaluation',valutazione.key]);
 
 }
   private $evaluation = inject(EvaluationService);
@@ -113,6 +104,7 @@ await modal.present();
   evaluationsList = signal<Evaluation[]>([]);
   activitiesMap = signal<Map<string, ActivityModel>>(new Map());
   modalCtrl = inject(ModalController);  
+  private router = inject(Router);
   constructor() { 
     console.log("Evaluation4StudentComponent constructor chiamato");
     this.ngOnInit()

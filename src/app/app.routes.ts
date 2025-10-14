@@ -91,4 +91,8 @@ export const routes: Routes = [
     path: 'activities-list',
     loadComponent: () => import('./pages/activities/activities-list/activities-list.page').then( m => m.ActivitiesListPage)
   },
+  {
+    path: 'edit-evaluation/:evaluationKey',
+    loadComponent: () => import('./pages/evaluations/edit-evaluation/edit-evaluation.page').then( m => m.EditEvaluationPage)
+  },
 ];
