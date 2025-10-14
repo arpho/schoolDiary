@@ -106,7 +106,6 @@ export class UsersService implements OnInit {
         const user = new UserModel(doc.data()).setKey(doc.id);
         const classes: ClasseModel[] = [];
         user.classes?.forEach((classKey: string) => {
-          console.log("fetching classModel in usersService", classKey);
           const classe = this.$classes.fetchClasseOnCache(classKey);
           if (classe) {
             classes.push(classe);
@@ -123,7 +122,6 @@ export class UsersService implements OnInit {
 
   ngOnInit(): void {
     this.getUsersOnRealTime((users)=>{
-      console.log("loaded users*",users)
       this.usersOnCache.set(users);
     })
   }

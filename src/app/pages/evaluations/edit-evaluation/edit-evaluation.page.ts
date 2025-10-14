@@ -20,10 +20,16 @@ evaluation = signal<Evaluation | null>(null);
     console.log("EditEvaluationPage constructor chiamato")
   }
 
-  ngOnInit() {
+  async ngOnInit() {
 
     const evaluationKey = this.route.snapshot.paramMap.get('evaluationKey');
     console.log(evaluationKey);
+    if(evaluationKey){
+    const evaluation = await this.$evaluation.getEvaluation(evaluationKey);
+    this.evaluation.set(evaluation);
+    console.log("editing ", evaluation)
+    }
+    
 
 
 }

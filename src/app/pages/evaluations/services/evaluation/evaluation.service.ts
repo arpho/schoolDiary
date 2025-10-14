@@ -39,6 +39,11 @@ export class EvaluationService {
     const docRef = doc(this.firestore, this.collection, evaluationKey);
     return setDoc(docRef, evaluation.serialize());
   }
+  async getEvaluation(evaluationKey: string) {
+    const docRef = doc(this.firestore, this.collection, evaluationKey);
+     const evaluation = new Evaluation((await getDoc(docRef)).data()).setKey(docRef.id);
+     return evaluation;
+  }
 
 getEvaluation4studentAndTeacher(studentKey: string, teacherKey: string, callback: (evaluations: Evaluation[]) => void) {
   console.log("getEvaluation4studentAndTeacher")
