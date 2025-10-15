@@ -36,6 +36,8 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { Grids } from 'src/app/shared/models/grids';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { EvaluateGridComponent } from '../evaluateGrid/evaluate-grid/evaluate-grid.component';
+import { EvaluationService } from '../../services/evaluation/evaluation.service';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
 @Component({
   selector: 'app-evaluation4pages',
   templateUrl: './evaluation4pages.component.html',
@@ -81,6 +83,8 @@ export class Evaluation4pagesComponent  implements OnInit {
   $users = inject(UsersService);
     // Inizializzo il form nel costruttore invece che nella dichiarazione
     evaluationform!: FormGroup;
+      $evaluations = inject(EvaluationService);
+   private $toaster = inject(ToasterService);
     // Inizializza il form
     private initializeForm() {
       this.evaluationform = this.fb.group({
@@ -96,7 +100,7 @@ export class Evaluation4pagesComponent  implements OnInit {
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
     private $activites: ActivitiesService,
-    private gridsService: GridsService
+    private gridsService: GridsService,
   ) { 
     addIcons({
       save,
@@ -133,6 +137,16 @@ this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | n
     }
   }
 });
+this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
+  if (activityKey) {
+    const activity = this.activities().find((activity) => activity.key === activityKey);
+    if (activity) {
+      console.log("activity", activity);
+      this.evaluationform.controls['description'].setValue(activity.title);
+    }
+  }
+});
+
 
   }
   openActivityDialog() {
@@ -140,6 +154,21 @@ this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | n
   }
   saveEvaluation() {
     console.log("saveEvaluation");
+    const evaluation = new Evaluation(this.evaluationform.value);
+    console.log("evaluation", evaluation);
+    console.log("grid", this.grid());
+    console.log("classKey",evaluation.classKey);
+    console.log("classe",this.classKey());
+    console.log("studente",this.studentKey());
+    console.log("teacherKey",this.teacherKey());
+    evaluation.classKey = this.classKey();
+    evaluation.studentKey = this.studentKey();
+    evaluation.teacherKey = this.teacherKey();
+    evaluation.grid = this.grid();
+    console.log("evaluation", evaluation);
+    this.$evaluations.addEvaluation(evaluation);
+    this.$toaster.presentToast({message: 'Valutazione salvata con successo', position: 'top'});
+  
 
   }
 
