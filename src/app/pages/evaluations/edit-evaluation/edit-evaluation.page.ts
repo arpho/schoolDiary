@@ -35,6 +35,9 @@ import { ActivityModel } from '../../activities/models/activityModel';
 import { ActivitiesService } from '../../activities/services/activities.service';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
+import { ActivityDialogComponent } from '../../activities/components/activityDialog/activity-dialog/activity-dialog.component';
+import { ClasseModel } from '../../classes/models/classModel';
+import { ClassiService } from '../../classes/services/classi.service';
 @Component({
   selector: 'app-edit-evaluation',
   templateUrl: './edit-evaluation.page.html',
@@ -68,9 +71,44 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
   ]
 })
 export class EditEvaluationPage implements OnInit {
-openActivityDialog() {
-console.log("openActivityDialog");
-}
+  $classes = inject(ClassiService);
+  modalCtrl = inject(ModalController);
+async openActivityDialog() {
+    const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
+    console.log("teacher", teacher);
+    let classi: ClasseModel[] = [];
+    if (teacher?.classes) {
+      const classKeys = teacher.classesKey;
+      classi = classKeys.map(classKey => this.$classes.fetchClasseOnCache(classKey))
+        .filter((classe): classe is ClasseModel => classe !== undefined);
+    }
+
+    const activity = signal<ActivityModel>(new ActivityModel({
+      teacherKey: teacher?.key,
+      classKey: this.classKey,
+      date: new Date().toISOString()
+    }));
+    const classi4Teacher  = teacher?.classesKey.map(classKey => this.$classes.fetchClasseOnCache(classKey))
+    console.log("classi4Teacher", classi4Teacher);
+
+    const modal = await this.modalCtrl.create({
+      component: ActivityDialogComponent,
+      componentProps: {
+        listaClassi: classi4Teacher,
+        activity: activity,
+        selectedClass: this.classKey()
+      }
+    });
+    await modal.present();
+
+    const result = await modal.onDidDismiss();
+    if (result.data) {
+      await this.$activites.addActivity(activity());
+      this.evaluationform.patchValue({
+        activityKey: result.data.key
+      });
+    }
+  }
 updateEvaluation() {
 console.log("updateEvaluation");
 const evaluation = this.evaluation();

@@ -107,7 +107,6 @@ this.router.navigate(['/edit-evaluation',valutazione.key]);
   modalCtrl = inject(ModalController);  
   private router = inject(Router);
   constructor() { 
-    console.log("Evaluation4StudentComponent constructor chiamato");
     this.ngOnInit()
     addIcons({
       eyeOutline: eyeOutline,
@@ -121,15 +120,11 @@ this.router.navigate(['/edit-evaluation',valutazione.key]);
     // Usa effect per reagire ai signal inputs
     try {
       effect(() => {
-        console.log("Effect eseguito!");
         const studentKey = this.studentkey();
         const teacherKey = this.teacherkey();
-        console.log("studentKey (from effect)", studentKey);
-        console.log("teacherKey (from effect)", teacherKey);
         
         // Chiama il servizio solo quando gli input sono valorizzati
         if (studentKey && teacherKey) {
-          console.log("Chiamata a getEvaluation4studentAndTeacher con:", studentKey, teacherKey);
           this.$evaluation.getEvaluation4studentAndTeacher(studentKey, teacherKey, async (evaluations: Evaluation[]) => {
 
             this.evaluationsList.set(evaluations);
@@ -174,7 +169,6 @@ this.router.navigate(['/edit-evaluation',valutazione.key]);
     );
     
     this.activitiesMap.set(activitiesMap);
-    console.log("activitiesMap", this.activitiesMap());
   }
 
   // Metodo sincrono per ottenere l'attività dalla cache locale

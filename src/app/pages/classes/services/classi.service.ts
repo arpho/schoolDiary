@@ -13,6 +13,7 @@ import {
   deleteDoc
 } from '@angular/fire/firestore';
 import { ClasseModel } from '../models/classModel';
+import { UsersService } from 'src/app/shared/services/users.service';
 
 
 
@@ -20,10 +21,16 @@ import { ClasseModel } from '../models/classModel';
   providedIn: 'root'
 })
 export class ClassiService {
+  fetchClasses4teacher(teacherKey: string) {
+
+return [];
+
+  }
    classesOnCache = signal<ClasseModel[]>([]);
 
   constructor() {
     this.getClassiOnRealtime((classi) => {
+      console.log("classi", classi);
       this.classesOnCache.set(classi);
     });
   }
@@ -33,7 +40,11 @@ export class ClassiService {
   }
 
   fetchClasseOnCache(classKey: string): ClasseModel | undefined {
-    return this.classesOnCache().find(classe => classe.key === classKey);
+    console.log("classiOnCache", this.classesOnCache());
+    console.log("looking for classKey", classKey);
+    const classe = this.classesOnCache().find(classe => classe.key === classKey);
+    console.log("classe", classe);
+    return classe;
   }
   fetchClasses(classes: string[]) {
     const classi = classes.map((classe) => this.fetchClasse(classe));

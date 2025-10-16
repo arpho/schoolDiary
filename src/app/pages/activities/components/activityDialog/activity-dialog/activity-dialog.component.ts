@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject, model } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, effect, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivityModel } from '../../../models/activityModel';
@@ -102,10 +102,16 @@ export class ActivityDialogComponent implements OnInit {
 
 
   @Input() listaClassi: ClasseModel[] = [];
+  @Input() selectedClass: string = '';
   constructor(
     private fb: FormBuilder,
     private modalController: ModalController
-  ){}
+  ){
+    effect(() => {
+      console.log("selectedClass", this.selectedClass);
+      this.activityForm.get('classKey')?.setValue(this.selectedClass);
+    })
+  }
   ngOnInit() {
     const activityValue = this.activity();
 

@@ -46,9 +46,6 @@ export class EvaluationService {
   }
 
 getEvaluation4studentAndTeacher(studentKey: string, teacherKey: string, callback: (evaluations: Evaluation[]) => void) {
-  console.log("getEvaluation4studentAndTeacher")
-  console.log("studentKey", studentKey)
-  console.log("teacherKey", teacherKey)
   const collectionRef = collection(this.firestore, this.collection);
   const q = query(collectionRef, where('studentKey', '==', studentKey),
          where('teacherKey', '==', teacherKey),
@@ -63,7 +60,6 @@ getEvaluation4studentAndTeacher(studentKey: string, teacherKey: string, callback
 }
 
   getEvaluationsOnRealtime(callback: (evaluations: Evaluation[]) => void, queries?: QueryCondition[]) {
-    console.log("getEvaluationsOnRealtime")
     
     const collectionRef = collection(this.firestore, this.collection,);
     const q = !queries ? collectionRef : query(collectionRef, ...queries.map((queryCondition: QueryCondition) => where(queryCondition.field, queryCondition.operator, queryCondition.value)));

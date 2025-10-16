@@ -111,11 +111,9 @@ return this.user()?.lastName + " " + this.user()?.firstName;
 
     // Aggiungi gli effetti
     effect(() => {
-      console.log("userSignal updated", this.user());
     });
 
     effect(() => {
-      console.log("setting classi", this.user().classi);
       this.usersClasses.set(this.user().classi);
     });
   }
@@ -125,7 +123,6 @@ return this.user()?.lastName + " " + this.user()?.firstName;
     const modal = await this.modalCtrl.getTop();
     const classKey = modal?.componentProps?.['classKey'];
     if (classKey) {
-      console.log("classKey from modal props:", classKey);
       this._updateUserClass(classKey);
     }
   }
