@@ -6,7 +6,7 @@
 
 <ion-content fullscreen="true">
   <ion-list>
-    <form [formGroup]="evaluationform" (ngSubmit)="updateEvaluation()" id="evaluationForm">
+    <form [formGroup]="evaluationform" (ngSubmit)="updateEvaluation()" id="evaluationForm" autocomplete="off">
       <ion-item>
         <ion-label position="floating">Descrizione</ion-label>
         <ion-input type="text" formControlName="description"></ion-input>
@@ -31,9 +31,8 @@
             </ion-select-option>
           }
         </ion-select>
-        @if(activities().length == 0) {
+   
           <ion-button (click)="openActivityDialog()">Aggiungi attività</ion-button>
-        }
       </ion-item>
 
       <ion-item>

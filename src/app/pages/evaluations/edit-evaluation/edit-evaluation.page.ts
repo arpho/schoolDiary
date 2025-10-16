@@ -32,6 +32,9 @@ import { UserModel } from 'src/app/shared/models/userModel';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { ActivityModel } from '../../activities/models/activityModel';
+import { ActivitiesService } from '../../activities/services/activities.service';
+import { QueryCondition } from 'src/app/shared/models/queryCondition';
+import { GridsService } from 'src/app/shared/services/grids/grids.service';
 @Component({
   selector: 'app-edit-evaluation',
   templateUrl: './edit-evaluation.page.html',
@@ -82,6 +85,8 @@ console.log("updateEvaluation");
   student = signal<UserModel>(new UserModel());
   isGridValid = signal<boolean>(false);
   $users = inject(UsersService);
+  private $activites = inject(ActivitiesService);
+  private $grids = inject(GridsService);
     // Inizializzo il form nel costruttore invece che nella dichiarazione
     evaluationform!: FormGroup;
       $evaluations = inject(EvaluationService);
@@ -98,11 +103,17 @@ evaluation = signal<Evaluation | null>(null);
   }
 
   async ngOnInit() {
+    this.$grids.getGridsOnRealtime((griglie: Grids[]) => {
+      this.griglie.set(griglie);
+    });
 
     const evaluationKey = this.route.snapshot.paramMap.get('evaluationKey');
     console.log(evaluationKey);
     if(evaluationKey){
     const evaluation = await this.$evaluation.getEvaluation(evaluationKey);
+    this.$activites.getActivities4teacherOnRealtime(evaluation.teacherKey, (activities: ActivityModel[]) => {
+      this.activities.set(activities);
+    }, [new QueryCondition('classKey', '==', evaluation.classKey)]);
     this.evaluation.set(evaluation);
     console.log("editing ", evaluation)
     this.initializeForm(evaluation);
