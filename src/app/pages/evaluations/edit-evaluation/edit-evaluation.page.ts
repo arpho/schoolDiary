@@ -73,6 +73,13 @@ console.log("openActivityDialog");
 }
 updateEvaluation() {
 console.log("updateEvaluation");
+const evaluation = this.evaluation();
+if (evaluation) {
+evaluation.build(this.evaluationform.value);
+console.log("Evaluation updated:", evaluation);
+}
+
+
 }
 
   studentKey = signal<string>("");
