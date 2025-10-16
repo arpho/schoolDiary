@@ -24,7 +24,7 @@ import {
    IonFabList,
   ModalController
 } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { EvaluationService } from '../../../../pages/evaluations/services/evaluation/evaluation.service';
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
@@ -59,7 +59,8 @@ import { Router } from '@angular/router';
     IonIcon,
     IonFab,
     IonFabButton,
-    IonFabList
+    IonFabList,
+    DatePipe
 ]
 })
 export class Evaluation4StudentComponent  implements OnInit {
