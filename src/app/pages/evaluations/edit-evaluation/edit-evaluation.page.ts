@@ -120,6 +120,7 @@ console.log("updateEvaluation");
         console.log('Caricamento valutazione...');
         const evaluation = await this.$evaluation.getEvaluation(evaluationKey);
         console.log('Evaluation loaded:', JSON.parse(JSON.stringify(evaluation)));
+        this.evaluation.set(evaluation);
         
         if (!evaluation) {
           throw new Error('Valutazione non trovata');
