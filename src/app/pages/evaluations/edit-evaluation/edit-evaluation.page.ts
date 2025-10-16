@@ -215,6 +215,7 @@ console.log("Evaluation updated:", evaluation);
       
       console.log('Valori del form da inizializzare:', formValues);
       console.log('Griglia corrente:', evaluation?.grid);
+      this.grid.set(evaluation?.grid);
       console.log('gridKey impostato a:', formValues.gridKey);
       
       console.log('Valori del form da inizializzare:', formValues);
@@ -256,8 +257,12 @@ console.log("Evaluation updated:", evaluation);
 
   // Aggiungi questo metodo per ottenere la griglia selezionata
   getSelectedGrid() {
+    if(this.grid())
+    {return this.grid()}
+    else{
     const gridKey = this.evaluationform.get('gridKey')?.value;
     if (!gridKey) return null;
     return this.griglie().find(g => g.key === gridKey) || null;
+    }
   }
 }
