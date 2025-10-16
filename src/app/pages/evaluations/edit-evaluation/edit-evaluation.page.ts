@@ -76,7 +76,9 @@ console.log("updateEvaluation");
 const evaluation = this.evaluation();
 if (evaluation) {
 evaluation.build(this.evaluationform.value);
+evaluation.grid = this.grid();
 console.log("Evaluation updated:", evaluation);
+console.log("grid", this.grid());
 }
 
 
