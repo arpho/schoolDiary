@@ -1,47 +1,40 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  forwardRef,
-  signal,
-  computed,
-  ViewEncapsulation,
-  ChangeDetectionStrategy,
-  EventEmitter,
-  Output
+import { 
+  Component, 
+  Input, 
+  OnInit, 
+  OnDestroy, 
+  Output, 
+  EventEmitter, 
+  forwardRef, 
+  signal, 
+  effect, 
+  inject,
+  DestroyRef,
+  model
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR
-} from '@angular/forms';
-import { ClasseModel } from '../../models/classModel';
-import {
-  IonItem,
-  IonList
-} from "@ionic/angular/standalone";
-import { ClassViewerComponent } from "../class-viewer/class-viewer.component";
-import { ClassiService } from '../../services/classi.service';
-import {
-  IonButton,
-  IonIcon
-} from '@ionic/angular/standalone';
-
-import { ModalController } from '@ionic/angular';
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { ClassiService } from 'src/app/pages/classes/services/classi.service';
+import { ClassViewerComponent } from '../class-viewer/class-viewer.component';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { IonItem, IonList, IonButton, IonIcon, ModalController, IonFabButton, IonFab } from "@ionic/angular/standalone";
 import { ClassesSelectorPage } from '../../pages/classes-selector/classes-selector.page';
 @Component({
+  selector: 'app-classes-field',
   standalone: true,
   imports: [
     CommonModule,
     IonList,
     IonItem,
+    IonButton,
+    IonIcon,
     ClassViewerComponent,
     FormsModule,
-    IonButton,
-    IonIcon
-  ],
-  selector: 'app-classes-field',
+    IonFabButton,
+    IonFab
+    ],
   templateUrl: './classes-field.component.html',
   styleUrls: ['./classes-field.component.scss'],
   providers: [
@@ -52,51 +45,85 @@ import { ClassesSelectorPage } from '../../pages/classes-selector/classes-select
     }
   ],
 })
-export class ClassesFieldComponent implements OnInit, ControlValueAccessor {
+export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() disabled: boolean = false;
-  @Input() classes: ClasseModel[] = [];
   @Output() classeschange = new EventEmitter<ClasseModel[]>();
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  
+  classes = model<ClasseModel[]>([]);
   classi = signal<ClasseModel[]>([]);
+  
+  onChange: (value: ClasseModel[]) => void = () => {};
+  onTouched: () => void = () => {};
+  
+  private destroyRef = inject(DestroyRef);
+  private classiService = inject(ClassiService);
+  private modalController = inject(ModalController);
 
   trackByFn(index: number, item: ClasseModel): string {
     return item.key;
   }
 
 
-  constructor(
-    private classiService: ClassiService,
-    private modalController: ModalController
-  ) {}
+  constructor() {}
+  
+  private setupClassesEffect() {
+    const classesEffect = effect(() => {
+      const currentClasses = this.classes();
+      console.log("Effect - classi aggiornate:", currentClasses);
+      this.onChange(currentClasses);
+      this.classeschange.emit(currentClasses);
+    });
+
+    // Pulisci l'effect quando il componente viene distrutto
+    this.destroyRef.onDestroy(() => {
+      classesEffect.destroy();
+    });
+  }
 
   async selectClasses() {
     const modal = await this.modalController.create({
       component: ClassesSelectorPage,
       componentProps: {
-        selectedClasses: this.classes
+        selectedClasses: [...this.classes()]
       }
     });
-    const modalRef = await modal.present();
-    const {data} = await modal.onDidDismiss();
-    console.log("data",data);
-    this.classes = data;
-    this.classeschange.emit(this.classes);
+    
+    const { data } = await modal.onDidDismiss();
+    
+    if (data) {
+      console.log("Classi selezionate:", data);
+      this.classes.set(data);
+    }
   }
 
   ngOnInit() {
+    console.log("ngOnInit - classi*:", this.classes());
+    
+    // Configura l'effect dopo l'inizializzazione
+    this.setupClassesEffect();
+    
+    // Carica le classi disponibili
     this.classiService.getClassiOnRealtime((classi) => {
       this.classi.set(classi);
     });
   }
 
-  writeValue(value: ClasseModel[]): void {
-    console.log("writeValue", value);
-    this.classes = value;
+  ngOnDestroy() {
+    // Pulizia aggiuntiva se necessaria
   }
 
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
+  writeValue(value: ClasseModel[]): void {
+    console.log("writeValue", value);
+    if (value && JSON.stringify(this.classes()) !== JSON.stringify(value)) {
+      this.classes.set([...value]);
+    }
+  }
+
+  registerOnChange(fn: (value: ClasseModel[]) => void): void {
+    this.onChange = (value: ClasseModel[]) => {
+      fn(value);
+      this.classeschange.emit(value);
+    };
   }
 
   registerOnTouched(fn: any): void {

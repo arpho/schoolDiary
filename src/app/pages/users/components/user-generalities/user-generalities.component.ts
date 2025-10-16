@@ -1,38 +1,58 @@
 import { Subject } from 'rxjs';
-import { Component, effect, EventEmitter, input, OnInit, Output, signal } from '@angular/core';
-import { IonContent } from "@ionic/angular/standalone";
-import { ClassesFieldComponent } from "src/app/pages/classes/components/classes-field/classes-field.component";
-import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, FormBuilder } from '@angular/forms';
+import { 
+  Component, 
+  OnInit, 
+  ChangeDetectionStrategy, 
+  signal, 
+  effect, 
+  DestroyRef,
+  inject,
+  input,
+  output,
+  EventEmitter,
+  model
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { 
+  FormsModule, 
+  ReactiveFormsModule, 
+  FormGroup, 
+  FormBuilder, 
+  Validators, 
+  FormControl 
+} from '@angular/forms';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
-import { ClassiService } from 'src/app/pages/classes/services/classi.service';
-import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UsersService } from 'src/app/shared/services/users.service';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { ClassesFieldComponent } from 'src/app/pages/classes/components/classes-field/classes-field.component';
 import { addIcons } from 'ionicons';
-import { save } from 'ionicons/icons';
+import { save } from 'ionicons/icons/index';
 import {
-    IonItem,
-    IonLabel,
-    IonNote,
-    IonInput,
-    IonSelect,
-    IonSelectOption,
-    IonBackButton,
-    IonButton,
-    IonFooter,
-    IonFabButton,
-    IonIcon,
-    IonButtons,
+  IonContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonFooter,
+  IonFabButton,
+  IonIcon,
+  IonNote,
+  IonDatetime,
+  IonFab
+} from '@ionic/angular/standalone';
 
-    IonFab 
-  } from '@ionic/angular/standalone';
 @Component({
   selector: 'app-user-generalities',
   templateUrl: './user-generalities.component.html',
   styleUrls: ['./user-generalities.component.scss'],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ClassesFieldComponent,
+    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     IonContent, 
@@ -42,95 +62,133 @@ import {
     IonInput,
     IonSelect,
     IonSelectOption,
-    IonBackButton,
-    IonButton,
     IonFooter,
     IonFabButton,
     IonIcon,
-    IonButtons,
+    IonDatetime,
     IonFab,
-    UserGeneralitiesComponent,
-
-],
+    ClassesFieldComponent
+  ],
 })
 export class UserGeneralitiesComponent  implements OnInit {
   private destroy$ = new Subject<void>();
-  fb: FormBuilder= new FormBuilder();
-save() {
-console.log("saving",this.user())
-  const user = new UserModel(this.user());
-console.log("user serialized",user.serialize())
-const claims = {
-  role: user.role,
-  classes: user.classes,
-  classKey: user.classe,
-};
-console.log("claims", claims);
-if(user.key){
-this.$users.updateUser(user.key, user).then(() => {
-  console.log("user updated");
-  this.toaster.presentToast({message: "User aggiornato con successo", duration: 2000, position: "bottom"});
-}).catch((error: any) => {
-  console.log("error updating user", error);
-  this.toaster.presentToast({message: "Errore durante l'aggiornamento del user", duration: 2000, position: "bottom"});
-});
 
-this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
-  console.log("claims set", data);
-  const usersClaims = await this.$users.getCustomClaims4LoggedUser();
-  console.log("usersClaims", usersClaims);
-  this.toaster.presentToast({message: "Claims aggiornati con successo", duration: 2000, position: "bottom"});
-}).catch((error: any) => {
-  console.log("error setting claims", error);
-  this.toaster.presentToast({message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom"});
-});
-}
-else{
-  console.log("user key not found, it is a new user",user); 
-  this.$users.createUser(user).then((data: any) => {
-    console.log("user created", data);
-    this.toaster.presentToast({message: "User creato con successo", duration: 2000, position: "bottom"});
-  }).catch((error: any) => {
-    console.log("error creating user", error);
-    this.toaster.presentToast({message: "Errore durante la creazione del user", duration: 2000, position: "bottom"});
-  });
+  // Metodo per gestire il cambiamento delle classi
+  onClassesChange(classes: ClasseModel[]) {
+    this.userForm.get('classes')?.setValue(classes);
+  }
 
- }
-}
+  save() {
+    console.log("Saving user...");
+    const formValue = this.userForm.value;
+    const userData = {
+      ...this.user(),
+      ...formValue,
+      classes: formValue.classes || []
+    };
 
- @Output() editeduser= new EventEmitter<UserModel>();
- user = input<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
-rolesValue: any[] = [];
-rolesName: string[] = [];
-elencoClassi= signal<ClasseModel[]>([]);
-  userForm: FormGroup = new FormGroup({
-    firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    userName: new FormControl('', ),
-    email: new FormControl('', [Validators.email,Validators.required]),
-    role: new FormControl(UsersRole.STUDENT),
-    phoneNumber: new FormControl(''),
-    birthDate: new FormControl(''),
-    classes: new FormControl([]),
-    classe: new FormControl('',[Validators.required])
-  });
-
- 
+    const user = new UserModel(userData);
+    console.log("User to save:", user.serialize());
     
+    const claims = {
+      role: user.role,
+      classes: user.classes,
+      classKey: user.classe,
+    };
+
+    console.log("Claims to set:", claims);
+
+    if (user.key) {
+      this.updateUser(user, claims);
+    } else {
+      this.createUser(user, claims);
+    }
+  }
+
+  private updateUser(user: UserModel, claims: any) {
+    this.$users.updateUser(user.key, user)
+      .then(() => {
+        console.log("User updated successfully");
+        this.toaster.presentToast({
+          message: "Utente aggiornato con successo", 
+          duration: 2000, 
+          position: "bottom"
+        });
+        return this.updateUserClaims(user.key, claims);
+      })
+      .catch(error => {
+        console.error("Error updating user:", error);
+        this.toaster.presentToast({
+          message: "Errore durante l'aggiornamento dell'utente", 
+          duration: 2000, 
+          position: "bottom"
+        });
+      });
+  }
+
+  private createUser(user: UserModel, claims: any) {
+    this.$users.createUser(user)
+      .then((data: any) => {
+        console.log("User created successfully:", data);
+        this.toaster.presentToast({
+          message: "Utente creato con successo", 
+          duration: 2000, 
+          position: "bottom"
+        });
+        return this.updateUserClaims(user.key, claims);
+      })
+      .catch(error => {
+        console.error("Error creating user:", error);
+        this.toaster.presentToast({
+          message: "Errore durante la creazione dell'utente", 
+          duration: 2000, 
+          position: "bottom"
+        });
+      });
+  }
+
+  private updateUserClaims(userId: string, claims: any) {
+    return this.$users.setUserClaims2user(userId, claims)
+      .then(async (data: any) => {
+        console.log("Claims set successfully:", data);
+        const usersClaims = await this.$users.getCustomClaims4LoggedUser();
+        console.log("Current user claims:", usersClaims);
+        this.toaster.presentToast({
+          message: "Autorizzazioni aggiornate con successo", 
+          duration: 2000, 
+          position: "bottom"
+        });
+      })
+      .catch(error => {
+        console.error("Error setting claims:", error);
+        this.toaster.presentToast({
+          message: "Errore durante l'aggiornamento delle autorizzazioni", 
+          duration: 2000, 
+          position: "bottom"
+        });
+      });
+  }
+
+  editeduser = output<UserModel>();
+  user = input<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
+  rolesValue: any[] = [];
+  rolesName: string[] = [];
+  elencoClassi = signal<ClasseModel[]>([]);
+  userForm!: FormGroup;
   usersClasses = signal<ClasseModel[]>([]);
   $UsersRole = UsersRole;
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private $users: UsersService,
     private $classes: ClassiService,
-    private toaster: ToasterService
+    private toaster: ToasterService,
+    private fb: FormBuilder
   ) { 
-
-    addIcons({ save });
-
+    // Initialize form
     this.userForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      firstName: ['', [Validators.required, Validators.minLength(1)]],
+      lastName: ['', [Validators.required, Validators.minLength(1)]],
       userName: [''],
       email: ['', [Validators.required, Validators.email]],
       role: [UsersRole.STUDENT, Validators.required],
@@ -140,16 +198,29 @@ elencoClassi= signal<ClasseModel[]>([]);
       classe: ['']
     });
 
+    // Add icons
+    addIcons({ save });
+
+    // Effect to handle user changes
     effect(() => {
       const user = this.user();
-      console.log("Effect - Cambiamento user:", user);
+      console.log("Effect - User changed:", user);
       
       if (user) {
-        console.log("Aggiornamento usersClasses con classi:", user.classi);
-        this.usersClasses.set(user.classi || []);
+        // Update classes from user
+        const classi: ClasseModel[] = [];
+        if (user.classesKey) {
+          user.classesKey.forEach((classKey: string) => {
+            const classe = this.$classes.fetchClasseOnCache(classKey);
+            if (classe) {
+              classi.push(classe);
+            }
+          });
+        }
+        
+        this.elencoClassi.set(classi);
+        this.usersClasses.set(classi);
         this.syncFormWithUser();
-      } else {
-        console.log("User è null o undefined");
       }
     });
   
@@ -189,7 +260,15 @@ elencoClassi= signal<ClasseModel[]>([]);
     const user = this.user();
     if (!user) return;
   
-    console.log("Sincronizzazione form con utente:", user);
+    console.log("Sincronizzazione form con utente:*", user);
+    const classi: ClasseModel[] = [];
+    user.classesKey.forEach((classKey: string) => {
+      const classe = this.$classes.fetchClasseOnCache(classKey);
+      if (classe) {
+        classi.push(classe);
+      }
+    });
+    this.usersClasses.set(classi);
     
     this.userForm.patchValue({
       firstName: user.firstName || '',
@@ -202,13 +281,12 @@ elencoClassi= signal<ClasseModel[]>([]);
       classes: user.classes || [],
       classe: user.classKey || ''
     }, { emitEvent: false });
-    console.log("Form dopo la sincronizzazione:", this.userForm.value)
+    console.log("Form dopo la sincronizzazione:*", this.userForm.value)
   }
 
   ngOnInit() {
-    console.log("ngOnInit - user:", this.user());
-    
-    this.elencoClassi = this.$classes.classesOnCache;
+    console.log("ngOnInit - user:*", this.user());
+   
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
     

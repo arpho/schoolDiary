@@ -1,5 +1,5 @@
 <ion-list id="selectedClasses">
-  @for (classe of classes; track classe.key) {
+  @for (classe of classes(); track classe.key) {
     <ion-item>
     <app-class-viewer [classe]="classe"></app-class-viewer>
   </ion-item>
