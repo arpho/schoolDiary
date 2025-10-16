@@ -39,26 +39,29 @@
       <ion-item>
         <ion-label position="floating">Griglia</ion-label>
         <ion-select 
-          formControlName="grid" 
+          formControlName="gridKey" 
           placeholder="Seleziona griglia"
-          [class.ion-invalid]="evaluationform.get('grid')?.invalid && evaluationform.get('grid')?.touched">
+          [class.ion-invalid]="evaluationform.get('gridKey')?.invalid && evaluationform.get('gridKey')?.touched">
           @for(grid of griglie(); track grid.key) {
             <ion-select-option [value]="grid.key">
               {{grid.nome}}
             </ion-select-option>
           }
         </ion-select>
-        @if (evaluationform.get('grid')?.invalid && evaluationform.get('grid')?.touched) {
+        @if (evaluationform.get('gridKey')?.invalid && evaluationform.get('gridKey')?.touched) {
           <ion-note slot="error">Seleziona una griglia valida</ion-note>
         }
       </ion-item>
       
-      @if (evaluationform.get('grid')?.value) {
-        <app-evaluate-grid 
-          [grid]="grid()!"
-          (gridValid)="onGridValidityChange($event)">
-        </app-evaluate-grid>
-        @if (evaluationform.get('grid')?.value && !isGridValid() && evaluationform.get('grid')?.touched) {
+      @if (evaluationform.get('gridKey')?.value) {
+        @let selectedGrid = getSelectedGrid();
+        @if (selectedGrid) {
+          <app-evaluate-grid 
+            [grid]="selectedGrid"
+            (gridValid)="onGridValidityChange($event)">
+          </app-evaluate-grid>
+        }
+        @if (evaluationform.get('gridKey')?.value && !isGridValid() && evaluationform.get('gridKey')?.touched) {
           <ion-note color="danger" class="ion-padding-start">
             La griglia di valutazione non è valida. Assicurati di aver compilato tutti i campi richiesti.
           </ion-note>

@@ -103,7 +103,7 @@ console.log("updateEvaluation");
       description: [''],
       note: [''],
       data: [new Date()],
-      grid: [null],
+      gridKey: [null],
       activityKey: [''],
       classKey: [''],
       studentKey: ['']
@@ -199,11 +199,15 @@ console.log("updateEvaluation");
         description: evaluation?.description || '',
         note: evaluation?.note || '',
         data: evaluationDate,
-        grid: evaluation?.grid || null,
+        gridKey: evaluation?.grid?.key || null,
         activityKey: evaluation?.activityKey || '',
         classKey: evaluation?.classKey || '',
         studentKey: evaluation?.studentKey || ''
       };
+      
+      console.log('Valori del form da inizializzare:', formValues);
+      console.log('Griglia corrente:', evaluation?.grid);
+      console.log('gridKey impostato a:', formValues.gridKey);
       
       console.log('Valori del form da inizializzare:', formValues);
       
@@ -242,4 +246,10 @@ console.log("updateEvaluation");
       this.evaluationform.updateValueAndValidity();
     }
 
+  // Aggiungi questo metodo per ottenere la griglia selezionata
+  getSelectedGrid() {
+    const gridKey = this.evaluationform.get('gridKey')?.value;
+    if (!gridKey) return null;
+    return this.griglie().find(g => g.key === gridKey) || null;
+  }
 }
