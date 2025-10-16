@@ -87,19 +87,27 @@ console.log("updateEvaluation");
   $users = inject(UsersService);
   private $activites = inject(ActivitiesService);
   private $grids = inject(GridsService);
-    // Inizializzo il form nel costruttore invece che nella dichiarazione
-    evaluationform!: FormGroup;
-      $evaluations = inject(EvaluationService);
-   private $toaster = inject(ToasterService);
-
-
+  $evaluations = inject(EvaluationService);
+  private $toaster = inject(ToasterService);
   route = inject(ActivatedRoute);
-evaluation = signal<Evaluation | null>(null);
+  evaluation = signal<Evaluation | null>(null);
   $evaluation = inject(EvaluationService);
-  constructor(
-    private fb: FormBuilder,
-  ) { 
-    console.log("EditEvaluationPage constructor chiamato")
+  
+  // Form group declaration
+  evaluationform: FormGroup;
+
+  constructor(private fb: FormBuilder) { 
+    console.log("EditEvaluationPage constructor chiamato");
+    // Initialize form in constructor
+    this.evaluationform = this.fb.group({
+      description: [''],
+      note: [''],
+      data: [new Date()],
+      grid: [null],
+      activityKey: [''],
+      classKey: [''],
+      studentKey: ['']
+    }, { validators: [this.gridValidator()] });
   }
 
   async ngOnInit() {
@@ -161,6 +169,8 @@ evaluation = signal<Evaluation | null>(null);
 
 }
 
+
+
   private initializeForm(evaluation: Evaluation) {
     console.log('initializeForm - Inizio', {
       evaluation: JSON.parse(JSON.stringify(evaluation)),
@@ -184,39 +194,31 @@ evaluation = signal<Evaluation | null>(null);
     
     console.log('Data elaborata:', evaluationDate);
 
-  try {
-    const formValues = {
-      description: evaluation?.description || '',
-      note: evaluation?.note || '',
-      data: evaluationDate,
-      grid: evaluation?.grid || null,
-      activityKey: evaluation?.activityKey || '',
-      classKey: evaluation?.classKey || '',
-      studentKey: evaluation?.studentKey || ''
-    };
-    
-    console.log('Valori del form da inizializzare:', formValues);
-    
-    this.evaluationform = this.fb.group({
-      description: [formValues.description],
-      note: [formValues.note],
-      data: [formValues.data],
-      grid: [formValues.grid],
-      activityKey: [formValues.activityKey],
-      classKey: [formValues.classKey],
-      studentKey: [formValues.studentKey]
-    }, { validators: [this.gridValidator()] });
-    
-    console.log('Form inizializzato con valori:', {
-      formValue: this.evaluationform.value,
-      formStatus: this.evaluationform.status,
-      formErrors: this.evaluationform.errors
-    });
-    
-    // Forza l'aggiornamento della vista
-    this.evaluationform.updateValueAndValidity();
-  } catch (error) {
-    console.error('Errore durante l\'inizializzazione del form:', error);
+    try {
+      const formValues = {
+        description: evaluation?.description || '',
+        note: evaluation?.note || '',
+        data: evaluationDate,
+        grid: evaluation?.grid || null,
+        activityKey: evaluation?.activityKey || '',
+        classKey: evaluation?.classKey || '',
+        studentKey: evaluation?.studentKey || ''
+      };
+      
+      console.log('Valori del form da inizializzare:', formValues);
+      
+      // Update the form with the new values
+      this.evaluationform.patchValue(formValues);
+      this.evaluationform.setValidators([this.gridValidator()]);
+      this.evaluationform.updateValueAndValidity();
+      
+      console.log('Form aggiornato con valori:', {
+        formValue: this.evaluationform.value,
+        formStatus: this.evaluationform.status,
+        formErrors: this.evaluationform.errors
+      });
+    } catch (error) {
+      console.error('Errore durante l\'inizializzazione del form:', error);
     throw error;
   }
 }
