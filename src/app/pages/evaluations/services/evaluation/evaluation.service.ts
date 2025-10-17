@@ -30,6 +30,8 @@ export class EvaluationService {
 
   addEvaluation(evaluation: Evaluation) {
     const collectionRef = collection(this.firestore, this.collection);
+    const now = new Date().toISOString();
+    evaluation.lastUpdateDate = now;
     return addDoc(collectionRef, evaluation.serialize());
   }
  editEvaluation(evaluation: Evaluation) {
@@ -37,6 +39,8 @@ export class EvaluationService {
   }
   updateEvaluation( evaluation: Evaluation) {
     const docRef = doc(this.firestore, this.collection, evaluation.key);
+    const now = new Date().toISOString();
+    evaluation.lastUpdateDate = now;
     return setDoc(docRef, evaluation.serialize());
   }
   async getEvaluation(evaluationKey: string) {
@@ -49,7 +53,8 @@ getEvaluation4studentAndTeacher(studentKey: string, teacherKey: string, callback
   const collectionRef = collection(this.firestore, this.collection);
   const q = query(collectionRef, where('studentKey', '==', studentKey),
          where('teacherKey', '==', teacherKey),
-        orderBy('data','desc'));
+         orderBy('lastUpdateDate', 'desc'), 
+         orderBy('data', 'desc'));
   return onSnapshot(q, (snapshot) => {
     const evaluations: Evaluation[] = [];
     snapshot.forEach((doc) => {

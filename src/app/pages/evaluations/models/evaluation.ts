@@ -5,6 +5,7 @@ export class Evaluation {
   description: string = '';
   note: string = '';
   data: string = '';
+  lastUpdateDate: string = '';
   grid: Grids = new Grids();
   gridsKey: string = '';
   classKey: string = '';
@@ -33,7 +34,7 @@ export class Evaluation {
         grid: this.grid
       });
       this.gridsKey = this.grid.key;
-    }
+      }
     return this;
   }
   get voto() {
@@ -48,6 +49,7 @@ export class Evaluation {
       description: this.description,
       note: this.note,
       data: this.data,
+      lastUpdateDate: this.lastUpdateDate,
       grid: this.grid.serialize(),
       classKey: this.classKey,
       studentKey: this.studentKey,
