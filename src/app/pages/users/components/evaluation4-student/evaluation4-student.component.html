@@ -17,8 +17,14 @@
               <ion-list>
                 <ion-item>
                   <ion-label>
-                    <h3>Data</h3>
+                    <h3>Data creazione</h3>
                     <p>{{ evaluation.data |date:"dd/MM/yyyy"}}</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-label>
+                    <h3>Data ultima modifica</h3>
+                    <p>{{ evaluation.lastUpdateDate |date:"dd/MM/yyyy"}}</p>
                   </ion-label>
                 </ion-item>
 

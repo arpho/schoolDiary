@@ -162,6 +162,17 @@ export class UsersService implements OnInit {
       const users: UserModel[] = [];
       querySnapshot.forEach((doc) => {
         const user = new UserModel(doc.data()).setKey(doc.id);
+
+        const classes: ClasseModel[] = [];
+        user.classes?.forEach((classKey: string) => {
+          const classe = this.$classes.fetchClasseOnCache(classKey);
+          if (classe) {
+            classes.push(classe);
+          }
+        });
+        
+        user.classi = classes;
+
         users.push(user);
       });
       cb(users);
@@ -191,6 +202,20 @@ export class UsersService implements OnInit {
       this.MyAuth.getUser().subscribe(async (user) => {
         if (user) {
           const loggedUser = await this.getUserByUid(user.uid);
+if(loggedUser){
+  
+{
+  const classes: ClasseModel[] = [];
+        loggedUser.classes?.forEach((classKey: string) => {
+          const classe = this.$classes.fetchClasseOnCache(classKey);
+          if (classe) {
+            classes.push(classe);
+          }
+        });
+        
+        loggedUser.classi = classes;
+}
+          
           resolve(loggedUser);
         } else {
           resolve(null);

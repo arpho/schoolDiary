@@ -218,7 +218,7 @@ export class UserGeneralitiesComponent  implements OnInit {
           });
         }
         
-        this.elencoClassi.set(classi);
+        
         this.usersClasses.set(classi);
         this.syncFormWithUser();
       }
@@ -284,9 +284,13 @@ export class UserGeneralitiesComponent  implements OnInit {
     console.log("Form dopo la sincronizzazione:*", this.userForm.value)
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     console.log("ngOnInit - user:*", this.user());
-   
+   const loggedUser =await  this.$users.getLoggedUser();
+   if(loggedUser){
+    console.log("user logged", loggedUser)
+   console.log("classi in logged user", loggedUser.classi);
+   }
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
     
