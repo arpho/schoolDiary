@@ -117,6 +117,16 @@ evaluation.build(this.evaluationform.value);
 evaluation.grid = this.grid();
 console.log("Evaluation updated:", evaluation);
 console.log("grid", this.grid());
+try{  
+this.$evaluations.updateEvaluation(evaluation);
+this.$toaster.presentToast({
+  message: 'Valutazione aggiornata con successo',
+  position: 'top'
+});
+}
+catch(error){
+  console.log("Error updating evaluation:", error);
+}
 }
 
 

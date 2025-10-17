@@ -143,7 +143,7 @@ async saveEvaluation() {
         console.log("evaluation serialzed", evaluation.serialize());
 
         if (this.evaluationKey) {
-          await this.evaluationService.updateEvaluation(this.evaluationKey, evaluation);
+          await this.evaluationService.updateEvaluation(evaluation);
         } else {
           await this.evaluationService.addEvaluation(evaluation);
         }

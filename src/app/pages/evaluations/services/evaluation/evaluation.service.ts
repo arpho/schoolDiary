@@ -33,10 +33,10 @@ export class EvaluationService {
     return addDoc(collectionRef, evaluation.serialize());
   }
  editEvaluation(evaluation: Evaluation) {
-    return this.updateEvaluation(evaluation.key, evaluation);
+    return this.updateEvaluation(evaluation);
   }
-  updateEvaluation(evaluationKey: string, evaluation: Evaluation) {
-    const docRef = doc(this.firestore, this.collection, evaluationKey);
+  updateEvaluation( evaluation: Evaluation) {
+    const docRef = doc(this.firestore, this.collection, evaluation.key);
     return setDoc(docRef, evaluation.serialize());
   }
   async getEvaluation(evaluationKey: string) {
