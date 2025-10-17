@@ -289,10 +289,12 @@ export class UserGeneralitiesComponent  implements OnInit {
    const loggedUser =await  this.$users.getLoggedUser();
    if(loggedUser){
     console.log("user logged", loggedUser)
+    this.elencoClassi.set(loggedUser.classi);
    console.log("classi in logged user", loggedUser.classi);
    }
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
+
     
     // Sincronizza il form con i valori iniziali
     this.syncFormWithUser();

@@ -203,8 +203,6 @@ export class UsersService implements OnInit {
         if (user) {
           const loggedUser = await this.getUserByUid(user.uid);
 if(loggedUser){
-  
-{
   const classes: ClasseModel[] = [];
         loggedUser.classes?.forEach((classKey: string) => {
           const classe = this.$classes.fetchClasseOnCache(classKey);
