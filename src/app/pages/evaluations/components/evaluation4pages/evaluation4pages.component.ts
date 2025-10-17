@@ -38,6 +38,9 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { EvaluateGridComponent } from '../evaluateGrid/evaluate-grid/evaluate-grid.component';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { ActivityDialogComponent } from 'src/app/pages/activities/components/activityDialog/activity-dialog/activity-dialog.component';
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 @Component({
   selector: 'app-evaluation4pages',
   templateUrl: './evaluation4pages.component.html',
@@ -101,6 +104,8 @@ export class Evaluation4pagesComponent  implements OnInit {
     private fb: FormBuilder,
     private $activites: ActivitiesService,
     private gridsService: GridsService,
+    private modalCtrl: ModalController,
+    private $classes: ClassiService
   ) { 
     addIcons({
       save,
@@ -149,9 +154,42 @@ this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey:
 
 
   }
-  openActivityDialog() {
-    console.log("openActiivityDialog");
-  }
+ async openActivityDialog() {
+     const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
+     console.log("teacher", teacher);
+     let classi: ClasseModel[] = [];
+     if (teacher?.classes) {
+       const classKeys = teacher.classesKey;
+       classi = classKeys.map(classKey => this.$classes.fetchClasseOnCache(classKey))
+         .filter((classe): classe is ClasseModel => classe !== undefined);
+     }
+ 
+     const activity = signal<ActivityModel>(new ActivityModel({
+       teacherKey: teacher?.key,
+       classKey: this.classKey,
+       date: new Date().toISOString()
+     }));
+     const classi4Teacher  = teacher?.classesKey.map(classKey => this.$classes.fetchClasseOnCache(classKey))
+     console.log("classi4Teacher", classi4Teacher);
+ 
+     const modal = await this.modalCtrl.create({
+       component: ActivityDialogComponent,
+       componentProps: {
+         listaClassi: classi4Teacher,
+         activity: activity,
+         selectedClass: this.classKey()
+       }
+     });
+     await modal.present();
+ 
+     const result = await modal.onDidDismiss();
+     if (result.data) {
+       await this.$activites.addActivity(activity());
+       this.evaluationform.patchValue({
+         activityKey: result.data.key
+       });
+     }
+   }
   saveEvaluation() {
     console.log("saveEvaluation");
     const evaluation = new Evaluation(this.evaluationform.value);
