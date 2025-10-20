@@ -98,9 +98,13 @@ export class ActivitiesService {
     }
   }
 
-  async addActivity(activity: ActivityModel): Promise<DocumentReference<DocumentData>> {
+  async addActivity(activity: ActivityModel): Promise<ActivityModel> {
     const collectionRef = collection(this.firestore, this.collection);
-    return addDoc(collectionRef, activity.serialize());
+    const docref = await addDoc(collectionRef, activity.serialize()); 
+ const docSnap = await getDoc(docref);
+ const newActivity = new ActivityModel(docSnap.data()).setKey(docSnap.id);  
+ this.activitiesOnCache.update(activities => [...activities, newActivity]);
+    return newActivity;
   }
 
   async updateActivity(activityKey: string, activity: ActivityModel): Promise<void> {
