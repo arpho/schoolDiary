@@ -117,6 +117,8 @@ evaluation.build(this.evaluationform.value);
 evaluation.grid = this.grid();
 console.log("Evaluation updated:", evaluation);
 console.log("grid", this.grid());
+evaluation.grid = this.grid();
+console.log("Evaluation updated:", evaluation);
 try{  
 this.$evaluations.updateEvaluation(evaluation);
 this.$toaster.presentToast({

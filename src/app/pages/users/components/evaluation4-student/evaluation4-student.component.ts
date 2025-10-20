@@ -148,6 +148,9 @@ this.router.navigate(['/edit-evaluation',valutazione.key]);
     // Prova anche con setTimeout
 
   }
+  sanitizeDate(date:any){
+    return date?.toDate ? date.toDate() : date
+  }
 
   // Pre-carica tutte le attività per le valutazioni
   private async loadActivitiesForEvaluations(evaluations: Evaluation[]): Promise<void> {

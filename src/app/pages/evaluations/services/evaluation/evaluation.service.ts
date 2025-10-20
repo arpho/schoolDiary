@@ -41,6 +41,7 @@ export class EvaluationService {
     const docRef = doc(this.firestore, this.collection, evaluation.key);
     const now = new Date().toISOString();
     evaluation.lastUpdateDate = now;
+    console.log("evaluation to be updated",evaluation.serialize())
     return setDoc(docRef, evaluation.serialize());
   }
   async getEvaluation(evaluationKey: string) {
