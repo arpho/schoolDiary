@@ -112,3 +112,10 @@ h2 {
       transform: rotate(360deg);
     }
   } 
+
+
+  ion-toolbar {
+    --min-height: 70px;  // Imposta l'altezza desiderata (es. 80px invece del valore predefinito)
+    --padding-top: 10px;  // Aggiungi un po' di padding in alto
+    --padding-bottom: 10px;  // Aggiungi un po' di padding in basso
+  }
