@@ -103,22 +103,19 @@ async openActivityDialog() {
 
     const result = await modal.onDidDismiss();
     if (result.data) {
-      await this.$activites.addActivity(activity());
+      const newActivity = await this.$activites.addActivity(activity());
+
       this.evaluationform.patchValue({
-        activityKey: result.data.key
+        activityKey: newActivity.key
       });
+      this.evaluationform.updateValueAndValidity();
     }
   }
 updateEvaluation() {
-console.log("updateEvaluation");
 const evaluation = this.evaluation();
 if (evaluation) {
 evaluation.build(this.evaluationform.value);
 evaluation.grid = this.grid();
-console.log("Evaluation updated:", evaluation);
-console.log("grid", this.grid());
-evaluation.grid = this.grid();
-console.log("Evaluation updated:", evaluation);
 try{  
 this.$evaluations.updateEvaluation(evaluation);
 this.$toaster.presentToast({
