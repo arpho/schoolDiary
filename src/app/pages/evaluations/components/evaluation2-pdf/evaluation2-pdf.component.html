@@ -10,9 +10,7 @@
         <ion-fab-button color="light" (click)="generatePdf()">
           <ion-icon name="print"></ion-icon>
         </ion-fab-button>
-        <ion-fab-button color="light" (click)="close()">
-          <ion-icon name="close"></ion-icon>
-        </ion-fab-button>
+
       </ion-fab-list>
     </ion-fab>
   </ion-toolbar>
@@ -41,7 +39,7 @@
       <ion-col size="3">
         <div class="generalita">
           <div class="label">Data:</div>
-          <div class="value">{{evaluationData()?.data|date:'dd/MM/yyyy'}}</div>
+          <div class="value">{{sanitizeDate(evaluationData()?.data)|date:'dd/MM/yyyy'}}</div>
         </div>
       </ion-col>
     </ion-row>

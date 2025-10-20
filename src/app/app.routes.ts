@@ -95,4 +95,8 @@ export const routes: Routes = [
     path: 'edit-evaluation/:evaluationKey',
     loadComponent: () => import('./pages/evaluations/edit-evaluation/edit-evaluation.page').then( m => m.EditEvaluationPage)
   },
+  {
+    path:"pdf-evaluation/:evaluationKey",
+    loadComponent: () => import('./pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component').then( m => m.Evaluation2PdfComponent)
+  }
 ];

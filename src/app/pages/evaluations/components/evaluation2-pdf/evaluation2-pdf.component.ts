@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, input, OnInit, signal, inject, computed } from '@angular/core';
+import { Component, ViewEncapsulation, input, OnInit, signal, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { IonGrid, IonRow, IonCol, IonButton, IonFabButton, IonFab, IonFabList, IonIcon, IonHeader, IonContent, IonToolbar, IonTitle } from "@ionic/angular/standalone";
 import { UserWieverComponent } from "src/app/shared/components/user-wiever/user-wiever.component";
@@ -11,11 +11,19 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { IonicModule } from "@ionic/angular";
 import { ModalController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
+import { EvaluationService } from '../../services/evaluation/evaluation.service';
+import { archive, create, ellipsisVertical, eyeOutline, trash } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+import { print } from 'ionicons/icons';
+import { close } from 'ionicons/icons';
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'app-evaluation2-pdf',
   templateUrl: './evaluation2-pdf.component.html',
   styleUrls: ['./evaluation2-pdf.component.scss'],
+  standalone:true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonGrid,
@@ -36,16 +44,25 @@ import { ModalController } from '@ionic/angular';
 })
 export class Evaluation2PdfComponent  implements OnInit {
   showSpinner= signal(false);
-close() {
-this.modalCtrl.dismiss();
-}
+
   hideButtons= signal(false);
   constructor(
     private $users:UsersService,
     private $class:ClassiService,
-    private modalCtrl:ModalController
+    private route: ActivatedRoute,
+    private $evaluation:EvaluationService
   
-  ) { }
+  ) {
+    addIcons({
+      eyeOutline: eyeOutline,
+      print: print,
+      ellipsisVertical: ellipsisVertical,
+      create: create,
+      archive: archive,
+      trash: trash,
+      close: close,
+    });
+   }
 
   formatDate(date:string){
     return  new Date(date).toLocaleDateString("it-IT", {
@@ -100,6 +117,24 @@ const voto = this.evaluationData().grid?.indicatori.reduce((acc: any, indicatore
  })
 
   ngOnInit() {
-    this.evaluationData.set(new Evaluation(this.evaluation))
+    this.route.paramMap.subscribe(async params => {
+      const evaluationKey = params.get('evaluationKey');
+      console.log('Evaluation Key:', evaluationKey);
+      if (evaluationKey){
+      const evaluation= await this.$evaluation.getEvaluation(evaluationKey);
+      console.log("evaluation", evaluation);
+      this.evaluationData.set(evaluation);
+      }
+      
+      // Usa il parametro come necessario
+    });
+
+   
     console.log("evaluationData", this.evaluationData()); 
-}}
+}
+
+sanitizeDate(date:any){
+  return date?.toDate ? date.toDate() : date
+}
+
+}

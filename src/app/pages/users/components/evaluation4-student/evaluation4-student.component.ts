@@ -76,14 +76,16 @@ throw new Error('Method not implemented.');
 }
   async evaluationPdf(valutazione: Evaluation) {
 console.log("evaluationPdf", valutazione);
-const modal = await this.modalCtrl.create({
+/* const modal = await this.modalCtrl.create({
   component: Evaluation2PdfComponent,
   componentProps: {
     evaluation: valutazione,
   },
   cssClass: "fullscreen"
 });
-await modal.present(); 
+await modal.present();  */
+
+this.router.navigate(['/pdf-evaluation',valutazione.key]);
 }
 deleteEvaluation(valutazione: Evaluation) {
 console.log("deleteEvaluation chiamato", valutazione);
