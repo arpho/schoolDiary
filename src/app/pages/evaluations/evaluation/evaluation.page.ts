@@ -382,10 +382,11 @@ if (this.evaluationKey()) {
 
     const result = await modal.onDidDismiss();
     if (result.data) {
-      await this.activitiesService.addActivity(activity());
+      const newActivity = await this.activitiesService.addActivity(activity());
       this.evaluationform.patchValue({
-        activityKey: result.data.key
+        activityKey: newActivity.key
       });
+      this.evaluationform.updateValueAndValidity();
     }
   }
 
