@@ -13,7 +13,7 @@ import { IonicModule } from "@ionic/angular";
 import { ModalController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
-import { archive, create, ellipsisVertical, eyeOutline, trash } from 'ionicons/icons';
+import { archive, create, ellipsisVertical, eyeOutline, trash, homeOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { print } from 'ionicons/icons';
 import { close } from 'ionicons/icons';
@@ -61,6 +61,7 @@ export class Evaluation2PdfComponent  implements OnInit {
       archive: archive,
       trash: trash,
       close: close,
+      home: homeOutline,
     });
    }
 

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Evaluation } from '../models/evaluation';
 import { EvaluationService } from '../services/evaluation/evaluation.service';
 import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/evaluate-grid.component';
@@ -118,6 +118,7 @@ evaluation.build(this.evaluationform.value);
 evaluation.grid = this.grid();
 try{  
 this.$evaluations.updateEvaluation(evaluation);
+this.router.navigate(['/pdf-evaluation', evaluation.key]);
 this.$toaster.presentToast({
   message: 'Valutazione aggiornata con successo',
   position: 'top'
@@ -152,7 +153,8 @@ catch(error){
   // Form group declaration
   evaluationform: FormGroup;
 
-  constructor(private fb: FormBuilder) { 
+  constructor(private fb: FormBuilder,
+    private router: Router) { 
     console.log("EditEvaluationPage constructor chiamato");
     // Initialize form in constructor
     this.evaluationform = this.fb.group({

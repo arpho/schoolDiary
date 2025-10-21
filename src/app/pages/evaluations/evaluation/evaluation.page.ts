@@ -343,7 +343,7 @@ if (this.evaluationKey()) {
           this.modalCtrl.dismiss();
         } else {
           console.log("navigate");
-          this.router.navigate(['/evaluations-list']);
+          this.router.navigate(['/pdf-evaluation', this.evaluationKey()]);
         }
       } catch (error) {
         console.error('Error saving evaluation:', error);

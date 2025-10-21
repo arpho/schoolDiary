@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
 import { Evaluation } from '../../models/evaluation';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { QueryFieldFilterConstraint } from 'firebase/firestore';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
@@ -105,7 +105,8 @@ export class Evaluation4pagesComponent  implements OnInit {
     private $activites: ActivitiesService,
     private gridsService: GridsService,
     private modalCtrl: ModalController,
-    private $classes: ClassiService
+    private $classes: ClassiService,
+    private router: Router
   ) { 
     addIcons({
       save,
@@ -185,12 +186,13 @@ this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey:
      const result = await modal.onDidDismiss();
      if (result.data) {
        await this.$activites.addActivity(activity());
+       this.activities.set([...this.activities(), activity()]);
        this.evaluationform.patchValue({
          activityKey: result.data.key
        });
      }
    }
-  saveEvaluation() {
+  async saveEvaluation() {
     console.log("saveEvaluation");
     const evaluation = new Evaluation(this.evaluationform.value);
     console.log("evaluation", evaluation);
@@ -204,8 +206,9 @@ this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey:
     evaluation.teacherKey = this.teacherKey();
     evaluation.grid = this.grid();
     console.log("evaluation", evaluation);
-    this.$evaluations.addEvaluation(evaluation);
+    const evaluationKey = (await this.$evaluations.addEvaluation(evaluation)).id;
     this.$toaster.presentToast({message: 'Valutazione salvata con successo', position: 'top'});
+    this.router.navigate(['/pdf-evaluation', evaluationKey]);
   
 
   }
