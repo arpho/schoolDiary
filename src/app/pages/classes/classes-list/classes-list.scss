@@ -50,4 +50,19 @@ ion-content p {
 }
 
 
+/* Stili per il back button */
+ion-back-button {
+  --background: var(--ion-background-color, #ffffff);
+  --color: var(--ion-color-primary, #3880ff);
+  --border-radius: 20px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --min-height: 58px;
+  margin: 0px;
+  z-index: 10;
+  position: relative;
+}
+
 

@@ -84,6 +84,7 @@ export class ActivitiesService {
       let q = query(collectionRef);
       q = query(q, where('teachersKey', '==', teachersKey));
       q = query(q, where('classKey', '==', classKey));
+      q = query(q, orderBy('date', 'desc'));
       return getDocs(q).then(snapshot => {
         return snapshot.docs.map(docSnap => {
           const activity = new ActivityModel();
@@ -126,7 +127,7 @@ export class ActivitiesService {
     console.log("* fetching activities for teacher", teachersKey);
     console.log("* fetching activities with queries", queries);
     const collectionRef = collection(this.firestore, this.collection);
-    let q = query(collectionRef, where('teacherKey', '==', teachersKey));
+    let q = query(collectionRef, where('teacherKey', '==', teachersKey),orderBy('date', 'desc'));
 
     if(queries) {
       queries.forEach((condition: QueryCondition) => {
