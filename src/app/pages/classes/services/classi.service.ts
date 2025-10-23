@@ -30,7 +30,6 @@ return [];
 
   constructor() {
     this.getClassiOnRealtime((classi) => {
-      console.log("classi", classi);
       this.classesOnCache.set(classi);
     });
   }
@@ -40,10 +39,7 @@ return [];
   }
 
   fetchClasseOnCache(classKey: string): ClasseModel | undefined {
-    console.log("classiOnCache", this.classesOnCache());
-    console.log("looking for classKey", classKey);
     const classe = this.classesOnCache().find(classe => classe.key === classKey);
-    console.log("classe", classe);
     return classe;
   }
   fetchClasses(classes: string[]) {
