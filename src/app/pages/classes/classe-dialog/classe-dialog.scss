@@ -48,6 +48,73 @@ ion-back-button {
   padding: 0;
 }
 
+/* Stili per la tab bar personalizzata */
+ion-tab-bar.custom-tab-bar {
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-medium);
+  --color-selected: var(--ion-color-primary);
+  --border-color: var(--ion-color-light-shade);
+  --border-style: solid;
+  --border-width: 0 0 1px 0;
+  padding: 0;
+  margin: 0;
+  min-height: 48px;
+  
+  ion-tab-button {
+    --color: var(--ion-color-medium);
+    --color-selected: var(--ion-color-primary);
+    --ripple-color: var(--ion-color-primary);
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    margin: 0;
+    position: relative;
+    transition: all 0.3s ease;
+    
+    ion-label {
+      margin: 4px 0 0;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: none;
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 3px;
+      background: var(--ion-color-primary);
+      border-radius: 3px 3px 0 0;
+      transition: all 0.3s ease;
+    }
+    
+    &.active-tab {
+      --color: var(--ion-color-primary);
+      
+      &::after {
+        width: 80%;
+      }
+    }
+    
+    &:hover {
+      --color: var(--ion-color-primary);
+      opacity: 0.9;
+    }
+  }
+}
+
+/* Stile per il contenuto delle tab */
+ion-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+}
+
 ion-tabs {
   flex: 1;
   display: flex;

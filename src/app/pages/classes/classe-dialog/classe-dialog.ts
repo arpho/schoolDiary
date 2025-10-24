@@ -76,7 +76,16 @@ import { StudentsWithPdPComponent } from '../components/students-with-pd-p/stude
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ClasseDialogPage  implements OnInit {
+export class ClasseDialogPage implements OnInit {
+  // Gestione tab attivo
+  selectedTab: string = 'generalita';
+  
+  // Metodo per cambiare tab
+  setSelectedTab(tab: string) {
+    console.log('Tab selezionato:', tab);
+    this.selectedTab = tab;
+  }
+
   classkey = signal<string>('');
   classe = signal<ClasseModel>(new ClasseModel({}));
   teacherkey = signal<string>('');
@@ -87,7 +96,6 @@ export class ClasseDialogPage  implements OnInit {
     note: new FormControl('', Validators.required),
   });
   isEditMode: boolean = false;
-  selectedTab: string = 'generalita';
 
   constructor(
     private modalCtrl: ModalController,

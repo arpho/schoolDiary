@@ -10,24 +10,41 @@
 
 <ion-content>
   <form (ngsubmit)="save()" [formGroup]="formClass" class="black-form">
-    <ion-tabs #tabs [selected]="selectedTab">
-      <ion-tab-bar slot="top">
-        <ion-tab-button tab="generalita">
+    <ion-tabs (ionTabsDidChange)="setSelectedTab($event.tab)" [selectedTab]="selectedTab">
+      <ion-tab-bar slot="top" class="custom-tab-bar">
+        <ion-tab-button 
+          tab="generalita" 
+          [class.active-tab]="selectedTab === 'generalita'">
           <ion-label>Generalità</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="studenti">
+        
+        <ion-tab-button 
+          tab="studenti" 
+          [class.active-tab]="selectedTab === 'studenti'">
           <ion-label>Studenti</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="annotazioni">
+        
+        <ion-tab-button 
+          tab="annotazioni" 
+          [class.active-tab]="selectedTab === 'annotazioni'">
           <ion-label>Annotazioni</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="attivita">
+        
+        <ion-tab-button 
+          tab="attivita" 
+          [class.active-tab]="selectedTab === 'attivita'">
           <ion-label>Attività</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="gruppi">
+        
+        <ion-tab-button 
+          tab="gruppi" 
+          [class.active-tab]="selectedTab === 'gruppi'">
           <ion-label>Gruppi</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="pdp">
+        
+        <ion-tab-button 
+          tab="pdp" 
+          [class.active-tab]="selectedTab === 'pdp'">
           <ion-label>PDP</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
