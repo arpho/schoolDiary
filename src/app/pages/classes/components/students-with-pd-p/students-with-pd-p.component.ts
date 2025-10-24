@@ -18,6 +18,7 @@ students = signal<UserModel[]>([]);
 
   constructor() { 
     effect(() => {
+      console.log("studentsWithPdPComponent", this.classe());
       const classeKey = this.classe().key;
       if(classeKey){
         this.$users.getUsersOnRealTime((users: UserModel[]) => {

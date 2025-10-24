@@ -45,6 +45,7 @@ import { ReservedNotes4ClassesComponent } from '../components/reserved-notes4cla
 import { ListActivities4classComponent } from  "../components/listActivities4class/list-activities4class/list-activities4class.component"
 import { UsersService } from 'src/app/shared/services/users.service';
 import { GroupsManagerComponent } from '../components/groups-manager/groups-manager.component';
+import { StudentsWithPdPComponent } from '../components/students-with-pd-p/students-with-pd-p.component';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -70,7 +71,8 @@ import { GroupsManagerComponent } from '../components/groups-manager/groups-mana
     ListStudent4classComponent,
     ReservedNotes4ClassesComponent,
     ListActivities4classComponent,
-    GroupsManagerComponent
+    GroupsManagerComponent,
+    StudentsWithPdPComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
