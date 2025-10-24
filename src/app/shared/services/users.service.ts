@@ -19,7 +19,7 @@ import { UserModel } from '../models/userModel';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { ClassiService } from '../../../app/pages/classes/services/classi.service';  
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
-import { QueryCondition } from '../models/queryCondition';
+import { OrCondition, QueryCondition } from '../models/queryCondition';
 
 interface ClaimsResponse {
   message?: string;
@@ -156,8 +156,14 @@ export class UsersService implements OnInit {
     }
   }
 
-  getUsersOnRealTime(cb: (users: UserModel[]) => void) {
-    const q = query(collection(this.firestore, this.collection));
+  getUsersOnRealTime(cb: (users: UserModel[]) => void, queryConditions?: QueryCondition[],orConditions?: OrCondition) {
+    let q = query(collection(this.firestore, this.collection));
+    if(queryConditions){
+      q = query(q, ...queryConditions?.map((condition) => condition.toWhere()) || []);
+    } 
+    if(orConditions){
+      q = query(q, orConditions.toWhere());
+    }
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const users: UserModel[] = [];
       querySnapshot.forEach((doc) => {
