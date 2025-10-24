@@ -31,6 +31,23 @@
       </ion-select>
     </ion-item>
     <ion-item>
+    <ion-label> DVA</ion-label>
+    <ion-toggle formControlName="DVA"></ion-toggle>
+  </ion-item>
+    <ion-item>
+    <ion-label> DSA</ion-label>
+    <ion-toggle formControlName="DSA"></ion-toggle>
+  </ion-item>
+    <ion-item>
+    <ion-label> BES</ion-label>
+    <ion-toggle formControlName="BES"></ion-toggle>
+  </ion-item>
+  <ion-item>
+    <ion-label> Note disabilità</ion-label>
+    <ion-textarea formControlName="noteDisabilita"></ion-textarea>
+  </ion-item>
+
+    <ion-item>
       <ion-label position="floating">Classe</ion-label>
       <ion-select formControlName="classe">
         @for (classe of elencoClassi(); track classe.key) {

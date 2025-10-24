@@ -42,8 +42,10 @@ import {
   IonIcon,
   IonNote,
   IonDatetime,
-  IonFab
+  IonFab,
+  IonToggle
 } from '@ionic/angular/standalone';
+import { IonicModule } from "@ionic/angular";
 
 @Component({
   selector: 'app-user-generalities',
@@ -55,7 +57,7 @@ import {
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    IonContent, 
+    IonContent,
     IonItem,
     IonLabel,
     IonNote,
@@ -67,8 +69,10 @@ import {
     IonIcon,
     IonDatetime,
     IonFab,
-    ClassesFieldComponent
-  ],
+    ClassesFieldComponent,
+    IonToggle
+
+],
 })
 export class UserGeneralitiesComponent  implements OnInit {
   private destroy$ = new Subject<void>();
@@ -276,6 +280,11 @@ export class UserGeneralitiesComponent  implements OnInit {
       userName: user.userName || '',
       email: user.email || '',
       role: user.role || UsersRole.STUDENT,
+      DVA: user.DVA || false,
+      DSA: user.DSA || false,
+      BES: user.BES || false,
+      noteDisabilita: user.noteDisabilita || '',
+      pdpUrl: user.pdpUrl || '',
       phoneNumber: user.phoneNumber || '',
       birthDate: user.birthDate || '',
       classes: user.classes || [],
