@@ -11,6 +11,11 @@ export class UserModel{
   birthDate: string|number = ''
   email = ''
   firstName = ''
+  DSA = false
+  DVA = false
+  BES = false
+  noteDisabilita = ''
+  pdpUrl = ''
   lastName = ''
   password = ''
   classKey: string = ''
@@ -57,6 +62,11 @@ serialize(){
     lastName: this.lastName,
     phoneNumber: this.phoneNumber,
     role: this.role,
+    DVA: this.DVA,
+    DSA: this.DSA,
+    BES: this.BES,
+    noteDisabilita: this.noteDisabilita,
+    pdpUrl: this.pdpUrl,
     userName: this.userName,
     classes: this.classi.map((classe) => classe.key)
   }
