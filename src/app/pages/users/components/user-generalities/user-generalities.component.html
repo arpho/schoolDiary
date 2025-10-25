@@ -44,7 +44,11 @@
   </ion-item>
   <ion-item>
     <ion-label> Note disabilità</ion-label>
-    <ion-textarea formControlName="noteDisabilita"></ion-textarea>
+    <ion-textarea formControlName="noteDisabilita"
+    rows="5"
+    autoGrow="true"
+    (ionChange)="onNoteDisabilitaChange($event)"
+    ></ion-textarea>
   </ion-item>
 
     <ion-item>

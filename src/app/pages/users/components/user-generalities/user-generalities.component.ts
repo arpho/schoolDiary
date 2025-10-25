@@ -45,7 +45,8 @@ import {
   IonFab,
   IonToggle
 } from '@ionic/angular/standalone';
-import { IonicModule } from "@ionic/angular";
+import { IonicModule, TextareaChangeEventDetail } from "@ionic/angular";
+import { IonTextareaCustomEvent } from '@ionic/core';
 
 @Component({
   selector: 'app-user-generalities',
@@ -75,6 +76,13 @@ import { IonicModule } from "@ionic/angular";
 ],
 })
 export class UserGeneralitiesComponent  implements OnInit {
+onNoteDisabilitaChange($event: IonTextareaCustomEvent<TextareaChangeEventDetail>) {
+console.log("Note disabilità changed:", $event.detail.value);
+
+const value = $event.detail.value;
+this.userForm.get('noteDisabilita')?.setValue(value);
+this.userForm.updateValueAndValidity();
+}
   private destroy$ = new Subject<void>();
 
   // Metodo per gestire il cambiamento delle classi
@@ -85,6 +93,7 @@ export class UserGeneralitiesComponent  implements OnInit {
   save() {
     console.log("Saving user...");
     const formValue = this.userForm.value;
+    console.log("Form value:", formValue);
     const userData = {
       ...this.user(),
       ...formValue,
@@ -110,6 +119,7 @@ export class UserGeneralitiesComponent  implements OnInit {
   }
 
   private updateUser(user: UserModel, claims: any) {
+    console.log("Updating user...", user);
     this.$users.updateUser(user.key, user)
       .then(() => {
         console.log("User updated successfully");
@@ -189,11 +199,23 @@ export class UserGeneralitiesComponent  implements OnInit {
     private toaster: ToasterService,
     private fb: FormBuilder
   ) { 
+    effect(() => {
+      const user = this.user();
+      console.log('User input changed:', user);
+      if (user) {
+        this.syncFormWithUser();
+        this.logFormState();
+      }
+    });
     // Initialize form
     this.userForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(1)]],
       lastName: ['', [Validators.required, Validators.minLength(1)]],
       userName: [''],
+      DVA: [false],
+      DSA: [false],
+      BES: [false],
+      noteDisabilita: [''],
       email: ['', [Validators.required, Validators.email]],
       role: [UsersRole.STUDENT, Validators.required],
       phoneNumber: [''],
@@ -201,7 +223,14 @@ export class UserGeneralitiesComponent  implements OnInit {
       classes: [[]],
       classe: ['']
     });
+    this.userForm.valueChanges.subscribe(() => {
+      console.log('User form changed:', this.userForm.value);
+    }); 
 
+
+    this.userForm.get('noteDisabilita')?.valueChanges.subscribe(value => {
+      console.log('noteDisabilita changed:', value);
+    });
     // Add icons
     addIcons({ save });
 
@@ -225,9 +254,16 @@ export class UserGeneralitiesComponent  implements OnInit {
         
         this.usersClasses.set(classi);
         this.syncFormWithUser();
+        this.logFormState();
       }
     });
   
+  }
+
+  logFormState() {
+    console.log('Form controls:', this.userForm.controls);
+    console.log('noteDisabilita control:', this.userForm.get('noteDisabilita'));
+    console.log('Form value:', this.userForm.value);
   }
 
   
@@ -287,8 +323,8 @@ export class UserGeneralitiesComponent  implements OnInit {
       pdpUrl: user.pdpUrl || '',
       phoneNumber: user.phoneNumber || '',
       birthDate: user.birthDate || '',
-      classes: user.classes || [],
-      classe: user.classKey || ''
+      classe: user.classKey || '',
+      classes: user.classesKey || []
     }, { emitEvent: false });
     console.log("Form dopo la sincronizzazione:*", this.userForm.value)
   }
@@ -306,7 +342,7 @@ export class UserGeneralitiesComponent  implements OnInit {
 
     
     // Sincronizza il form con i valori iniziali
-    this.syncFormWithUser();
+
     
     // Ascolta i cambiamenti del Signal user
    

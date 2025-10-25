@@ -1,3 +1,31 @@
-<p>
-  students-with-pd-p works!
-</p>
+<ion-content class="students-list">
+  <ion-list>
+    @if (students().length > 0) {
+      @for (student of students(); track student.key) {
+        <ion-card class="student-card">
+          <ion-card-header>
+            <ion-card-title>{{student.lastName}} {{student.firstName}}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p><strong>Email:</strong> {{student.email || 'Nessuna email'}}</p>
+            <div class="badges">
+              @if (student.DVA) { <ion-badge color="danger">DVA</ion-badge> }
+              @if (student.DSA) { <ion-badge color="warning">DSA</ion-badge> }
+              @if (student.BES) { <ion-badge color="primary">BES</ion-badge> }
+            </div>
+            @if (student.noteDisabilita) {
+              <div><p>{{student.noteDisabilita}}</p></div>
+            }
+          </ion-card-content>
+        </ion-card>
+      }
+    } @else {
+      <ion-item>
+        <ion-label class="no-students">
+          <h2>Nessuno studente con PDP trovato</h2>
+          <p>Classe: {{classe().classe || 'Nessuna classe selezionata'}}</p>
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>

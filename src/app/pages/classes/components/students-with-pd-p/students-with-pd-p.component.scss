@@ -1,0 +1,96 @@
+/* Stili per il contenitore principale */
+:host {
+  display: block;
+  height: 100%;
+  min-height: 400px; /* Aumentata l'altezza minima */
+  max-height: 800px; /* Aggiunta altezza massima */
+}
+
+ion-content {
+  --background: transparent;
+  height: 100%;
+  min-height: 400px;
+  max-height: 800px;
+  --padding: 16px;
+  --overflow: auto;
+  display: block;
+  contain: layout size style;
+}
+
+/* Stili per il debug */
+.debug-info {
+  border: 2px solid var(--ion-color-danger);
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: rgba(var(--ion-color-danger-rgb), 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+/* Stili per la lista */
+.students-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  ion-list {
+    flex: 1;
+    overflow-y: auto;
+    background: transparent;
+    padding: 0;
+  }
+}
+
+/* Stili per le card degli studenti */
+.student-card {
+  margin: 8px 0;
+  border: 1px solid var(--ion-color-light-shade);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Stili per i badge */
+.badges {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Stile per il messaggio di nessun risultato */
+.no-students {
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+  
+  h2 {
+    color: var(--ion-color-medium);
+    font-weight: 500;
+  }
+  
+  p {
+    color: var(--ion-color-medium-shade);
+    margin-top: 8px;
+  }
+}
+
+/* Stile per il titolo della card */
+ion-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Spaziatura per il contenuto della card */
+ion-card-content {
+  padding: 16px;
+}
+
+students-with-pdp {
+height: fit-content;  
+}

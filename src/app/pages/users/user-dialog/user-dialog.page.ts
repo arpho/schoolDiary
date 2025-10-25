@@ -133,6 +133,7 @@ return this.user()?.lastName + " " + this.user()?.firstName;
       this.loggedUser.set(loggedUser);
     }
     const userKey = this.route.snapshot.paramMap.get('userKey');
+    console.log("userKey", userKey);
     
     // Imposta la userKey nella proprietà del componente
     if (userKey) {
@@ -150,6 +151,7 @@ return this.user()?.lastName + " " + this.user()?.firstName;
       try {
         const user = this.$users.fetchUserOnCache(userKey);
         if (user) {
+          console.log("user showed", user);
           this.user.set(user);
         }
       

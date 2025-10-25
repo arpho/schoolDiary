@@ -163,6 +163,7 @@ export class UsersService implements OnInit {
     } 
     if(orConditions){
       q = query(q, orConditions.toWhere());
+      console.log("orConditions", orConditions);
     }
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const users: UserModel[] = [];
