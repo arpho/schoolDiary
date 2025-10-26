@@ -68,8 +68,10 @@ export class Evaluation4StudentComponent  implements OnInit {
 loggedUser = signal<UserModel | null>(null)
   $users = inject(UsersService);
 userCanEdit(evaluation: Evaluation) {
+  console.log("userCanEdit", evaluation);
 
 return this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
+return true;
 }
 viewEvaluation(_t12: Evaluation) {
 throw new Error('Method not implemented.');

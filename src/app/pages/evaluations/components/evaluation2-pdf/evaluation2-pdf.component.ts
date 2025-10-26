@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, input, OnInit, signal, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewEncapsulation, input, OnInit, signal, inject, computed, ChangeDetectionStrategy, effect } from '@angular/core';
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { IonGrid, IonRow, IonCol, IonButton, IonFabButton, IonFab, IonFabList, IonIcon, IonHeader, IonContent, IonToolbar, IonTitle } from "@ionic/angular/standalone";
 import { UserWieverComponent } from "src/app/shared/components/user-wiever/user-wiever.component";
@@ -11,7 +11,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { IonicModule } from "@ionic/angular";
 import { ModalController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
 import { archive, create, ellipsisVertical, eyeOutline, trash, homeOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -43,16 +43,28 @@ import { close } from 'ionicons/icons';
 ],
 })
 export class Evaluation2PdfComponent  implements OnInit {
+gotoClassDialog() {
+this.router.navigate(['/classes', this.evaluationData().classKey]);
+}
   showSpinner= signal(false);
 
   hideButtons= signal(false);
   constructor(
     private $users:UsersService,
+    private router: Router,
     private $class:ClassiService,
     private route: ActivatedRoute,
     private $evaluation:EvaluationService
   
   ) {
+    effect(async () => {
+      const evaluationKey = this.route.snapshot.paramMap.get('evaluationKey');
+      if (evaluationKey){
+      const evaluation= await this.$evaluation.getEvaluation(evaluationKey);
+      console.log("evaluation", evaluation);
+      this.evaluationData.set(evaluation);
+      }
+    });
     addIcons({
       eyeOutline: eyeOutline,
       print: print,
