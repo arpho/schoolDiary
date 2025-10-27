@@ -91,7 +91,9 @@ private destroyRef = inject(DestroyRef);
     private toaster: ToasterService,
     private fb: FormBuilder
   ) { 
-
+addIcons({
+  save,
+});
   }
 
     // Metodo per gestire il cambiamento delle classi
