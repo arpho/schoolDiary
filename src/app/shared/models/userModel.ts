@@ -14,6 +14,7 @@ export class UserModel{
   DSA = false
   DVA = false
   BES = false
+  ADHD = false
   noteDisabilita = ''
   pdpUrl = ''
   lastName = ''
@@ -65,6 +66,7 @@ serialize(){
     DVA: this.DVA,
     DSA: this.DSA,
     BES: this.BES,
+    ADHD: this.ADHD,
     noteDisabilita: this.noteDisabilita,
     pdpUrl: this.pdpUrl,
     userName: this.userName,

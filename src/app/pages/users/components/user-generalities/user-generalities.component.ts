@@ -201,9 +201,20 @@ this.userForm.updateValueAndValidity();
   ) { 
     effect(() => {
       const user = this.user();
-      console.log('User input changed:', user);
+      console.log('User input changed on effect*:', user);
       if (user) {
-        this.syncFormWithUser();
+        // Update classes from user
+        const classi: ClasseModel[] = [];
+        if (user.classesKey) {
+          user.classesKey.forEach((classKey: string) => {
+            const classe = this.$classes.fetchClasseOnCache(classKey);
+            if (classe) {
+              classi.push(classe);
+            }
+          });
+        }
+        this.usersClasses.set(classi);
+        this.syncFormWithUser(user);
         this.logFormState();
       }
     });
@@ -235,7 +246,7 @@ this.userForm.updateValueAndValidity();
     addIcons({ save });
 
     // Effect to handle user changes
-    effect(() => {
+/*     effect(() => {
       const user = this.user();
       console.log("Effect - User changed:", user);
       
@@ -253,10 +264,10 @@ this.userForm.updateValueAndValidity();
         
         
         this.usersClasses.set(classi);
-        this.syncFormWithUser();
+        this.syncFormWithUser(user);
         this.logFormState();
       }
-    });
+    }); */
   
   }
 
@@ -296,9 +307,14 @@ this.userForm.updateValueAndValidity();
 
   
 
-  private syncFormWithUser() {
-    const user = this.user();
+  private syncFormWithUser(user: UserModel) {
+
     if (!user) return;
+    console.log('syncFormWithUser called with:', { 
+      user, 
+      noteDisabilita: user.noteDisabilita,
+      hasNoteDisabilita: 'noteDisabilita' in user
+    });
   
     console.log("Sincronizzazione form con utente:*", user);
     const classi: ClasseModel[] = [];
