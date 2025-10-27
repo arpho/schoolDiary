@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, signal, effect } from '@angular/core';
+import { Component, OnInit, Input, signal, effect, ViewChild } from '@angular/core';
 import { ModalController, IonBackButton, IonContent, IonHeader, IonIcon, IonTabs, IonTabBar, IonTabButton, IonTitle, IonToolbar, IonTab, IonLabel } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -40,6 +40,19 @@ import { UserGeneralities2Component } from '../components/user-generalities2/use
 ]
 })
 export class UserDialogPage implements OnInit {
+  @ViewChild('tabs') tabs!: IonTabs;
+  
+  // Track the currently selected tab
+  selectedTab = signal<string>('home');
+
+  // Handle tab changes
+  setSelectedTab(event: any) {
+    const tab = event.tab || event.detail?.tab;
+    console.log('Tab changed to:', tab);
+    if (tab) {
+      this.selectedTab.set(tab);
+    }
+  }
   nomeStudente() {
 return this.user()?.lastName + " " + this.user()?.firstName;
 }

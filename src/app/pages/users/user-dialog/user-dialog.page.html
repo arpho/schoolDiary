@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-tabs>
+<ion-tabs #tabs (ionTabsDidChange)="setSelectedTab($event.tab)">
   <ion-tab tab="home">
     <ion-header>
       <ion-toolbar>
@@ -21,7 +21,7 @@
 
     </ion-content>
   </ion-tab>
-  <ion-tab tab="radio">
+  <ion-tab tab="note">
     <ion-header>
       <ion-toolbar>
         <ion-title>Note</ion-title>
@@ -43,17 +43,17 @@
   </ion-tab>
 
 
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="home">
-      <ion-icon name="play-circle"></ion-icon>
+  <ion-tab-bar slot="bottom" class="custom-tab-bar">
+    <ion-tab-button tab="home" [class.tab-selected]="selectedTab() === 'home'">
+      <ion-icon name="person"></ion-icon>
       <ion-label>Generalità</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="radio">
-      <ion-icon name="radio"></ion-icon>
+    <ion-tab-button tab="note" [class.tab-selected]="selectedTab() === 'note'">
+      <ion-icon name="document-text"></ion-icon>
       <ion-label>Note</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="valutazioni">
-      <ion-icon name="library"></ion-icon>
+    <ion-tab-button tab="valutazioni" [class.tab-selected]="selectedTab() === 'valutazioni'">
+      <ion-icon name="school"></ion-icon>
       <ion-label>Valutazioni</ion-label>
     </ion-tab-button>
 
