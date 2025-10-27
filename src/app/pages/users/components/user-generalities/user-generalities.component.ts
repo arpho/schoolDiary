@@ -325,7 +325,7 @@ this.userForm.updateValueAndValidity();
       }
     });
     this.usersClasses.set(classi);
-    
+    if(user.key){
     this.userForm.patchValue({
       firstName: user.firstName || '',
       lastName: user.lastName || '',
@@ -341,8 +341,10 @@ this.userForm.updateValueAndValidity();
       birthDate: user.birthDate || '',
       classe: user.classKey || '',
       classes: user.classesKey || []
-    }, { emitEvent: false });
+    });
+    this.userForm.updateValueAndValidity();
     console.log("Form dopo la sincronizzazione:*", this.userForm.value)
+    }
   }
 
   async ngOnInit() {

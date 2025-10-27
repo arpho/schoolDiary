@@ -12,6 +12,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReservedNotes4studentComponent } from "../components/reserved-notes4student/reserved-notes4student.component";
 import { Evaluation4StudentComponent } from "../components/evaluation4-student/evaluation4-student.component";
+import { UserGeneralities2Component } from '../components/user-generalities2/user-generalities2.component';
 
 @Component({
   selector: 'app-user-dialog',
@@ -28,6 +29,7 @@ import { Evaluation4StudentComponent } from "../components/evaluation4-student/e
     IonTitle,
     IonToolbar,
     UserGeneralitiesComponent,
+    UserGeneralities2Component,
     IonTabs,
     IonTabBar,
     IonTabButton,
@@ -41,9 +43,9 @@ export class UserDialogPage implements OnInit {
   nomeStudente() {
 return this.user()?.lastName + " " + this.user()?.firstName;
 }
-  editedUser($event: UserModel) {
+  editedUser($event: any | UserModel) {
     console.log("editedUser*", $event);
-    this.user.set($event);
+    this.user.set(new UserModel($event));
     console.log("userSignal*", this.user());
   }
 
