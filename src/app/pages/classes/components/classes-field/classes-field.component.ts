@@ -64,20 +64,21 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
   }
 
 
-  constructor() {}
-  
-  private setupClassesEffect() {
-    const classesEffect = effect(() => {
+  constructor() {
+    effect(() => {
       const currentClasses = this.classes();
       console.log("Effect - classi aggiornate:", currentClasses);
       this.onChange(currentClasses);
       this.classeschange.emit(currentClasses);
     });
 
+  }
+  
+  private setupClassesEffect() {
+  
+
     // Pulisci l'effect quando il componente viene distrutto
-    this.destroyRef.onDestroy(() => {
-      classesEffect.destroy();
-    });
+
   }
 
   async selectClasses() {

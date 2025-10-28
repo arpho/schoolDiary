@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, effect, inject, input, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectorRef, Component, DestroyRef, effect, inject, input, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
-import { save } from 'ionicons/icons/index';
+import { list, save } from 'ionicons/icons/index';
 import {  
   IonContent,
   IonItem,
@@ -71,12 +71,27 @@ import { IonicModule, TextareaChangeEventDetail } from "@ionic/angular";
     IonFabButton,
     IonIcon,
     IonTextarea,
-    IonTextarea
   ]
 })
 export class UserGeneralities2Component  implements OnInit {
   user = input<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
-userForm!: FormGroup;
+userForm: FormGroup= this.fb.group({
+  firstName: [''],
+  lastName: [''],
+  userName: [''],
+  email: [''],
+  role: [UsersRole.STUDENT],
+  DVA: [false],
+  DSA: [false],
+  BES: [false],
+  ADHD: [false],
+  noteDisabilita: [''],
+  pdpUrl: [''],
+  phoneNumber: [''],
+  birthDate: [''],
+  classe: [''],
+  classes: [[]]
+});
 
 rolesValue: any[] = [];
 rolesName: string[] = [];
@@ -89,10 +104,12 @@ private destroyRef = inject(DestroyRef);
     private $users: UsersService,
     private $classes: ClassiService,
     private toaster: ToasterService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef 
   ) { 
 addIcons({
   save,
+  listCircleOutline:list,
 });
   }
 
@@ -119,10 +136,12 @@ addIcons({
           user.classesKey.forEach((classKey: string) => {
             const classe = this.$classes.fetchClasseOnCache(classKey);
             if (classe) {
+              console.log("pushing Classe* ", classe);
               classi.push(classe);
             }
           });
         }
+        console.log("Classi aggiunte:", classi);
         this.usersClasses.set(classi);
         this.syncFormWithUser(user);
         this.logFormState();
@@ -276,6 +295,23 @@ addIcons({
     console.log('Form controls:', this.userForm.controls);
     console.log('noteDisabilita control:', this.userForm.get('noteDisabilita'));
     console.log('noteDisabilita value:', this.userForm.get('noteDisabilita')?.value);
+    console.log('classes control:', this.userForm.get('classes'));
+    console.log('firstName value:', this.userForm.get('firstName')?.value);
+    console.log('lastName value:', this.userForm.get('lastName')?.value);
+    console.log('userName value:', this.userForm.get('userName')?.value);
+    console.log('email value:', this.userForm.get('email')?.value);
+    console.log('role value:', this.userForm.get('role')?.value);
+    console.log('DVA value:', this.userForm.get('DVA')?.value);
+    console.log('DSA value:', this.userForm.get('DSA')?.value);
+    console.log('BES value:', this.userForm.get('BES')?.value);
+    console.log('ADHD value:', this.userForm.get('ADHD')?.value);
+    console.log('noteDisabilita value:', this.userForm.get('noteDisabilita')?.value);
+    console.log('pdpUrl value:', this.userForm.get('pdpUrl')?.value);
+    console.log('phoneNumber value:', this.userForm.get('phoneNumber')?.value);
+    console.log('birthDate value:', this.userForm.get('birthDate')?.value);
+    console.log('classe value:', this.userForm.get('classe')?.value);
+    console.log('classes value:', this.userForm.get('classes')?.value);
+    console.log('Form state:', this.userForm.value);
   }
   syncFormWithUser(user: UserModel) {
     console.log("syncFormWithUser - user:*", user);
@@ -296,7 +332,8 @@ addIcons({
       birthDate: user.birthDate || '',
       classe: user.classKey || '',
       classes: user.classesKey || []
-    });
+    }, { emitEvent: false });  // Aggiungi emitEvent: false
+    this.cdr.detectChanges();  // Forza il rilevamento delle modifiche
     this.userForm.updateValueAndValidity();
     console.log("Form dopo la sincronizzazione:*", this.userForm.value)
     }
