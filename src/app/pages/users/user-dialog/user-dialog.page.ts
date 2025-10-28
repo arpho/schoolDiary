@@ -13,6 +13,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReservedNotes4studentComponent } from "../components/reserved-notes4student/reserved-notes4student.component";
 import { Evaluation4StudentComponent } from "../components/evaluation4-student/evaluation4-student.component";
 import { UserGeneralities2Component } from '../components/user-generalities2/user-generalities2.component';
+import { addIcons } from 'ionicons';
+import { documentTextOutline, personOutline, sparklesOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-user-dialog',
@@ -121,6 +123,11 @@ return this.user()?.lastName + " " + this.user()?.firstName;
     private readonly modalCtrl: ModalController
   ) {
     console.log("UserDialogPage constructor");
+    addIcons({
+      'document-text': documentTextOutline,
+      'person': personOutline,
+      'sparkles': sparklesOutline,
+    });
     
     // Inizializzazione nel constructor
 
