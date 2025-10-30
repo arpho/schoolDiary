@@ -58,6 +58,7 @@ students = signal<UserModel[]>([]);
           new QueryCondition('DVA', '==', true),
           new QueryCondition('BES', '==', true),
           new QueryCondition('DSA', '==', true),
+          new QueryCondition('ADHD', '==', true),
         ]))
       }
 
