@@ -71,27 +71,12 @@ import { IonicModule, TextareaChangeEventDetail } from "@ionic/angular";
     IonFabButton,
     IonIcon,
     IonTextarea,
+    IonInput
   ]
 })
 export class UserGeneralities2Component  implements OnInit {
-  user = input<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
-userForm: FormGroup= this.fb.group({
-  firstName: [''],
-  lastName: [''],
-  userName: [''],
-  email: [''],
-  role: [UsersRole.STUDENT],
-  DVA: [false],
-  DSA: [false],
-  BES: [false],
-  ADHD: [false],
-  noteDisabilita: [''],
-  pdpUrl: [''],
-  phoneNumber: [''],
-  birthDate: [''],
-  classKey: [''],
-  classes: [[]]
-});
+  user = input.required<UserModel>();
+userForm: FormGroup
 
 rolesValue: any[] = [];
 rolesName: string[] = [];
@@ -107,6 +92,38 @@ private destroyRef = inject(DestroyRef);
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef 
   ) { 
+    console.log('UserGeneralities2Component - Costruttore chiamato*');
+
+
+    // Inizializza la form
+  this.userForm = this.fb.group({
+    firstName: [''],
+    lastName: [''],
+    userName: [''],
+    email: [''],
+    role: [UsersRole.STUDENT],
+    DVA: [false],
+    DSA: [false],
+    BES: [false],
+    ADHD: [false],
+    noteDisabilita: [''],
+    pdpUrl: [''],
+    phoneNumber: [''],
+    birthDate: [''],
+    classKey: [''],
+    classes: [[]]
+  });
+
+    effect(() => {
+      const user = this.user();
+      console.log('User in effect:*', user);
+      if (user.key) {
+        console.log('Syncing form with user:*', user);
+        this.syncFormWithUser(user);
+      } else {
+        console.warn('User is null or undefined*');
+      }
+    }, { allowSignalWrites: true });
 addIcons({
   save,
   listCircleOutline:list,
@@ -143,7 +160,6 @@ console.log("logged user*",loggedUser)
           user.classesKey.forEach((classKey: string) => {
             const classe = this.$classes.fetchClasseOnCache(classKey);
             if (classe) {
-              console.log("pushing Classe* ", classe);
               classi.push(classe);
             }
           });
@@ -155,6 +171,9 @@ console.log("logged user*",loggedUser)
       }
       });
   ngOnInit() {
+    console.log('UserGeneralities2Component - ngOnInit*');
+    console.log('User input value on init*:', this.user());
+    this.cdr.detectChanges();
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
     console.log("ngOnInit - user:*", this.user());
@@ -172,11 +191,20 @@ console.log("logged user*",loggedUser)
       pdpUrl: [''],
       phoneNumber: [''],
       birthDate: [''],
-      classe: [''],
+      classKey: [''],
       classes: [[]]
     });
   }
-
+  ngAfterViewInit() {
+    console.log('UserGeneralities2Component - ngAfterViewInit');
+    console.log('Form controls after view init:', this.userForm.controls);
+    
+    // Forza un ulteriore controllo dopo l'inizializzazione della vista
+    setTimeout(() => {
+      console.log('Form values after timeout:', this.userForm.value);
+      this.cdr.detectChanges();
+    });
+  }
   save() {
     console.log("Saving user...");
     const formValue = this.userForm.value;
@@ -322,7 +350,15 @@ console.log("logged user*",loggedUser)
   }
   syncFormWithUser(user: UserModel) {
     console.log("syncFormWithUser - user:*", user);
+    if (!this.userForm) {
+      console.error('Form non inizializzata!*');
+      return;
+    }
+  
+    console.log("Form controls before patch:*", Object.keys(this.userForm.controls));
+    
     if(user.key){
+      try{
     this.userForm.patchValue({  
       firstName: user.firstName || '',
       lastName: user.lastName || '',
@@ -337,12 +373,18 @@ console.log("logged user*",loggedUser)
       pdpUrl: user.pdpUrl || '',
       phoneNumber: user.phoneNumber || '',
       birthDate: user.birthDate || '',
-      classe: user.classKey || '',
+      classKey: user.classKey || '',
       classes: user.classesKey || []
     }, { emitEvent: false });  // Aggiungi emitEvent: false
     this.cdr.detectChanges();  // Forza il rilevamento delle modifiche
     this.userForm.updateValueAndValidity();
     console.log("Form dopo la sincronizzazione:*", this.userForm.value)
+    }catch(error){
+      console.error("Error patching form with user:*", error);
+    }
+    }
+    else{
+      console.warn("User is null or undefined*");
     }
   }
 

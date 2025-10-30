@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, signal, effect, ViewChild } from '@angular/core';
 import { ModalController, IonBackButton, IonContent, IonHeader, IonIcon, IonTabs, IonTabBar, IonTabButton, IonTitle, IonToolbar, IonTab, IonLabel } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserGeneralitiesComponent } from '../components/user-generalities/user-generalities.component';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -38,7 +38,9 @@ import { documentTextOutline, personOutline, sparklesOutline } from 'ionicons/ic
     IonTab,
     ReservedNotes4studentComponent,
     IonLabel,
-    Evaluation4StudentComponent
+    Evaluation4StudentComponent,
+    ReactiveFormsModule,
+    FormsModule
 ]
 })
 export class UserDialogPage implements OnInit {
@@ -131,9 +133,6 @@ return this.user()?.lastName + " " + this.user()?.firstName;
     
     // Inizializzazione nel constructor
 
-    // Aggiungi gli effetti
-    effect(() => {
-    });
 
     effect(() => {
       this.usersClasses.set(this.user().classi);
@@ -150,6 +149,7 @@ return this.user()?.lastName + " " + this.user()?.firstName;
   }
 
   async ngOnInit() {
+    console.log("UserDialogPage ngOnInit");
     const loggedUser = await this.$users.getLoggedUser();
     if (loggedUser) {
       this.loggedUser.set(loggedUser);
