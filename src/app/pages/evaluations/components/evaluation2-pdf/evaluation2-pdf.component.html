@@ -1,7 +1,11 @@
 
 <ion-header>
   <ion-toolbar>
+  
     <ion-title align="center">stampa valutazione</ion-title>
+    @if(showSpinner()){
+      <span class="loader"></span>
+      }
     <ion-fab vertical="top" horizontal="end" side="end" size="small">
 
         <ion-fab-button color="light" (click)="generatePdf()">
@@ -10,14 +14,16 @@
 
     </ion-fab>
     <ion-fab vertical="top" horizontal="start"  size="small">
-
+@if(!showSpinner()){
         <ion-fab-button color="light" (click)="gotoClassDialog()">
           <ion-icon name="home"></ion-icon>
         </ion-fab-button>
-
+}
     </ion-fab>
   </ion-toolbar>
 </ion-header>
+
+
 <div id="contentToConvert">
 
 <ion-grid>
@@ -90,6 +96,4 @@
 
   </ion-grid>
 </div>
-@if(showSpinner()){
-<span class="loader"></span>
-}
+

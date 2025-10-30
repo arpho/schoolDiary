@@ -44,15 +44,15 @@
 
 
   <ion-tab-bar slot="bottom" class="custom-tab-bar">
-    <ion-tab-button tab="home" [class.tab-selected]="selectedTab() === 'home'">
+    <ion-tab-button tab="home" [class.tab-selected]="selectedTab === 'home'">
       <ion-icon name="person"></ion-icon>
       <ion-label>Generalità</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="note" [class.tab-selected]="selectedTab() === 'note'">
+    <ion-tab-button tab="note" [class.tab-selected]="selectedTab === 'note'">
       <ion-icon name="document-text"></ion-icon>
       <ion-label>Note</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="valutazioni" [class.tab-selected]="selectedTab() === 'valutazioni'">
+    <ion-tab-button tab="valutazioni" [class.tab-selected]="selectedTab === 'valutazioni'">
       <ion-icon name="sparkles"></ion-icon>
       <ion-label>Valutazioni</ion-label>
     </ion-tab-button>

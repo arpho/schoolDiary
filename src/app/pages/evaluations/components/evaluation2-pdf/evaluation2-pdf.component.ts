@@ -44,9 +44,9 @@ import { close } from 'ionicons/icons';
 })
 export class Evaluation2PdfComponent  implements OnInit {
 gotoClassDialog() {
-this.router.navigate(['/classes', this.evaluationData().classKey]);
+this.router.navigate(['/class-dialog', this.evaluationData().classKey]);
 }
-  showSpinner= signal(false);
+  showSpinner= signal(true);
 
   hideButtons= signal(false);
   constructor(
@@ -86,7 +86,7 @@ this.router.navigate(['/classes', this.evaluationData().classKey]);
   }
 generatePdf() {
   this.hideButtons.set(true);
-  this.showSpinner.set(true);
+  this.showSpinner.set(false);
 console.log("generatePdf");
 const data = document.getElementById('contentToConvert');
 if(data){
@@ -115,6 +115,7 @@ className=classe.classe
 }
 const fileName = `evaluation_${userName}_${className}_${this.formatDate(this.evaluationData().data)}.pdf`;
   pdf.save(fileName); // Generated PDF
+  this.showSpinner.set(false);
     });
 }
 this.hideButtons.set(false);
@@ -130,12 +131,14 @@ const voto = this.evaluationData().grid?.indicatori.reduce((acc: any, indicatore
  })
 
   ngOnInit() {
+    this.showSpinner.set(false);
     this.route.paramMap.subscribe(async params => {
       const evaluationKey = params.get('evaluationKey');
       console.log('Evaluation Key:', evaluationKey);
       if (evaluationKey){
       const evaluation= await this.$evaluation.getEvaluation(evaluationKey);
       console.log("evaluation", evaluation);
+      console.log("show spinner", this.showSpinner());
       this.evaluationData.set(evaluation);
       }
       

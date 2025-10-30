@@ -46,15 +46,15 @@ import { documentTextOutline, personOutline, sparklesOutline } from 'ionicons/ic
 export class UserDialogPage implements OnInit {
   @ViewChild('tabs') tabs!: IonTabs;
   
-  // Track the currently selected tab
-  selectedTab = signal<string>('home');
+  // Gestione tab attivo
+  selectedTab: string = 'generalita';
+  
+
 
   // Handle tab changes
-  setSelectedTab(event: any) {
-    const tab = event.tab || event.detail?.tab;
-    console.log('Tab changed to:', tab);
+  setSelectedTab(tab: any) {
     if (tab) {
-      this.selectedTab.set(tab);
+      this.selectedTab = tab;
     }
   }
   nomeStudente() {
