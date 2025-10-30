@@ -71,7 +71,8 @@ import { IonicModule, TextareaChangeEventDetail } from "@ionic/angular";
     IonFabButton,
     IonIcon,
     IonTextarea,
-    IonInput
+    IonInput,
+    IonSelect,
   ]
 })
 export class UserGeneralities2Component  implements OnInit {
