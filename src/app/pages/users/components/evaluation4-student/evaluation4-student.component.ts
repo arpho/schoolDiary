@@ -70,8 +70,9 @@ loggedUser = signal<UserModel | null>(null)
 userCanEdit(evaluation: Evaluation) {
   console.log("userCanEdit", evaluation);
 
-return this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
-return true;
+const canEdit = this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
+console.log("can edit ",canEdit)
+return canEdit;
 }
 viewEvaluation(_t12: Evaluation) {
 throw new Error('Method not implemented.');
