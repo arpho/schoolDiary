@@ -57,7 +57,7 @@
 
     <ion-item>
       <ion-label position="floating">Classe</ion-label>
-      <ion-select formControlName="classe">
+      <ion-select formControlName="classKey">
         @for (classe of elencoClassi(); track classe.key) {
           <ion-select-option [value]="classe.key">{{classe.classe}}</ion-select-option>
         }

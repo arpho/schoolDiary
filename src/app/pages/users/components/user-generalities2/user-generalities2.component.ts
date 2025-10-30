@@ -89,7 +89,7 @@ userForm: FormGroup= this.fb.group({
   pdpUrl: [''],
   phoneNumber: [''],
   birthDate: [''],
-  classe: [''],
+  classKey: [''],
   classes: [[]]
 });
 
@@ -126,10 +126,17 @@ addIcons({
   this.userForm.updateValueAndValidity();
   }
 
-    private readonly userEffect = effect(() => {
+    private readonly userEffect = effect(async () => {
+      const loggedUser = await  this.$users.getLoggedUser();
+console.log("logged user*",loggedUser)
       const user = this.user();
+      if(loggedUser){
+      this.elencoClassi.set(loggedUser.classi)
+      }
+      console.log("elenco classi*", this.elencoClassi())
       console.log('User input changed on effect*:', user);
       if (user.key) {
+        console.log("User key:", user.key);
         // Update classes from user
         const classi: ClasseModel[] = [];
         if (user.classesKey) {
@@ -146,7 +153,7 @@ addIcons({
         this.syncFormWithUser(user);
         this.logFormState();
       }
-    });
+      });
   ngOnInit() {
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
