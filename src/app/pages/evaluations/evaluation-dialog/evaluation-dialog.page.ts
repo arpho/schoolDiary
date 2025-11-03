@@ -149,7 +149,7 @@ async saveEvaluation() {
         }
 
         console.log('Saving evaluation:', evaluationData);
-        this.toaster.showToast({
+        this.toaster.presentToast({
           message: 'Valutazione salvata con successo',
           duration: 3000,
           position: 'bottom'
@@ -157,7 +157,7 @@ async saveEvaluation() {
         this.modalCtrl.dismiss();
       } catch (error) {
         console.error('Error saving evaluation:', error);
-        this.toaster.showToast({
+        this.toaster.presentToast({
           message: 'Errore nel salvataggio della valutazione',
           duration: 3000,
           position: 'bottom'

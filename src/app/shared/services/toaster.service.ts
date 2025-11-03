@@ -18,5 +18,8 @@ export class ToasterService {
       position: data.position
     });
     toast.present();
+    setTimeout(() => {
+      toast.dismiss();
+    }, data.duration);
   }
 }
