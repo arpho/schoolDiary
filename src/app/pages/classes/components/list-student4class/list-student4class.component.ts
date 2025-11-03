@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, computed, OnChanges, SimpleChanges } from '@angular/core';
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon, IonButton,  IonTextarea  } from '@ionic/angular/standalone';
+import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon, IonButton } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
@@ -19,6 +19,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { UploadStudentsComponent } from '../uploadStudents/upload-students/upload-students.component';
 import { UserDialogPage } from '../../../users/user-dialog/user-dialog.page';
+import { StudentGradeDisplayComponent } from 'src/app/pages/evaluations/components/student-grade-average/student-grade-average.component';
 
 @Component({
   selector: 'app-list-student4class',
@@ -37,8 +38,9 @@ import { UserDialogPage } from '../../../users/user-dialog/user-dialog.page';
     IonFabList,
     IonIcon,
     IonButton,
-  
-]
+    CommonModule,
+    StudentGradeDisplayComponent
+  ]
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
 async addStudent() {
@@ -78,6 +80,7 @@ await modal.present();
 }
 async newEvaluation(studentKey: string) {
   const teacher = await this.$users.getLoggedUser()
+  console.log('🔄 ListStudent4classComponent - newEvaluation');
   this.router.navigate(['/evaluation',studentKey,this.classkey,teacher?.key]);
 }
 
@@ -87,10 +90,21 @@ async newEvaluation(studentKey: string) {
     private $modalController: ModalController,
     private route: ActivatedRoute
   ) {
+    console.log('🔄 ListStudent4classComponent - Costruttore chiamato');
     addIcons({
-      cloudupload: cloudUploadOutline,add
-    })
+      cloudupload: cloudUploadOutline, add
+    });
+    
+    // Verifica che il componente venga effettivamente caricato
+    setTimeout(() => {
+      console.log('🔍 Controlla se il componente è nel DOM con:', 
+        'document.querySelector(\'app-list-student4class\')');
+      console.log('📋 Controlla il template con:', 
+        'document.querySelector(\'app-list-student4class\')?.innerHTML');
+    }, 1000);
   }
+
+
 deleteStudent(arg0: string) {
 throw new Error('Method not implemented.');
 }
@@ -109,7 +123,6 @@ this.router.navigate(['/user-dialog',arg0]);
   }
 
   private setStudents(users: UserModel[]): void {
-    console.log("setStudents*", users, "for class", this.classkey);
     this._students.set(users);
   }
 
@@ -126,7 +139,6 @@ this.router.navigate(['/user-dialog',arg0]);
   }
 
   private loadStudents() {
-    console.log("Loading students for class:", this.classkey);
     this.$users.getUsersByClass(this.classkey, (users: UserModel[]) => {
       this.setStudents(users);
     });

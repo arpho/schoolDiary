@@ -14,3 +14,38 @@
     margin-right: 8px;
   }
 }
+
+.student-container {
+  position: relative;
+  margin: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.student-card {
+  width: 100%;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+  
+  ion-card-header {
+    padding-bottom: 8px;
+  }
+  
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+.grade-container {
+  padding: 12px 16px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+  background-color: #e3f2fd; padding: 10px; border: 2px dashed #1976d2; margin-top: 10px;
+}
+
+app-student-grade-average {
+  display: block;
+  width: 100%;
+}
