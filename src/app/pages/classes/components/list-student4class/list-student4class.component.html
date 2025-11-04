@@ -8,7 +8,8 @@
                     <ion-card-title> {{student.lastName}} {{student.firstName}}</ion-card-title>
                 </ion-card-header>
                 <ion-card-content>
-                    <p>{{student.email}}</p>
+
+                    <app-student-average-grade-display [studentkey]="student.key" [teacherkey]="teacherkey()"></app-student-average-grade-display>
                 </ion-card-content>
             </ion-card>
 <ion-fab id="test"  vertical="bottom" horizontal="end" >
@@ -30,4 +31,4 @@
         </ion-item>
     }
 </ion-list>
-<ion-button (click)="uploadStudents()" shape="round" size="small" style="--background: #3880ff; --color: #ffffff;"><ion-icon name="cloudupload"></ion-icon>Carica Studenti</ion-button>
+<ion-button (click)="uploadStudents()" shape="round" size="small" ><ion-icon name="cloudupload"></ion-icon>Carica Studenti</ion-button>

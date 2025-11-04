@@ -19,7 +19,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { UploadStudentsComponent } from '../uploadStudents/upload-students/upload-students.component';
 import { UserDialogPage } from '../../../users/user-dialog/user-dialog.page';
-import { StudentGradeDisplayComponent } from 'src/app/pages/evaluations/components/student-grade-average/student-grade-average.component';
+import { StudentAverageGradeDisplayComponent } from '../student-average-grade-display/student-average-grade-display.component';
 
 @Component({
   selector: 'app-list-student4class',
@@ -39,10 +39,11 @@ import { StudentGradeDisplayComponent } from 'src/app/pages/evaluations/componen
     IonIcon,
     IonButton,
     CommonModule,
-    StudentGradeDisplayComponent
+    StudentAverageGradeDisplayComponent
   ]
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
+teacherkey = signal<string>('');
 async addStudent() {
   console.log("adding student", this.classkey)
   const modal = await this.$modalController.create({
@@ -126,9 +127,13 @@ this.router.navigate(['/user-dialog',arg0]);
     this._students.set(users);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.classkey) {
       this.loadStudents();
+      const teacher =await  this.$users.getLoggedUser();
+      if (teacher) {  
+      this.teacherkey.set(teacher.key);  
+    }
     }
   }
 

@@ -51,18 +51,7 @@ export class EvaluationService {
   }
 
 getEvaluation4studentAndTeacher(studentKey: string, teacherKey: string, callback: (evaluations: Evaluation[]) => void) {
-  const collectionRef = collection(this.firestore, this.collection);
-  const q = query(collectionRef, where('studentKey', '==', studentKey),
-         where('teacherKey', '==', teacherKey),
-         orderBy('lastUpdateDate', 'desc'), 
-         orderBy('data', 'desc'));
-  return onSnapshot(q, (snapshot) => {
-    const evaluations: Evaluation[] = [];
-    snapshot.forEach((doc) => {
-      evaluations.push(new Evaluation(doc.data()).setKey(doc.id));
-    });
-    callback(evaluations);
-  });
+this.getEvaluationsOnRealtime(callback, [new QueryCondition('studentKey', '==', studentKey), new QueryCondition('teacherKey', '==', teacherKey)]);
 }
 
   getEvaluationsOnRealtime(callback: (evaluations: Evaluation[]) => void, queries?: QueryCondition[]) {

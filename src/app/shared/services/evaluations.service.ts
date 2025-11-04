@@ -6,6 +6,15 @@ import { Evaluation } from '../../pages/evaluations/models/evaluation';
   providedIn: 'root'
 })
 export class EvaluationsService {
+  fetchAverageGrade4StudentAndTeacher(arg0: string, arg1: (averageGrade: number) => void) {
+    throw new Error('Method not implemented.');
+  }
+  fetchEvaluationsCount4Student(arg0: string, arg1: (evaluationscount: number) => void) {
+    throw new Error('Method not implemented.');
+  }
+  fetchAverageGrade4Student(arg0: string, arg1: (averageGrade: number) => void) {
+ 
+  }
   private _evaluations = new BehaviorSubject<Evaluation[]>([]);
   public evaluations$ = this._evaluations.asObservable();
   
@@ -15,13 +24,7 @@ export class EvaluationsService {
     console.log('Caricamento valutazioni per studente:', studentKey);
     
     // Simulazione di caricamento con dati mock
-    setTimeout(() => {
-      const mockEvaluations: Evaluation[] = [
-        { voto: 8, votoMax: 10 } as any,
-        { voto: 7, votoMax: 10 } as any
-      ];
-      this._evaluations.next(mockEvaluations);
-    }, 500);
+
   }
 
   async getEvaluationsByStudent(studentKey: string): Promise<Evaluation[]> {

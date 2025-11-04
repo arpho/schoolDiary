@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { StudentGradeAverageComponent } from './student-grade-average.component';
+import { StudentAverageGradeDisplayComponent } from './student-average-grade-display.component';
 
-describe('StudentGradeAverageComponent', () => {
-  let component: StudentGradeAverageComponent;
-  let fixture: ComponentFixture<StudentGradeAverageComponent>;
+describe('StudentAverageGradeDisplayComponent', () => {
+  let component: StudentAverageGradeDisplayComponent;
+  let fixture: ComponentFixture<StudentAverageGradeDisplayComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ StudentGradeAverageComponent ],
+      declarations: [ StudentAverageGradeDisplayComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(StudentGradeAverageComponent);
+    fixture = TestBed.createComponent(StudentAverageGradeDisplayComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
