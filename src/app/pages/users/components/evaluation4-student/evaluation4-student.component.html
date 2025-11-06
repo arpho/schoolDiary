@@ -94,6 +94,12 @@
                         <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0 ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' : evaluation.votoMax) : 'N/A' }}</strong></p>
                       </ion-label>
                     </ion-item>
+                    <ion-item>
+                      <ion-label>
+                        <h3>Voto decimale</h3>
+                        <p><strong>{{ evaluation.gradeInDecimal }}</strong></p>
+                      </ion-label>
+                    </ion-item>
                   } @else {
                     <ion-item>
                       <ion-label>
@@ -124,8 +130,10 @@
                     <ion-label>
                       <h3>Voto</h3>
                       <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0 ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' : evaluation.votoMax) : 'N/A' }}</strong></p>
+
                     </ion-label>
                   </ion-item>
+                
                 }
               </ion-list>
             </ion-card-content>
