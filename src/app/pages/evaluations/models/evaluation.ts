@@ -44,6 +44,10 @@ export class Evaluation {
     return this.grid.votoMax;
   }
 
+  get gradeInDecimal() {
+    return this.voto / this.votoMax*10;
+  }
+
   serialize() {
     return {
       description: this.description,

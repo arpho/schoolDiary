@@ -19,6 +19,22 @@ import { orderBy } from 'firebase/firestore';
   providedIn: 'root'
 })
 export class EvaluationService {
+  fetchEvaluationsCount4Student(studentKey: string, teacherKey: string, callback: (evaluationscount: number) => void) {
+    console.log("#fetchEvaluationsCount4Student studentKey", studentKey,);
+    console.log("#fetchEvaluationsCount4Student teacherKey", teacherKey);
+    this.getEvaluation4studentAndTeacher(studentKey, teacherKey, (evaluations: Evaluation[]) => {
+      callback(evaluations.length);
+    });
+    
+  }
+  fetchAverageGrade4StudentAndTeacher(studentKey: string, teacherKey: string, callback: (averageGrade: number) => void) {
+    console.log("#fetchAverageGrade4StudentAndTeacher studentKey", studentKey);
+    console.log("#fetchAverageGrade4StudentAndTeacher teacherKey", teacherKey);
+    this.getEvaluation4studentAndTeacher(studentKey, teacherKey, (evaluations: Evaluation[]) => {
+      callback(evaluations.reduce((total, evaluation) => total + evaluation.gradeInDecimal, 0) / evaluations.length);
+    });
+
+  }
   private firestore = inject(Firestore);
   collection = 'valutazioni';
 

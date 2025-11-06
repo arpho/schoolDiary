@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, computed, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, computed, OnChanges, SimpleChanges, effect } from '@angular/core';
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon, IonButton } from '@ionic/angular/standalone';
@@ -91,10 +91,14 @@ async newEvaluation(studentKey: string) {
     private $modalController: ModalController,
     private route: ActivatedRoute
   ) {
-    console.log('🔄 ListStudent4classComponent - Costruttore chiamato');
+    console.log("constructor ListStudent4classComponent#");
     addIcons({
       cloudupload: cloudUploadOutline, add
     });
+
+
+
+  
     
     // Verifica che il componente venga effettivamente caricato
     setTimeout(() => {
@@ -128,12 +132,14 @@ this.router.navigate(['/user-dialog',arg0]);
   }
 
   async ngOnInit() {
+    const teacher =await  this.$users.getLoggedUser();
+    if (teacher) {  
+      console.log("teacher key# in listStudent4class", teacher.key)
+    this.teacherkey.set(teacher.key);  
+  }
     if (this.classkey) {
       this.loadStudents();
-      const teacher =await  this.$users.getLoggedUser();
-      if (teacher) {  
-      this.teacherkey.set(teacher.key);  
-    }
+    
     }
   }
 
