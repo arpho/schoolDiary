@@ -33,7 +33,15 @@ export class EvaluationService {
     this.getEvaluation4studentAndTeacher(studentKey, teacherKey, (evaluations: Evaluation[]) => {
       callback(evaluations.reduce((total, evaluation) => total + evaluation.gradeInDecimal, 0) / evaluations.length);
     });
+    
 
+  }
+  fetchAverageGradeWhitCount4StudentAndTeacher(studentKey: string, teacherKey: string, callback: (result: {averageGrade: number, evaluationscount: number}) => void) {
+    this.getEvaluation4studentAndTeacher(studentKey, teacherKey, (evaluations: Evaluation[]) => {
+    const averageGrade = evaluations.reduce((total, evaluation) => total + evaluation.gradeInDecimal, 0) / evaluations.length;
+    const evaluationscount = evaluations.length;
+    callback({averageGrade, evaluationscount});
+    });
   }
   private firestore = inject(Firestore);
   collection = 'valutazioni';

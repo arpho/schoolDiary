@@ -1,3 +1,6 @@
+
+@if(evaluationscount() > 0){
+
 <ion-item>
 <ion-badge>{{averagegrade()}}</ion-badge>
 <ion-label>media</ion-label>
@@ -6,3 +9,9 @@
   <ion-badge>{{evaluationscount()}}</ion-badge>
   <ion-label>valutazioni</ion-label>
 </ion-item>
+}
+@else {
+  <ion-item>
+    <ion-label>nessuna valutazione</ion-label>
+  </ion-item>
+}
