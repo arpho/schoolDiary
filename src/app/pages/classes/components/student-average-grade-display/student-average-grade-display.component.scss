@@ -1,0 +1,77 @@
+/* Stili per il componente di visualizzazione media voti */
+.grade-display-container {
+  padding: 8px;
+}
+
+.grade-card {
+  --background: var(--ion-color-light);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 0;
+  overflow: visible;
+
+  ion-card-content {
+    padding: 20px 16px;
+  }
+
+  .grade-icon {
+    font-size: 2.5rem;
+    color: var(--ion-color-primary);
+    margin-bottom: 8px;
+  }
+
+  .grade-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 8px 0 4px;
+    color: var(--ion-color-dark);
+  }
+
+  .grade-label {
+    color: var(--ion-color-medium);
+    margin: 0 0 12px;
+    font-size: 0.9rem;
+  }
+
+  .evaluation-count {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --padding-top: 6px;
+    --padding-bottom: 6px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    border-radius: 16px;
+  }
+}
+
+.no-evaluations-card {
+  --background: var(--ion-color-light);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin: 0;
+
+  ion-card-content {
+    padding: 24px 16px;
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+    color: var(--ion-color-medium);
+    opacity: 0.7;
+    margin-bottom: 12px;
+  }
+
+  .empty-message {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ion-color-medium);
+    margin: 0 0 4px;
+  }
+
+  .empty-subtext {
+    font-size: 0.85rem;
+    color: var(--ion-color-medium-shade);
+    margin: 0;
+    opacity: 0.8;
+  }
+}

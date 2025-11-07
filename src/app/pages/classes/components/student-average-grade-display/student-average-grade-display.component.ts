@@ -1,14 +1,24 @@
 import { Component, OnInit, effect, inject, input, signal } from '@angular/core';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { EvaluationService } from '../../../evaluations/services/evaluation/evaluation.service';
-import { IonBadge, IonItem, IonLabel } from "@ionic/angular/standalone";
+import { 
+  IonBadge, 
+  IonCard, 
+  IonCardContent, 
+  IonIcon
+} from "@ionic/angular/standalone";
 @Component({
   selector: 'app-student-average-grade-display',
   templateUrl: './student-average-grade-display.component.html',
   styleUrls: ['./student-average-grade-display.component.scss'],
+  standalone: true,
   imports: [
+    CommonModule,
+    DecimalPipe,
     IonBadge,
-    IonItem,
-    IonLabel
+    IonCard,
+    IonCardContent,
+    IonIcon
   ],
 })
 export class StudentAverageGradeDisplayComponent  implements OnInit {
