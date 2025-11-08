@@ -9,7 +9,7 @@
         </ion-card>
       } @else {
         @for (evaluation of evaluationsList(); track evaluation.key) {
-          <ion-card>
+          <ion-card  (click)="openActionSheet(evaluation, $event)">
             <ion-card-header>
               <ion-card-title>{{ evaluation.description }}</ion-card-title>
             </ion-card-header>
@@ -54,22 +54,15 @@
                           <ion-icon name="ellipsis-vertical"></ion-icon>
                         </ion-fab-button>
                         <ion-fab-list side="start">
-                          @if(userCanEdit(evaluation)){
                           <ion-fab-button color="light" (click)="editEvaluation(evaluation)">
                             <ion-icon name="create"></ion-icon>
                           </ion-fab-button>
-                          }
-
-                       <!--    @if(userCanEdit(evaluation)){
                           <ion-fab-button color="light" (click)="archiveEvaluation(evaluation)">
                             <ion-icon name="archive"></ion-icon>
                           </ion-fab-button>
-                          }
-                          @if(userCanEdit(evaluation)){
                           <ion-fab-button color="danger" (click)="deleteEvaluation(evaluation)">
                             <ion-icon name="trash"></ion-icon>
                           </ion-fab-button>
-                          } -->
                           <ion-fab-button color="light">
                             <ion-icon name="close"></ion-icon>
                           </ion-fab-button>

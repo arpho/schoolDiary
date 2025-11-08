@@ -30,11 +30,8 @@ export class StudentAverageGradeDisplayComponent  implements OnInit {
 
   constructor() { 
     effect(() => {
-      console.log('StudentAverageGradeDisplayComponent - studentkey cambiato:', this.studentkey());
       this.$evaluations.fetchAverageGradeWhitCount4StudentAndTeacher(this.studentkey(), this.teacherkey(), (result: {averageGrade: number, evaluationscount: number}) => {
-        console.log("got averageGrade#", result.averageGrade)
         this.averagegrade.set(result.averageGrade);
-        console.log("got evaluationscount#", result.evaluationscount)
         this.evaluationscount.set(result.evaluationscount);
       });
     }); 

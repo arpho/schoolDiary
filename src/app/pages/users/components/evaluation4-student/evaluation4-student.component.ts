@@ -37,7 +37,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { Evaluation2PdfComponent } from 'src/app/pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component';
 import { EvaluationPage } from 'src/app/pages/evaluations/evaluation/evaluation.page';
 import { Router } from '@angular/router';
-
+import { ActionSheetController } from '@ionic/angular/standalone';
 @Component({
   selector: 'app-evaluation4-student',
   templateUrl: './evaluation4-student.component.html',
@@ -64,6 +64,48 @@ import { Router } from '@angular/router';
 ]
 })
 export class Evaluation4StudentComponent  implements OnInit {
+  private actionSheetCtrl = inject(ActionSheetController);
+  async openActionSheet(evaluation: Evaluation, evente:Event) {
+  evente.stopPropagation();
+console.log("openActionSheet", evaluation);
+const actionSheet = await this.actionSheetCtrl.create({
+  header: 'Azioni valutazione',
+  buttons: [
+    {
+      text: 'Modifica',
+      icon: 'create',
+      handler: () => {
+        this.editEvaluation(evaluation);
+        return false;
+      }
+    },
+    {
+      text: 'Archivia',
+      icon: 'archive',
+      handler: () => {
+        this.archiveEvaluation(evaluation);
+        return false;
+      }
+    },
+    {
+      text: 'Elimina',
+      role: 'destructive',
+      icon: 'trash',
+      handler: () => {
+        this.deleteEvaluation(evaluation);
+        return false;
+      }
+    },
+    {
+      text: 'Annulla',
+      icon: 'close',
+      role: 'cancel'
+    }
+  ]
+});
+
+await actionSheet.present();
+}
   classKey = signal<string>('');
 loggedUser = signal<UserModel | null>(null)
   $users = inject(UsersService);
