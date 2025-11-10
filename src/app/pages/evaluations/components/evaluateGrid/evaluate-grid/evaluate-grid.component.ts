@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, signal, model, output } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, signal, model, output, effect } from '@angular/core';
 import { Grids } from 'src/app/shared/models/grids';
 import { IonList, IonItem, IonLabel, IonCard, IonGrid, IonRow, IonCol, IonInput, IonCardContent, IonContent } from "@ionic/angular/standalone";
 import { IndicatorViewerComponent } from "src/app/shared/components/indicatorsViewer/indicator-viewer/indicator-viewer.component";
@@ -72,7 +72,17 @@ setValue($event: any, indicatore: Indicatore) {
   this.gridValid.emit(isValid);
 }
 
-  constructor() { }
+  constructor() {
+    effect(() => {
+      console.log("grid", this.grid());
+      this.voto.set(this.grid().indicatori.reduce((acc, indicatore) => {
+        const votoNum = Number(indicatore.voto) || 0;
+        return acc + (isNaN(votoNum) ? 0 : votoNum);
+      }, 0)); 
+      this.votoMax = this.grid().indicatori.reduce((acc, indicatore) => 
+        acc + (isNaN(Number(indicatore.valore)) ? 0 : Number(indicatore.valore)), 0);
+    });
+   }
 
   ngOnInit() {
     console.log("grid to show", this.grid);
