@@ -90,7 +90,7 @@
                     <ion-item>
                       <ion-label>
                         <h3>Voto decimale</h3>
-                        <p><strong>{{ evaluation.gradeInDecimal }}</strong></p>
+                        <p><strong>{{ evaluation.gradeInDecimal | number:'1.2-2'}}</strong></p>
                       </ion-label>
                     </ion-item>
                   } @else {
@@ -126,7 +126,7 @@
 
                     </ion-label>
                   </ion-item>
-                
+
                 }
               </ion-list>
             </ion-card-content>
