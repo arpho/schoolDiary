@@ -76,6 +76,7 @@ const actionSheet = await this.actionSheetCtrl.create({
       icon: 'create',
       handler: () => {
         this.editEvaluation(evaluation);
+        actionSheet.dismiss();
         return false;
       }
     },
@@ -84,6 +85,7 @@ const actionSheet = await this.actionSheetCtrl.create({
       icon: 'archive',
       handler: () => {
         this.archiveEvaluation(evaluation);
+        actionSheet.dismiss();
         return false;
       }
     },
@@ -93,13 +95,18 @@ const actionSheet = await this.actionSheetCtrl.create({
       icon: 'trash',
       handler: () => {
         this.deleteEvaluation(evaluation);
+        actionSheet.dismiss();
         return false;
       }
     },
     {
       text: 'Annulla',
       icon: 'close',
-      role: 'cancel'
+      role: 'cancel',
+      handler: () => {
+        actionSheet.dismiss();
+        return false;
+      }
     }
   ]
 });
