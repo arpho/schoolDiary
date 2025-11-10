@@ -114,8 +114,12 @@ async openActivityDialog() {
 updateEvaluation() {
 const evaluation = this.evaluation();
 if (evaluation) {
+  console.log("evaluation before ", evaluation);
+  console.log("evaluationform", this.evaluationform.value);
 evaluation.build(this.evaluationform.value);
+console.log("evaluation after ", evaluation);
 evaluation.grid = this.grid();
+console.log("evaluation grid ", evaluation.grid);
 try{  
 this.$evaluations.updateEvaluation(evaluation);
 this.router.navigate(['/pdf-evaluation', evaluation.key]);
