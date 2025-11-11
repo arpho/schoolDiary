@@ -100,6 +100,15 @@ const actionSheet = await this.actionSheetCtrl.create({
       }
     },
     {
+      text: 'Esporta in PDF',
+      icon: 'print',
+      handler: () => {
+        this.evaluationPdf(evaluation);
+        actionSheet.dismiss();
+        return false;
+      }
+    },
+    {
       text: 'Annulla',
       icon: 'close',
       role: 'cancel',
