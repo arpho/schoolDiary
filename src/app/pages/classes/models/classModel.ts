@@ -4,6 +4,8 @@ export class ClasseModel{
  descrizione: string=""
  note:string=""
  archived: boolean = false
+ coordinatore: string=""
+ segretario: string=""
  key: string=""
  constructor(args?:{}){
   this.build(args);
@@ -22,6 +24,8 @@ serialize() {
     description: this.descrizione,
     note: this.note,
     archived: this.archived,
+    coordinatore: this.coordinatore,
+    segretario: this.segretario,
     key: this.key
   }
     }

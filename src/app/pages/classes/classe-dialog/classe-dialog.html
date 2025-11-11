@@ -80,12 +80,33 @@
                 labelplacement="floating">
                 <ion-label slot="floating" class="custom-label">Descrizione</ion-label>
               </ion-textarea>
+              <ion-label>Coordinatore</ion-label>
+              <ion-input
+                class="custom-input"
+                label="Coordinatore"
+                formControlName="coordinatore"
+                fill="outline"
+                required
+                labelplacement="floating">
+                <ion-label slot="floating" class="custom-label">Coordinatore</ion-label>
+              </ion-input>
+              <ion-label>Segretario</ion-label>
+              <ion-input
+                class="custom-input"
+                label="Segretario"
+                formControlName="segretario"
+                fill="outline"
+                required
+                labelplacement="floating">
+                <ion-label slot="floating" class="custom-label">Segretario</ion-label>
+              </ion-input>
             </ion-card-content>
             <div class="ion-padding">
               <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
               <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
             </div>
           </ion-card>
+
         </ion-content>
       </ion-tab>
       <ion-tab tab="pdp">
