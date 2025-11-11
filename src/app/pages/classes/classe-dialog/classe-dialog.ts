@@ -92,6 +92,8 @@ export class ClasseDialogPage implements OnInit {
   formClass = new FormGroup({
     classe: new FormControl('', Validators.required),
     year: new FormControl('', Validators.required),
+    coordinatore: new FormControl('', Validators.required),
+    segretario: new FormControl('', Validators.required),
     descrizione: new FormControl('', Validators.required),
     note: new FormControl('', Validators.required),
   });
@@ -134,6 +136,8 @@ export class ClasseDialogPage implements OnInit {
         this.formClass.setValue({
           classe: editingClasse.classe,
           year: editingClasse.year,
+          coordinatore: editingClasse.coordinatore,
+          segretario: editingClasse.segretario,
           descrizione: editingClasse.descrizione,
           note: editingClasse.note
         });
