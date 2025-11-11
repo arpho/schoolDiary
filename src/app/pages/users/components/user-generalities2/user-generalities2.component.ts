@@ -93,7 +93,10 @@ private destroyRef = inject(DestroyRef);
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef 
   ) { 
-    console.log('UserGeneralities2Component - Costruttore chiamato*');
+    addIcons({
+      'save': 'save-outline',
+      'pdf': 'pdf-outline'
+    });
 
 
     // Inizializza la form
@@ -126,8 +129,8 @@ private destroyRef = inject(DestroyRef);
       }
     }, { allowSignalWrites: true });
 addIcons({
-  save,
-  listCircleOutline:list,
+  'save':'save-outline',
+  'listCircleOutline':'list-circle-outline',
 });
   }
 
