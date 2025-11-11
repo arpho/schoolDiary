@@ -38,6 +38,7 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { ActivityDialogComponent } from '../../activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { ClasseModel } from '../../classes/models/classModel';
 import { ClassiService } from '../../classes/services/classi.service';
+import { addIcons } from 'ionicons';
 @Component({
   selector: 'app-edit-evaluation',
   templateUrl: './edit-evaluation.page.html',
@@ -160,6 +161,10 @@ catch(error){
   constructor(private fb: FormBuilder,
     private router: Router) { 
     console.log("EditEvaluationPage constructor chiamato");
+    addIcons({
+      'save': 'save-outline',
+      'pdf': 'pdf-outline'
+    });
     // Initialize form in constructor
     this.evaluationform = this.fb.group({
       description: [''],

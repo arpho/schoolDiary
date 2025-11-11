@@ -1,7 +1,7 @@
 
 @if (evaluationscount() > 0) {
   <div class="grade-display-container">
-    <ion-card class="grade-card">
+    <ion-card class="grade-card" [style]="getCardBackground(averagegrade())">
       <ion-card-content class="ion-text-center">
         <ion-icon name="stats-chart" class="grade-icon"></ion-icon>
         <h2 class="grade-value">{{ averagegrade() | number:'1.0-2' }}</h2>
