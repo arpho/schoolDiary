@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject, input, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, input, output, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { EvaluationService } from '../../../evaluations/services/evaluation/evaluation.service';
@@ -8,6 +8,8 @@ import {
   IonCardContent, 
   IonIcon
 } from "@ionic/angular/standalone";
+import { UserModel } from 'src/app/shared/models/userModel';
+import { filter } from 'rxjs';
 @Component({
   selector: 'app-student-average-grade-display',
   templateUrl: './student-average-grade-display.component.html',
@@ -25,6 +27,8 @@ import {
 export class StudentAverageGradeDisplayComponent  implements OnInit {
   studentkey = input.required<string>();
   averagegrade = signal<number>(0);
+  visibilityStatus = output<{studentKey:string,visibility:boolean}>();
+  filterFunction = input<(student: UserModel) => boolean>();
   evaluationscount = signal<number>(0);
   teacherkey = input.required<string>();
   $evaluations = inject(EvaluationService);
