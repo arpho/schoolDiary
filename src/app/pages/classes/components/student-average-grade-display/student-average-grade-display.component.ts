@@ -25,10 +25,10 @@ import { filter } from 'rxjs';
   ],
 })
 export class StudentAverageGradeDisplayComponent  implements OnInit {
-  studentkey = input.required<string>();
+  student = input.required<UserModel>();
   averagegrade = signal<number>(0);
   visibilityStatus = output<{studentKey:string,visibility:boolean}>();
-  filterFunction = input<(student: UserModel) => boolean>();
+  filterFunction = input<(student: UserModel) => boolean>((student: UserModel)=>true);
   evaluationscount = signal<number>(0);
   teacherkey = input.required<string>();
   $evaluations = inject(EvaluationService);
@@ -62,9 +62,12 @@ export class StudentAverageGradeDisplayComponent  implements OnInit {
 
   constructor() { 
     effect(() => {
-      this.$evaluations.fetchAverageGradeWhitCount4StudentAndTeacher(this.studentkey(), this.teacherkey(), (result: {averageGrade: number, evaluationscount: number}) => {
+      this.$evaluations.fetchAverageGradeWhitCount4StudentAndTeacher(this.student().key, this.teacherkey(), (result: {averageGrade: number, evaluationscount: number}) => {
         this.averagegrade.set(result.averageGrade);
         this.evaluationscount.set(result.evaluationscount);
+        const filter = this.filterFunction();
+        const visibility= filter(this.student());
+        this.visibilityStatus.emit({studentKey:this.student().key,visibility:visibility});
       });
     }); 
   }
