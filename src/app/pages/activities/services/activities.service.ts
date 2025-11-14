@@ -105,7 +105,7 @@ export class ActivitiesService {
  const docSnap = await getDoc(docref);
  const newActivity = new ActivityModel(docSnap.data()).setKey(docSnap.id);  
  this.activitiesOnCache.update(activities => [...activities, newActivity]);
-    return newActivity;
+    return newActivity.setKey(docSnap.id);
   }
 
   async updateActivity(activityKey: string, activity: ActivityModel): Promise<void> {
