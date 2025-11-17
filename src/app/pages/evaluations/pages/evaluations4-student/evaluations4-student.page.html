@@ -1,0 +1,14 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title align="center">Valutazioni per lo  studente {{student().lastName}} {{student().firstName}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">evaluations4Student</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <app-evaluation4-student [studentkey]="student().key" [teacherkey]="teacherKey"></app-evaluation4-student>
+</ion-content>

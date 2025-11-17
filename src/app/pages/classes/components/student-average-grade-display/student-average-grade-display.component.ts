@@ -10,6 +10,9 @@ import {
 } from "@ionic/angular/standalone";
 import { UserModel } from 'src/app/shared/models/userModel';
 import { filter } from 'rxjs';
+import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { clipboardOutline, documentText, statsChart } from 'ionicons/icons';
 @Component({
   selector: 'app-student-average-grade-display',
   templateUrl: './student-average-grade-display.component.html',
@@ -25,10 +28,30 @@ import { filter } from 'rxjs';
   ],
 })
 export class StudentAverageGradeDisplayComponent  implements OnInit {
+  constructor(
+    private router: Router
+  ) { 
+    effect(() => {
+      
+      this.$evaluations.fetchAverageGradeWhitCount4StudentAndTeacher(this.student().key, this.teacherkey(), (result: {averageGrade: number, evaluationscount: number}) => {
+        this.averagegrade.set(result.averageGrade);
+        this.evaluationscount.set(result.evaluationscount);
+        this.visibilityStatus.emit({studentKey:this.student().key,visibility:true});
+      });
+    });
+    addIcons({
+   clipboardOutline: clipboardOutline,
+   statsChart: statsChart,
+   documentText: documentText 
+  });
+}
+openEvaluationList() {
+console.log("openEvaluationList for student", this.student().key);
+this.router.navigate(['/evaluations4-student', this.student().key,this.teacherkey()]);
+}
   student = input.required<UserModel>();
   averagegrade = signal<number>(0);
   visibilityStatus = output<{studentKey:string,visibility:boolean}>();
-  filterFunction = input<(student: UserModel) => boolean>((student: UserModel)=>true);
   evaluationscount = signal<number>(0);
   teacherkey = input.required<string>();
   $evaluations = inject(EvaluationService);
@@ -60,17 +83,7 @@ export class StudentAverageGradeDisplayComponent  implements OnInit {
     return this.sanitizer.bypassSecurityTrustStyle(`--background: ${color}`);
   }
 
-  constructor() { 
-    effect(() => {
-      this.$evaluations.fetchAverageGradeWhitCount4StudentAndTeacher(this.student().key, this.teacherkey(), (result: {averageGrade: number, evaluationscount: number}) => {
-        this.averagegrade.set(result.averageGrade);
-        this.evaluationscount.set(result.evaluationscount);
-        const filter = this.filterFunction();
-        const visibility= filter(this.student());
-        this.visibilityStatus.emit({studentKey:this.student().key,visibility:visibility});
-      });
-    }); 
-  }
+
 
   ngOnInit() {}
 
