@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { inject } from '@angular/core';
@@ -12,7 +12,17 @@ import { Evaluation4StudentComponent } from "src/app/pages/users/components/eval
   templateUrl: './evaluations4-student.page.html',
   styleUrls: ['./evaluations4-student.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, Evaluation4StudentComponent]
+  imports: [
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    CommonModule,
+    FormsModule,
+    Evaluation4StudentComponent,
+    IonBackButton,
+    IonButtons
+]
 })
 export class Evaluations4StudentPage implements OnInit {
   studentKey = '';
