@@ -1,55 +1,51 @@
 <!DOCTYPE html>
 <ion-header [translucent]="true">
-  <ion-back-button
-    text="dashboard"
-    class="back-button"
-    defaultHref="/dashboard"></ion-back-button>
   <ion-toolbar>
-    <ion-title align="center">Classi</ion-title>
-    <ion-fab vertical="bottom" horizontal="end">
-      <ion-fab-button shape="round" size="small" (click)="go2ClasseDialog('')"><ion-icon name="add"></ion-icon></ion-fab-button>
-    </ion-fab>
+    <ion-buttons slot="start">
+      <ion-back-button 
+        text="dashboard"
+        default-href="/dashboard"
+        class="back-button">
+      </ion-back-button>
+    </ion-buttons>
+    <ion-title>Classi</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="go2ClasseDialog('')">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large" align="center">Classi</ion-title>
+      <ion-title size="large">Classi</ion-title>
     </ion-toolbar>
   </ion-header>
-  @if (classiList().length >0) {
+
+  @if (classiList().length > 0) {
     <ion-list>
-        @for (classe of sortedClassiList(); track classe.key) {
-            <ion-item >
-              <ion-card >
-                <ion-card-header>
-                  <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                  <p>{{classe.descrizione}}</p>
-                </ion-card-content>
-            <ion-fab id="test"  vertical="top" horizontal="end" >
-              <ion-fab-button size="small"   color="medium">
-                <ion-icon name="ellipsis-vertical"></ion-icon>
-              </ion-fab-button>
-              <ion-fab-list side="start">
-                <ion-fab-button color="light" (click)="editClass(classe.key)">
-                  <ion-icon name="create"></ion-icon>
-                </ion-fab-button>
-                <ion-fab-button color="danger" (click)="deleteClass(classe)">
-                  <ion-icon name="trash"></ion-icon>
-                </ion-fab-button>
-                <ion-fab-button color="light">
-                  <ion-icon name="close"></ion-icon>
-                </ion-fab-button>
-              </ion-fab-list>
-            </ion-fab>
-            </ion-card>
-            </ion-item>
-        }
+      @for (classe of sortedClassiList(); track classe.key) {
+        <ion-item (click)="clickedClass(classe)" button detail="true" class="class-item">
+          <ion-card class="class-card">
+            <ion-card-header>
+              <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p>{{classe.descrizione || 'Nessuna descrizione'}}</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-item>
+      }
     </ion-list>
   } @else {
-    <p>Non ci sono classi, creane una</p>
+    <div class="ion-text-center ion-padding">
+      <p>Non ci sono classi</p>
+      <ion-button (click)="go2ClasseDialog('')">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Crea la tua prima classe
+      </ion-button>
+    </div>
   }
 </ion-content>
