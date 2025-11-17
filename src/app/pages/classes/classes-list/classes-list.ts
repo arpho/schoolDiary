@@ -1,15 +1,9 @@
-import {
-  Component,
-  signal,
-  effect,
-  computed
-} from '@angular/core';
-import {
-  CommonModule
-} from '@angular/common';
-import {
-  FormsModule
-} from '@angular/forms';
+import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+
 import {
   IonContent,
   IonHeader,
@@ -19,33 +13,23 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
+  IonItem,
+  IonList,
+  IonBackButton,
+  IonButtons,
   IonButton,
   IonIcon,
-  IonItem,
-  IonFab,
-  IonFabButton,
-  IonFabList,
-  IonList,
-  IonBackButton
+  ActionSheetController,
+  AlertController,
+  ModalController,
+  ModalOptions
 } from '@ionic/angular/standalone';
-import {
-  ClassiService,
-} from '../services/classi.service';
-import { ModalController } from '@ionic/angular';
-import { AlertController, ActionSheetController } from '@ionic/angular';
-import { Router } from '@angular/router';
+
+import { ClassiService } from '../services/classi.service';
 import { ClasseModel } from '../models/classModel';
-import { Subscription } from 'rxjs';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { addIcons } from 'ionicons';
-import {
-    add,
-    create,
-    trash,
-    close,
-    archive,
-    ellipsisVertical
-} from 'ionicons/icons';
+import { add, create, trash, close, archive, ellipsisVertical } from 'ionicons/icons';
 
 @Component({
   selector: 'app-classes-list',
@@ -53,27 +37,28 @@ import {
   styleUrls: ['./classes-list.scss'],
   standalone: true,
   imports: [
+    CommonModule,
+    FormsModule,
     IonContent,
     IonHeader,
     IonTitle,
     IonToolbar,
-    CommonModule,
-    FormsModule,
     IonCard,
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    IonButton,
-    IonIcon,
     IonItem,
-    IonFab,
-    IonFabButton,
     IonList,
-    IonFabList,
-    IonBackButton
-]
+    IonBackButton,
+    IonButtons,
+    IonButton,
+    IonIcon
+  ]
 })
-export class ClassesListComponent {
+export class ClassesListComponent implements OnInit, OnDestroy {
+  classiList = signal<ClasseModel[]>([]);
+  private sub: Subscription = new Subscription();
+
   sortedClassiList = computed(() => 
     [...this.classiList()].sort((a, b) => {
       const keyA = `${a.classe}${a.year}`;
@@ -81,116 +66,118 @@ export class ClassesListComponent {
       return keyA.localeCompare(keyB);
     })
   );
-  async clickedClass(arg0: ClasseModel) {
+
+  constructor(
+    private service: ClassiService,
+    private modalController: ModalController,
+    private alertController: AlertController,
+    private actionSheetController: ActionSheetController,
+    private router: Router,
+    private toaster: ToasterService
+  ) {
+    addIcons({ add, create, trash, close, archive, ellipsisVertical });
+  }
+
+  ngOnInit(): void {
+    this.sub.add(
+      this.service.getClassiOnRealtime((classi) => {
+        this.classiList.set(classi);
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+  }
+
+  async clickedClass(classe: ClasseModel) {
     const actionSheet = await this.actionSheetController.create({
-      header: 'Select an option',
+      header: `Classe ${classe.classe} - ${classe.year}`,
+      subHeader: classe.descrizione || 'Nessuna descrizione',
       buttons: [
         {
-          text: 'Delete',
+          text: 'Modifica',
+          icon: 'create',
+          handler: () => {
+            this.editClass(classe.key);
+          }
+        },
+        {
+          text: 'Elimina',
           role: 'destructive',
           icon: 'trash',
           handler: () => {
-            this.deleteClass(arg0);
-          },
+            this.deleteClass(classe);
+          }
         },
         {
-          text: 'Edit',
-          role: 'edit',
-          icon: 'create',
-          handler: () => {
-            this.editClass(arg0.key);
-          },
-        },
-        {
-          text: 'Archive',
-          role: 'archive',
+          text: 'Archivia',
           icon: 'archive',
           handler: () => {
-            this.archives(arg0.key);
-          },
+            this.archives(classe.key);
+          }
         },
         {
-          text: 'Cancel',
-          icon: 'close',
+          text: 'Annulla',
           role: 'cancel',
-          handler: () => {
-            // Cancel clicked
-          },
-        },
-      ],
+          icon: 'close'
+        }
+      ]
     });
+
     await actionSheet.present();
   }
+
   archives(key: string) {
-    // Implementa la logica di archiviazione
+    // TODO: Implement archive functionality
+    console.log('Archiving class with key:', key);
   }
-  editClass(arg0: string) {
-    this.go2ClasseDialog(arg0);
-  }
-  async deleteClass(arg0: ClasseModel) {
-   const alert = await this.alertController.create({
-    header: 'Delete',
-    message: 'Are you sure you want to delete this class?',
-    buttons: [
-      {
-        text: 'Cancel',
-        role: 'cancel',
-        handler: () => {
-          console.log('Cancel clicked');
-        },
-      },
-      {
-        text: 'Delete',
-        role: 'destructive',
-        handler: () => {
-          this.service.deleteClasse(arg0.key).then(() => {
-            this.toaster.presentToast({message:"Classe eliminata con successo",duration:2000,position:"bottom"});
-          }).catch((error) => {
-            this.toaster.presentToast({message:"Errore durante l'eliminazione della classe",duration:2000,position:"bottom"});
-          })  .finally(() => {
 
-          });
-        },
-      },
-    ],
-  });
-  await alert.present();
+  editClass(key: string) {
+    this.go2ClasseDialog(key);
   }
-subscriptions = new Subscription()
-  classiList = signal<ClasseModel[]>([]);
-constructor(
-  private modalController: ModalController,
-  private router: Router,
-  private service: ClassiService,
-  private toaster: ToasterService,
-  private actionSheetController: ActionSheetController,
-  private alertController: AlertController
-) {
-  addIcons({
-    ellipsisVertical,
-    add,
-    trash,
-    create,
-    close,
-    archive
-});
-}
-  ngOnInit(): void {
-    this.service.getClassiOnRealtime((classi) => {
-      this.classiList.set(classi);
+
+  async deleteClass(classe: ClasseModel) {
+    const alert = await this.alertController.create({
+      header: 'Elimina Classe',
+      message: `Sei sicuro di voler eliminare la classe ${classe.classe}?`,
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel',
+          handler: () => {
+            // Azione annullata
+          }
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          handler: () => {
+            this.service.deleteClasse(classe.key)
+              .then(() => {
+                this.toaster.presentToast({
+                  message: 'Classe eliminata con successo',
+                  duration: 2000,
+                  position: 'bottom'
+                });
+              })
+              .catch((error) => {
+                console.error('Errore durante l\'eliminazione della classe:', error);
+                this.toaster.presentToast({
+                  message: "Errore durante l'eliminazione della classe",
+                  duration: 2000,
+                  position: 'bottom'
+                });
+              });
+          }
+        }
+      ]
     });
+
+    await alert.present();
   }
 
-  showList = effect(() => {
-    console.log(this.classiList());
-    return this.classiList().length > 0;
-  })
-
-  async go2ClasseDialog(classeId: string) {
-    let classe: ClasseModel | undefined = undefined;
-    if (classeId) {
-      classe = this.classiList().find(c => c.key === classeId);
-    }
+  go2ClasseDialog(classeId: string = ''): void {
     this.router.navigate(['/class-dialog', classeId]);
   }
 }
