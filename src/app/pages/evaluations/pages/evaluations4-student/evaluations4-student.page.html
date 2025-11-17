@@ -1,8 +1,15 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title align="center">Valutazioni per lo  studente {{student().lastName}} {{student().firstName}}</ion-title>
+
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="/dashboard"></ion-back-button>
+  </ion-buttons>
+
+  <ion-toolbar>    <ion-title align="center">Valutazioni per lo  studente {{student().lastName}} {{student().firstName}}</ion-title>
+  
   </ion-toolbar>
 </ion-header>
+
+
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
