@@ -189,7 +189,7 @@ this.router.navigate(['/edit-evaluation',valutazione.key]);
         // Chiama il servizio solo quando gli input sono valorizzati
         if (studentKey && teacherKey) {
           this.$evaluation.getEvaluation4studentAndTeacher(studentKey, teacherKey, async (evaluations: Evaluation[]) => {
-
+console.log("getEvaluation4studentAndTeacher", evaluations);
             this.evaluationsList.set(evaluations);
             
             // Pre-carica tutte le attività associate alle valutazioni

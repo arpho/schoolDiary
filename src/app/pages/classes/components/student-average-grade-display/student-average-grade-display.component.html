@@ -6,7 +6,7 @@
         <ion-icon name="stats-chart" class="grade-icon"></ion-icon>
         <h2 class="grade-value">{{ averagegrade() | number:'1.0-2' }}</h2>
         <p class="grade-label">Media voti</p>
-        <ion-badge color="medium" class="evaluation-count">
+        <ion-badge color="medium" class="evaluation-count" (click)="openEvaluationList()">
           <ion-icon name="document-text" class="ion-margin-end"></ion-icon>
           {{ evaluationscount() }} valutazioni
         </ion-badge>
