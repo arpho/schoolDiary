@@ -1,7 +1,20 @@
 import { Component, OnInit, Input, computed, OnChanges, SimpleChanges, effect } from '@angular/core';
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonList, IonItem, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonFab, IonFabButton, IonFabList, IonIcon, IonButton } from '@ionic/angular/standalone';
+import {
+   IonList,
+   IonItem,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonFab,
+  ActionSheetController,
+  IonFabButton,
+         IonFabList,
+          IonIcon,
+           IonButton 
+          } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
@@ -43,6 +56,46 @@ import { StudentAverageGradeDisplayComponent } from '../student-average-grade-di
   ]
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
+async showActionSheet(student: UserModel) {
+console.log("action for",student)
+
+
+const actionSheet = await this.actionSheetController.create({
+  header: `Studente ${student.lastName} ${student.firstName}`,
+  subHeader: student.lastName   || 'Nessuna descrizione',
+  buttons: [
+    {
+      text: 'Modifica',
+      icon: 'eye',
+      handler: () => {
+        this.editStudent( student.key)
+      }
+    },
+    {
+      text: 'nuova valutazione',
+      
+      icon: 'sparkles',
+      handler: () => {
+        this.newEvaluation(student.key);
+      }
+    },
+    {
+      text: 'Archivia',
+      icon: 'archive',
+      handler: () => {
+        console.log("what?")
+      }
+    },
+    {
+      text: 'Annulla',
+      role: 'cancel',
+      icon: 'close'
+    }
+  ]
+});
+
+await actionSheet.present();
+}
 teacherkey = signal<string>('');
 async addStudent() {
   console.log("adding student", this.classkey)
@@ -88,6 +141,7 @@ async newEvaluation(studentKey: string) {
   constructor(
     private $users: UsersService,
     private router: Router,
+    private actionSheetController: ActionSheetController,
     private $modalController: ModalController,
     private route: ActivatedRoute
   ) {

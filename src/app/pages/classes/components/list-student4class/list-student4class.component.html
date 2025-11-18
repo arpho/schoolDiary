@@ -1,34 +1,40 @@
-<h1>Lista Studenti</h1>
-<ion-button (click)="addStudent()" color="primary"><ion-icon name="add"></ion-icon></ion-button>
-<ion-list>
-    @for(student of sortedStudents(); track student.key) {
-        <ion-item>
-            <ion-card>
-                <ion-card-header>
-                    <ion-card-title> {{student.lastName}} {{student.firstName}}</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-
-                    <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()"></app-student-average-grade-display>
-                </ion-card-content>
-            </ion-card>
-<ion-fab id="test"  vertical="bottom" horizontal="end" >
-  <ion-fab-button size="small"   color="medium">
-    <ion-icon name="ellipsis-vertical"></ion-icon>
-  </ion-fab-button>
-  <ion-fab-list side="start">
-    <ion-fab-button color="light" (click)="editStudent(student.key)">
-      <ion-icon name="eye"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button color="light" (click)="newEvaluation(student.key)">
-      <ion-icon name="sparkles"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button color="light">
-      <ion-icon name="close"></ion-icon>
-    </ion-fab-button>
-  </ion-fab-list>
-</ion-fab>
+<div class="container">
+  <div class="header">
+    <h1>Lista Studenti</h1>
+    <ion-button (click)="addStudent()" color="primary">
+      <ion-icon slot="start" name="add"></ion-icon>
+      Aggiungi
+    </ion-button>
+  </div>
+  
+  <div class="student-list">
+    <ion-list class="centered-list">
+      @for (student of sortedStudents(); track student.key) {
+        <ion-item class="student-item" (click)="showActionSheet(student)">
+          <ion-card class="student-card">
+            <ion-card-header>
+              <ion-card-title>{{student.lastName}} {{student.firstName}}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <app-student-average-grade-display 
+                [student]="student" 
+                [teacherkey]="teacherkey()">
+              </app-student-average-grade-display>
+            </ion-card-content>
+          </ion-card>
         </ion-item>
-    }
-</ion-list>
-<ion-button (click)="uploadStudents()" shape="round" size="small" ><ion-icon name="cloudupload"></ion-icon>Carica Studenti</ion-button>
+      } @empty {
+        <div class="empty-state">
+          <p>Nessuno studente presente</p>
+        </div>
+      }
+    </ion-list>
+  </div>
+  
+  <div class="footer">
+    <ion-button (click)="uploadStudents()" expand="block" fill="outline">
+      <ion-icon slot="start" name="cloud-upload"></ion-icon>
+      Carica Studenti
+    </ion-button>
+  </div>
+</div>
