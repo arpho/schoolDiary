@@ -171,7 +171,6 @@ this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey:
        date: new Date().toISOString()
      }));
      const classi4Teacher  = teacher?.classesKey.map(classKey => this.$classes.fetchClasseOnCache(classKey))
-     console.log("classi4Teacher", classi4Teacher);
  
      const modal = await this.modalCtrl.create({
        component: ActivityDialogComponent,
@@ -182,30 +181,23 @@ this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey:
        }
      });
      await modal.present();
- 
      const result = await modal.onDidDismiss();
      if (result.data) {
-       await this.$activites.addActivity(activity());
-       this.activities.set([...this.activities(), activity()]);
+       const newActivity = await this.$activites.addActivity(activity());
        this.evaluationform.patchValue({
-         activityKey: result.data.key
+         activityKey: newActivity.key
        });
+       this.evaluationform.updateValueAndValidity();
+       this.activities.set([...this.activities(), newActivity]);
+       console.log("activityForm", this.evaluationform.value);
      }
    }
   async saveEvaluation() {
-    console.log("saveEvaluation");
     const evaluation = new Evaluation(this.evaluationform.value);
-    console.log("evaluation", evaluation);
-    console.log("grid", this.grid());
-    console.log("classKey",evaluation.classKey);
-    console.log("classe",this.classKey());
-    console.log("studente",this.studentKey());
-    console.log("teacherKey",this.teacherKey());
     evaluation.classKey = this.classKey();
     evaluation.studentKey = this.studentKey();
     evaluation.teacherKey = this.teacherKey();
     evaluation.grid = this.grid();
-    console.log("evaluation", evaluation);
     const evaluationKey = (await this.$evaluations.addEvaluation(evaluation)).id;
     this.$toaster.presentToast({message: 'Valutazione salvata con successo', position: 'top'});
     this.router.navigate(['/pdf-evaluation', evaluationKey]);
