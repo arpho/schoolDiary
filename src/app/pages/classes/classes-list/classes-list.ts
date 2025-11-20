@@ -29,7 +29,7 @@ import { ClassiService } from '../services/classi.service';
 import { ClasseModel } from '../models/classModel';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { addIcons } from 'ionicons';
-import { add, create, trash, close, archive, ellipsisVertical } from 'ionicons/icons';
+import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionicons/icons';
 
 @Component({
   selector: 'app-classes-list',
@@ -75,7 +75,7 @@ export class ClassesListComponent implements OnInit, OnDestroy {
     private router: Router,
     private toaster: ToasterService
   ) {
-    addIcons({ add, create, trash, close, archive, ellipsisVertical });
+    addIcons({ add, eye, trash, close, archive, ellipsisVertical });
   }
 
   ngOnInit(): void {
@@ -96,8 +96,8 @@ export class ClassesListComponent implements OnInit, OnDestroy {
       subHeader: classe.descrizione || 'Nessuna descrizione',
       buttons: [
         {
-          text: 'Modifica',
-          icon: 'create',
+          text: 'Visualizza',
+          icon: 'eye',
           handler: () => {
             this.editClass(classe.key);
           }
