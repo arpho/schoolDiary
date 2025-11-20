@@ -45,7 +45,8 @@ export class StudentAverageGradeDisplayComponent  implements OnInit {
    documentText: documentText 
   });
 }
-openEvaluationList() {
+openEvaluationList(event: Event) {
+  event.stopPropagation();
 console.log("openEvaluationList for student", this.student().key);
 this.router.navigate(['/evaluations4-student', this.student().key,this.teacherkey()]);
 }
