@@ -327,7 +327,7 @@ if (this.evaluationKey()) {
   console.log("edited evaluation");
           newEvaluation.key = this.evaluationKey();
          
-          await this.evaluationService.editEvaluation(newEvaluation);
+          await this.evaluationService.updateEvaluation(newEvaluation);
         } else {
           console.log("new evaluation");
           await this.evaluationService.addEvaluation(newEvaluation);

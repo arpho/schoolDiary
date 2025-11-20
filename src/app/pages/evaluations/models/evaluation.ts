@@ -5,6 +5,7 @@ export class Evaluation {
   description: string = '';
   note: string = '';
   data: string = '';
+  subjectKey: string = '';
   lastUpdateDate: string = '';
   grid: Grids = new Grids();
   gridsKey: string = '';
@@ -52,6 +53,7 @@ export class Evaluation {
     return {
       description: this.description,
       note: this.note,
+      subjectKey: this.subjectKey,
       data: this.data,
       lastUpdateDate: this.lastUpdateDate,
       grid: this.grid.serialize(),
