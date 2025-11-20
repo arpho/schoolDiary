@@ -185,7 +185,7 @@ catch(error){
     if (evaluationKey) {
       try {
         console.log('Caricamento valutazione...');
-        const evaluation = await this.$evaluation.getEvaluation(evaluationKey);
+        const evaluation = await this.$evaluation.fetchEvaluation(evaluationKey);
         console.log('Evaluation loaded:', JSON.parse(JSON.stringify(evaluation)));
         this.evaluation.set(evaluation);
         

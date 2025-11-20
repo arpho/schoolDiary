@@ -60,7 +60,7 @@ this.router.navigate(['/class-dialog', this.evaluationData().classKey]);
     effect(async () => {
       const evaluationKey = this.route.snapshot.paramMap.get('evaluationKey');
       if (evaluationKey){
-      const evaluation= await this.$evaluation.getEvaluation(evaluationKey);
+      const evaluation= await this.$evaluation.fetchEvaluation(evaluationKey);
       console.log("evaluation", evaluation);
       this.evaluationData.set(evaluation);
       }
@@ -136,7 +136,7 @@ const voto = this.evaluationData().grid?.indicatori.reduce((acc: any, indicatore
       const evaluationKey = params.get('evaluationKey');
       console.log('Evaluation Key:', evaluationKey);
       if (evaluationKey){
-      const evaluation= await this.$evaluation.getEvaluation(evaluationKey);
+      const evaluation= await this.$evaluation.fetchEvaluation(evaluationKey);
       console.log("evaluation", evaluation);
       console.log("show spinner", this.showSpinner());
       this.evaluationData.set(evaluation);
