@@ -36,8 +36,8 @@ export class EvaluationService {
   }
 
   private async fetchEvaluationsFromServer(
-    studentKey: string, 
-    teacherKey: string, 
+    studentKey: string,
+    teacherKey: string,
     subjectKey?: string
   ): Promise<Evaluation[]> {
     const collectionRef = collection(this.firestore, this.collection);
@@ -52,8 +52,8 @@ export class EvaluationService {
 
     const q = query(collectionRef, ...conditions);
     const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => 
+
+    return querySnapshot.docs.map(doc =>
       new Evaluation(doc.data()).setKey(doc.id)
     );
   }
@@ -80,14 +80,44 @@ export class EvaluationService {
     }
   }
 
+  private updateLocalCache(evaluation: Evaluation): void {
+    if (!evaluation.studentKey || !evaluation.teacherKey) return;
+
+    const keysToUpdate = [
+      this.getCacheKey(evaluation.studentKey, evaluation.teacherKey)
+    ];
+
+    if (evaluation.subjectKey) {
+      keysToUpdate.push(
+        this.getCacheKey(evaluation.studentKey, evaluation.teacherKey, evaluation.subjectKey)
+      );
+    }
+
+    keysToUpdate.forEach(key => {
+      const cachedEvaluations = this.evaluationCache.get(key);
+      if (cachedEvaluations) {
+        const index = cachedEvaluations.findIndex(e => e.key === evaluation.key);
+        if (index !== -1) {
+          // Aggiorna esistente
+          cachedEvaluations[index] = evaluation;
+        } else {
+          // Aggiungi nuovo
+          cachedEvaluations.push(evaluation);
+        }
+        // Opzionale: riordinare se necessario, per ora lasciamo l'ordine di inserimento/aggiornamento
+        // o manteniamo l'ordine originale se era ordinato dal server
+      }
+    });
+  }
+
   async getEvaluation4studentAndTeacher(
-    studentKey: string, 
-    teacherKey: string, 
-    callback: (evaluations: Evaluation[])=>void,
+    studentKey: string,
+    teacherKey: string,
+    callback: (evaluations: Evaluation[]) => void,
     subjectKey?: string
   ) {
     const cacheKey = this.getCacheKey(studentKey, teacherKey, subjectKey);
-    
+
     // Se i dati sono in cache, li restituiamo subito
     const cachedData = this.getFromCache(studentKey, teacherKey, subjectKey);
     if (cachedData) {
@@ -121,7 +151,7 @@ export class EvaluationService {
   private setupRealtimeUpdates(
     studentKey: string,
     teacherKey: string,
-    callback: (evaluations: Evaluation[])=>void,
+    callback: (evaluations: Evaluation[]) => void,
     subjectKey?: string
   ) {
     const collectionRef = collection(this.firestore, this.collection);
@@ -137,13 +167,13 @@ export class EvaluationService {
     const q = query(collectionRef, ...conditions);
 
     return onSnapshot(q, (snapshot) => {
-      const evaluations = snapshot.docs.map(doc => 
+      const evaluations = snapshot.docs.map(doc =>
         new Evaluation(doc.data()).setKey(doc.id)
       );
-      
+
       // Aggiorna la cache con i nuovi dati
       this.updateCache(studentKey, teacherKey, evaluations, subjectKey);
-      
+
       // Esegui la callback con i dati aggiornati
       callback(evaluations);
     });
@@ -167,8 +197,10 @@ export class EvaluationService {
         lastUpdateDate: new Date().toISOString()
       }
     );
-    
-    this.invalidateCache(evaluation);
+
+    // Aggiorniamo la chiave dell'oggetto evaluation con l'ID generato
+    evaluation.setKey(docRef.id);
+    this.updateLocalCache(evaluation);
     return docRef;
   }
 
@@ -185,7 +217,7 @@ export class EvaluationService {
       }
     );
 
-    this.invalidateCache(evaluation);
+    this.updateLocalCache(evaluation);
   }
 
   async deleteEvaluation(evaluation: Evaluation) {
@@ -199,8 +231,8 @@ export class EvaluationService {
 
   // Metodi di utilità
   fetchEvaluationsCount4Student(
-    studentKey: string, 
-    teacherKey: string, 
+    studentKey: string,
+    teacherKey: string,
     callback: (evaluationscount: number) => void,
     subjectKey?: string
   ) {
@@ -210,8 +242,8 @@ export class EvaluationService {
   }
 
   fetchAverageGrade4StudentAndTeacher(
-    studentKey: string, 
-    teacherKey: string, 
+    studentKey: string,
+    teacherKey: string,
     callback: (averageGrade: number) => void,
     subjectKey?: string
   ) {
@@ -222,8 +254,8 @@ export class EvaluationService {
   }
 
   fetchAverageGradeWhitCount4StudentAndTeacher(
-    studentKey: string, 
-    teacherKey: string, 
+    studentKey: string,
+    teacherKey: string,
     callback: (result: EvaluationCount) => void,
     subjectKey?: string
   ) {
@@ -239,17 +271,17 @@ export class EvaluationService {
 
   // Metodo per forzare il refresh dei dati
   async refreshEvaluations(
-    studentKey: string, 
-    teacherKey: string, 
-    callback: (evaluations: Evaluation[])=>void,
+    studentKey: string,
+    teacherKey: string,
+    callback: (evaluations: Evaluation[]) => void,
     subjectKey?: string
   ) {
     const evaluations = await this.fetchEvaluationsFromServer(
-      studentKey, 
-      teacherKey, 
+      studentKey,
+      teacherKey,
       subjectKey
     );
-    
+
     this.updateCache(studentKey, teacherKey, evaluations, subjectKey);
     callback(evaluations);
   }
@@ -264,12 +296,12 @@ export class EvaluationService {
   getEvaluationsOnRealtime(callback: (evaluations: Evaluation[]) => void, queries?: QueryCondition[]) {
     const collectionRef = collection(this.firestore, this.collection);
     const q = !queries ? collectionRef : query(
-      collectionRef, 
+      collectionRef,
       ...queries.map(q => where(q.field, q.operator, q.value))
     );
 
     return onSnapshot(q, (snapshot) => {
-      const evaluations = snapshot.docs.map(doc => 
+      const evaluations = snapshot.docs.map(doc =>
         new Evaluation(doc.data()).setKey(doc.id)
       );
       callback(evaluations);
