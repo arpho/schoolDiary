@@ -2,8 +2,8 @@ import { Component, OnInit, Input, computed, OnChanges, SimpleChanges, effect } 
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-   IonList,
-   IonItem,
+  IonList,
+  IonItem,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -11,22 +11,26 @@ import {
   IonFab,
   ActionSheetController,
   IonFabButton,
-         IonFabList,
-          IonIcon,
-           IonButton 
-          } from '@ionic/angular/standalone';
+  IonFabList,
+  IonIcon,
+  IonButton,
+  IonSelect,
+  IonSelectOption
+} from '@ionic/angular/standalone';
+import { FormsModule } from '@angular/forms';
+import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation/evaluation.service';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
 import {
-   create,
-   ellipsisVertical,
-   sparkles,
-   close,
-   trash,
-   eye,
-   add
-  } from 'ionicons/icons';
+  create,
+  ellipsisVertical,
+  sparkles,
+  close,
+  trash,
+  eye,
+  add
+} from 'ionicons/icons';
 import { cloudUploadOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
@@ -51,68 +55,71 @@ import { StudentAverageGradeDisplayComponent } from '../student-average-grade-di
     IonFabList,
     IonIcon,
     IonButton,
+    IonSelect,
+    IonSelectOption,
     CommonModule,
+    FormsModule,
     StudentAverageGradeDisplayComponent
   ]
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
-async showActionSheet(student: UserModel) {
-console.log("action for",student)
+  async showActionSheet(student: UserModel) {
+    console.log("action for", student)
 
 
-const actionSheet = await this.actionSheetController.create({
-  header: `Studente ${student.lastName} ${student.firstName}`,
-  subHeader: student.lastName   || 'Nessuna descrizione',
-  buttons: [
-    {
-      text: 'Modifica',
-      icon: 'eye',
-      handler: () => {
-        this.editStudent( student.key)
-      }
-    },
-    {
-      text: 'nuova valutazione',
-      
-      icon: 'sparkles',
-      handler: () => {
-        this.newEvaluation(student.key);
-      }
-    },
-    {
-      text: 'Archivia',
-      icon: 'archive',
-      handler: () => {
-        console.log("what?")
-      }
-    },
-    {
-      text: 'Annulla',
-      role: 'cancel',
-      icon: 'close'
-    }
-  ]
-});
+    const actionSheet = await this.actionSheetController.create({
+      header: `Studente ${student.lastName} ${student.firstName}`,
+      subHeader: student.lastName || 'Nessuna descrizione',
+      buttons: [
+        {
+          text: 'Modifica',
+          icon: 'eye',
+          handler: () => {
+            this.editStudent(student.key)
+          }
+        },
+        {
+          text: 'nuova valutazione',
 
-await actionSheet.present();
-}
-teacherkey = signal<string>('');
-async addStudent() {
-  console.log("adding student", this.classkey)
-  const modal = await this.$modalController.create({
-    component: UserDialogPage,
-    componentProps: {
-      classKey: this.classkey
-    }
-  });
-  
-  await modal.present();
-  
-  const { data } = await modal.onWillDismiss();
-  if (data) {
-    this.loadStudents(); // Ricarica gli studenti se ne è stato aggiunto uno nuovo
+          icon: 'sparkles',
+          handler: () => {
+            this.newEvaluation(student.key);
+          }
+        },
+        {
+          text: 'Archivia',
+          icon: 'archive',
+          handler: () => {
+            console.log("what?")
+          }
+        },
+        {
+          text: 'Annulla',
+          role: 'cancel',
+          icon: 'close'
+        }
+      ]
+    });
+
+    await actionSheet.present();
   }
-}
+  teacherkey = signal<string>('');
+  async addStudent() {
+    console.log("adding student", this.classkey)
+    const modal = await this.$modalController.create({
+      component: UserDialogPage,
+      componentProps: {
+        classKey: this.classkey
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data) {
+      this.loadStudents(); // Ricarica gli studenti se ne è stato aggiunto uno nuovo
+    }
+  }
   @Input() set classkey(value: string) {
     this._classkey = value;
     if (value) {
@@ -124,22 +131,23 @@ async addStudent() {
   }
   private _classkey: string = '';
   async uploadStudents() {
-const modal = await this.$modalController.create({
-  component: UploadStudentsComponent,
-  componentProps: {
-    classkey: this.classkey
+    const modal = await this.$modalController.create({
+      component: UploadStudentsComponent,
+      componentProps: {
+        classkey: this.classkey
+      }
+    });
+    await modal.present();
   }
-});
-await modal.present();
-}
-async newEvaluation(studentKey: string) {
-  const teacher = await this.$users.getLoggedUser()
-  console.log('🔄 ListStudent4classComponent - newEvaluation');
-  this.router.navigate(['/evaluation',studentKey,this.classkey,teacher?.key]);
-}
+  async newEvaluation(studentKey: string) {
+    const teacher = await this.$users.getLoggedUser()
+    console.log('🔄 ListStudent4classComponent - newEvaluation');
+    this.router.navigate(['/evaluation', studentKey, this.classkey, teacher?.key]);
+  }
 
   constructor(
     private $users: UsersService,
+    private $evaluations: EvaluationService,
     private router: Router,
     private actionSheetController: ActionSheetController,
     private $modalController: ModalController,
@@ -152,29 +160,50 @@ async newEvaluation(studentKey: string) {
 
 
 
-  
-    
+
+
     // Verifica che il componente venga effettivamente caricato
     setTimeout(() => {
-      console.log('🔍 Controlla se il componente è nel DOM con:', 
+      console.log('🔍 Controlla se il componente è nel DOM con:',
         'document.querySelector(\'app-list-student4class\')');
-      console.log('📋 Controlla il template con:', 
+      console.log('📋 Controlla il template con:',
         'document.querySelector(\'app-list-student4class\')?.innerHTML');
     }, 1000);
   }
 
 
-deleteStudent(arg0: string) {
-throw new Error('Method not implemented.');
-}
-editStudent(arg0: string) {
-this.router.navigate(['/user-dialog',arg0]);
-}
+  deleteStudent(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
+  editStudent(arg0: string) {
+    this.router.navigate(['/user-dialog', arg0]);
+  }
 
   readonly _students = signal<UserModel[]>([]);
-  sortedStudents = computed(() => {
+  readonly studentAverages = signal<Map<string, number>>(new Map());
+  readonly filterType = signal<string>('all');
+
+  filteredStudents = computed(() => {
+    const students = this._students();
+    const averages = this.studentAverages();
+    const filter = this.filterType();
+
+    let filtered = students;
+
+    if (filter === 'insufficient') {
+      filtered = students.filter(s => {
+        const avg = averages.get(s.key);
+        return avg !== undefined && avg < 6;
+      });
+    } else if (filter === 'sufficient') {
+      filtered = students.filter(s => {
+        const avg = averages.get(s.key);
+        return avg !== undefined && avg >= 6;
+      });
+    }
+
     const makeFullName = (user: UserModel) => `${user.lastName} ${user.firstName}`;
-    return this._students().sort((a, b) => makeFullName(a).localeCompare(makeFullName(b)));
+    return filtered.sort((a, b) => makeFullName(a).localeCompare(makeFullName(b)));
   });
 
   get students(): UserModel[] {
@@ -186,14 +215,14 @@ this.router.navigate(['/user-dialog',arg0]);
   }
 
   async ngOnInit() {
-    const teacher =await  this.$users.getLoggedUser();
-    if (teacher) {  
+    const teacher = await this.$users.getLoggedUser();
+    if (teacher) {
       console.log("teacher key# in listStudent4class", teacher.key)
-    this.teacherkey.set(teacher.key);  
-  }
+      this.teacherkey.set(teacher.key);
+    }
     if (this.classkey) {
       this.loadStudents();
-    
+
     }
   }
 
@@ -206,6 +235,20 @@ this.router.navigate(['/user-dialog',arg0]);
   private loadStudents() {
     this.$users.getUsersByClass(this.classkey, (users: UserModel[]) => {
       this.setStudents(users);
+      // Carica le medie per tutti gli studenti
+      users.forEach(student => {
+        this.$evaluations.fetchAverageGrade4StudentAndTeacher(
+          student.key,
+          this.teacherkey(),
+          (average) => {
+            this.studentAverages.update(map => {
+              const newMap = new Map(map);
+              newMap.set(student.key, average);
+              return newMap;
+            });
+          }
+        );
+      });
     });
   }
 
