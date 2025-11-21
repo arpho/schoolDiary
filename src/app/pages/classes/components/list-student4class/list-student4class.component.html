@@ -7,26 +7,33 @@
     </ion-button>
   </div>
 
+  <div class="filter-container" style="padding: 0 16px;">
+    <ion-select [ngModel]="filterType()" (ngModelChange)="filterType.set($event)" interface="popover"
+      placeholder="Filtra per media">
+      <ion-select-option value="all">Tutti</ion-select-option>
+      <ion-select-option value="insufficient">Insufficienti (< 6)</ion-select-option>
+          <ion-select-option value="sufficient">Sufficienti (>= 6)</ion-select-option>
+    </ion-select>
+  </div>
+
   <div class="student-list">
     <ion-list class="centered-list">
-      @for (student of sortedStudents(); track student.key) {
-        <ion-item class="student-item" (click)="showActionSheet(student)">
-          <ion-card class="student-card">
-            <ion-card-header>
-              <ion-card-title>{{student.lastName}} {{student.firstName}}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <app-student-average-grade-display 
-                [student]="student" 
-                [teacherkey]="teacherkey()">
-              </app-student-average-grade-display>
-            </ion-card-content>
-          </ion-card>
-        </ion-item>
+      @for (student of filteredStudents(); track student.key) {
+      <ion-item class="student-item" (click)="showActionSheet(student)">
+        <ion-card class="student-card">
+          <ion-card-header>
+            <ion-card-title>{{student.lastName}} {{student.firstName}}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()">
+            </app-student-average-grade-display>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
       } @empty {
-        <div class="empty-state">
-          <p>Nessuno studente presente</p>
-        </div>
+      <div class="empty-state">
+        <p>Nessuno studente presente</p>
+      </div>
       }
     </ion-list>
   </div>
