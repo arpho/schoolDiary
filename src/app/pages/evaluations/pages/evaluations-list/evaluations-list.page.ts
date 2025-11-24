@@ -1,8 +1,9 @@
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar,
-   IonList,
+import {
+  IonContent, IonHeader, IonTitle, IonToolbar,
+  IonList,
   IonItem,
   IonLabel,
   IonFab,
@@ -14,21 +15,24 @@ import { IonContent, IonHeader, IonTitle, IonToolbar,
   IonButton,
   IonBadge,
   ModalController,
-  PopoverController } from '@ionic/angular/standalone';
+  PopoverController
+} from '@ionic/angular/standalone';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
 import { Evaluation } from '../../models/evaluation';
 import { addIcons } from 'ionicons';
 import {
-   create,
-   archive,
-   ellipsisVertical,
-   trash,
-   close,
-   print,
-   filter } from 'ionicons/icons';
+  create,
+  archive,
+  ellipsisVertical,
+  trash,
+  eye,
+  close,
+  print,
+  filter
+} from 'ionicons/icons';
 import { EvaluationDialogPage } from '../../evaluation-dialog/evaluation-dialog.page';
 import { Evaluation2PdfComponent } from '../../components/evaluation2-pdf/evaluation2-pdf.component';
-import { FilterPopupComponent } from '../../components/filterPopup/filter-popup/filter-popup.component';                     
+import { FilterPopupComponent } from '../../components/filterPopup/filter-popup/filter-popup.component';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -58,16 +62,16 @@ import { UsersRole } from 'src/app/shared/models/usersRole';
     IonBackButton,
     IonButton,
     IonBadge,
-    
-]
+
+  ]
 })
 export class EvaluationsListPage implements OnInit {
-userCanEdit(evaluation: Evaluation) {
-return this.loggedUser()?.role === UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
-}
-viewEvaluation(evaluation: Evaluation) {
-console.log("viewEvaluation", evaluation);
-}
+  userCanEdit(evaluation: Evaluation) {
+    return this.loggedUser()?.role === UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
+  }
+  viewEvaluation(evaluation: Evaluation) {
+    console.log("viewEvaluation", evaluation);
+  }
   filterSignal = signal<QueryCondition[]>([])
   listaClassi = signal<ClasseModel[]>([])
   listaStudenti = signal<UserModel[]>([])
@@ -79,7 +83,7 @@ console.log("viewEvaluation", evaluation);
     private $users: UsersService,
     private $classi: ClassiService,
     private $activities: ActivitiesService
-  ) { 
+  ) {
     addIcons({
       create,
       archive,
@@ -102,7 +106,7 @@ console.log("viewEvaluation", evaluation);
           }, queryConditions);
           this.$service.getEvaluationsOnRealtime((evaluations: Evaluation[]) => {
             this.evaluationsList.set(evaluations);
-          },this.filterSignal());
+          }, this.filterSignal());
         }
         // aggiorno la lista studenti per classe
         this.$users.getUsersByClass(classKey, (students: UserModel[]) => {
@@ -116,30 +120,30 @@ console.log("viewEvaluation", evaluation);
   badgefilter = computed(() => this.filterSignal().length);
   async openFilterPopup(event: Event) {
     console.log('Opening filter popup');
- const popover = await this.popOverCtrl.create({
-  component: FilterPopupComponent,
-  event,
-  translucent: true,
-  componentProps: {
-    filter: this.filterSignal,
-    listaClassi: this.listaClassi,
-    listaAttivita: this.listaAttivita,
-    listaStudenti: this.listaStudenti
+    const popover = await this.popOverCtrl.create({
+      component: FilterPopupComponent,
+      event,
+      translucent: true,
+      componentProps: {
+        filter: this.filterSignal,
+        listaClassi: this.listaClassi,
+        listaAttivita: this.listaAttivita,
+        listaStudenti: this.listaStudenti
+      }
+    });
+    await popover.present();
   }
-});
-await popover.present();
-}
 
   async evaluationPdf(valutazione: Evaluation) {
-console.log("evaluationPdf", valutazione);
-const modal = await this.modalCtrl.create({
-  component: Evaluation2PdfComponent,
-  componentProps: {
-    evaluation: valutazione
+    console.log("evaluationPdf", valutazione);
+    const modal = await this.modalCtrl.create({
+      component: Evaluation2PdfComponent,
+      componentProps: {
+        evaluation: valutazione
+      }
+    });
+    await modal.present();
   }
-});
-await modal.present(); 
-}
   evaluationsList = signal<Evaluation[]>([]);
 
   private modalCtrl = inject(ModalController);
@@ -149,18 +153,18 @@ await modal.present();
     const user = await this.$users.getLoggedUser();
     this.loggedUser.set(user);
     console.log("user", user)
-    if(user?.classesKey){
+    if (user?.classesKey) {
       const classi = user.classesKey.map(classKey => this.$classi.fetchClasseOnCache(classKey))
-      .filter((classe): classe is ClasseModel => classe !== undefined);
+        .filter((classe): classe is ClasseModel => classe !== undefined);
       this.listaClassi.set(classi);
       console.log("classi", classi)
       this.listaClassi.set(classi);
-       const activitiesQuery: QueryCondition[] = [];
-     
-       this.$activities.getActivities4teacherOnRealtime(user?.key, (activities: ActivityModel[]) => {
+      const activitiesQuery: QueryCondition[] = [];
+
+      this.$activities.getActivities4teacherOnRealtime(user?.key, (activities: ActivityModel[]) => {
         console.log("activities", activities);
         this.listaAttivita.set(activities);
-       })
+      })
     }
     this.$service.getEvaluationsOnRealtime((evaluations: Evaluation[]) => {
       console.log("evaluations", evaluations);

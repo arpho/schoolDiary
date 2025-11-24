@@ -63,7 +63,7 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
     IonItemOption
   ]
 })
-export class AgendaDisplayComponent implements OnChanges {
+export class AgendaDisplayComponent {
   @Input() classKey?: string;
   @Input() teacherKey!: string;
 
@@ -77,17 +77,9 @@ export class AgendaDisplayComponent implements OnChanges {
     addIcons({ bookOutline, helpCircleOutline, documentTextOutline, createOutline, trashOutline, peopleOutline });
   }
 
-  ngOnChanges() {
-    if (this.teacherKey) {
-      this.loadEvents();
-    }
-  }
 
-  loadEvents() {
-    this.agendaService.getEvents(this.teacherKey, this.classKey).subscribe(events => {
-      this.events.set(events);
-    });
-  }
+
+
 
   getIcon(type: string) {
     switch (type) {

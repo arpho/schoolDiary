@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>agenda</ion-title>
+    <ion-title align="center">agenda</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -10,4 +13,5 @@
       <ion-title size="large">agenda</ion-title>
     </ion-toolbar>
   </ion-header>
+  <app-display-agenda4-classes [targetedClasses]="targetedClasses()"></app-display-agenda4-classes>
 </ion-content>

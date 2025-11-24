@@ -1,43 +1,46 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton } from '@ionic/angular/standalone';
 import { AgendaDisplayComponent } from '../../shared/components/agenda-display/agenda-display.component';
 import { UsersService } from '../../shared/services/users.service';
+import { DisplayAgenda4ClassesComponent } from './components/display-agenda4-classes/display-agenda4-classes.component';
 
 @Component({
   selector: 'app-agenda',
-  template: `
-    <ion-header [translucent]="true">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/dashboard"></ion-back-button>
-        </ion-buttons>
-        <ion-title>Agenda Globale</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content [fullscreen]="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Agenda Globale</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <app-agenda-display *ngIf="teacherKey()" [teacherKey]="teacherKey()"></app-agenda-display>
-    </ion-content>
-  `,
+  templateUrl: './agenda.page.html',
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, AgendaDisplayComponent, IonButtons, IonBackButton]
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    CommonModule,
+    FormsModule,
+    AgendaDisplayComponent,
+    IonButtons,
+    IonBackButton,
+    DisplayAgenda4ClassesComponent]
 })
 export class AgendaPage implements OnInit {
   private usersService = inject(UsersService);
   teacherKey = signal<string>('');
+  targetedClasses = signal<string[]>([]);
+  constructor() {
+    this.initialize();
+  }
 
-  async ngOnInit() {
+  async initialize() {
     const user = await this.usersService.getLoggedUser();
     if (user) {
       this.teacherKey.set(user.key);
+      console.log("user", user);
+      this.targetedClasses.set(user.classesKey);
     }
+  }
+
+  async ngOnInit() {
+
   }
 }
