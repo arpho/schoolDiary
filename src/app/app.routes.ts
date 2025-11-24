@@ -103,9 +103,5 @@ export const routes: Routes = [
     path: 'evaluations4-student/:studentKey/:teacherKey',
     loadComponent: () => import('./pages/evaluations/pages/evaluations4-student/evaluations4-student.page').then( m => m.Evaluations4StudentPage),
     
-  },
-  {
-    path: 'agenda',
-    loadComponent: () => import('./pages/agenda/agenda.page').then( m => m.AgendaPage)
   }
 ];
