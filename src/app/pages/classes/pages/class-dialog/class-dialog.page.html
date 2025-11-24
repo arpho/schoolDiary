@@ -10,4 +10,27 @@
       <ion-title size="large">classDialog</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <ion-segment [value]="segmentValue()" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="activities">
+      <ion-label>Attività</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="agenda">
+      <ion-label>Agenda</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div *ngIf="segmentValue() === 'activities'">
+    <app-list-activities4class></app-list-activities4class>
+  </div>
+
+  <div *ngIf="segmentValue() === 'agenda'">
+    <app-agenda-display [classKey]="classKey()" [teacherKey]="teacherKey()"></app-agenda-display>
+
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button (click)="addEvent()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </div>
 </ion-content>

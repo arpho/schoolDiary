@@ -2,12 +2,26 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-   IonContent,
-   IonHeader,
-   IonTitle,
-   IonToolbar,
-   IonBackButton } from '@ionic/angular/standalone';
-import { ListActivities4classComponent } from 'pages/classes/components/listActivities4class/list-activities4class/list-activities4class.component';
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonBackButton,
+  IonSegment,
+  IonSegmentButton,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  ModalController
+} from '@ionic/angular/standalone';
+import { ListActivities4classComponent } from '../../components/listActivities4class/list-activities4class/list-activities4class.component';
+import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display/agenda-display.component';
+import { AgendaEventInputComponent } from 'src/app/shared/components/agenda-event-input/agenda-event-input.component';
+import { ActivatedRoute } from '@angular/router';
+import { inject, signal } from '@angular/core';
+import { UsersService } from 'src/app/shared/services/users.service';
+import { addIcons } from 'ionicons';
+import { add } from 'ionicons/icons';
 
 @Component({
   selector: 'app-class-dialog',
@@ -22,14 +36,55 @@ import { ListActivities4classComponent } from 'pages/classes/components/listActi
     CommonModule,
     FormsModule,
     IonBackButton,
-    ListActivities4classComponent
+    IonBackButton,
+    ListActivities4classComponent,
+    IonSegment,
+    IonSegmentButton,
+    AgendaDisplayComponent,
+    IonFab,
+    IonFabButton,
+    IonIcon
   ]
 })
 export class ClassDialogPage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private usersService = inject(UsersService);
+  private modalCtrl = inject(ModalController);
 
-  constructor() { }
+  segmentValue = signal<'activities' | 'agenda'>('activities');
+  classKey = signal<string>('');
+  teacherKey = signal<string>('');
 
-  ngOnInit() {
+  constructor() {
+    addIcons({ add });
   }
+
+  async ngOnInit() {
+    this.classKey.set(this.route.snapshot.paramMap.get('key') || '');
+    const user = await this.usersService.getLoggedUser();
+    if (user) {
+      this.teacherKey.set(user.key);
+    }
+  }
+
+  segmentChanged(ev: any) {
+    this.segmentValue.set(ev.detail.value);
+  }
+
+  async addEvent() {
+    const modal = await this.modalCtrl.create({
+      component: AgendaEventInputComponent,
+      componentProps: {
+        classKey: this.classKey(),
+        teacherKey: this.teacherKey()
+      }
+    });
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    if (role === 'confirm') {
+      // Refresh logic if needed, but AgendaDisplay listens to Firebase so it should update automatically
+    }
+  }
+
 
 }
