@@ -13,7 +13,6 @@ import {
   deleteDoc
 } from '@angular/fire/firestore';
 import { ClasseModel } from '../models/classModel';
-import { UsersService } from 'src/app/shared/services/users.service';
 
 
 
@@ -23,15 +22,16 @@ import { UsersService } from 'src/app/shared/services/users.service';
 export class ClassiService {
   fetchClasses4teacher(teacherKey: string) {
 
-return [];
+    return [];
 
   }
-   classesOnCache = signal<ClasseModel[]>([]);
+  classesOnCache = signal<ClasseModel[]>([]);
 
   constructor() {
-    this.getClassiOnRealtime((classi) => {
-      this.classesOnCache.set(classi);
-    });
+    // TEMPORARY: Commentato per debug dipendenza circolare
+    // this.getClassiOnRealtime((classi) => {
+    //   this.classesOnCache.set(classi);
+    // });
   }
 
   ngOnInit(): void {

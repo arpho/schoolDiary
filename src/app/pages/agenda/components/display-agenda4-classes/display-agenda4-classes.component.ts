@@ -10,15 +10,20 @@ import { AgendaService } from 'src/app/shared/services/agenda.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
 })
-export class DisplayAgenda4ClassesComponent {
+export class DisplayAgenda4ClassesComponent implements OnInit {
   targetedClasses = input.required<string[]>();
   title = signal<string>('');
   agenda = signal<AgendaEvent[]>([])
-  $agenda = inject(AgendaService)
-  $classes = inject(ClassiService)
   classes: any;
 
-  constructor() {
+  constructor(
+    private $classes: ClassiService,
+    private $agenda: AgendaService
+  ) {
+    console.log("constructor");
+  }
+
+  ngOnInit() {
     this.classes = effect(() => {
       const targetedClasses = this.targetedClasses();
       console.log("classi target", targetedClasses);
@@ -29,10 +34,10 @@ export class DisplayAgenda4ClassesComponent {
       console.log("classi", classes);
       const title = classes.length > 1 ? `agenda per le classi: ${classes.map((classe) => classe?.classe).join(', ')}` : `agenda per ${classes[0]?.classe}`;
       this.title.set(title);
-      this.$agenda.getAgenda4targetedClassesOnrealtime(targetedClasses, (events: AgendaEvent[]) => {
-        console.log("events", events);
-        this.agenda.set(events);
-      });
+      /*      this.$agenda.getAgenda4targetedClassesOnrealtime(targetedClasses, (events: AgendaEvent[]) => {
+             console.log("events", events);
+             this.agenda.set(events);
+           }); */
     });
   }
 

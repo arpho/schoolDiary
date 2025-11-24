@@ -17,7 +17,7 @@ import {
 import { AuthService } from './auth.service';
 import { UserModel } from '../models/userModel';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { ClassiService } from '../../../app/pages/classes/services/classi.service';  
+import { ClassiService } from '../../../app/pages/classes/services/classi.service';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { OrCondition, QueryCondition } from '../models/queryCondition';
 
@@ -44,16 +44,17 @@ export class UsersService implements OnInit {
   constructor(
     private $classes: ClassiService
   ) {
-    // Initialize usersCache with all users
-    this.getUsersOnRealTime((users) => {
-      this.usersOnCache.set(users);
-      // Populate the usersCache Map
-      users.forEach(user => {
-        if (user.key) {
-          this.usersCache.set(user.key, user);
-        }
-      });
-    });
+    // TEMPORARY: Commentato per debug dipendenza circolare
+    // // Initialize usersCache with all users
+    // this.getUsersOnRealTime((users) => {
+    //   this.usersOnCache.set(users);
+    //   // Populate the usersCache Map
+    //   users.forEach(user => {
+    //     if (user.key) {
+    //       this.usersCache.set(user.key, user);
+    //     }
+    //   });
+    // });
   }
 
   updatePassword(user: User, newPassword: string) {
@@ -71,7 +72,7 @@ export class UsersService implements OnInit {
     try {
       const docRef = doc(this.firestore, 'userProfiles', userKey);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         const userData = new UserModel(docSnap.data()).setKey(docSnap.id);
         // Add to cache
@@ -111,17 +112,17 @@ export class UsersService implements OnInit {
             classes.push(classe);
           }
         });
-        
+
         user.classi = classes;
         users.push(user);
       });
-      
+
       callback(users);
     });
   }
 
   ngOnInit(): void {
-    this.getUsersOnRealTime((users)=>{
+    this.getUsersOnRealTime((users) => {
       this.usersOnCache.set(users);
     })
   }
@@ -134,7 +135,7 @@ export class UsersService implements OnInit {
     try {
       const docRef = doc(this.firestore, 'userProfiles', userKey);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         const data = docSnap.data() as UserModel;
         return new UserModel(data).setKey(docSnap.id);
@@ -156,12 +157,12 @@ export class UsersService implements OnInit {
     }
   }
 
-  getUsersOnRealTime(cb: (users: UserModel[]) => void, queryConditions?: QueryCondition[],orConditions?: OrCondition) {
+  getUsersOnRealTime(cb: (users: UserModel[]) => void, queryConditions?: QueryCondition[], orConditions?: OrCondition) {
     let q = query(collection(this.firestore, this.collection));
-    if(queryConditions){
+    if (queryConditions) {
       q = query(q, ...queryConditions?.map((condition) => condition.toWhere()) || []);
-    } 
-    if(orConditions){
+    }
+    if (orConditions) {
       q = query(q, orConditions.toWhere());
       console.log("orConditions", orConditions);
     }
@@ -177,7 +178,7 @@ export class UsersService implements OnInit {
             classes.push(classe);
           }
         });
-        
+
         user.classi = classes;
 
         users.push(user);
@@ -209,18 +210,18 @@ export class UsersService implements OnInit {
       this.MyAuth.getUser().subscribe(async (user) => {
         if (user) {
           const loggedUser = await this.getUserByUid(user.uid);
-if(loggedUser){
-  const classes: ClasseModel[] = [];
-        loggedUser.classes?.forEach((classKey: string) => {
-          const classe = this.$classes.fetchClasseOnCache(classKey);
-          if (classe) {
-            classes.push(classe);
+          if (loggedUser) {
+            const classes: ClasseModel[] = [];
+            loggedUser.classes?.forEach((classKey: string) => {
+              const classe = this.$classes.fetchClasseOnCache(classKey);
+              if (classe) {
+                classes.push(classe);
+              }
+            });
+
+            loggedUser.classi = classes;
           }
-        });
-        
-        loggedUser.classi = classes;
-}
-          
+
           resolve(loggedUser);
         } else {
           resolve(null);
@@ -237,7 +238,7 @@ if(loggedUser){
       const functions = getFunctions();
       const setCustomClaims = httpsCallable(functions, 'setCustomClaims');
 
-      const result = await setCustomClaims({ userKey, claims}) as ClaimsResponse;
+      const result = await setCustomClaims({ userKey, claims }) as ClaimsResponse;
       console.log('Claims response:', result);
 
       if (result.data?.result !== 'ok') {
