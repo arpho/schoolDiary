@@ -21,7 +21,10 @@ export class UserWieverComponent {
   updateUser() {
     const key = this.userkey();
     if (key) {
-      this.user.set(this.usersService.fetchUserOnCache(key));
+      const user = this.usersService.fetchUserOnCache(key);   
+      if(user instanceof UserModel){
+        this.user.set(user);
+      }
     }
   }
 

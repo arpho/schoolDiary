@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, effect, input, OnInit, inject, sign
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { AgendaEvent } from '../../models/agendaEvent';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 
 @Component({
   selector: 'app-display-agenda4-classes',
@@ -19,7 +20,7 @@ export class DisplayAgenda4ClassesComponent implements OnInit {
   title = signal<string>('');
   agenda = signal<AgendaEvent[]>([])
   classes: any;
-
+listaClassi = signal<ClasseModel[]>([]);
   constructor() {
     this.$classes = this.injector.get(ClassiService);
     this.$agenda = this.injector.get(AgendaService);

@@ -174,7 +174,9 @@ return this.user()?.lastName + " " + this.user()?.firstName;
         const user = this.$users.fetchUserOnCache(userKey);
         if (user) {
           console.log("user showed", user);
-          this.user.set(user);
+          if(user instanceof UserModel){
+            this.user.set(user);
+          }
         }
       
       } catch (error) {

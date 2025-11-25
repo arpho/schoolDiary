@@ -70,6 +70,7 @@ export class ActivitiesListPage implements OnInit {
   async newActivity() {
     const user =await  this.usersService.getLoggedUser();
   console.log("user", user);
+  console.log("classi del docente ", user?.lastName, user?.firstName, this.classesList());
     const activity = signal<ActivityModel>(new ActivityModel({
       title: '',
       description: '',

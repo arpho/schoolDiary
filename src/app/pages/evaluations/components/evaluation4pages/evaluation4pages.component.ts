@@ -170,8 +170,7 @@ this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey:
        classKey: this.classKey,
        date: new Date().toISOString()
      }));
-     const classi4Teacher  = teacher?.classesKey.map(classKey => this.$classes.fetchClasseOnCache(classKey))
- 
+     const classi4Teacher  = teacher?.classi;
      const modal = await this.modalCtrl.create({
        component: ActivityDialogComponent,
        componentProps: {

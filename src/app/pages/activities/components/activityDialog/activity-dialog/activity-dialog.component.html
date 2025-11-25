@@ -20,9 +20,11 @@
     <ion-item>
       <ion-label position="floating">Classe</ion-label>
       <ion-select formControlName="classKey">
-        <ion-select-option *ngFor="let classe of listaClassi" [value]="classe.key">
-          {{ classe.classe }} {{ classe.year }}
-        </ion-select-option>
+        @for (classe of listaClassi; track classe.key) {
+          <ion-select-option [value]="classe.key">
+            {{ classe.classe }} {{ classe.year }}
+          </ion-select-option>
+        }
       </ion-select>
     </ion-item>
     <ion-item>
