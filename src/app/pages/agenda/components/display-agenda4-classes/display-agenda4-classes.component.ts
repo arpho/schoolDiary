@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, effect, input, OnInit, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, effect, input, OnInit, inject, signal, Injector } from '@angular/core';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { AgendaEvent } from '../../models/agendaEvent';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
@@ -11,23 +11,28 @@ import { AgendaService } from 'src/app/shared/services/agenda.service';
   standalone: true,
 })
 export class DisplayAgenda4ClassesComponent implements OnInit {
+  private injector = inject(Injector);
+  private $classes?: ClassiService;
+  private $agenda?: AgendaService;
+  
   targetedClasses = input.required<string[]>();
   title = signal<string>('');
   agenda = signal<AgendaEvent[]>([])
   classes: any;
 
-  constructor(
-    private $classes: ClassiService,
-    private $agenda: AgendaService
-  ) {
-    console.log("constructor");
-  }
-
-  ngOnInit() {
+  constructor() {
+    this.$classes = this.injector.get(ClassiService);
+    this.$agenda = this.injector.get(AgendaService);
     this.classes = effect(() => {
       const targetedClasses = this.targetedClasses();
       console.log("classi target", targetedClasses);
+      if(targetedClasses.length>0 &&targetedClasses[0]){
+        console.log("got classi target", targetedClasses);
+      }
       const classes = targetedClasses.map((classKey) => {
+        if (!this.$classes) {
+          throw new Error('ClassiService non inizializzato');
+        } 
         return this.$classes.fetchClasseOnCache(classKey);
       });
 
@@ -39,6 +44,10 @@ export class DisplayAgenda4ClassesComponent implements OnInit {
              this.agenda.set(events);
            }); */
     });
+  }
+
+  ngOnInit() {
+   
   }
 
 }

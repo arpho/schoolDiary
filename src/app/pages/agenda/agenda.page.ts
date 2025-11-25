@@ -36,6 +36,7 @@ export class AgendaPage implements OnInit {
     if (user) {
       this.teacherKey.set(user.key);
       console.log("user", user);
+      console.log("user.classesKey", user.classesKey);
       this.targetedClasses.set(user.classesKey);
     }
   }

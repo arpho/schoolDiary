@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { AgendaEvent } from '../../pages/agenda/models/agendaEvent';
-import { addDoc, collection, CollectionReference, deleteDoc, doc, DocumentData, Firestore, getDocs, orderBy, query, QuerySnapshot, setDoc, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, CollectionReference, deleteDoc, doc, DocumentData, Firestore, getDocs, orderBy, query, QuerySnapshot, setDoc, updateDoc, where } from '@angular/fire/firestore';
 
 @Injectable({
     providedIn: 'root'
