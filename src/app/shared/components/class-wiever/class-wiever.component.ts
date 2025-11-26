@@ -16,10 +16,11 @@ export class ClassViewerComponent {
     this.updateClasse();
   }
 
-  updateClasse() {
+  async updateClasse() {
     const key = this.classkey();
     if (key) {
-      this.classe.set(this.classiService.fetchClasseOnCache(key));
+      const classe = await this.classiService.fetchClasseOnCache(key);
+      this.classe.set(classe);
     }
   }
 

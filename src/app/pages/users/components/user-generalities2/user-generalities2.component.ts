@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
 import { list, save } from 'ionicons/icons/index';
-import {  
+import {
   IonContent,
   IonItem,
   IonLabel,
@@ -75,24 +75,24 @@ import { IonicModule, TextareaChangeEventDetail } from "@ionic/angular";
     IonSelect,
   ]
 })
-export class UserGeneralities2Component  implements OnInit {
+export class UserGeneralities2Component implements OnInit {
   user = input.required<UserModel>();
-userForm: FormGroup
+  userForm: FormGroup
 
-rolesValue: any[] = [];
-rolesName: string[] = [];
-elencoClassi = signal<ClasseModel[]>([]);
+  rolesValue: any[] = [];
+  rolesName: string[] = [];
+  elencoClassi = signal<ClasseModel[]>([]);
 
-usersClasses = signal<ClasseModel[]>([]);
-$UsersRole = UsersRole;
-private destroyRef = inject(DestroyRef);
+  usersClasses = signal<ClasseModel[]>([]);
+  $UsersRole = UsersRole;
+  private destroyRef = inject(DestroyRef);
   constructor(
     private $users: UsersService,
     private $classes: ClassiService,
     private toaster: ToasterService,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef 
-  ) { 
+    private cdr: ChangeDetectorRef
+  ) {
     addIcons({
       'save': 'save-outline',
       'pdf': 'pdf-outline'
@@ -100,23 +100,23 @@ private destroyRef = inject(DestroyRef);
 
 
     // Inizializza la form
-  this.userForm = this.fb.group({
-    firstName: [''],
-    lastName: [''],
-    userName: [''],
-    email: [''],
-    role: [UsersRole.STUDENT],
-    DVA: [false],
-    DSA: [false],
-    BES: [false],
-    ADHD: [false],
-    noteDisabilita: [''],
-    pdpUrl: [''],
-    phoneNumber: [''],
-    birthDate: [''],
-    classKey: [''],
-    classes: [[]]
-  });
+    this.userForm = this.fb.group({
+      firstName: [''],
+      lastName: [''],
+      userName: [''],
+      email: [''],
+      role: [UsersRole.STUDENT],
+      DVA: [false],
+      DSA: [false],
+      BES: [false],
+      ADHD: [false],
+      noteDisabilita: [''],
+      pdpUrl: [''],
+      phoneNumber: [''],
+      birthDate: [''],
+      classKey: [''],
+      classes: [[]]
+    });
 
     effect(() => {
       const user = this.user();
@@ -128,58 +128,54 @@ private destroyRef = inject(DestroyRef);
         console.warn('User is null or undefined*');
       }
     }, { allowSignalWrites: true });
-addIcons({
-  'save':'save-outline',
-  'listCircleOutline':'list-circle-outline',
-});
+    addIcons({
+      'save': 'save-outline',
+      'listCircleOutline': 'list-circle-outline',
+    });
   }
 
-    // Metodo per gestire il cambiamento delle classi
-    onClassesChange(classes: ClasseModel[]) {
-      this.userForm.get('classes')?.setValue(classes);
-    }
+  // Metodo per gestire il cambiamento delle classi
+  onClassesChange(classes: ClasseModel[]) {
+    this.userForm.get('classes')?.setValue(classes);
+  }
 
   onNoteDisabilitaChange($event: IonTextareaCustomEvent<TextareaChangeEventDetail>) {
-  console.log("Note disabilità changed:", $event.detail.value);
-  
-  const value = $event.detail.value;
-  this.userForm.get('noteDisabilita')?.setValue(value);
-  this.userForm.updateValueAndValidity();
+    console.log("Note disabilità changed:", $event.detail.value);
+
+    const value = $event.detail.value;
+    this.userForm.get('noteDisabilita')?.setValue(value);
+    this.userForm.updateValueAndValidity();
   }
 
-    private readonly userEffect = effect(async () => {
-      const loggedUser = await  this.$users.getLoggedUser();
-console.log("logged user*",loggedUser)
-      const user = this.user();
-      if(loggedUser){
+  private readonly userEffect = effect(async () => {
+    const loggedUser = await this.$users.getLoggedUser();
+    console.log("logged user*", loggedUser)
+    const user = this.user();
+    if (loggedUser) {
       this.elencoClassi.set(loggedUser.classi)
-      }
-      console.log("elenco classi*", this.elencoClassi())
-      console.log('User input changed on effect*:', user);
-      if (user.key) {
-        console.log("User key:", user.key);
-        // Update classes from user
-        const classi: ClasseModel[] = [];
-        if (user.classesKey) {
-          user.classesKey.forEach((classKey: string) => {
-            const classe = this.$classes.fetchClasseOnCache(classKey);
-            if (classe) {
-              classi.push(classe);
-            }
-          });
-        }
+    }
+    console.log("elenco classi*", this.elencoClassi())
+    console.log('User input changed on effect*:', user);
+    if (user.key) {
+      console.log("User key:", user.key);
+      // Update classes from user
+      if (user.classesKey) {
+        const classPromises = user.classesKey.map((classKey: string) => this.$classes.fetchClasseOnCache(classKey));
+        const classResults = await Promise.all(classPromises);
+        const classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
         console.log("Classi aggiunte:", classi);
         this.usersClasses.set(classi);
-        this.syncFormWithUser(user);
-        this.logFormState();
       }
-      });
+      this.syncFormWithUser(user);
+      this.logFormState();
+    }
+  });
   ngOnInit() {
     console.log('UserGeneralities2Component - ngOnInit*');
     console.log('User input value on init*:', this.user());
     this.cdr.detectChanges();
     const rolesKey = Object.keys(UsersRole);
-    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
+    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
     console.log("ngOnInit - user:*", this.user());
     this.userForm = this.fb.group({
       firstName: [''],
@@ -202,7 +198,7 @@ console.log("logged user*",loggedUser)
   ngAfterViewInit() {
     console.log('UserGeneralities2Component - ngAfterViewInit');
     console.log('Form controls after view init:', this.userForm.controls);
-    
+
     // Forza un ulteriore controllo dopo l'inizializzazione della vista
     setTimeout(() => {
       console.log('Form values after timeout:', this.userForm.value);
@@ -221,7 +217,7 @@ console.log("logged user*",loggedUser)
 
     const user = new UserModel(userData);
     console.log("User to save:", user.serialize());
-    
+
     const claims = {
       role: user.role,
       classes: user.classes,
@@ -244,8 +240,8 @@ console.log("logged user*",loggedUser)
       .then(() => {
         console.log("User updated successfully");
         this.toaster.presentToast({
-          message: "Utente aggiornato con successo", 
-          duration: 2000, 
+          message: "Utente aggiornato con successo",
+          duration: 2000,
           position: "bottom"
         });
         return this.updateUserClaims(user.key, claims);
@@ -253,8 +249,8 @@ console.log("logged user*",loggedUser)
       .catch(error => {
         console.error("Error updating user:", error);
         this.toaster.presentToast({
-          message: "Errore durante l'aggiornamento dell'utente", 
-          duration: 2000, 
+          message: "Errore durante l'aggiornamento dell'utente",
+          duration: 2000,
           position: "bottom"
         });
       });
@@ -265,8 +261,8 @@ console.log("logged user*",loggedUser)
       .then((data: any) => {
         console.log("User created successfully:", data);
         this.toaster.presentToast({
-          message: "Utente creato con successo", 
-          duration: 2000, 
+          message: "Utente creato con successo",
+          duration: 2000,
           position: "bottom"
         });
         return this.updateUserClaims(user.key, claims);
@@ -274,8 +270,8 @@ console.log("logged user*",loggedUser)
       .catch(error => {
         console.error("Error creating user:", error);
         this.toaster.presentToast({
-          message: "Errore durante la creazione dell'utente", 
-          duration: 2000, 
+          message: "Errore durante la creazione dell'utente",
+          duration: 2000,
           position: "bottom"
         });
       });
@@ -288,16 +284,16 @@ console.log("logged user*",loggedUser)
         const usersClaims = await this.$users.getCustomClaims4LoggedUser();
         console.log("Current user claims:", usersClaims);
         this.toaster.presentToast({
-          message: "Autorizzazioni aggiornate con successo", 
-          duration: 2000, 
+          message: "Autorizzazioni aggiornate con successo",
+          duration: 2000,
           position: "bottom"
         });
       })
       .catch(error => {
         console.error("Error setting claims:", error);
         this.toaster.presentToast({
-          message: "Errore durante l'aggiornamento delle autorizzazioni", 
-          duration: 2000, 
+          message: "Errore durante l'aggiornamento delle autorizzazioni",
+          duration: 2000,
           position: "bottom"
         });
       });
@@ -307,21 +303,21 @@ console.log("logged user*",loggedUser)
 
   getErrorMessage(controlName: string): string {
     const control = this.userForm.get(controlName);
-    
+
     if (!control || !control.errors) return '';
-  
+
     if (control.hasError('required')) {
       return 'Campo obbligatorio';
     }
-  
+
     if (control.hasError('email')) {
       return 'Inserisci un indirizzo email valido';
     }
-  
+
     if (control.hasError('minlength')) {
       return `Minimo ${control.getError('minlength').requiredLength} caratteri richiesti`;
     }
-  
+
     return 'Campo non valido';
   }
 
@@ -358,36 +354,36 @@ console.log("logged user*",loggedUser)
       console.error('Form non inizializzata!*');
       return;
     }
-  
+
     console.log("Form controls before patch:*", Object.keys(this.userForm.controls));
-    
-    if(user.key){
-      try{
-    this.userForm.patchValue({  
-      firstName: user.firstName || '',
-      lastName: user.lastName || '',
-      userName: user.userName || '',
-      email: user.email || '',
-      role: user.role || UsersRole.STUDENT,
-      DVA: user.DVA || false,
-      DSA: user.DSA || false,
-      BES: user.BES || false,
-      ADHD: user.ADHD || false,
-      noteDisabilita: user.noteDisabilita || '',
-      pdpUrl: user.pdpUrl || '',
-      phoneNumber: user.phoneNumber || '',
-      birthDate: user.birthDate || '',
-      classKey: user.classKey || '',
-      classes: user.classesKey || []
-    }, { emitEvent: false });  // Aggiungi emitEvent: false
-    this.cdr.detectChanges();  // Forza il rilevamento delle modifiche
-    this.userForm.updateValueAndValidity();
-    console.log("Form dopo la sincronizzazione:*", this.userForm.value)
-    }catch(error){
-      console.error("Error patching form with user:*", error);
+
+    if (user.key) {
+      try {
+        this.userForm.patchValue({
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          userName: user.userName || '',
+          email: user.email || '',
+          role: user.role || UsersRole.STUDENT,
+          DVA: user.DVA || false,
+          DSA: user.DSA || false,
+          BES: user.BES || false,
+          ADHD: user.ADHD || false,
+          noteDisabilita: user.noteDisabilita || '',
+          pdpUrl: user.pdpUrl || '',
+          phoneNumber: user.phoneNumber || '',
+          birthDate: user.birthDate || '',
+          classKey: user.classKey || '',
+          classes: user.classesKey || []
+        }, { emitEvent: false });  // Aggiungi emitEvent: false
+        this.cdr.detectChanges();  // Forza il rilevamento delle modifiche
+        this.userForm.updateValueAndValidity();
+        console.log("Form dopo la sincronizzazione:*", this.userForm.value)
+      } catch (error) {
+        console.error("Error patching form with user:*", error);
+      }
     }
-    }
-    else{
+    else {
       console.warn("User is null or undefined*");
     }
   }

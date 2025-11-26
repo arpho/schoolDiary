@@ -28,18 +28,27 @@ export class ClassiService {
   classesOnCache = signal<ClasseModel[]>([]);
 
   constructor() {
-    // TEMPORARY: Commentato per debug dipendenza circolare
-    // this.getClassiOnRealtime((classi) => {
-    //   this.classesOnCache.set(classi);
-    // });
+    this.getClassiOnRealtime((classi) => {
+      this.classesOnCache.set(classi);
+    });
   }
 
   ngOnInit(): void {
     // Already initialized in constructor
   }
 
-  fetchClasseOnCache(classKey: string): ClasseModel | undefined {
-    const classe = this.classesOnCache().find(classe => classe.key === classKey);
+  async fetchClasseOnCache(classKey: string): Promise<ClasseModel> {
+    console.log("getting classKey", classKey);
+    let classe = this.classesOnCache().find(classe => classe.key === classKey);
+    console.log("classe", classe);
+    if (!classe) {
+      console.log("classe non trovata in cache, cerco su firestore");
+      classe = await this.fetchClasse(classKey);
+      if (classe !== undefined) {
+        this.classesOnCache.update(classi => [...classi, classe!]);
+      }
+
+    }
     return classe;
   }
   fetchClasses(classes: string[]) {
@@ -61,8 +70,8 @@ export class ClassiService {
     }
 
     const docRef = doc(this.firestore, this.collection, classKey);
-    classe.archived = true;
-    return setDoc(docRef, classe.serialize(), { merge: true });
+    (await classe).archived = true;
+    return setDoc(docRef, (await classe).serialize(), { merge: true });
   }
 
   async fetchClasse(classeKey: string) {

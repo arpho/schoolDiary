@@ -37,11 +37,11 @@ import { DatePipe } from '@angular/common';
     IonCardSubtitle,
     IonButton,
     DatePipe
-]
+  ]
 })
 export class ActivitiesListPage implements OnInit {
 
-  activity = signal<ActivityModel >(new ActivityModel({
+  activity = signal<ActivityModel>(new ActivityModel({
     title: '',
     description: '',
     classKey: '',
@@ -53,30 +53,31 @@ export class ActivitiesListPage implements OnInit {
   private classiService = inject(ClassiService);
   private classesList = signal<ClasseModel[]>([]);
   private modalController = inject(ModalController);
-  
 
-  constructor() { 
 
-    effect(() => {
+  constructor() {
+
+    effect(async () => {
       const user = this.loggedUser();
       if (user?.classes) {
         const classKeys = user.classesKey as string[];
-        const classi = classKeys.map(classKey => this.classiService.fetchClasseOnCache(classKey))
-          .filter((classe): classe is ClasseModel => classe !== undefined);
-        this.classesList.set(classi);    
+        const classPromises = classKeys.map((classKey) => this.classiService.fetchClasseOnCache(classKey));
+        const classResults = await Promise.all(classPromises);
+        const classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
+        this.classesList.set(classi);
       }
     });
   }
   async newActivity() {
-    const user =await  this.usersService.getLoggedUser();
-  console.log("user", user);
-  console.log("classi del docente ", user?.lastName, user?.firstName, this.classesList());
+    const user = await this.usersService.getLoggedUser();
+    console.log("user", user);
+    console.log("classi del docente ", user?.lastName, user?.firstName, this.classesList());
     const activity = signal<ActivityModel>(new ActivityModel({
       title: '',
       description: '',
       classKey: '',
       date: new Date().toISOString(),
-      teacherKey: user?.key || '' 
+      teacherKey: user?.key || ''
     }).setTeacherKey(user?.key || ''));
     const modal = await this.modalController.create({
       component: ActivityDialogComponent,
@@ -89,14 +90,14 @@ export class ActivitiesListPage implements OnInit {
     const result = await modal.onDidDismiss();
     if (result.data) {
       console.log("local activity", activity());
-console.log("dismissed activity", result.data);
-this.activitiesService.addActivity(activity());
+      console.log("dismissed activity", result.data);
+      this.activitiesService.addActivity(activity());
     }
   }
 
   activitiesList = signal<ActivityModel[]>([]);
   loggedUser = signal<UserModel | null>(null);
-  
+
   seeClass(classKey: string): string {
     const classe = this.classesList().find(classe => classe.key === classKey);
     return `${classe?.classe} ${classe?.year}`;
@@ -118,7 +119,7 @@ this.activitiesService.addActivity(activity());
             console.log("activities", activities);
             this.activitiesList.set(activities);
           },
-           [new QueryCondition('classKey', 'in', classKey)] 
+          [new QueryCondition('classKey', 'in', classKey)]
         );
       }
     });

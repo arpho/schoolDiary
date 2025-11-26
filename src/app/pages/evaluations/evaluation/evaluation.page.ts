@@ -24,7 +24,7 @@ import {
   IonList,
   IonTextarea,
   IonFab,
-  IonFabButton, 
+  IonFabButton,
   IonIcon,
   IonBackButton,
   IonNote,
@@ -87,7 +87,7 @@ export class EvaluationPage implements OnInit {
   evaluationParam = input<Evaluation>(new Evaluation());
   teacherKey = signal<string>("");
   evaluationKey = signal<string>("");
-isModal = input<boolean>(false);
+  isModal = input<boolean>(false);
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -114,35 +114,35 @@ isModal = input<boolean>(false);
 
 
     // 2. Effect - Reagisce ai cambiamenti dell'input parameter
-effect(() => {
-  const evaluationData = this.evaluationParam();
-  const isModal = this.isModal();
-  if (evaluationData) {
-    console.log("evaluationData*", evaluationData);
-    console.log(" è modal*", isModal);
-    this.evaluationKey.set(evaluationData.key);
-    this.grid.set(evaluationData.grid);
-      // Aggiorna il form con i dati della valutazione
-    this.classKey = evaluationData.classKey;
-    this.teacherKey.set(evaluationData.teacherKey);
-    this.loadActivitiesForClass(this.classKey, this.teacherKey());
-    this.evaluationform.patchValue({
-      description: evaluationData.description,
-      note: evaluationData.note,
-      data: evaluationData.data,
-      grid: evaluationData.gridsKey,
-      activityKey: evaluationData.activityKey,
-      classKey: evaluationData.classKey,
-      studentKey: evaluationData.studentKey
-      // ... altri campi
+    effect(() => {
+      const evaluationData = this.evaluationParam();
+      const isModal = this.isModal();
+      if (evaluationData) {
+        console.log("evaluationData*", evaluationData);
+        console.log(" è modal*", isModal);
+        this.evaluationKey.set(evaluationData.key);
+        this.grid.set(evaluationData.grid);
+        // Aggiorna il form con i dati della valutazione
+        this.classKey = evaluationData.classKey;
+        this.teacherKey.set(evaluationData.teacherKey);
+        this.loadActivitiesForClass(this.classKey, this.teacherKey());
+        this.evaluationform.patchValue({
+          description: evaluationData.description,
+          note: evaluationData.note,
+          data: evaluationData.data,
+          grid: evaluationData.gridsKey,
+          activityKey: evaluationData.activityKey,
+          classKey: evaluationData.classKey,
+          studentKey: evaluationData.studentKey
+          // ... altri campi
+        });
+
+        // Imposta il titolo corretto
+        if (evaluationData.key) {
+          this.title.set("Modifica valutazione");
+        }
+      }
     });
-    
-    // Imposta il titolo corretto
-    if (evaluationData.key) {
-      this.title.set("Modifica valutazione");
-    }
-  }
-});
   }
   loadActivitiesForClass(classKey: string, teacherKey: string) {
     console.log("loadActivitiesForClass*", classKey);
@@ -164,7 +164,7 @@ effect(() => {
   activities = signal<ActivityModel[]>([]);
   // Aggiungo un segnale per tenere traccia della validità della griglia
   isGridValid = signal<boolean>(false);
-  
+
   // Inizializzo il form nel costruttore invece che nella dichiarazione
   evaluationform!: FormGroup;
   // Inizializza il form
@@ -184,7 +184,7 @@ effect(() => {
   private gridValidator() {
     return (control: any) => {
       if (!(control instanceof FormGroup)) return null;
-      
+
       const gridControl = control.get('grid');
       if (gridControl?.value && !this.isGridValid()) {
         return { gridInvalid: true };
@@ -201,7 +201,7 @@ effect(() => {
   }
 
   title = signal('');
-  
+
   classKey: string = '';
   studentKey: string = '';
   activityKey: string = '';
@@ -218,7 +218,7 @@ effect(() => {
     console.log("paramClassKey*", paramClassKey);
     console.log("classKey*", this.classKey);
     console.log("studentKey*", this.studentKey);
-//    this.loadActivitiesForClass(this.classKey, this.teacherKey());
+    //    this.loadActivitiesForClass(this.classKey, this.teacherKey());
     const user = await this.$users.getLoggedUser();
 
     if (user) {
@@ -323,10 +323,10 @@ effect(() => {
         if (this.grid()) {
           newEvaluation.grid = this.grid();
         }
-if (this.evaluationKey()) {
-  console.log("edited evaluation");
+        if (this.evaluationKey()) {
+          console.log("edited evaluation");
           newEvaluation.key = this.evaluationKey();
-         
+
           await this.evaluationService.updateEvaluation(newEvaluation);
         } else {
           console.log("new evaluation");
@@ -361,8 +361,9 @@ if (this.evaluationKey()) {
     let classi: ClasseModel[] = [];
     if (user?.classes) {
       const classKeys = user.classesKey;
-      classi = classKeys.map(classKey => this.classiService.fetchClasseOnCache(classKey))
-        .filter((classe): classe is ClasseModel => classe !== undefined);
+      const classPromises = classKeys.map(classKey => this.classiService.fetchClasseOnCache(classKey));
+      const classResults = await Promise.all(classPromises);
+      classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
     }
 
     const activity = signal<ActivityModel>(new ActivityModel({

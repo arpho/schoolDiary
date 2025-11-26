@@ -1,10 +1,10 @@
 import { Subject } from 'rxjs';
-import { 
-  Component, 
-  OnInit, 
-  ChangeDetectionStrategy, 
-  signal, 
-  effect, 
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  signal,
+  effect,
   DestroyRef,
   inject,
   input,
@@ -13,13 +13,13 @@ import {
   model
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { 
-  FormsModule, 
-  ReactiveFormsModule, 
-  FormGroup, 
-  FormBuilder, 
-  Validators, 
-  FormControl 
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  FormBuilder,
+  Validators,
+  FormControl
 } from '@angular/forms';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
@@ -73,16 +73,16 @@ import { IonTextareaCustomEvent } from '@ionic/core';
     ClassesFieldComponent,
     IonToggle
 
-],
+  ],
 })
-export class UserGeneralitiesComponent  implements OnInit {
-onNoteDisabilitaChange($event: IonTextareaCustomEvent<TextareaChangeEventDetail>) {
-console.log("Note disabilità changed:", $event.detail.value);
+export class UserGeneralitiesComponent implements OnInit {
+  onNoteDisabilitaChange($event: IonTextareaCustomEvent<TextareaChangeEventDetail>) {
+    console.log("Note disabilità changed:", $event.detail.value);
 
-const value = $event.detail.value;
-this.userForm.get('noteDisabilita')?.setValue(value);
-this.userForm.updateValueAndValidity();
-}
+    const value = $event.detail.value;
+    this.userForm.get('noteDisabilita')?.setValue(value);
+    this.userForm.updateValueAndValidity();
+  }
   private destroy$ = new Subject<void>();
 
   // Metodo per gestire il cambiamento delle classi
@@ -102,7 +102,7 @@ this.userForm.updateValueAndValidity();
 
     const user = new UserModel(userData);
     console.log("User to save:", user.serialize());
-    
+
     const claims = {
       role: user.role,
       classes: user.classes,
@@ -124,8 +124,8 @@ this.userForm.updateValueAndValidity();
       .then(() => {
         console.log("User updated successfully");
         this.toaster.presentToast({
-          message: "Utente aggiornato con successo", 
-          duration: 2000, 
+          message: "Utente aggiornato con successo",
+          duration: 2000,
           position: "bottom"
         });
         return this.updateUserClaims(user.key, claims);
@@ -133,8 +133,8 @@ this.userForm.updateValueAndValidity();
       .catch(error => {
         console.error("Error updating user:", error);
         this.toaster.presentToast({
-          message: "Errore durante l'aggiornamento dell'utente", 
-          duration: 2000, 
+          message: "Errore durante l'aggiornamento dell'utente",
+          duration: 2000,
           position: "bottom"
         });
       });
@@ -145,8 +145,8 @@ this.userForm.updateValueAndValidity();
       .then((data: any) => {
         console.log("User created successfully:", data);
         this.toaster.presentToast({
-          message: "Utente creato con successo", 
-          duration: 2000, 
+          message: "Utente creato con successo",
+          duration: 2000,
           position: "bottom"
         });
         return this.updateUserClaims(user.key, claims);
@@ -154,8 +154,8 @@ this.userForm.updateValueAndValidity();
       .catch(error => {
         console.error("Error creating user:", error);
         this.toaster.presentToast({
-          message: "Errore durante la creazione dell'utente", 
-          duration: 2000, 
+          message: "Errore durante la creazione dell'utente",
+          duration: 2000,
           position: "bottom"
         });
       });
@@ -168,16 +168,16 @@ this.userForm.updateValueAndValidity();
         const usersClaims = await this.$users.getCustomClaims4LoggedUser();
         console.log("Current user claims:", usersClaims);
         this.toaster.presentToast({
-          message: "Autorizzazioni aggiornate con successo", 
-          duration: 2000, 
+          message: "Autorizzazioni aggiornate con successo",
+          duration: 2000,
           position: "bottom"
         });
       })
       .catch(error => {
         console.error("Error setting claims:", error);
         this.toaster.presentToast({
-          message: "Errore durante l'aggiornamento delle autorizzazioni", 
-          duration: 2000, 
+          message: "Errore durante l'aggiornamento delle autorizzazioni",
+          duration: 2000,
           position: "bottom"
         });
       });
@@ -198,26 +198,22 @@ this.userForm.updateValueAndValidity();
     private $classes: ClassiService,
     private toaster: ToasterService,
     private fb: FormBuilder
-  ) { 
-    effect(() => {
+  ) {
+    effect(async () => {
       const user = this.user();
       console.log('User input changed on effect*:', user);
       if (user) {
         // Update classes from user
-        const classi: ClasseModel[] = [];
         if (user.classesKey) {
-          user.classesKey.forEach((classKey: string) => {
-            const classe = this.$classes.fetchClasseOnCache(classKey);
-            if (classe) {
-              classi.push(classe);
-            }
-          });
+          const classPromises = user.classesKey.map((classKey: string) => this.$classes.fetchClasseOnCache(classKey));
+          const classResults = await Promise.all(classPromises);
+          const classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
+          this.usersClasses.set(classi);
         }
-        this.usersClasses.set(classi);
         this.syncFormWithUser(user);
         this.logFormState();
       }
-    });
+    }, { allowSignalWrites: true });
     // Initialize form
     this.userForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(1)]],
@@ -236,7 +232,7 @@ this.userForm.updateValueAndValidity();
     });
     this.userForm.valueChanges.subscribe(() => {
       console.log('User form changed:', this.userForm.value);
-    }); 
+    });
 
 
     this.userForm.get('noteDisabilita')?.valueChanges.subscribe(value => {
@@ -246,29 +242,29 @@ this.userForm.updateValueAndValidity();
     addIcons({ save });
 
     // Effect to handle user changes
-/*     effect(() => {
-      const user = this.user();
-      console.log("Effect - User changed:", user);
-      
-      if (user) {
-        // Update classes from user
-        const classi: ClasseModel[] = [];
-        if (user.classesKey) {
-          user.classesKey.forEach((classKey: string) => {
-            const classe = this.$classes.fetchClasseOnCache(classKey);
-            if (classe) {
-              classi.push(classe);
+    /*     effect(() => {
+          const user = this.user();
+          console.log("Effect - User changed:", user);
+          
+          if (user) {
+            // Update classes from user
+            const classi: ClasseModel[] = [];
+            if (user.classesKey) {
+              user.classesKey.forEach((classKey: string) => {
+                const classe = this.$classes.fetchClasseOnCache(classKey);
+                if (classe) {
+                  classi.push(classe);
+                }
+              });
             }
-          });
-        }
-        
-        
-        this.usersClasses.set(classi);
-        this.syncFormWithUser(user);
-        this.logFormState();
-      }
-    }); */
-  
+            
+            
+            this.usersClasses.set(classi);
+            this.syncFormWithUser(user);
+            this.logFormState();
+          }
+        }); */
+
   }
 
   logFormState() {
@@ -277,26 +273,26 @@ this.userForm.updateValueAndValidity();
     console.log('Form value:', this.userForm.value);
   }
 
-  
+
 
 
   getErrorMessage(controlName: string): string {
     const control = this.userForm.get(controlName);
-    
+
     if (!control || !control.errors) return '';
-  
+
     if (control.hasError('required')) {
       return 'Campo obbligatorio';
     }
-  
+
     if (control.hasError('email')) {
       return 'Inserisci un indirizzo email valido';
     }
-  
+
     if (control.hasError('minlength')) {
       return `Minimo ${control.getError('minlength').requiredLength} caratteri richiesti`;
     }
-  
+
     return 'Campo non valido';
   }
 
@@ -305,65 +301,63 @@ this.userForm.updateValueAndValidity();
     return control ? control.invalid && (control.dirty || control.touched) : false;
   }
 
-  
 
-  private syncFormWithUser(user: UserModel) {
+
+  private async syncFormWithUser(user: UserModel) {
 
     if (!user) return;
-    console.log('syncFormWithUser called with:', { 
-      user, 
+    console.log('syncFormWithUser called with:', {
+      user,
       noteDisabilita: user.noteDisabilita,
       hasNoteDisabilita: 'noteDisabilita' in user
     });
-  
+
     console.log("Sincronizzazione form con utente:*", user);
-    const classi: ClasseModel[] = [];
-    user.classesKey.forEach((classKey: string) => {
-      const classe = this.$classes.fetchClasseOnCache(classKey);
-      if (classe) {
-        classi.push(classe);
-      }
-    });
-    this.usersClasses.set(classi);
-    if(user.key){
-    this.userForm.patchValue({
-      firstName: user.firstName || '',
-      lastName: user.lastName || '',
-      userName: user.userName || '',
-      email: user.email || '',
-      role: user.role || UsersRole.STUDENT,
-      DVA: user.DVA || false,
-      DSA: user.DSA || false,
-      BES: user.BES || false,
-      noteDisabilita: user.noteDisabilita || '',
-      pdpUrl: user.pdpUrl || '',
-      phoneNumber: user.phoneNumber || '',
-      birthDate: user.birthDate || '',
-      classe: user.classKey || '',
-      classes: user.classesKey || []
-    });
-    this.userForm.updateValueAndValidity();
-    console.log("Form dopo la sincronizzazione:*", this.userForm.value)
+    if (user.classesKey && user.classesKey.length > 0) {
+      const classPromises = user.classesKey.map((classKey: string) => this.$classes.fetchClasseOnCache(classKey));
+      const classResults = await Promise.all(classPromises);
+      const classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
+      this.usersClasses.set(classi);
+    }
+    if (user.key) {
+      this.userForm.patchValue({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        userName: user.userName || '',
+        email: user.email || '',
+        role: user.role || UsersRole.STUDENT,
+        DVA: user.DVA || false,
+        DSA: user.DSA || false,
+        BES: user.BES || false,
+        noteDisabilita: user.noteDisabilita || '',
+        pdpUrl: user.pdpUrl || '',
+        phoneNumber: user.phoneNumber || '',
+        birthDate: user.birthDate || '',
+        classe: user.classKey || '',
+        classes: user.classesKey || []
+      });
+      this.userForm.updateValueAndValidity();
+      console.log("Form dopo la sincronizzazione:*", this.userForm.value)
     }
   }
 
   async ngOnInit() {
     console.log("ngOnInit - user:*", this.user());
-   const loggedUser =await  this.$users.getLoggedUser();
-   if(loggedUser){
-    console.log("user logged", loggedUser)
-    this.elencoClassi.set(loggedUser.classi);
-   console.log("classi in logged user", loggedUser.classi);
-   }
+    const loggedUser = await this.$users.getLoggedUser();
+    if (loggedUser) {
+      console.log("user logged", loggedUser)
+      this.elencoClassi.set(loggedUser.classi);
+      console.log("classi in logged user", loggedUser.classi);
+    }
     const rolesKey = Object.keys(UsersRole);
-    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
+    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
 
-    
+
     // Sincronizza il form con i valori iniziali
 
-    
+
     // Ascolta i cambiamenti del Signal user
-   
+
   }
 
 

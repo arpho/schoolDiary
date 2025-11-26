@@ -15,30 +15,33 @@ export class DisplayAgenda4ClassesComponent implements OnInit {
   private injector = inject(Injector);
   private $classes?: ClassiService;
   private $agenda?: AgendaService;
-  
+
   targetedClasses = input.required<string[]>();
   title = signal<string>('');
   agenda = signal<AgendaEvent[]>([])
   classes: any;
-listaClassi = signal<ClasseModel[]>([]);
+  listaClassi = signal<ClasseModel[]>([]);
   constructor() {
     this.$classes = this.injector.get(ClassiService);
     this.$agenda = this.injector.get(AgendaService);
-    this.classes = effect(() => {
+    this.classes = effect(async () => {
       const targetedClasses = this.targetedClasses();
       console.log("classi target", targetedClasses);
-      if(targetedClasses.length>0 &&targetedClasses[0]){
+      if (targetedClasses.length > 0 && targetedClasses[0]) {
         console.log("got classi target", targetedClasses);
       }
-      const classes = targetedClasses.map((classKey) => {
+      const classPromises = targetedClasses.map((classKey) => {
+        console.log("classKey", classKey);
         if (!this.$classes) {
           throw new Error('ClassiService non inizializzato');
-        } 
+        }
         return this.$classes.fetchClasseOnCache(classKey);
       });
+      const classes = await Promise.all(classPromises);
 
       console.log("classi", classes);
-      const title = classes.length > 1 ? `agenda per le classi: ${classes.map((classe) => classe?.classe).join(', ')}` : `agenda per ${classes[0]?.classe}`;
+      const title = classes.length > 1 ?
+        `agenda per le classi: ${classes.map((classe) => classe?.classe).join(', ')}` : `agenda per ${classes[0]?.classe}`;
       this.title.set(title);
       /*      this.$agenda.getAgenda4targetedClassesOnrealtime(targetedClasses, (events: AgendaEvent[]) => {
              console.log("events", events);
@@ -48,7 +51,7 @@ listaClassi = signal<ClasseModel[]>([]);
   }
 
   ngOnInit() {
-   
+
   }
 
 }

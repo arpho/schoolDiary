@@ -21,7 +21,7 @@ import {
   IonList,
   IonTextarea,
   IonFab,
-  IonFabButton, 
+  IonFabButton,
   IonIcon,
   IonBackButton,
   IonNote,
@@ -64,7 +64,7 @@ import { addIcons } from 'ionicons';
     IonList,
     IonTextarea,
     IonFab,
-    IonFabButton, 
+    IonFabButton,
     IonIcon,
     IonBackButton,
     IonNote,
@@ -74,14 +74,15 @@ import { addIcons } from 'ionicons';
 export class EditEvaluationPage implements OnInit {
   $classes = inject(ClassiService);
   modalCtrl = inject(ModalController);
-async openActivityDialog() {
+  async openActivityDialog() {
     const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
     console.log("teacher", teacher);
     let classi: ClasseModel[] = [];
     if (teacher?.classes) {
       const classKeys = teacher.classesKey;
-      classi = classKeys.map(classKey => this.$classes.fetchClasseOnCache(classKey))
-        .filter((classe): classe is ClasseModel => classe !== undefined);
+      const classPromises = classKeys.map(classKey => this.$classes.fetchClasseOnCache(classKey));
+      const classResults = await Promise.all(classPromises);
+      classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
     }
 
     const activity = signal<ActivityModel>(new ActivityModel({
@@ -89,7 +90,7 @@ async openActivityDialog() {
       classKey: this.classKey,
       date: new Date().toISOString()
     }));
-    const classi4Teacher  = teacher?.classesKey.map(classKey => this.$classes.fetchClasseOnCache(classKey))
+    const classi4Teacher = await Promise.all(teacher?.classesKey.map(classKey => this.$classes.fetchClasseOnCache(classKey)) || [])
     console.log("classi4Teacher", classi4Teacher);
 
     const modal = await this.modalCtrl.create({
@@ -112,38 +113,38 @@ async openActivityDialog() {
       this.evaluationform.updateValueAndValidity();
     }
   }
-updateEvaluation() {
-const evaluation = this.evaluation();
-if (evaluation) {
-  console.log("evaluation before ", evaluation);
-  console.log("evaluationform", this.evaluationform.value);
-evaluation.build(this.evaluationform.value);
-console.log("evaluation after ", evaluation);
-evaluation.grid = this.grid();
-console.log("evaluation grid ", evaluation.grid);
-try{  
-this.$evaluations.updateEvaluation(evaluation);
-this.router.navigate(['/pdf-evaluation', evaluation.key]);
-this.$toaster.presentToast({
-  message: 'Valutazione aggiornata con successo',
-  position: 'top'
-});
-}
-catch(error){
-  console.log("Error updating evaluation:", error);
-}
-}
+  updateEvaluation() {
+    const evaluation = this.evaluation();
+    if (evaluation) {
+      console.log("evaluation before ", evaluation);
+      console.log("evaluationform", this.evaluationform.value);
+      evaluation.build(this.evaluationform.value);
+      console.log("evaluation after ", evaluation);
+      evaluation.grid = this.grid();
+      console.log("evaluation grid ", evaluation.grid);
+      try {
+        this.$evaluations.updateEvaluation(evaluation);
+        this.router.navigate(['/pdf-evaluation', evaluation.key]);
+        this.$toaster.presentToast({
+          message: 'Valutazione aggiornata con successo',
+          position: 'top'
+        });
+      }
+      catch (error) {
+        console.log("Error updating evaluation:", error);
+      }
+    }
 
 
-}
+  }
 
   studentKey = signal<string>("");
   classKey = signal<string>("");
   teacherKey = signal<string>("");
   activities = signal<ActivityModel[]>([]);
   title = signal('');
-    grid = signal<Grids>(new Grids());
-    griglie = signal<Grids[]>([]);
+  grid = signal<Grids>(new Grids());
+  griglie = signal<Grids[]>([]);
   student = signal<UserModel>(new UserModel());
   isGridValid = signal<boolean>(false);
   $users = inject(UsersService);
@@ -154,12 +155,12 @@ catch(error){
   route = inject(ActivatedRoute);
   evaluation = signal<Evaluation | null>(null);
   $evaluation = inject(EvaluationService);
-  
+
   // Form group declaration
   evaluationform: FormGroup;
 
   constructor(private fb: FormBuilder,
-    private router: Router) { 
+    private router: Router) {
     console.log("EditEvaluationPage constructor chiamato");
     addIcons({
       'save': 'save-outline',
@@ -181,32 +182,32 @@ catch(error){
     console.log('ngOnInit - Inizio');
     const evaluationKey = this.route.snapshot.paramMap.get('evaluationKey');
     console.log('Evaluation key:', evaluationKey);
-    
+
     if (evaluationKey) {
       try {
         console.log('Caricamento valutazione...');
         const evaluation = await this.$evaluation.fetchEvaluation(evaluationKey);
         console.log('Evaluation loaded:', JSON.parse(JSON.stringify(evaluation)));
         this.evaluation.set(evaluation);
-        
+
         if (!evaluation) {
           throw new Error('Valutazione non trovata');
         }
-        
+
         // Imposta i segnali prima di inizializzare il form
         this.evaluation.set(evaluation);
         this.classKey.set(evaluation.classKey || '');
         this.teacherKey.set(evaluation.teacherKey || '');
         this.studentKey.set(evaluation.studentKey || '');
         this.grid.set(evaluation.grid || new Grids());
-        
+
         console.log('Segnali impostati:', {
           classKey: this.classKey(),
           teacherKey: this.teacherKey(),
           studentKey: this.studentKey(),
           grid: this.grid()
         });
-        
+
         // Carica le griglie
         this.$grids.getGridsOnRealtime((griglie: Grids[]) => {
           console.log('Griglie caricate:', griglie);
@@ -215,27 +216,27 @@ catch(error){
 
         // Carica le attività per l'insegnante e la classe
         this.$activites.getActivities4teacherOnRealtime(
-          evaluation.teacherKey, 
+          evaluation.teacherKey,
           (activities: ActivityModel[]) => {
             console.log('Activities loaded:', activities);
             this.activities.set(activities);
             // Inizializza il form solo dopo aver caricato tutto
             this.initializeForm(evaluation);
-          }, 
+          },
           [new QueryCondition('classKey', '==', evaluation.classKey)]
         );
       } catch (error) {
         console.error('Error loading evaluation:', error);
-        this.$toaster.presentToast({ 
-          message: 'Errore nel caricamento della valutazione', 
+        this.$toaster.presentToast({
+          message: 'Errore nel caricamento della valutazione',
           position: 'top'
         });
       }
     }
-    
 
 
-}
+
+  }
 
 
 
@@ -245,11 +246,11 @@ catch(error){
       hasGrid: !!evaluation?.grid,
       hasActivities: this.activities().length > 0
     });
-    
+
     // Gestisci la data in base al tipo
     let evaluationDate: Date = new Date();
     const data = evaluation?.data;
-    
+
     if (!data) {
       evaluationDate = new Date();
     } else if (typeof data === 'string') {
@@ -259,7 +260,7 @@ catch(error){
     } else if (data && typeof (data as any).toDate === 'function') {
       evaluationDate = (data as any).toDate();
     }
-    
+
     console.log('Data elaborata:', evaluationDate);
 
     try {
@@ -272,19 +273,19 @@ catch(error){
         classKey: evaluation?.classKey || '',
         studentKey: evaluation?.studentKey || ''
       };
-      
+
       console.log('Valori del form da inizializzare:', formValues);
       console.log('Griglia corrente:', evaluation?.grid);
       this.grid.set(evaluation?.grid);
       console.log('gridKey impostato a:', formValues.gridKey);
-      
+
       console.log('Valori del form da inizializzare:', formValues);
-      
+
       // Update the form with the new values
       this.evaluationform.patchValue(formValues);
       this.evaluationform.setValidators([this.gridValidator()]);
       this.evaluationform.updateValueAndValidity();
-      
+
       console.log('Form aggiornato con valori:', {
         formValue: this.evaluationform.value,
         formStatus: this.evaluationform.status,
@@ -292,37 +293,36 @@ catch(error){
       });
     } catch (error) {
       console.error('Errore durante l\'inizializzazione del form:', error);
-    throw error;
+      throw error;
+    }
   }
-}
 
-    // Validatore personalizzato per la griglia
-    private gridValidator() {
-      return (control: any) => {
-        if (!(control instanceof FormGroup)) return null;
-        
-        const gridControl = control.get('grid');
-        if (gridControl?.value && !this.isGridValid()) {
-          return { gridInvalid: true };
-        }
-        return null;
-      };
-    }
+  // Validatore personalizzato per la griglia
+  private gridValidator() {
+    return (control: any) => {
+      if (!(control instanceof FormGroup)) return null;
 
-    onGridValidityChange(isValid: boolean) {
-      this.isGridValid.set(isValid);
-      // Forza il ricalcolo della validità del form
-      this.evaluationform.updateValueAndValidity();
-    }
+      const gridControl = control.get('grid');
+      if (gridControl?.value && !this.isGridValid()) {
+        return { gridInvalid: true };
+      }
+      return null;
+    };
+  }
+
+  onGridValidityChange(isValid: boolean) {
+    this.isGridValid.set(isValid);
+    // Forza il ricalcolo della validità del form
+    this.evaluationform.updateValueAndValidity();
+  }
 
   // Aggiungi questo metodo per ottenere la griglia selezionata
   getSelectedGrid() {
-    if(this.grid())
-    {return this.grid()}
-    else{
-    const gridKey = this.evaluationform.get('gridKey')?.value;
-    if (!gridKey) return null;
-    return this.griglie().find(g => g.key === gridKey) || null;
+    if (this.grid()) { return this.grid() }
+    else {
+      const gridKey = this.evaluationform.get('gridKey')?.value;
+      if (!gridKey) return null;
+      return this.griglie().find(g => g.key === gridKey) || null;
     }
   }
 }

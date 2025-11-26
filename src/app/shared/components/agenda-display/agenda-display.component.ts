@@ -91,9 +91,19 @@ export class AgendaDisplayComponent {
     }
   }
 
+  private classNamesCache = new Map<string, string>();
+
   getClassName(classKey: string): string {
-    const classe = this.classService.fetchClasseOnCache(classKey);
-    return classe ? `${classe.year} ${classe.classe} ${classe.descrizione}` : classKey;
+    if (!this.classNamesCache.has(classKey)) {
+      // Load asynchronously and store in cache
+      this.classService.fetchClasseOnCache(classKey).then(classe => {
+        if (classe) {
+          this.classNamesCache.set(classKey, `${classe.year} ${classe.classe} ${classe.descrizione}`);
+        }
+      });
+      return classKey; // Return key temporarily while loading
+    }
+    return this.classNamesCache.get(classKey) || classKey;
   }
 
   async editEvent(event: AgendaEvent) {

@@ -154,8 +154,9 @@ export class EvaluationsListPage implements OnInit {
     this.loggedUser.set(user);
     console.log("user", user)
     if (user?.classesKey) {
-      const classi = user.classesKey.map(classKey => this.$classi.fetchClasseOnCache(classKey))
-        .filter((classe): classe is ClasseModel => classe !== undefined);
+      const classPromises = user.classesKey.map(classKey => this.$classi.fetchClasseOnCache(classKey));
+      const classResults = await Promise.all(classPromises);
+      const classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
       this.listaClassi.set(classi);
       console.log("classi", classi)
       this.listaClassi.set(classi);

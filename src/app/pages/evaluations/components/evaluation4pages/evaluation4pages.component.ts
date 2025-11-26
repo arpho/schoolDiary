@@ -24,7 +24,7 @@ import {
   IonList,
   IonTextarea,
   IonFab,
-  IonFabButton, 
+  IonFabButton,
   IonIcon,
   IonBackButton,
   IonNote,
@@ -66,40 +66,40 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
     IonList,
     IonTextarea,
     IonFab,
-    IonFabButton, 
+    IonFabButton,
     IonIcon,
     IonBackButton,
     IonNote,
     EvaluateGridComponent
   ]
 })
-export class Evaluation4pagesComponent  implements OnInit {
+export class Evaluation4pagesComponent implements OnInit {
   studentKey = signal<string>("");
   classKey = signal<string>("");
   teacherKey = signal<string>("");
   activities = signal<ActivityModel[]>([]);
   title = signal('');
-    grid = signal<Grids>(new Grids());
-    griglie = signal<Grids[]>([]);
+  grid = signal<Grids>(new Grids());
+  griglie = signal<Grids[]>([]);
   student = signal<UserModel>(new UserModel());
   isGridValid = signal<boolean>(false);
   $users = inject(UsersService);
-    // Inizializzo il form nel costruttore invece che nella dichiarazione
-    evaluationform!: FormGroup;
-      $evaluations = inject(EvaluationService);
-   private $toaster = inject(ToasterService);
-    // Inizializza il form
-    private initializeForm() {
-      this.evaluationform = this.fb.group({
-        description: [''],
-        note: [''],
-        data: [new Date().toISOString()],
-        grid: [''],
-        activityKey: [''],
-        classKey: [this.classKey],
-        studentKey: [this.studentKey]
-      }, { validators: [this.gridValidator()] });
-    }
+  // Inizializzo il form nel costruttore invece che nella dichiarazione
+  evaluationform!: FormGroup;
+  $evaluations = inject(EvaluationService);
+  private $toaster = inject(ToasterService);
+  // Inizializza il form
+  private initializeForm() {
+    this.evaluationform = this.fb.group({
+      description: [''],
+      note: [''],
+      data: [new Date().toISOString()],
+      grid: [''],
+      activityKey: [''],
+      classKey: [this.classKey],
+      studentKey: [this.studentKey]
+    }, { validators: [this.gridValidator()] });
+  }
   constructor(private route: ActivatedRoute,
     private fb: FormBuilder,
     private $activites: ActivitiesService,
@@ -107,7 +107,7 @@ export class Evaluation4pagesComponent  implements OnInit {
     private modalCtrl: ModalController,
     private $classes: ClassiService,
     private router: Router
-  ) { 
+  ) {
     addIcons({
       save,
     });
@@ -120,77 +120,77 @@ export class Evaluation4pagesComponent  implements OnInit {
 
   async ngOnInit() {
     const classKey = this.route.snapshot.paramMap.get('classKey');
-      const studentKey = this.route.snapshot.paramMap.get('studentKey');
-      const teacherKey = this.route.snapshot.paramMap.get('teacherKey');
-      console.log(classKey, studentKey, teacherKey);
-      this.classKey.set(classKey!);
-      this.studentKey.set(studentKey!);
-      this.teacherKey.set(teacherKey!);
-      this.$activites.getActivities4teacherOnRealtime(teacherKey!, (activities: ActivityModel[]) => {
-        console.log("activities", activities);
-        this.activities.set(activities);
-      },[new QueryCondition("classKey", "==", classKey!)]);
-const student = await this.$users.getUser(studentKey!);
-if(student  != null){
-  this.student.set(student);
-  this.title.set("Valutazione studente " + student.lastName + " " + student.firstName);
-}
-this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
-  if (gridKey) {
-    const grid = this.griglie().find((grid) => grid.key === gridKey);
-    if (grid) {
-      this.grid.set(grid);
+    const studentKey = this.route.snapshot.paramMap.get('studentKey');
+    const teacherKey = this.route.snapshot.paramMap.get('teacherKey');
+    console.log(classKey, studentKey, teacherKey);
+    this.classKey.set(classKey!);
+    this.studentKey.set(studentKey!);
+    this.teacherKey.set(teacherKey!);
+    this.$activites.getActivities4teacherOnRealtime(teacherKey!, (activities: ActivityModel[]) => {
+      console.log("activities", activities);
+      this.activities.set(activities);
+    }, [new QueryCondition("classKey", "==", classKey!)]);
+    const student = await this.$users.getUser(studentKey!);
+    if (student != null) {
+      this.student.set(student);
+      this.title.set("Valutazione studente " + student.lastName + " " + student.firstName);
     }
-  }
-});
-this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
-  if (activityKey) {
-    const activity = this.activities().find((activity) => activity.key === activityKey);
-    if (activity) {
-      console.log("activity", activity);
-      this.evaluationform.controls['description'].setValue(activity.title);
-    }
-  }
-});
+    this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
+      if (gridKey) {
+        const grid = this.griglie().find((grid) => grid.key === gridKey);
+        if (grid) {
+          this.grid.set(grid);
+        }
+      }
+    });
+    this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
+      if (activityKey) {
+        const activity = this.activities().find((activity) => activity.key === activityKey);
+        if (activity) {
+          console.log("activity", activity);
+          this.evaluationform.controls['description'].setValue(activity.title);
+        }
+      }
+    });
 
 
   }
- async openActivityDialog() {
-     const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
-     console.log("teacher", teacher);
-     let classi: ClasseModel[] = [];
-     if (teacher?.classes) {
-       const classKeys = teacher.classesKey;
-       classi = classKeys.map(classKey => this.$classes.fetchClasseOnCache(classKey))
-         .filter((classe): classe is ClasseModel => classe !== undefined);
-     }
- 
-     const activity = signal<ActivityModel>(new ActivityModel({
-       teacherKey: teacher?.key,
-       classKey: this.classKey,
-       date: new Date().toISOString()
-     }));
-     const classi4Teacher  = teacher?.classi;
-     const modal = await this.modalCtrl.create({
-       component: ActivityDialogComponent,
-       componentProps: {
-         listaClassi: classi4Teacher,
-         activity: activity,
-         selectedClass: this.classKey()
-       }
-     });
-     await modal.present();
-     const result = await modal.onDidDismiss();
-     if (result.data) {
-       const newActivity = await this.$activites.addActivity(activity());
-       this.evaluationform.patchValue({
-         activityKey: newActivity.key
-       });
-       this.evaluationform.updateValueAndValidity();
-       this.activities.set([...this.activities(), newActivity]);
-       console.log("activityForm", this.evaluationform.value);
-     }
-   }
+  async openActivityDialog() {
+    const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
+    console.log("teacher", teacher);
+    let classi: ClasseModel[] = [];
+    if (teacher?.classes) {
+      const classKeys = teacher.classesKey;
+      classi = (await Promise.all(classKeys.map(classKey => this.$classes.fetchClasseOnCache(classKey))))
+        .filter((classe: ClasseModel | undefined): classe is ClasseModel => classe !== undefined);
+    }
+
+    const activity = signal<ActivityModel>(new ActivityModel({
+      teacherKey: teacher?.key,
+      classKey: this.classKey,
+      date: new Date().toISOString()
+    }));
+    const classi4Teacher = teacher?.classi;
+    const modal = await this.modalCtrl.create({
+      component: ActivityDialogComponent,
+      componentProps: {
+        listaClassi: classi4Teacher,
+        activity: activity,
+        selectedClass: this.classKey()
+      }
+    });
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    if (result.data) {
+      const newActivity = await this.$activites.addActivity(activity());
+      this.evaluationform.patchValue({
+        activityKey: newActivity.key
+      });
+      this.evaluationform.updateValueAndValidity();
+      this.activities.set([...this.activities(), newActivity]);
+      console.log("activityForm", this.evaluationform.value);
+    }
+  }
   async saveEvaluation() {
     const evaluation = new Evaluation(this.evaluationform.value);
     evaluation.classKey = this.classKey();
@@ -198,25 +198,25 @@ this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey:
     evaluation.teacherKey = this.teacherKey();
     evaluation.grid = this.grid();
     const evaluationKey = (await this.$evaluations.addEvaluation(evaluation)).id;
-    this.$toaster.presentToast({message: 'Valutazione salvata con successo', position: 'top'});
+    this.$toaster.presentToast({ message: 'Valutazione salvata con successo', position: 'top' });
     this.router.navigate(['/pdf-evaluation', evaluationKey]);
-  
+
 
   }
 
-  
-    // Validatore personalizzato per la griglia
-    private gridValidator() {
-      return (control: any) => {
-        if (!(control instanceof FormGroup)) return null;
-        
-        const gridControl = control.get('grid');
-        if (gridControl?.value && !this.isGridValid()) {
-          return { gridInvalid: true };
-        }
-        return null;
-      };
-    }
+
+  // Validatore personalizzato per la griglia
+  private gridValidator() {
+    return (control: any) => {
+      if (!(control instanceof FormGroup)) return null;
+
+      const gridControl = control.get('grid');
+      if (gridControl?.value && !this.isGridValid()) {
+        return { gridInvalid: true };
+      }
+      return null;
+    };
+  }
   openFilterPopup() {
     console.log("openFilterPopup");
   }

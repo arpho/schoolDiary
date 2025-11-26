@@ -1,11 +1,13 @@
 import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule,
+import {
+  FormsModule,
   ReactiveFormsModule,
   FormBuilder,
   FormGroup,
-  FormControl } from '@angular/forms';
-import { 
+  FormControl
+} from '@angular/forms';
+import {
   IonButtons,
   IonContent,
   IonHeader,
@@ -63,10 +65,10 @@ import { ClassiService } from '../../classes/services/classi.service';
     IonTextarea,
     EvaluateGridComponent,
     IonIcon,
-]
+  ]
 })
 export class EvaluationDialogPage implements OnInit {
-  sortedActivities = computed(() => 
+  sortedActivities = computed(() =>
     [...this.activities()].sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
@@ -74,48 +76,51 @@ export class EvaluationDialogPage implements OnInit {
     })
   );
   classesList = signal<ClasseModel[]>([]);
-async openActivityDialog() {
-  const user = await this.$users.getLoggedUser()
-  let classi:ClasseModel[] = [];
-  if(user?.classes){
-    const classKeys = user.classesKey;
-    classi = classKeys.map(classKey => this.classiService.fetchClasseOnCache(classKey))
-      .filter((classe): classe is ClasseModel => classe !== undefined);
-  }
-console.log("openActivityDialog");
-console.log("classi", classi)
-console.log("evaluationSignal",this.evaluationSignal());
-const activity = signal<ActivityModel>(new ActivityModel({teacherKey: user?.key,
-   classKey: this.classKey, date: new Date().toISOString()}));
-   console.log("new activity",activity())
-   const modal = await this.modalCtrl.create({
-    component: ActivityDialogComponent,
-    componentProps: {
-      listaClassi: classi,
-      activity: activity
+  async openActivityDialog() {
+    const user = await this.$users.getLoggedUser()
+    let classi: ClasseModel[] = [];
+    if (user?.classes) {
+      const classKeys = user.classesKey;
+      const classPromises = classKeys.map(classKey => this.classiService.fetchClasseOnCache(classKey));
+      const classResults = await Promise.all(classPromises);
+      classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
     }
-  });
-  await modal.present();
-  const result = await modal.onDidDismiss();
-  if (result.data) {
-    console.log("local activity", activity());
-console.log("dismissed activity", result.data);
-this.activitiesService.addActivity(activity()).then((res: any) => {
-  console.log("activity added", res);
-  this.evaluationform.patchValue({
-    activityKey: res.key
-  })
-})  .catch((error: any) => {
-  console.error("Error adding activity", error);
-});
+    console.log("openActivityDialog");
+    console.log("classi", classi)
+    console.log("evaluationSignal", this.evaluationSignal());
+    const activity = signal<ActivityModel>(new ActivityModel({
+      teacherKey: user?.key,
+      classKey: this.classKey, date: new Date().toISOString()
+    }));
+    console.log("new activity", activity())
+    const modal = await this.modalCtrl.create({
+      component: ActivityDialogComponent,
+      componentProps: {
+        listaClassi: classi,
+        activity: activity
+      }
+    });
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    if (result.data) {
+      console.log("local activity", activity());
+      console.log("dismissed activity", result.data);
+      this.activitiesService.addActivity(activity()).then((res: any) => {
+        console.log("activity added", res);
+        this.evaluationform.patchValue({
+          activityKey: res.key
+        })
+      }).catch((error: any) => {
+        console.error("Error adding activity", error);
+      });
+    }
   }
-}
 
-close() {
-this.modalCtrl.dismiss();
-}
+  close() {
+    this.modalCtrl.dismiss();
+  }
 
-async saveEvaluation() {
+  async saveEvaluation() {
     if (this.evaluationform.valid) {
       const evaluationData = this.evaluationform.value;
       try {
@@ -165,9 +170,9 @@ async saveEvaluation() {
       }
     }
   }
-printEvaluation() {
-console.log("printEvaluation");
-}
+  printEvaluation() {
+    console.log("printEvaluation");
+  }
   @ViewChild('evaluateGrid') evaluateGrid!: ElementRef;
   @ViewChild(EvaluateGridComponent) evaluateGridComponent!: EvaluateGridComponent;
   evaluation = input<Evaluation>(new Evaluation());
@@ -182,7 +187,7 @@ console.log("printEvaluation");
     classKey: new FormControl(''),
     studentKey: new FormControl('')
   });
-  title=signal('');
+  title = signal('');
   valutazione: Evaluation | null = null;
   classKey: string = '';
   studentKey: string = '';
@@ -201,35 +206,35 @@ console.log("printEvaluation");
     private gridsService: GridsService,
     private evaluationService: EvaluationService,
     private classiService: ClassiService,
-    
-  ) { 
+
+  ) {
     console.log("EvaluationDialogPage constructor");
     const modalCtrl = inject(ModalController);
   }
 
-  async ngOnInit() { 
+  async ngOnInit() {
     const paramClassKey = this.route.snapshot.paramMap.get('classKey');
     console.log("paramClassKey", paramClassKey);
     // Initialize form controls with URL parameters
-    this.classKey = this.route.snapshot.queryParams['classKey'] || this.route.snapshot.paramMap.get('classKey')||'';
+    this.classKey = this.route.snapshot.queryParams['classKey'] || this.route.snapshot.paramMap.get('classKey') || '';
     this.studentKey = this.route.snapshot.queryParams['studentKey'] || '';
     this.evaluationKey = this.evaluationSignal().key || this.route.snapshot.queryParams['evaluationKey'] || '';
     console.log("classKey", this.classKey);
     console.log("studentKey", this.studentKey);
     console.log("evaluationKey", this.evaluationKey);
-const user = await this.$users.getLoggedUser();
+    const user = await this.$users.getLoggedUser();
 
     this.evaluationSignal.set(new Evaluation(this.evaluation))
-    if(user){
+    if (user) {
       console.log(" teacherKey*", user.key)
-      this.activitiesService.getActivities4teacherOnRealtime( user.key, (activities: ActivityModel[]) => {
+      this.activitiesService.getActivities4teacherOnRealtime(user.key, (activities: ActivityModel[]) => {
         console.log("activities*", activities);
         this.activities.set(activities);
       },
-    [new QueryCondition('classKey', '==', this.classKey)]);
+        [new QueryCondition('classKey', '==', this.classKey)]);
     }
     console.log("init evaluation-dialog");
-    console.log("evaluation",this.evaluationSignal())
+    console.log("evaluation", this.evaluationSignal())
     this.evaluationform = new FormGroup({
       description: new FormControl(''),
       note: new FormControl(''),
@@ -239,7 +244,7 @@ const user = await this.$users.getLoggedUser();
       classKey: new FormControl(this.classKey),
       studentKey: new FormControl(this.studentKey)
     });
-    if(this.evaluationSignal().key){
+    if (this.evaluationSignal().key) {
       this.evaluationKey = this.evaluationSignal().key;
       this.title.set("rivedi valutazione");
       this.classKey = this.evaluationSignal().classKey;
@@ -253,10 +258,10 @@ const user = await this.$users.getLoggedUser();
         studentKey: this.evaluationSignal().studentKey
       });
       this.grid.set(this.evaluationSignal().grid);
-    }else{
+    } else {
       this.title.set("Nuova valutazione");
 
-  
+
     }
     this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
       if (activityKey) {

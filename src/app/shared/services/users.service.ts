@@ -104,31 +104,31 @@ export class UsersService implements OnInit {
       where('classKey', '==', classKey),
       ...queryConditions.map(condition => condition.toWhere())
     ];
-    
+
     const queryRef = query(collectionRef, ...conditions);
-    
+
     return onSnapshot(queryRef, async (snapshot) => {
       const users: UserModel[] = [];
-      
+
       for (const doc of snapshot.docs) {
         const user = new UserModel(doc.data()).setKey(doc.id);
-        
+
         // Se l'utente ha classi multiple, le carichiamo
         if (user.classes && user.classes.length > 0) {
-          const classiPromises = user.classes.map(async (classKey: string) => 
-            this.$classes.fetchClasseOnCache(classKey) || 
+          const classiPromises = user.classes.map(async (classKey: string) =>
+            this.$classes.fetchClasseOnCache(classKey) ||
             await this.$classes.fetchClasse(classKey)
           );
-          
+
           const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
           user.classi = classi;
         } else {
           user.classi = [];
         }
-        
+
         users.push(user);
       }
-      
+
       callback(users);
     });
   }
@@ -147,15 +147,15 @@ export class UsersService implements OnInit {
 
     // Cerca prima nella cache
     const cachedUser = this.usersOnCache().find(user => user && user.key === userKey);
-    
+
     if (cachedUser) {
       return cachedUser;
     }
-    
+
     try {
       // Se non trovato in cache, cerca su Firestore
       const user = await this.fetchUser(userKey);
-      
+
       if (user) {
         // Aggiorna la cache con l'utente appena recuperato
         this.usersOnCache.update(users => {
@@ -166,7 +166,7 @@ export class UsersService implements OnInit {
           return users;
         });
       }
-      
+
       return user;
     } catch (error) {
       console.error('Errore durante il recupero dell\'utente da Firestore:', error);
@@ -196,20 +196,20 @@ export class UsersService implements OnInit {
       }
 
       const user = new UserModel(data as UserModel).setKey(docSnap.id);
-      
+
       // Se l'utente ha classi, le carichiamo
       if (user.classes && user.classes.length > 0) {
-        const classiPromises = user.classes.map(classKey => 
-          this.$classes.fetchClasseOnCache(classKey) || 
+        const classiPromises = user.classes.map(classKey =>
+          this.$classes.fetchClasseOnCache(classKey) ||
           this.$classes.fetchClasse(classKey)
         );
-        
+
         const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
         user.classi = classi;
       } else {
         user.classi = [];
       }
-      
+
       return user;
     } catch (error) {
       console.error(`Errore nel recupero dell'utente con ID ${userKey}:`, error);
@@ -242,8 +242,8 @@ export class UsersService implements OnInit {
         const user = new UserModel(doc.data()).setKey(doc.id);
 
         const classes: ClasseModel[] = [];
-        user.classes?.forEach((classKey: string) => {
-          const classe = this.$classes.fetchClasseOnCache(classKey);
+        user.classes?.forEach(async (classKey: string) => {
+          const classe = await this.$classes.fetchClasseOnCache(classKey);
           if (classe) {
             classes.push(classe);
           }
@@ -282,8 +282,8 @@ export class UsersService implements OnInit {
           const loggedUser = await this.getUserByUid(user.uid);
           if (loggedUser) {
             const classes: ClasseModel[] = [];
-            loggedUser.classes?.forEach((classKey: string) => {
-              const classe = this.$classes.fetchClasseOnCache(classKey);
+            loggedUser.classes?.forEach(async (classKey: string) => {
+              const classe = await this.$classes.fetchClasseOnCache(classKey);
               if (classe) {
                 classes.push(classe);
               }
