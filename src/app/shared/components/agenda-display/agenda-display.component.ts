@@ -1,4 +1,4 @@
-import { Component, Input, inject, signal, effect, OnChanges } from '@angular/core';
+import { Component, inject, signal, effect, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonList,
@@ -28,7 +28,7 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
           <ion-label>
             <h2>{{ event.title }}</h2>
             <p>{{ event.description }}</p>
-            <p *ngIf="!classKey && event.classKey">
+            <p *ngIf="!classKey() && event.classKey">
               <ion-note color="medium">Classe: {{ getClassName(event.classKey) }}</ion-note>
             </p>
           </ion-label>
@@ -64,8 +64,9 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
   ]
 })
 export class AgendaDisplayComponent {
-  @Input() classKey?: string;
-  @Input() teacherKey!: string;
+  classKey = input<string>();
+  teacherKey = input<string>();
+  eventsInput = input<AgendaEvent[]>();
 
   private agendaService = inject(AgendaService);
   private modalCtrl = inject(ModalController);
@@ -75,6 +76,14 @@ export class AgendaDisplayComponent {
 
   constructor() {
     addIcons({ bookOutline, helpCircleOutline, documentTextOutline, createOutline, trashOutline, peopleOutline });
+
+    // Update events signal when eventsInput changes
+    effect(() => {
+      const inputEvents = this.eventsInput();
+      if (inputEvents) {
+        this.events.set(inputEvents);
+      }
+    });
   }
 
 
