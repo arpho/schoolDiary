@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, effect, input, OnInit, inject, signal, Injector } from '@angular/core';
+import { Component, ChangeDetectionStrategy, effect, input, OnInit, signal } from '@angular/core';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { AgendaEvent } from '../../models/agendaEvent';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
@@ -12,18 +12,19 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
   standalone: true,
 })
 export class DisplayAgenda4ClassesComponent implements OnInit {
-  private injector = inject(Injector);
-  private $classes?: ClassiService;
-  private $agenda?: AgendaService;
-
   targetedClasses = input.required<string[]>();
   title = signal<string>('');
   agenda = signal<AgendaEvent[]>([])
   classes: any;
   listaClassi = signal<ClasseModel[]>([]);
-  constructor() {
-    this.$classes = this.injector.get(ClassiService);
-    this.$agenda = this.injector.get(AgendaService);
+
+  constructor(
+    private $classes: ClassiService,
+    private $agenda: AgendaService
+  ) {
+  }
+
+  ngOnInit() {
     this.classes = effect(async () => {
       const targetedClasses = this.targetedClasses();
       console.log("classi target", targetedClasses);
@@ -43,15 +44,11 @@ export class DisplayAgenda4ClassesComponent implements OnInit {
       const title = classes.length > 1 ?
         `agenda per le classi: ${classes.map((classe) => classe?.classe).join(', ')}` : `agenda per ${classes[0]?.classe}`;
       this.title.set(title);
-      /*      this.$agenda.getAgenda4targetedClassesOnrealtime(targetedClasses, (events: AgendaEvent[]) => {
-             console.log("events", events);
-             this.agenda.set(events);
-           }); */
+      this.$agenda.getAgenda4targetedClassesOnrealtime(targetedClasses, (events: AgendaEvent[]) => {
+        console.log("events", events);
+        this.agenda.set(events);
+      });
     });
-  }
-
-  ngOnInit() {
-
   }
 
 }
