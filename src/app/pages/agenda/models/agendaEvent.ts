@@ -5,7 +5,7 @@ export class AgendaEvent {
     date: string = ''; // ISO string or timestamp
     classKey: string = '';
     teacherKey: string = '';
-    type: 'homework' | 'test' | 'interrogation' | 'note' | 'other' = 'other';
+    type: 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'other' = 'other';
     creationDate: number = Date.now();
 
     constructor(args?: { [key: string]: any }) {

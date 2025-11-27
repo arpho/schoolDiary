@@ -16,6 +16,9 @@ interface DatetimeValue {
   value: string;
 }
 
+// Tipi di evento disponibili
+export type EventType = 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'other';
+
 // Interfaccia per i dati dell'evento
 export interface EventData {
   title: string;
@@ -25,6 +28,7 @@ export interface EventData {
   allDay: boolean;
   classId: string;
   classInfo?: any;
+  type: EventType;
 }
 
 @Component({
@@ -55,6 +59,16 @@ export class EventFormComponent implements OnInit {
   // Proprietà per la gestione del form
   readonly MAX_TITLE_LENGTH = 100;
   readonly MAX_DESCRIPTION_LENGTH = 500;
+  
+  // Tipi di evento disponibili
+  eventTypes: {value: EventType, label: string}[] = [
+    { value: 'homework', label: 'Compiti' },
+    { value: 'test', label: 'Verifica' },
+    { value: 'interrogation', label: 'Interrogazione' },
+    { value: 'meeting', label: 'Riunione' },
+    { value: 'note', label: 'Nota' },
+    { value: 'other', label: 'Altro' }
+  ];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -128,8 +142,9 @@ export class EventFormComponent implements OnInit {
         [Validators.required]
       ],
       allDay: [eventData?.allDay || false],
-      classId: [classId || '', Validators.required],
-      classInfo: [classInfo || {}]
+classId: [classId || '', Validators.required],
+      classInfo: [classInfo || {}],
+      type: [eventData?.type || 'other', Validators.required]
     });
 
     // Aggiorna automaticamente la data di fine se quella di inizio cambia
@@ -227,8 +242,9 @@ export class EventFormComponent implements OnInit {
           startDate: formValue.startDate,
           endDate: formValue.endDate,
           allDay: formValue.allDay,
-          classId: formValue.classId,
-          classInfo: formValue.classInfo
+classId: formValue.classId,
+          classInfo: formValue.classInfo,
+          type: formValue.type
         };
 
         // Chiudi il modale restituendo i dati

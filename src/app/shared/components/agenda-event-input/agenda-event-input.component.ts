@@ -60,6 +60,7 @@ import { AgendaService } from '../../services/agenda.service';
           <ion-select-option value="homework">Compiti</ion-select-option>
           <ion-select-option value="test">Verifica</ion-select-option>
           <ion-select-option value="interrogation">Interrogazione</ion-select-option>
+          <ion-select-option value="meeting">Riunione</ion-select-option>
           <ion-select-option value="note">Nota</ion-select-option>
           <ion-select-option value="other">Altro</ion-select-option>
         </ion-select>
@@ -102,7 +103,7 @@ export class AgendaEventInputComponent {
   title = '';
   description = '';
   date = new Date().toISOString();
-  type: 'homework' | 'test' | 'interrogation' | 'note' | 'other' = 'homework';
+  type: 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'other' = 'homework';
 
   ngOnInit() {
     if (this.event) {

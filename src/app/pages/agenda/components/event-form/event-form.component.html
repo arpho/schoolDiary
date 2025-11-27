@@ -42,7 +42,7 @@
     <ion-item>
       <ion-label position="floating">Descrizione</ion-label>
       <ion-textarea 
-        formControlName="description" 
+        formcontrolname="description" 
         placeholder="Aggiungi una descrizione (opzionale)"
         [maxlength]="MAX_DESCRIPTION_LENGTH"
         rows="4">
@@ -54,13 +54,28 @@
       </ion-note>
     }
 
+    <!-- Tipo di evento -->
+    <ion-item>
+      <ion-label>Tipo di evento</ion-label>
+      <ion-select 
+        formcontrolname="type"
+        interface="action-sheet"
+        placeholder="Seleziona il tipo">
+        @for (eventType of eventTypes; track eventType.value) {
+          <ion-select-option [value]="eventType.value">
+            {{ eventType.label }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
     <!-- Tutto il giorno -->
     <ion-item lines="none">
       <ion-label>Tutto il giorno</ion-label>
       <ion-toggle 
         slot="end" 
-        formControlName="allDay"
-        (ionChange)="onAllDayChange($event)">
+        formcontrolname="allDay"
+        (ionchange)="onAllDayChange($event)">
       </ion-toggle>
     </ion-item>
 
