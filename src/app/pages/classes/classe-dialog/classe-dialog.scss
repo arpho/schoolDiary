@@ -51,6 +51,44 @@ ion-back-button {
 /* Stili per la tab bar personalizzata */
 ion-tab-bar.custom-tab-bar {
   --background: var(--ion-color-light);
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; // Per Firefox
+  -ms-overflow-style: none; // Per IE e Edge
+  
+  // Nascondi la scrollbar su tutti i browser
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Stile per i tab button
+  ion-tab-button {
+    display: inline-flex;
+    flex: 0 0 auto;
+    min-width: auto;
+    width: auto;
+    padding: 0 16px;
+    white-space: nowrap;
+  }
+
+  // Opzionale: Aggiungi un'ombra a destra per indicare lo scroll
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 48px; // Altezza della tab bar
+    width: 30px;
+    background: linear-gradient(90deg, transparent, var(--ion-background-color, #ffffff) 70%);
+    pointer-events: none;
+    z-index: 10;
+  }
   --color: var(--ion-color-medium);
   --color-selected: var(--ion-color-primary);
   --border-color: var(--ion-color-light-shade);
