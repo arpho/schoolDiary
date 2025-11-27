@@ -47,6 +47,12 @@
           [class.active-tab]="selectedTab === 'pdp'">
           <ion-label>PDP</ion-label>
         </ion-tab-button>
+        
+        <ion-tab-button 
+          tab="agenda" 
+          [class.active-tab]="selectedTab === 'agenda'">
+          <ion-label>Agenda</ion-label>
+        </ion-tab-button>
       </ion-tab-bar>
 
       <ion-tab tab="generalita">
@@ -154,6 +160,19 @@
           <ion-card>
             <ion-card-content>
       <app-groups-manager [classkey]="classkey()"></app-groups-manager>
+            </ion-card-content>
+          </ion-card>
+        </ion-content>
+      </ion-tab>
+
+      <!-- Tab Agenda -->
+      <ion-tab tab="agenda">
+        <ion-content>
+          <ion-card>
+            <ion-card-content>
+              <app-display-agenda4classes 
+                [targetedClasses]="[classe().key]">
+              </app-display-agenda4classes>
             </ion-card-content>
           </ion-card>
         </ion-content>
