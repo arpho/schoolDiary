@@ -1,13 +1,15 @@
 <ion-list>
   <ion-list-header>
-    <ion-label>{{ title() }}</ion-label>
+    <ion-label class="ion-text-center">{{ title() }}</ion-label>
   </ion-list-header>
 
-  <app-agenda-display *ngIf="agenda().length > 0" [eventsInput]="agenda()" />
-
-  <ion-item *ngIf="agenda().length === 0">
-    <ion-label class="ion-text-center">
-      <p>{{ emptyMessage() }}</p>
-    </ion-label>
-  </ion-item>
+  @if (agenda().length > 0) {
+    <app-agenda-display [eventsInput]="agenda()"></app-agenda-display>
+  } @else {
+    <ion-item>
+      <ion-label class="ion-text-center">
+        <p>{{ emptyMessage() }}</p>
+      </ion-label>
+    </ion-item>
+  }
 </ion-list>

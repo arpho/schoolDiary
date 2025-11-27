@@ -4,7 +4,8 @@ import {
   signal,
   input,
   computed,
-  CUSTOM_ELEMENTS_SCHEMA
+  CUSTOM_ELEMENTS_SCHEMA,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   ModalController,
@@ -35,7 +36,7 @@ import {
 } from '@angular/forms';
 import {
   ClassiService,
-  } from '../services/classi.service';
+} from '../services/classi.service';
 import { ClasseModel } from '../models/classModel';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
@@ -46,6 +47,8 @@ import { ListActivities4classComponent } from  "../components/listActivities4cla
 import { UsersService } from 'src/app/shared/services/users.service';
 import { GroupsManagerComponent } from '../components/groups-manager/groups-manager.component';
 import { StudentsWithPdPComponent } from '../components/students-with-pd-p/students-with-pd-p.component';
+import { DisplayAgenda4ClassesComponent } from 'src/app/pages/agenda/components/display-agenda4-classes/display-agenda4-classes.component';
+import { EventFormComponent } from '../../agenda/components/event-form/event-form.component';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -72,7 +75,8 @@ import { StudentsWithPdPComponent } from '../components/students-with-pd-p/stude
     ReservedNotes4ClassesComponent,
     ListActivities4classComponent,
     GroupsManagerComponent,
-    StudentsWithPdPComponent
+    StudentsWithPdPComponent,
+    DisplayAgenda4ClassesComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -84,6 +88,12 @@ export class ClasseDialogPage implements OnInit {
   setSelectedTab(tab: string) {
     console.log('Tab selezionato:', tab);
     this.selectedTab = tab;
+    
+    // Forza l'aggiornamento del componente quando si seleziona il tab agenda
+    if (tab === 'agenda') {
+      this.cdr.detectChanges();
+      console.log('Change detection forzato per il tab agenda');
+    }
   }
 
   classkey = signal<string>('');
@@ -104,7 +114,8 @@ export class ClasseDialogPage implements OnInit {
     private service: ClassiService,
     private route: ActivatedRoute,
     private toaster: ToasterService,
-    private $users:UsersService
+    private $users:UsersService,
+    private cdr: ChangeDetectorRef
   ) {
     // Initialize with empty model
     this.classe.set(new ClasseModel({
@@ -167,5 +178,29 @@ export class ClasseDialogPage implements OnInit {
 
   dismiss() {
     this.modalCtrl.dismiss();
+  }
+
+  async addNewEvent() {
+    try {
+      const modal = await this.modalCtrl.create({
+        component: EventFormComponent, // Sostituisci con il tuo componente effettivo
+        componentProps: {
+          classId: this.classe()?.key,
+          classInfo: this.classe()
+        }
+      });
+      
+      await modal.present();
+      
+      // Gestisci il risultato quando il modale viene chiuso
+      const { data } = await modal.onDidDismiss();
+      if (data?.saved) {
+        // Ricarica gli eventi o aggiorna la vista se necessario
+        console.log('Evento salvato con successo');
+      }
+    } catch (error) {
+      console.error('Errore nell\'apertura del form evento:', error);
+      this.toaster.presentToast({message:'Errore durante l\'apertura del form evento',duration:2000,position:"bottom"});
+    }
   }
 }

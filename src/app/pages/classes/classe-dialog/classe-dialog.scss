@@ -10,6 +10,40 @@ ion-content {
   flex-direction: column;
 }
 
+
+
+ion-tab[tab="agenda"] {
+  display: block;
+  height: 100%;
+  
+  ion-content {
+    --padding: 0;
+    --background: transparent;
+    height: 100%;
+    contain: none;
+    
+    ion-card {
+      margin: 0;
+      height: 100%;
+      box-shadow: none;
+      
+      ion-card-content {
+        padding: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        
+        app-display-agenda4-classes {
+          flex: 1;
+          min-height: 0; // Importante per il flex in contenitori con overflow
+          display: block;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
 ion-header {
   --height: 44px;
   --min-height: 44px;

@@ -170,9 +170,22 @@
         <ion-content>
           <ion-card>
             <ion-card-content>
-              <app-display-agenda4classes 
+              <!-- Aggiungi questo per debug -->
+              <div *ngIf="!classe()?.key" style="color: red; padding: 10px;">
+                Attenzione: classe().key è vuoto o non definito!
+              </div>
+              
+              <app-display-agenda4-classes 
+                *ngIf="classe()?.key"
                 [targetedClasses]="[classe().key]">
-              </app-display-agenda4classes>
+              </app-display-agenda4-classes>
+              
+              <!-- Pulsante per aggiungere un nuovo evento -->
+              <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+                <ion-fab-button (click)="addNewEvent()" color="primary">
+                  <ion-icon name="add"></ion-icon>
+                </ion-fab-button>
+              </ion-fab>
             </ion-card-content>
           </ion-card>
         </ion-content>
