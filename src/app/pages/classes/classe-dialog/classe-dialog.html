@@ -171,21 +171,22 @@
           <ion-card>
             <ion-card-content>
               <!-- Aggiungi questo per debug -->
-              <div *ngIf="!classe()?.key" style="color: red; padding: 10px;">
-                Attenzione: classe().key è vuoto o non definito!
-              </div>
+              @if (!classe()?.key) {
+                <div class="warning-message">
+                  Attenzione: classe().key è vuoto o non definito!
+                </div>
+              } @else {
+                <app-display-agenda4-classes 
+                  [targetedClasses]="[classe().key]">
+                </app-display-agenda4-classes>
               
-              <app-display-agenda4-classes 
-                *ngIf="classe()?.key"
-                [targetedClasses]="[classe().key]">
-              </app-display-agenda4-classes>
-              
-              <!-- Pulsante per aggiungere un nuovo evento -->
-              <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-                <ion-fab-button (click)="addNewEvent()" color="primary">
-                  <ion-icon name="add"></ion-icon>
-                </ion-fab-button>
-              </ion-fab>
+                <!-- Pulsante per aggiungere un nuovo evento -->
+                <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+                  <ion-fab-button (click)="addNewEvent()" color="primary">
+                    <ion-icon name="add"></ion-icon>
+                  </ion-fab-button>
+                </ion-fab>
+              }
             </ion-card-content>
           </ion-card>
         </ion-content>
