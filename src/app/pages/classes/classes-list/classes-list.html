@@ -2,10 +2,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button 
-        text="dashboard"
-        default-href="/dashboard"
-        class="back-button">
+      <ion-back-button text="dashboard" default-href="/dashboard" class="back-button">
       </ion-back-button>
     </ion-buttons>
     <ion-title>Classi</ion-title>
@@ -25,27 +22,27 @@
   </ion-header>
 
   @if (classiList().length > 0) {
-    <ion-list>
-      @for (classe of sortedClassiList(); track classe.key) {
-        <ion-item (click)="clickedClass(classe)" button detail="true" class="class-item">
-          <ion-card class="class-card">
-            <ion-card-header>
-              <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <p>{{classe.descrizione || 'Nessuna descrizione'}}</p>
-            </ion-card-content>
-          </ion-card>
-        </ion-item>
-      }
-    </ion-list>
+  <ion-list>
+    @for (classe of sortedClassiList(); track classe.key) {
+    <ion-item (click)="clickedClass(classe)" button detail="true" class="class-item">
+      <ion-card class="class-card">
+        <ion-card-header>
+          <ion-card-title class="centered-title">{{classe.classe}} {{classe.year}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>{{classe.descrizione || 'Nessuna descrizione'}}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+    }
+  </ion-list>
   } @else {
-    <div class="ion-text-center ion-padding">
-      <p>Non ci sono classi</p>
-      <ion-button (click)="go2ClasseDialog('')">
-        <ion-icon slot="start" name="add"></ion-icon>
-        Crea la tua prima classe
-      </ion-button>
-    </div>
+  <div class="ion-text-center ion-padding">
+    <p>Non ci sono classi</p>
+    <ion-button (click)="go2ClasseDialog('')">
+      <ion-icon slot="start" name="add"></ion-icon>
+      Crea la tua prima classe
+    </ion-button>
+  </div>
   }
 </ion-content>
