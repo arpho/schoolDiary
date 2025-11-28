@@ -1,20 +1,19 @@
 import { 
   Component, 
+  Input, 
   OnInit, 
+  OnDestroy, 
+  AfterViewInit, 
+  ChangeDetectorRef, 
+  ElementRef, 
   ViewChild, 
-  CUSTOM_ELEMENTS_SCHEMA, 
-  Input 
+  input, 
+  effect, 
+  inject, 
+  signal, 
+  CUSTOM_ELEMENTS_SCHEMA
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { 
-  FormBuilder, 
-  FormGroup, 
-  Validators, 
-  ReactiveFormsModule, 
-  FormsModule,
-  FormArray,
-  FormControl
-} from '@angular/forms';
+
 import { 
   IonButton, 
   IonButtons, 
@@ -28,22 +27,24 @@ import {
   IonLabel, 
   IonList, 
   IonModal, 
-  IonNote, 
+  IonTextarea, 
   IonSelect, 
   IonSelectOption, 
-  IonText, 
-  IonTextarea, 
   IonTitle, 
-  IonToggle, 
-  IonToolbar,
+  IonToolbar, 
+  IonCheckbox, 
+  IonPopover, 
   ModalController,
   NavParams,
   ModalOptions
 } from '@ionic/angular/standalone';
+import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { close, save } from 'ionicons/icons';
 import { defineCustomElements } from '@ionic/core/loader';
 import { ClasseModel } from '../../../classes/models/classModel';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { from } from 'rxjs';
 
 type CustomDatetimeEvent = CustomEvent<{ value?: string | string[] | null }>;
 
@@ -90,35 +91,81 @@ export interface EventData {
     IonLabel,
     IonList,
     IonModal,
-    IonNote,
+    IonTextarea,
     IonSelect,
     IonSelectOption,
-    IonText,
-    IonTextarea,
     IonTitle,
-    IonToggle,
-    IonToolbar
+    IonToolbar,
+    IonCheckbox,
+    IonPopover,
   ]
 })
-export class EventFormComponent implements OnInit {
+export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
+cancelDatetime() {
+console.log("cancelDatetime");
+}
 
+  // Riferimenti ai componenti
   @ViewChild('startDatetime') startDatetime: IonDatetime | undefined;
   @ViewChild('endDatetime') endDatetime: IonDatetime | undefined;
 
+  // Proprietà del form
   eventForm!: FormGroup;
   isEditMode = false;
 
+  // Proprietà per la gestione delle date
   minDate: string = '';
   maxDate: string = '';
-  currentDatetime: DatetimeValue | null = null;
+  currentDatetime: { type: 'start' | 'end'; value: string | null } | null = null;
 
-  // Proprietà per la gestione del form
+  // Costanti di validazione
   readonly MAX_TITLE_LENGTH = 100;
   readonly MAX_DESCRIPTION_LENGTH = 500;
   
-  // Lista delle classi disponibili
-  @Input() targetedClasses: ClasseModel[] = [];
-  
+  // Input properties
+  protected targetedClasses = input.required<ClasseModel[]>({
+    alias: 'targetedClasses'
+  });
+
+  protected eventData = input<EventData | null>(null, {
+    alias: 'eventData'
+  });
+
+  // Opzioni per il tipo di evento
+
+
+  // Metodi richiesti dal template
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Metodi del ciclo di vita
+  ngOnInit(): void {
+    // Se stai modificando un evento esistente, popola il form
+    const eventData = this.eventData();
+    if (eventData) {
+      this.isEditMode = true;
+      this.eventForm.patchValue({
+        ...eventData,
+        startDate: this.formatDateForInput(eventData.startDate),
+        endDate: this.formatDateForInput(eventData.endDate)
+      });
+    }
+  }
+
+
+
+
+
   // Tipi di evento disponibili
   eventTypes: {value: EventType, label: string}[] = [
     { value: 'homework', label: 'Compiti' },
@@ -129,13 +176,18 @@ export class EventFormComponent implements OnInit {
     { value: 'other', label: 'Altro' }
   ];
 
+  private formBuilder = inject(FormBuilder);
+  private cdRef = inject(ChangeDetectorRef);
+  private modalCtrl = inject(ModalController);
+  private el = inject(ElementRef);
+
+
   constructor(
-    private formBuilder: FormBuilder,
-    private modalCtrl: ModalController,
-    private navParams: NavParams
+
   ) {
     // Add icons
     addIcons({ close, save });
+    defineCustomElements(window);
 
     // Imposta le date minime e massime (es. da oggi a 1 anno da oggi)
     const today = new Date();
@@ -148,34 +200,47 @@ export class EventFormComponent implements OnInit {
     // Inizializza il form
     this.initializeForm();
 
-    // Initialize Ionic custom elements
-    defineCustomElements(window);
+    // Effetto per la selezione automatica della classe se ce n'è solo una
+    effect(() => {
+      const classes = this.targetedClasses();
+      if (classes.length === 1) {
+        this.eventForm.get('selectedClass')?.setValue(classes[0].key);
+      }
+    });
   }
 
-  ngOnInit() {
-    // Se stai modificando un evento esistente, popola il form
-    const eventData = this.navParams.get('eventData');
-    if (eventData) {
-      this.isEditMode = true;
-      this.eventForm.patchValue({
-        ...eventData,
-        startDate: this.formatDateForInput(eventData.startDate),
-        endDate: this.formatDateForInput(eventData.endDate)
-      });
+  ngAfterViewInit(): void {
+    // Forza l'aggiornamento della vista dopo che è stata inizializzata
+    this.cdRef.detectChanges();
+    
+    // Aggiungi i listener passivi per migliorare le prestazioni dello scorrimento
+    this.addPassiveEventListeners();
+  }
+
+  ngOnDestroy(): void {
+    // Pulizia delle risorse se necessario
+  }
+
+  private addPassiveEventListeners(): void {
+    if (typeof window === 'undefined') {
+      return;
     }
+    
+    const elements = this.el.nativeElement.querySelectorAll('ion-datetime, ion-select, ion-popover');
+    elements.forEach((element: HTMLElement) => {
+      element.addEventListener('touchstart', () => {}, { passive: true });
+      element.addEventListener('touchmove', () => {}, { passive: true });
+    });
   }
 
   private initializeForm() {
     const now = new Date();
-    // Arrotonda ai 15 minuti più vicini
-    now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
-
     const endDate = new Date(now);
     endDate.setHours(now.getHours() + 1); // Imposta la fine a 1 ora dopo l'inizio
 
-    // Ottieni i parametri dal NavParams o dagli input
-    const eventData = this.navParams.get('eventData') || {};
-    const initialClasses = (eventData.targetedClasses || this.targetedClasses || []) as ClasseModel[];
+    // Ottieni i parametri dagli input
+    const eventData = this.eventData() || {} as EventData;
+    const initialClasses = this.targetedClasses() || [];
 
     this.eventForm = this.formBuilder.group({
       title: [
@@ -200,10 +265,10 @@ export class EventFormComponent implements OnInit {
         [Validators.required]
       ],
       allDay: [eventData?.allDay || false],
-      targetedClasses: this.formBuilder.array(
-        initialClasses.map((c: ClasseModel) => c.key),
-        [Validators.required, Validators.minLength(1)]
-      ),
+      selectedClass: [
+        initialClasses.length > 0 ? initialClasses[0].key : null,
+        [Validators.required]
+      ],
       type: [eventData?.type || 'other', Validators.required]
     });
 
@@ -317,9 +382,14 @@ export class EventFormComponent implements OnInit {
     if (this.eventForm.valid) {
       try {
         const formValue = this.eventForm.value;
-        const selectedClasses = this.targetedClasses.filter((c: ClasseModel) => 
-          formValue.targetedClasses.includes(c.key)
+        const selectedClass = this.targetedClasses().find(
+          (c: ClasseModel) => c.key === formValue.selectedClass
         );
+
+        if (!selectedClass) {
+          console.error('Nessuna classe selezionata');
+          return;
+        }
 
         // Prepara i dati per il salvataggio
         const eventData: EventData = {
@@ -328,7 +398,7 @@ export class EventFormComponent implements OnInit {
           startDate: formValue.startDate,
           endDate: formValue.endDate,
           allDay: formValue.allDay,
-          targetedClasses: selectedClasses,
+          targetedClasses: [selectedClass],
           type: formValue.type
         };
 
@@ -387,7 +457,5 @@ export class EventFormComponent implements OnInit {
   /**
    * Annulla la selezione della data/ora
    */
-  cancelDatetime() {
-    this.currentDatetime = null;
-  }
+
 }
