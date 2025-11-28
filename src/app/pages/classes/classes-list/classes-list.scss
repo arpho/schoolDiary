@@ -1,10 +1,27 @@
-/* Stili base per la lista classi, puoi personalizzare */
+/* Stili base per la lista classi */
+ion-list {
+  --ion-padding: 0;
+  padding: 0 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 ion-card {
-  margin: 8px 0;
+  margin: 12px 0;
   width: 100%;
-  max-width: 400px;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  
+  ion-card-header {
+    padding-bottom: 8px;
+  }
+  
+  ion-card-content {
+    padding-top: 8px;
+  }
 }
 
 .centered-title {

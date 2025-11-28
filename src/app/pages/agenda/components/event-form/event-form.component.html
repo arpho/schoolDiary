@@ -141,13 +141,35 @@
       </ng-template>
     </ion-modal>
 
-    <!-- Classe -->
+    <!-- Selezione classi -->
     <ion-item>
-      <ion-label>Classe</ion-label>
-      <ion-text slot="end">
-        {{ eventForm.get('classInfo')?.value?.name || 'Nessuna classe selezionata' }}
-      </ion-text>
+      <ion-label>Classi <ion-text color="danger">*</ion-text></ion-label>
     </ion-item>
+    
+    <ion-list lines="none" class="ion-margin-vertical">
+      @for (classe of targetedClasses; track classe.key) {
+        <ion-item button (click)="toggleClassSelection(classe.key)">
+          <ion-label>{{ classe.classe }} {{ classe.year }}</ion-label>
+          <ion-icon 
+            slot="end" 
+            [name]="isClassSelected(classe.key) ? 'checkbox-outline' : 'square-outline'"
+            [color]="isClassSelected(classe.key) ? 'primary' : 'medium'">
+          </ion-icon>
+        </ion-item>
+      }
+      @if (targetedClasses.length === 0) {
+        <ion-item>
+          <ion-text color="medium" class="ion-text-center">
+            Nessuna classe disponibile
+          </ion-text>
+        </ion-item>
+      }
+      @if (eventForm.get('targetedClasses')?.touched && eventForm.get('targetedClasses')?.errors?.['required']) {
+        <ion-note color="danger" class="ion-padding-start">
+          Seleziona almeno una classe
+        </ion-note>
+      }
+    </ion-list>
 
     <!-- Pulsanti -->
     <div class="ion-padding-top">

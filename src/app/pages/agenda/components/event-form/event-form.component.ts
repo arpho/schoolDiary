@@ -1,11 +1,49 @@
-import { Component, OnInit, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { 
+  Component, 
+  OnInit, 
+  ViewChild, 
+  CUSTOM_ELEMENTS_SCHEMA, 
+  Input 
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { IonicModule, ModalController, NavParams } from '@ionic/angular';
+import { 
+  FormBuilder, 
+  FormGroup, 
+  Validators, 
+  ReactiveFormsModule, 
+  FormsModule,
+  FormArray,
+  FormControl
+} from '@angular/forms';
+import { 
+  IonButton, 
+  IonButtons, 
+  IonContent, 
+  IonDatetime, 
+  IonDatetimeButton, 
+  IonHeader, 
+  IonIcon, 
+  IonInput, 
+  IonItem, 
+  IonLabel, 
+  IonList, 
+  IonModal, 
+  IonNote, 
+  IonSelect, 
+  IonSelectOption, 
+  IonText, 
+  IonTextarea, 
+  IonTitle, 
+  IonToggle, 
+  IonToolbar,
+  ModalController,
+  NavParams,
+  ModalOptions
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { close, save } from 'ionicons/icons';
-import { IonDatetime } from '@ionic/angular';
 import { defineCustomElements } from '@ionic/core/loader';
+import { ClasseModel } from '../../../classes/models/classModel';
 
 type CustomDatetimeEvent = CustomEvent<{ value?: string | string[] | null }>;
 
@@ -26,8 +64,7 @@ export interface EventData {
   startDate: string;
   endDate: string;
   allDay: boolean;
-  classId: string;
-  classInfo?: any;
+  targetedClasses: ClasseModel[];
   type: EventType;
 }
 
@@ -41,7 +78,26 @@ export interface EventData {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonDatetime,
+    IonDatetimeButton,
+    IonHeader,
+    IonIcon,
+    IonInput,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonModal,
+    IonNote,
+    IonSelect,
+    IonSelectOption,
+    IonText,
+    IonTextarea,
+    IonTitle,
+    IonToggle,
+    IonToolbar
   ]
 })
 export class EventFormComponent implements OnInit {
@@ -59,6 +115,9 @@ export class EventFormComponent implements OnInit {
   // Proprietà per la gestione del form
   readonly MAX_TITLE_LENGTH = 100;
   readonly MAX_DESCRIPTION_LENGTH = 500;
+  
+  // Lista delle classi disponibili
+  @Input() targetedClasses: ClasseModel[] = [];
   
   // Tipi di evento disponibili
   eventTypes: {value: EventType, label: string}[] = [
@@ -114,10 +173,9 @@ export class EventFormComponent implements OnInit {
     const endDate = new Date(now);
     endDate.setHours(now.getHours() + 1); // Imposta la fine a 1 ora dopo l'inizio
 
-    // Ottieni i parametri dal NavParams
-    const classId = this.navParams.get('classId');
-    const classInfo = this.navParams.get('classInfo');
-    const eventData = this.navParams.get('eventData');
+    // Ottieni i parametri dal NavParams o dagli input
+    const eventData = this.navParams.get('eventData') || {};
+    const initialClasses = (eventData.targetedClasses || this.targetedClasses || []) as ClasseModel[];
 
     this.eventForm = this.formBuilder.group({
       title: [
@@ -142,8 +200,10 @@ export class EventFormComponent implements OnInit {
         [Validators.required]
       ],
       allDay: [eventData?.allDay || false],
-classId: [classId || '', Validators.required],
-      classInfo: [classInfo || {}],
+      targetedClasses: this.formBuilder.array(
+        initialClasses.map((c: ClasseModel) => c.key),
+        [Validators.required, Validators.minLength(1)]
+      ),
       type: [eventData?.type || 'other', Validators.required]
     });
 
@@ -230,10 +290,36 @@ classId: [classId || '', Validators.required],
     }
   }
 
+  get targetedClassesArray(): FormArray {
+    return this.eventForm.get('targetedClasses') as FormArray;
+  }
+
+  // Helper per verificare se una classe è selezionata
+  isClassSelected(classKey: string): boolean {
+    return this.targetedClassesArray.value.includes(classKey);
+  }
+
+  // Gestisce la selezione/deselezione di una classe
+  toggleClassSelection(classKey: string) {
+    const classesArray = this.targetedClassesArray;
+    const index = classesArray.value.indexOf(classKey);
+    
+    if (index > -1) {
+      // Rimuovi se già presente
+      classesArray.removeAt(index);
+    } else {
+      // Aggiungi se non presente
+      classesArray.push(new FormControl(classKey));
+    }
+  }
+
   async onSubmit() {
     if (this.eventForm.valid) {
       try {
         const formValue = this.eventForm.value;
+        const selectedClasses = this.targetedClasses.filter((c: ClasseModel) => 
+          formValue.targetedClasses.includes(c.key)
+        );
 
         // Prepara i dati per il salvataggio
         const eventData: EventData = {
@@ -242,8 +328,7 @@ classId: [classId || '', Validators.required],
           startDate: formValue.startDate,
           endDate: formValue.endDate,
           allDay: formValue.allDay,
-classId: formValue.classId,
-          classInfo: formValue.classInfo,
+          targetedClasses: selectedClasses,
           type: formValue.type
         };
 
