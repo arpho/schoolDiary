@@ -1,5 +1,5 @@
 import { Component, inject, signal, effect, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {
   IonList,
   IonItem,
@@ -12,7 +12,17 @@ import {
   ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { bookOutline, createOutline, documentTextOutline, helpCircleOutline, trashOutline, peopleOutline } from 'ionicons/icons';
+import { 
+  bookOutline, 
+  createOutline, 
+  documentTextOutline, 
+  helpCircleOutline, 
+  trashOutline, 
+  peopleOutline,
+  timeOutline,
+  calendarOutline,
+  arrowForwardOutline
+} from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
 import { AgendaEventInputComponent } from '../agenda-event-input/agenda-event-input.component';
@@ -22,7 +32,7 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
   selector: 'app-agenda-display',
   template: `
     <ion-list>
-      <ion-item-sliding *ngFor="let event of events()">
+      <ion-item-sliding *ngFor="let event of events()" [class.all-day]="event.allDay">
         <ion-item>
           <ion-icon [name]="getIcon(event.type)" slot="start"></ion-icon>
           <ion-label>
@@ -32,7 +42,17 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
               <ion-note color="medium">Classe: {{ getClassName(event.classKey) }}</ion-note>
             </p>
           </ion-label>
-          <ion-note slot="end">{{ event.date | date:'shortDate' }}</ion-note>
+          <ion-note slot="end" class="event-dates">
+            <div>
+              <ion-icon *ngIf="!event.allDay" name="time-outline"></ion-icon>
+              <ion-icon *ngIf="event.allDay" name="calendar-outline"></ion-icon>
+              {{ formatDate(event.dataInizio) }}
+            </div>
+            <div *ngIf="!isSameDay(event)" class="date-range">
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+              {{ formatDate(event.dataFine) }}
+            </div>
+          </ion-note>
         </ion-item>
 
         <ion-item-options side="end">
@@ -60,8 +80,30 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
     IonIcon,
     IonItemSliding,
     IonItemOptions,
-    IonItemOption
-  ]
+    IonItemOption,
+    DatePipe
+  ],
+  styles: [`
+    :host {
+      display: block;
+    }
+    .event-dates {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      font-size: 0.9em;
+    }
+    .date-range {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8em;
+      color: var(--ion-color-medium);
+    }
+    ion-item-sliding.all-day ion-item {
+      --background: var(--ion-color-light);
+    }
+  `]
 })
 export class AgendaDisplayComponent {
   classKey = input<string>();
@@ -75,7 +117,17 @@ export class AgendaDisplayComponent {
   events = signal<AgendaEvent[]>([]);
 
   constructor() {
-    addIcons({ bookOutline, helpCircleOutline, documentTextOutline, createOutline, trashOutline, peopleOutline });
+    addIcons({ 
+      bookOutline, 
+      helpCircleOutline, 
+      documentTextOutline, 
+      createOutline, 
+      trashOutline, 
+      peopleOutline,
+      timeOutline,
+      calendarOutline,
+      arrowForwardOutline
+    });
 
     // Update events signal when eventsInput changes
     effect(() => {
@@ -89,6 +141,27 @@ export class AgendaDisplayComponent {
 
 
 
+
+  // Verifica se l'evento si svolge in un solo giorno
+  isSameDay(event: AgendaEvent): boolean {
+    if (!event.dataInizio || !event.dataFine) return true;
+    const start = new Date(event.dataInizio).setHours(0, 0, 0, 0);
+    const end = new Date(event.dataFine).setHours(0, 0, 0, 0);
+    return start === end;
+  }
+
+  // Formatta la data in formato leggibile
+  formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
 
   getIcon(type: string) {
     switch (type) {

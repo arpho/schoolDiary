@@ -38,11 +38,8 @@ export class ClassiService {
   }
 
   async fetchClasseOnCache(classKey: string): Promise<ClasseModel> {
-    console.log("getting classKey", classKey);
     let classe = this.classesOnCache().find(classe => classe.key === classKey);
-    console.log("classe", classe);
     if (!classe) {
-      console.log("classe non trovata in cache, cerco su firestore");
       classe = await this.fetchClasse(classKey);
       if (classe !== undefined) {
         this.classesOnCache.update(classi => [...classi, classe!]);

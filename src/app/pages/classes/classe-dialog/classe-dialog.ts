@@ -48,7 +48,8 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { GroupsManagerComponent } from '../components/groups-manager/groups-manager.component';
 import { StudentsWithPdPComponent } from '../components/students-with-pd-p/students-with-pd-p.component';
 import { DisplayAgenda4ClassesComponent } from 'src/app/pages/agenda/components/display-agenda4-classes/display-agenda4-classes.component';
-import { EventFormComponent } from '../../agenda/components/event-form/event-form.component';
+import { EventDialogComponent } from '../../agenda/components/event-dialog/event-dialog.component';
+import { AgendaEvent } from '../../agenda/models/agendaEvent';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -159,17 +160,42 @@ export class ClasseDialogPage implements OnInit {
   }
 
   async save() {
-    // Crea una nuova istanza con i valori della form
-    const classeObj = new ClasseModel(this.formClass.value).setKey(this.classkey()!);
+    // Get form values with fallback to empty strings for required fields
+    const formValues = {
+      year: this.formClass.value.year || '',
+      classe: this.formClass.value.classe || '',
+      descrizione: this.formClass.value.descrizione || '',
+      note: this.formClass.value.note || '',
+      coordinatore: this.formClass.value.coordinatore || '',
+      segretario: this.formClass.value.segretario || ''
+    };
+    
+    // Create a new instance with the form values
+    const classeObj = new ClasseModel(formValues);
+    
+    // Set the key if it exists
+    if (this.classkey()) {
+      classeObj.setKey(this.classkey()!);
+    }
+    
     console.log("saving classeObj", classeObj);
+    
     try {
-      if(this.classkey()){
+      if (this.classkey()) {
         await this.service.updateClasse(this.classkey()!, classeObj);
-      }else{
+      } else {
         await this.service.addClasse(classeObj);
       }
-      const toasTest = this.classkey() ? "Classe aggiornata con successo" : "Classe aggiunta con successo";
-      this.toaster.presentToast({message:toasTest,duration:2000,position:"bottom"});
+      
+      const toastMessage = this.classkey() 
+        ? "Classe aggiornata con successo" 
+        : "Classe aggiunta con successo";
+        
+      this.toaster.presentToast({
+        message: toastMessage,
+        duration: 2000,
+        position: "bottom"
+      });
 
     } catch (error) {
       this.toaster.presentToast({message:"Errore durante l'aggiornamento della classe",duration:2000,position:"bottom"});
@@ -183,20 +209,35 @@ export class ClasseDialogPage implements OnInit {
   async addNewEvent() {
     try {
       const modal = await this.modalCtrl.create({
-        component: EventFormComponent, // Sostituisci con il tuo componente effettivo
+        component: EventDialogComponent,
         componentProps: {
           classId: this.classe()?.key,
-          classInfo: this.classe()
-        }
+          teacherKey: 'teacher123', // TODO: Sostituisci con la chiave effettiva dell'insegnante
+          targetedClasses: this.classe()?.key ? [this.classe()?.key] : []
+        },
+        breakpoints: [0, 0.8, 1],
+        initialBreakpoint: 0.8,
+        handle: true,
+        handleBehavior: 'cycle'
       });
-      
+
       await modal.present();
       
-      // Gestisci il risultato quando il modale viene chiuso
       const { data } = await modal.onDidDismiss();
-      if (data?.saved) {
-        // Ricarica gli eventi o aggiorna la vista se necessario
-        console.log('Evento salvato con successo');
+      
+      if (data?.saved && data.event) {
+        const event = new AgendaEvent(data.event);
+        console.log('Evento salvato con successo:', event);
+        
+        // Qui puoi salvare l'evento nel database o fare altre operazioni necessarie
+        // Esempio: await this.eventService.saveEvent(event);
+        
+        // Mostra un messaggio di conferma all'utente
+        this.toaster.presentToast({
+          message: 'Evento salvato con successo',
+          duration: 2000,
+          position: 'bottom'
+        });
       }
     } catch (error) {
       console.error('Errore nell\'apertura del form evento:', error);

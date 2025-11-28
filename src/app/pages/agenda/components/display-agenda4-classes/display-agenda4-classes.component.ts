@@ -16,9 +16,9 @@ import { AgendaEvent } from '../../models/agendaEvent';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display/agenda-display.component';
-import { EventFormComponent } from '../event-form/event-form.component';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
+import { EventDialogComponent } from '../event-dialog/event-dialog.component';
 
 @Component({
   selector: 'app-display-agenda4-classes',
@@ -54,7 +54,7 @@ export class DisplayAgenda4ClassesComponent {
 
   async addNewEvent() {
     const modal = await this.modalCtrl.create({
-      component: EventFormComponent,
+      component: EventDialogComponent,
       componentProps: {
         targetedClasses: this.listaClassi()
       },

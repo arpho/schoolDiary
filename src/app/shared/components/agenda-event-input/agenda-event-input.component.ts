@@ -1,4 +1,4 @@
-import { Component, Input, inject, signal } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -17,8 +17,12 @@ import {
   IonButtons,
   ModalController,
   IonDatetimeButton,
-  IonModal
+  IonModal,
+  IonToggle,
+  IonIcon
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { calendarOutline, timeOutline } from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
 
@@ -45,11 +49,38 @@ import { AgendaService } from '../../services/agenda.service';
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Data</ion-label>
-        <ion-datetime-button datetime="datetime"></ion-datetime-button>
+        <ion-label>Tutto il giorno</ion-label>
+        <ion-toggle [(ngModel)]="allDay" (ionChange)="onAllDayChange()"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Data e ora inizio</ion-label>
+        <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime id="datetime" presentation="date" [(ngModel)]="date"></ion-datetime>
+            <ion-datetime 
+              id="startDatetime" 
+              [presentation]="allDay ? 'date' : 'date-time'" 
+              [(ngModel)]="dataInizio"
+              [min]="minDate"
+              [max]="maxDate">
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Data e ora fine</ion-label>
+        <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime 
+              id="endDatetime" 
+              [presentation]="allDay ? 'date' : 'date-time'" 
+              [(ngModel)]="dataFine"
+              [min]="minDate"
+              [max]="maxDate">
+            </ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-item>
@@ -89,8 +120,16 @@ import { AgendaService } from '../../services/agenda.service';
     IonButton,
     IonButtons,
     IonDatetimeButton,
-    IonModal
-  ]
+    IonModal,
+    IonToggle,
+    IonIcon
+  ],
+  styles: [`
+    .time-icon {
+      margin-right: 8px;
+      color: var(--ion-color-medium);
+    }
+  `]
 })
 export class AgendaEventInputComponent {
   @Input() event?: AgendaEvent;
@@ -102,15 +141,47 @@ export class AgendaEventInputComponent {
 
   title = '';
   description = '';
-  date = new Date().toISOString();
+  dataInizio = new Date().toISOString();
+  dataFine = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 ora dopo
+  allDay = false;
   type: 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'other' = 'homework';
+  minDate = new Date().toISOString();
+  maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
+
+  constructor() {
+    addIcons({ calendarOutline, timeOutline });
+  }
 
   ngOnInit() {
     if (this.event) {
       this.title = this.event.title;
       this.description = this.event.description || '';
-      this.date = this.event.date;
+      this.dataInizio = this.event.dataInizio || new Date().toISOString();
+      this.dataFine = this.event.dataFine || new Date(Date.now() + 60 * 60 * 1000).toISOString();
+      this.allDay = this.event.allDay || false;
       this.type = this.event.type;
+    }
+  }
+
+  onAllDayChange() {
+    if (this.allDay) {
+      // Se è tutto il giorno, impostiamo l'orario a mezzanotte
+      const startDate = new Date(this.dataInizio);
+      startDate.setHours(0, 0, 0, 0);
+      this.dataInizio = startDate.toISOString();
+      
+      const endDate = new Date(this.dataInizio);
+      endDate.setDate(endDate.getDate() + 1); // Fine alla mezzanotte successiva
+      endDate.setHours(0, 0, 0, 0);
+      this.dataFine = endDate.toISOString();
+    } else {
+      // Se non è tutto il giorno, impostiamo un orario di default (es. 1 ora dopo)
+      const startDate = new Date(this.dataInizio);
+      startDate.setHours(12, 0, 0, 0); // Mezzogiorno
+      this.dataInizio = startDate.toISOString();
+      
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 ora dopo
+      this.dataFine = endDate.toISOString();
     }
   }
 
@@ -119,7 +190,7 @@ export class AgendaEventInputComponent {
   }
 
   isValid(): boolean {
-    return !!this.title && !!this.date;
+    return !!this.title && !!this.dataInizio && !!this.dataFine && !!this.type && !!this.classKey && !!this.teacherKey;
   }
 
   async save() {
@@ -129,11 +200,13 @@ export class AgendaEventInputComponent {
       key: this.event?.key,
       title: this.title,
       description: this.description,
-      date: this.date,
+      dataInizio: this.dataInizio,
+      dataFine: this.dataFine,
+      allDay: this.allDay,
       type: this.type,
       classKey: this.classKey,
       teacherKey: this.teacherKey,
-      creationDate: this.event?.creationDate
+      creationDate: this.event?.creationDate || Date.now()
     });
 
     try {
@@ -144,7 +217,7 @@ export class AgendaEventInputComponent {
       }
       this.modalCtrl.dismiss(eventData, 'confirm');
     } catch (error) {
-      console.error('Error saving event', error);
+      console.error('Errore durante il salvataggio dell\'evento', error);
     }
   }
 }

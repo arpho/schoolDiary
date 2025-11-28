@@ -1,0 +1,140 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ event?.id ? 'Modifica' : 'Nuovo' }} Evento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form #eventForm="ngForm" (ngSubmit)="save()">
+    <!-- Titolo -->
+    <ion-item>
+      <ion-label position="floating">Titolo <span class="required">*</span></ion-label>
+      <ion-input
+        type="text"
+        name="title"
+        [(ngModel)]="event.title"
+        required
+        (ionChange)="onFieldChange('title')">
+      </ion-input>
+    </ion-item>
+    @if (eventForm.controls['title']?.touched && eventForm.controls['title']?.errors?.['required']) {
+    <ion-note color="danger">
+      Il titolo è obbligatorio
+    </ion-note>
+}
+
+    <!-- Tipo Evento -->
+    <ion-item>
+      <ion-label>Tipo evento</ion-label>
+      <ion-select
+        name="type"
+        [(ngModel)]="event.type"
+        (ionChange)="onFieldChange('type')"
+        interface="popover">
+        <ion-select-option value="lezione">Lezione</ion-select-option>
+        <ion-select-option value="compito">Compito</ion-select-option>
+        <ion-select-option value="verifica">Verifica</ion-select-option>
+        <ion-select-option value="generico">Generico</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- All Day Toggle -->
+    <ion-item>
+      <ion-label>Tutto il giorno</ion-label>
+      <ion-toggle
+        slot="end"
+        [(ngModel)]="event.allDay"
+        (ionChange)="onAllDayChange($event)"
+        name="allDay">
+      </ion-toggle>
+    </ion-item>
+
+    <!-- Data e Ora Inizio -->
+    <ion-item>
+      <ion-label>Inizio <span class="required">*</span></ion-label>
+      <ion-datetime
+        #startDatetime
+        name="dataInizio"
+        [(ngModel)]="event.dataInizio"
+        (ionChange)="onStartDateChange()"
+        [showDefaultButtons]="true"
+        [presentation]="event.allDay ? 'date' : 'date-time'"
+        [min]="minDate"
+        [max]="maxDate"
+        required>
+      </ion-datetime>
+    </ion-item>
+
+    <!-- Data e Ora Fine -->
+    <ion-item>
+      <ion-label>Fine <span class="required">*</span></ion-label>
+      <ion-datetime
+        #endDatetime
+        name="dataFine"
+        [(ngModel)]="event.dataFine"
+        (ionChange)="onEndDateChange()"
+        [showDefaultButtons]="true"
+        [presentation]="event.allDay ? 'date' : 'date-time'"
+        [min]="event.dataInizio || minDate"
+        [max]="maxDate"
+        required>
+      </ion-datetime>
+    </ion-item>
+
+    <!-- Messaggio di errore per data fine precedente a data inizio -->
+    @if (hasDateError()) {
+      <ion-item lines="none">
+        <ion-text color="danger" class="ion-text-center">
+          La data di fine deve essere successiva alla data di inizio
+        </ion-text>
+      </ion-item>
+    }
+
+    <!-- Descrizione -->
+    <ion-item>
+      <ion-label position="stacked">Descrizione</ion-label>
+      <ion-textarea 
+        [(ngModel)]="event.description" 
+        name="description" 
+        rows="4" 
+        maxlength="500"
+        placeholder="Aggiungi una descrizione (opzionale)"
+        (ionChange)="onFieldChange('description')">
+      </ion-textarea>
+      <ion-note slot="helper">{{ event.description?.length || 0 }}/500 caratteri</ion-note>
+    </ion-item>
+
+    <!-- Classi target (se disponibili) -->
+    @if (targetedClasses && targetedClasses.length > 0) {
+      <ion-item>
+        <ion-label>Classi selezionate:</ion-label>
+      </ion-item>
+      @for (classInfo of targetedClasses; track classInfo.key || classInfo.id || $index) {
+        <ion-item>
+          <ion-label>{{ classInfo.classe || classInfo.key || classInfo.id || classInfo.toString() }}</ion-label>
+          <ion-checkbox 
+            [checked]="isClassSelected(classInfo)" 
+            (ionChange)="updateClassSelection(classInfo, $event.detail.checked)">
+          </ion-checkbox>
+        </ion-item>
+      }
+    }
+
+    <!-- Pulsante di salvataggio -->
+    <ion-button 
+      expand="block" 
+      shape="round"
+      class="ion-margin-top"
+      [color]="isFormValid() ? 'primary' : 'medium'"
+      [disabled]="!isFormValid()"
+      (click)="save()">
+      <ion-icon slot="start" name="save"></ion-icon>
+      {{ event.key ? 'Aggiorna' : 'Salva' }}
+    </ion-button>
+  </form>
+</ion-content>

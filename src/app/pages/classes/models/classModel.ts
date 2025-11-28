@@ -1,18 +1,33 @@
-export class ClasseModel{
- year: string=""
- classe: string=""
- descrizione: string=""
- note:string=""
- archived: boolean = false
- coordinatore: string=""
- segretario: string=""
- key: string=""
- constructor(args?:{}){
-  this.build(args);
- }
+export interface IClasseModel {
+  id?: string;
+  year: string;
+  classe: string;
+  descrizione: string;
+  note: string;
+  archived: boolean;
+  coordinatore: string;
+  segretario: string;
+  key: string;
+}
 
- build(args?:{}){
-  Object.assign(this, args)
+export class ClasseModel implements IClasseModel {
+  id?: string;
+  year: string = "";
+  classe: string = "";
+  descrizione: string = "";
+  note: string = "";
+  archived: boolean = false;
+  coordinatore: string = "";
+  segretario: string = "";
+  key: string = "";
+  constructor(args?: Partial<IClasseModel>) {
+    this.build(args);
+  }
+
+  build(args?: Partial<IClasseModel>): this {
+    if (args) {
+      Object.assign(this, args);
+    }
 
 
   return this
