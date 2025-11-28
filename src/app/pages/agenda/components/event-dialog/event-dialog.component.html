@@ -36,10 +36,12 @@
         [(ngModel)]="event.type"
         (ionChange)="onFieldChange('type')"
         interface="popover">
-        <ion-select-option value="lezione">Lezione</ion-select-option>
-        <ion-select-option value="compito">Compito</ion-select-option>
-        <ion-select-option value="verifica">Verifica</ion-select-option>
-        <ion-select-option value="generico">Generico</ion-select-option>
+        <ion-select-option value="homework">Compito</ion-select-option>
+        <ion-select-option value="test">Verifica</ion-select-option>
+        <ion-select-option value="interrogation">Interrogazione</ion-select-option>
+        <ion-select-option value="note">Nota</ion-select-option>
+        <ion-select-option value="meeting">Riunione</ion-select-option>
+        <ion-select-option value="other">Altro</ion-select-option>
       </ion-select>
     </ion-item>
 
