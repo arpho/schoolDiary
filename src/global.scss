@@ -19,6 +19,37 @@ body {
   font-family: var(--font-family) !important;
 }
 
+/* Stili per gestire la visibilità dei tab con i modali */
+ion-modal {
+  --z-index: 999;
+  --ion-backdrop-opacity: 0.5;
+}
+
+ion-tab-bar {
+  z-index: 1000 !important;
+  position: relative;
+}
+
+ion-modal {
+  --width: 100%;
+  --height: 100%;
+  --max-width: 500px;
+  --max-height: 90%;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Assicura che il contenuto del modale non sia nascosto dietro i tab */
+ion-modal::part(content) {
+  margin-bottom: var(--ion-safe-area-bottom, 0);
+}
+
+/* Stile per il backdrop del modale */
+ion-modal::part(backdrop) {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
 * {
   font-family: var(--font-family) !important;
 }
