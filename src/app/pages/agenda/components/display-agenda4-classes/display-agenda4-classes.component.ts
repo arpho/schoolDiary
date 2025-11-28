@@ -1,11 +1,24 @@
 import { Component, ChangeDetectionStrategy, effect, input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonList, IonListHeader, IonItem, IonLabel } from '@ionic/angular/standalone';
+import { 
+  IonList, 
+  IonListHeader, 
+  IonItem, 
+  IonLabel, 
+  IonFab, 
+  IonFabButton, 
+  IonIcon,
+  IonContent,
+  ModalController
+} from '@ionic/angular/standalone';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { AgendaEvent } from '../../models/agendaEvent';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display/agenda-display.component';
+import { EventFormComponent } from '../event-form/event-form.component';
+import { addIcons } from 'ionicons';
+import { add } from 'ionicons/icons';
 
 @Component({
   selector: 'app-display-agenda4-classes',
@@ -19,6 +32,10 @@ import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display
     IonListHeader,
     IonItem,
     IonLabel,
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    IonContent,
     AgendaDisplayComponent
   ]
 })
@@ -35,10 +52,27 @@ export class DisplayAgenda4ClassesComponent {
       : 'Nessun evento in agenda per questa classe'
   );
 
+  async addNewEvent() {
+    const modal = await this.modalCtrl.create({
+      component: EventFormComponent,
+      componentProps: {
+        targetedClasses: this.listaClassi()
+      },
+      breakpoints: [0, 0.8, 1],
+      initialBreakpoint: 0.8,
+      handle: true,
+      handleBehavior: 'cycle'
+    });
+
+    await modal.present();
+  }
+
   constructor(
     private $classes: ClassiService,
-    private $agenda: AgendaService
+    private $agenda: AgendaService,
+    private modalCtrl: ModalController
   ) {
+    addIcons({ add });
   }
 
   // Effect as field initializer - runs in injection context

@@ -179,13 +179,6 @@
                 *ngIf="classe()?.key"
                 [targetedClasses]="[classe().key]">
               </app-display-agenda4-classes>
-              
-              <!-- Pulsante per aggiungere un nuovo evento -->
-              <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-                <ion-fab-button (click)="addNewEvent()" color="primary">
-                  <ion-icon name="add"></ion-icon>
-                </ion-fab-button>
-              </ion-fab>
             </ion-card-content>
           </ion-card>
         </ion-content>

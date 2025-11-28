@@ -1,15 +1,24 @@
-<ion-list>
-  <ion-list-header>
-    <ion-label class="ion-text-center">{{ title() }}</ion-label>
-  </ion-list-header>
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-label class="ion-text-center">{{ title() }}</ion-label>
+    </ion-list-header>
 
-  @if (agenda().length > 0) {
-    <app-agenda-display [eventsInput]="agenda()"></app-agenda-display>
-  } @else {
-    <ion-item>
-      <ion-label class="ion-text-center">
-        <p>{{ emptyMessage() }}</p>
-      </ion-label>
-    </ion-item>
-  }
-</ion-list>
+    @if (agenda().length > 0) {
+      <app-agenda-display [eventsInput]="agenda()"></app-agenda-display>
+    } @else {
+      <ion-item>
+        <ion-label class="ion-text-center">
+          <p>{{ emptyMessage() }}</p>
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+
+  <!-- FAB Button per aggiungere un nuovo evento -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addNewEvent()" color="primary">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
