@@ -72,6 +72,20 @@ export class DisplayAgenda4ClassesComponent {
     private $agenda: AgendaService,
     private modalCtrl: ModalController
   ) {
+
+    effect(async () => {
+      console.log("targetedClasses", this.targetedClasses());
+      const classPromises = this.targetedClasses().map((classKey) => {
+        console.log("classKey", classKey);
+        if (!this.$classes) {
+          throw new Error('ClassiService non inizializzato');
+        }
+        return this.$classes.fetchClasseOnCache(classKey);
+      });
+      const classes = await Promise.all(classPromises);
+      console.log("classes", classes);
+      this.listaClassi.set(classes);
+    });
     addIcons({ add });
   }
 
