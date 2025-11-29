@@ -1,26 +1,19 @@
+// Reset e stili di base
 ion-content {
-  --padding-top: 0;
-  --padding-bottom: 0;
-  --padding-start: 0;
-  --padding-end: 0;
-  padding: 0;
+  --padding: 0;
   margin: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-
-
+// Stili specifici per la tab agenda
 ion-tab[tab="agenda"] {
-  display: block;
   height: 100%;
   
   ion-content {
-    --padding: 0;
     --background: transparent;
     height: 100%;
-    contain: none;
     
     ion-card {
       margin: 0;
@@ -35,7 +28,7 @@ ion-tab[tab="agenda"] {
         
         app-display-agenda4-classes {
           flex: 1;
-          min-height: 0; // Importante per il flex in contenitori con overflow
+          min-height: 0;
           display: block;
           width: 100%;
         }
@@ -44,24 +37,12 @@ ion-tab[tab="agenda"] {
   }
 }
 
-ion-header {
+// Stili per l'header
+ion-header, ion-toolbar {
   --height: 44px;
   --min-height: 44px;
-  --padding-top: 0;
-  --padding-bottom: 0;
-  --padding-start: 0;
-  --padding-end: 0;
+  --padding: 0;
   margin: 0;
-}
-
-ion-toolbar {
-  --min-height: 44px;
-  --padding-top: 0;
-  --padding-bottom: 0;
-  --padding-start: 0;
-  --padding-end: 0;
-  margin: 0;
-  height: 44px;
 }
 
 ion-title {
@@ -70,79 +51,57 @@ ion-title {
   padding: 0;
 }
 
-ion-buttons {
+ion-buttons, ion-back-button {
   margin: 0;
   padding: 0;
 }
 
-ion-back-button {
-  --padding-start: 0;
-  --padding-end: 0;
-  margin: 0;
-  padding: 0;
-}
-
-/* Stili per la tab bar personalizzata */
+// Stili per la tab bar personalizzata
 ion-tab-bar.custom-tab-bar {
   --background: var(--ion-color-light);
+  --color: var(--ion-color-medium);
+  --color-selected: var(--ion-color-primary);
+  --border-color: var(--ion-color-light-shade);
+  --border-style: solid;
+  --border-width: 0 0 1px;
+  
   display: flex;
   flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden auto;
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; // Per Firefox
-  -ms-overflow-style: none; // Per IE e Edge
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0;
+  margin: 0;
+  min-height: 48px;
+  position: relative;
   
-  // Nascondi la scrollbar su tutti i browser
   &::-webkit-scrollbar {
     display: none;
   }
-
-  // Stile per i tab button
-  ion-tab-button {
-    display: inline-flex;
-    flex: 0 0 auto;
-    min-width: auto;
-    width: auto;
-    padding: 0 16px;
-    white-space: nowrap;
-  }
-
-  // Opzionale: Aggiungi un'ombra a destra per indicare lo scroll
-  position: relative;
   
   &::after {
     content: '';
     position: absolute;
     top: 0;
     right: 0;
-    height: 48px; // Altezza della tab bar
+    height: 48px;
     width: 30px;
-    background: linear-gradient(90deg, transparent, var(--ion-background-color, #ffffff) 70%);
+    background: linear-gradient(90deg, transparent, var(--ion-background-color, #fff) 70%);
     pointer-events: none;
     z-index: 10;
   }
-  --color: var(--ion-color-medium);
-  --color-selected: var(--ion-color-primary);
-  --border-color: var(--ion-color-light-shade);
-  --border-style: solid;
-  --border-width: 0 0 1px 0;
-  padding: 0;
-  margin: 0;
-  min-height: 48px;
   
   ion-tab-button {
-    --color: var(--ion-color-medium);
-    --color-selected: var(--ion-color-primary);
     --ripple-color: var(--ion-color-primary);
-    --padding-top: 8px;
-    --padding-bottom: 8px;
-    --padding-start: 12px;
-    --padding-end: 12px;
+    --padding: 8px 12px;
+    
+    display: inline-flex;
+    flex: 0 0 auto;
     margin: 0;
     position: relative;
     transition: all 0.3s ease;
+    white-space: nowrap;
     
     ion-label {
       margin: 4px 0 0;
@@ -179,18 +138,19 @@ ion-tab-bar.custom-tab-bar {
   }
 }
 
-/* Stile per il contenuto delle tab */
-ion-tab {
+// Stili per le tab
+ion-tab, ion-tabs {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+ion-tab {
   overflow: auto;
 }
 
 ion-tabs {
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 ion-tab-bar {
