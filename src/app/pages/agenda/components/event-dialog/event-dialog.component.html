@@ -111,20 +111,24 @@
       <ion-note slot="helper">{{ event.description?.length || 0 }}/500 caratteri</ion-note>
     </ion-item>
 
-    <!-- Classi target (se disponibili) -->
+    <!-- Selezione Classe -->
     @if (targetedClasses && targetedClasses.length > 0) {
       <ion-item>
-        <ion-label>Classi selezionate:</ion-label>
+        <ion-label>Classe <span class="required">*</span></ion-label>
+        <ion-select
+          name="classKey"
+          [(ngModel)]="event.classKey"
+          (ionChange)="onFieldChange('classKey')"
+          interface="popover"
+          placeholder="Seleziona una classe"
+          required>
+          @for (classInfo of targetedClasses; track classInfo.key || classInfo.id || $index) {
+            <ion-select-option [value]="getClassKey(classInfo)">
+              {{ classInfo.classe || classInfo.key || classInfo.id || classInfo.toString() }}
+            </ion-select-option>
+          }
+        </ion-select>
       </ion-item>
-      @for (classInfo of targetedClasses; track classInfo.key || classInfo.id || $index) {
-        <ion-item>
-          <ion-label>{{ classInfo.classe || classInfo.key || classInfo.id || classInfo.toString() }}</ion-label>
-          <ion-checkbox 
-            [checked]="isClassSelected(classInfo)" 
-            (ionChange)="updateClassSelection(classInfo, $event.detail.checked)">
-          </ion-checkbox>
-        </ion-item>
-      }
     }
 
     <!-- Pulsante di salvataggio -->

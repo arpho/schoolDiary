@@ -20,37 +20,15 @@ type ExtendedAgendaEvent = Omit<IAgendaEvent, 'targetClasses'> & {
   imports: [CommonModule, FormsModule, IonicModule]
 })
 export class EventDialogComponent implements OnInit {
-  updateClassSelection(classInfo: IClasseModel | string, isSelected: boolean) {
-    if (!this.event.targetClasses) {
-      this.event.targetClasses = [];
-    }
-    
-    const classId = typeof classInfo === 'object' ? 
-      (classInfo as IClasseModel).key || (classInfo as IClasseModel).id || classInfo : 
-      classInfo;
-      
-    const index = this.event.targetClasses.findIndex((c: string | IClasseModel) => {
-      if (typeof c === 'string' && typeof classId === 'string') return c === classId;
-      if (typeof c === 'object') {
-        const cId = (c as IClasseModel).key || (c as IClasseModel).id;
-        const infoId = typeof classInfo === 'object' ? 
-          (classInfo as IClasseModel).key || (classInfo as IClasseModel).id : 
-          classInfo;
-        return cId === infoId;
-      }
-      return false;
-    });
-    
-    if (isSelected && index === -1) {
-      // Aggiungi la classe selezionata
-      this.event.targetClasses.push(classId);
-    } else if (!isSelected && index !== -1) {
-      // Rimuovi la classe deselezionata
-      this.event.targetClasses.splice(index, 1);
-    }
-    
-    // Forza l'aggiornamento della validazione del form
-    this.onFieldChange('targetClasses');
+  /**
+   * Gets the class key from a class info object
+   * @param classInfo The class info object or string
+   * @returns The class key as string
+   */
+  getClassKey(classInfo: IClasseModel | string): string {
+    if (!classInfo) return '';
+    if (typeof classInfo === 'string') return classInfo;
+    return (classInfo as IClasseModel).key || (classInfo as IClasseModel).id || '';
   }
   private modalCtrl = inject(ModalController);
   
@@ -122,10 +100,8 @@ export class EventDialogComponent implements OnInit {
   // Save the event and close the modal
   save() {
     if (this.isFormValid()) {
-      // Convert targetClasses to string[] if they are IClasseModel objects
-      const targetClasses = this.event.targetClasses?.map(item => 
-        typeof item === 'string' ? item : (item.key || item.id || '')
-      ).filter(Boolean) as string[] | undefined;
+      // Create targetClasses array from the selected classKey
+      const targetClasses = this.event.classKey ? [this.event.classKey] : [];
 
       // Create the event data with proper types
       const eventData: Partial<IAgendaEvent> = {
@@ -142,6 +118,7 @@ export class EventDialogComponent implements OnInit {
       
       // Create a new AgendaEvent instance with the converted data
       const newEvent = new AgendaEvent(eventData);
+      console.log("newEvent", newEvent);  
       
       // Dismiss the modal with the saved event
       this.modalCtrl.dismiss({ 
@@ -238,12 +215,15 @@ export class EventDialogComponent implements OnInit {
     const startDate = new Date(this.event.dataInizio);
     const endDate = new Date(this.event.dataFine);
     
-    return endDate < startDate;
+    if (endDate < startDate) {
+      // Se la data di fine è precedente a quella di inizio, ripristina il valore precedente
+      this.event.dataFine = this.event.dataInizio;
+    }
+    return true;
   }
 
   // Handle field changes for validation
-  onFieldChange(field: string) {
-    // Aggiorna la validazione del campo quando cambia
+  onFieldChange(field: string): void {
     if (this.eventForm) {
       const control = this.eventForm.controls[field];
       if (control) {
@@ -253,46 +233,22 @@ export class EventDialogComponent implements OnInit {
     }
   }
 
-  // Check if a class is selected
-  isClassSelected(classInfo: IClasseModel | string): boolean {
-    if (!this.event.targetClasses?.length) return false;
-    
-    const targetId = typeof classInfo === 'string' 
-      ? classInfo 
-      : classInfo.key || classInfo.id || '';
-    
-    if (!targetId) return false;
-    
-    return this.event.targetClasses.some(item => {
-      if (!item) return false;
-      
-      if (typeof item === 'string') {
-        return item === targetId;
-      } else {
-        const itemId = item.key || item.id || '';
-        return itemId === targetId;
-      }
-    });
-  }
-
   // Validate form
   isFormValid(): boolean {
-    // Verifica campi obbligatori
+    // Check required fields
     if (!this.event.title?.trim()) return false;
     if (!this.event.dataInizio) return false;
     if (!this.event.dataFine) return false;
     
-    // Verifica che la data di fine sia successiva o uguale a quella di inizio
+    // Check if end date is after or equal to start date
     const start = new Date(this.event.dataInizio).getTime();
     const end = new Date(this.event.dataFine).getTime();
     
     if (end < start) return false;
     
-    // Se ci sono classi target, almeno una deve essere selezionata
-    if (this.targetedClasses && this.targetedClasses.length > 0) {
-      if (!this.event.targetClasses || this.event.targetClasses.length === 0) {
-        return false;
-      }
+    // Check if a class is selected
+    if (!this.event.classKey) {
+      return false;
     }
     
     return true;
