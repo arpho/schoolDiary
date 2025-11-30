@@ -6,6 +6,8 @@ import { IonicModule } from '@ionic/angular';
 
 import { AgendaEvent, IAgendaEvent, EventType } from '../../models/agendaEvent';
 import { IClasseModel } from 'src/app/pages/classes/models/classModel';
+import { AgendaService } from 'src/app/shared/services/agenda.service';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
 
 // Estendi il tipo AgendaEvent per gestire i targetClasses come stringhe o oggetti ClasseModel
 type ExtendedAgendaEvent = Omit<IAgendaEvent, 'targetClasses'> & {
@@ -46,7 +48,7 @@ export class EventDialogComponent implements OnInit {
   event: Partial<ExtendedAgendaEvent> = {
     title: '',
     description: '',
-    dataInizio: new Date().toISOString(),
+    dataInizio: new Date(Date.now()).toISOString(),
     dataFine: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 ora dopo
     type: 'other',
     classKey: this.classId,
@@ -68,7 +70,10 @@ export class EventDialogComponent implements OnInit {
   minDate: string = new Date().toISOString();
   maxDate: string = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
 
-  constructor() {}
+  constructor(
+    private $agenda: AgendaService,
+    private toaster: ToasterService
+  ) {}
 
   ionViewWillEnter() {
     // Set the class key and teacher key if provided
@@ -118,7 +123,14 @@ export class EventDialogComponent implements OnInit {
       
       // Create a new AgendaEvent instance with the converted data
       const newEvent = new AgendaEvent(eventData);
-      console.log("newEvent", newEvent);  
+      console.log("newEvent", newEvent);
+      try {
+        this.$agenda.addEvent(newEvent);
+        this.toaster.showToast({message: "Evento aggiunto con successo", duration: 2000, position: "top"}, "success");
+      } catch (error) {
+        console.error("Error adding event:", error);
+        this.toaster.showToast({message: "Errore durante l'aggiunta dell'evento", duration: 2000, position: "top"}, "danger");
+      }  
       
       // Dismiss the modal with the saved event
       this.modalCtrl.dismiss({ 
@@ -211,15 +223,17 @@ export class EventDialogComponent implements OnInit {
   // Check if there's a date error (end date before start date)
   hasDateError(): boolean {
     if (!this.event.dataInizio || !this.event.dataFine) return false;
+    let out = false;
     
-    const startDate = new Date(this.event.dataInizio);
-    const endDate = new Date(this.event.dataFine);
+    const startDate = new Date(this.event.dataInizio).getTime();
+    const endDate = new Date(this.event.dataFine).getTime();
     
     if (endDate < startDate) {
       // Se la data di fine è precedente a quella di inizio, ripristina il valore precedente
       this.event.dataFine = this.event.dataInizio;
+      out = true;
     }
-    return true;
+    return out;
   }
 
   // Handle field changes for validation

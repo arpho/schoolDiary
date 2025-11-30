@@ -8,7 +8,7 @@ import { addDoc, collection, CollectionReference, deleteDoc, doc, DocumentData, 
 export class AgendaService {
     private firestore = inject(Firestore);
     getAgenda4targetedClassesOnrealtime(targetedClasses: string[], callBack: (events: AgendaEvent[]) => void) {
-        console.log("targetedClasses", targetedClasses);
+        console.log("targetedClasse *", targetedClasses);
         try {
             const collectionRef = collection(this.firestore, 'agenda-events');
             let q = query(collectionRef);

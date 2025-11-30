@@ -66,6 +66,7 @@
         (ionChange)="onStartDateChange()"
         [showDefaultButtons]="true"
         [presentation]="event.allDay ? 'date' : 'date-time'"
+        [readonly]="event.allDay"
         [min]="minDate"
         [max]="maxDate"
         required>
@@ -82,6 +83,7 @@
         (ionChange)="onEndDateChange()"
         [showDefaultButtons]="true"
         [presentation]="event.allDay ? 'date' : 'date-time'"
+        [readonly]="event.allDay"
         [min]="event.dataInizio || minDate"
         [max]="maxDate"
         required>
