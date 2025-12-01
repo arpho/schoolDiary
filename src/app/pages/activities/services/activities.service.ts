@@ -124,8 +124,6 @@ export class ActivitiesService {
     callback: (activities: ActivityModel[]) => void,
     queries?: QueryCondition[]
   ) {
-    console.log("* fetching activities for teacher", teachersKey);
-    console.log("* fetching activities with queries", queries);
     const collectionRef = collection(this.firestore, this.collection);
     let q = query(collectionRef, where('teacherKey', '==', teachersKey),orderBy('date', 'desc'));
 

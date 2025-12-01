@@ -1,20 +1,36 @@
-import { Injectable, inject } from '@angular/core';
-import { AgendaEvent } from '../../pages/agenda/models/agendaEvent';
-import { addDoc, collection, CollectionReference, deleteDoc, doc, DocumentData, Firestore, getDocs, orderBy, query, QuerySnapshot, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { Injectable, inject }                                                                 from '@angular/core';
+import { AgendaEvent }                                                                         from '../../pages/agenda/models/agendaEvent';
+import {
+  addDoc,
+  collection,
+  CollectionReference,
+  deleteDoc,
+  doc,
+  DocumentData,
+  Firestore,
+  getDocs,
+  orderBy,
+  query,
+  QuerySnapshot,
+  setDoc,
+  updateDoc,
+  where
+}                                                                                             from '@angular/fire/firestore';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AgendaService {
     private firestore = inject(Firestore);
+    collection="agenda-events"
     getAgenda4targetedClassesOnrealtime(targetedClasses: string[], callBack: (events: AgendaEvent[]) => void) {
         console.log("targetedClasse *", targetedClasses);
         try {
-            const collectionRef = collection(this.firestore, 'agenda-events');
+            const collectionRef = collection(this.firestore, this.collection);
             let q = query(collectionRef);
-            q = query(q, where('classKey', 'in', targetedClasses));
+           // q = query(q, where('classKey', 'in', targetedClasses));
             q = query(q, orderBy('date', 'desc'));
-            q = query(q, where('date', '>=', new Date()));
+           // q = query(q, where('date', '>=', new Date()));
             getDocs(q).then((querySnapshot: QuerySnapshot<DocumentData>) => {
                 const events: AgendaEvent[] = [];
                 querySnapshot.forEach((doc) => {
@@ -22,6 +38,7 @@ export class AgendaService {
                     event.setKey(doc.id);
                     events.push(event);
                 });
+                console.log("events *", events);
                 callBack(events);
             });
         }
