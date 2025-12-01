@@ -41,7 +41,7 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
               <p>{{ event.description }}</p>
               @if (!classKey() && event.classKey) {
                 <p>
-                  <ion-note color="medium">Classe: {{ classe() }}</ion-note>
+                  <ion-note color="medium">Classe: {{ fetchClassName(event.classKey) | async }}</ion-note>
                 </p>
               }
             </ion-label>
@@ -118,13 +118,27 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
   `]
 })
 export class AgendaDisplayComponent  {
+  async fetchClassName(classKey: string) {
+  console.log("classKey fetchClassName* ", classKey);
+  let classe;
+  try {
+    classe = await this.$classes.fetchClasse(classKey)
+    console.log("classe fetchClassName*  try", classe);
+    
+  } catch (error) {
+    console.error("Errore nella registrazione dell'effect:", error);
+  }
+  const out = `${classe?.year} ${classe?.classe} ${classe?.descrizione}`
+  console.log("out fetchClassName*", out);
+  return out
+}
   classKey = input<string>();
   teacherKey = input<string>();
   eventsInput = input<AgendaEvent[]>();
 
   private agendaService = inject(AgendaService);
   private modalCtrl = inject(ModalController);
-  private classService = inject(ClassiService);
+  private $classes = inject(ClassiService);
 
   events = signal<AgendaEvent[]>([]);
 
@@ -192,7 +206,7 @@ export class AgendaDisplayComponent  {
   getClassName(classKey: string): string {
     if (!this.classNamesCache.has(classKey)) {
       // Load asynchronously and store in cache
-      this.classService.fetchClasseOnCache(classKey).then(classe => {
+      this.$classes.fetchClasseOnCache(classKey).then(classe => {
         if (classe) {
           this.classNamesCache.set(classKey, `${classe.year} ${classe.classe} ${classe.descrizione}`);
           this.classe.set(`${classe.year} ${classe.classe} ${classe.descrizione}`);
