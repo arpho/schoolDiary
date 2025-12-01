@@ -32,42 +32,54 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
   selector: 'app-agenda-display',
   template: `
     <ion-list>
-      <ion-item-sliding *ngFor="let event of events()" [class.all-day]="event.allDay">
-        <ion-item>
-          <ion-icon [name]="getIcon(event.type)" slot="start"></ion-icon>
-          <ion-label>
-            <h2>{{ event.title }}</h2>
-            <p>{{ event.description }}</p>
-            <p *ngIf="!classKey() && event.classKey">
-              <ion-note color="medium">Classe: {{ getClassName(event.classKey) }}</ion-note>
-            </p>
-          </ion-label>
-          <ion-note slot="end" class="event-dates">
-            <div>
-              <ion-icon *ngIf="!event.allDay" name="time-outline"></ion-icon>
-              <ion-icon *ngIf="event.allDay" name="calendar-outline"></ion-icon>
-              {{ formatDate(event.dataInizio) }}
-            </div>
-            <div *ngIf="!isSameDay(event)" class="date-range">
-              <ion-icon name="arrow-forward-outline"></ion-icon>
-              {{ formatDate(event.dataFine) }}
-            </div>
-          </ion-note>
-        </ion-item>
+      @for (event of events(); track event) {
+        <ion-item-sliding [class.all-day]="event.allDay">
+          <ion-item>
+            <ion-icon [name]="getIcon(event.type)" slot="start"></ion-icon>
+            <ion-label>
+              <h2>{{ event.title }}</h2>
+              <p>{{ event.description }}</p>
+              @if (!classKey() && event.classKey) {
+                <p>
+                  <ion-note color="medium">Classe: {{ classe() }}</ion-note>
+                </p>
+              }
+            </ion-label>
+            <ion-note slot="end" class="event-dates">
+              <div>
+                @if (!event.allDay) {
+                  <ion-icon name="time-outline"></ion-icon>
+                }
+                @if (event.allDay) {
+                  <ion-icon name="calendar-outline"></ion-icon>
+                }
+                {{ formatDate(event.dataInizio) }}
+              </div>
+              @if (!isSameDay(event)) {
+                <div class="date-range">
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                  {{ formatDate(event.dataFine) }}
+                </div>
+              }
+            </ion-note>
+          </ion-item>
 
-        <ion-item-options side="end">
-          <ion-item-option color="primary" (click)="editEvent(event)">
-            <ion-icon name="create-outline"></ion-icon>
-          </ion-item-option>
-          <ion-item-option color="danger" (click)="deleteEvent(event)">
-            <ion-icon name="trash-outline"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="editEvent(event)">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="deleteEvent(event)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
       
-      <ion-item *ngIf="events().length === 0">
-        <ion-label class="ion-text-center">Nessun evento in agenda</ion-label>
-      </ion-item>
+      @if (events().length === 0) {
+        <ion-item>
+          <ion-label class="ion-text-center">Nessun evento in agenda</ion-label>
+        </ion-item>
+      }
     </ion-list>
   `,
   standalone: true,
@@ -105,7 +117,7 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
     }
   `]
 })
-export class AgendaDisplayComponent {
+export class AgendaDisplayComponent  {
   classKey = input<string>();
   teacherKey = input<string>();
   eventsInput = input<AgendaEvent[]>();
@@ -134,6 +146,7 @@ export class AgendaDisplayComponent {
       const inputEvents = this.eventsInput();
       if (inputEvents) {
         this.events.set(inputEvents);
+      
       }
     });
   }
@@ -174,6 +187,7 @@ export class AgendaDisplayComponent {
   }
 
   private classNamesCache = new Map<string, string>();
+  classe = signal("")
 
   getClassName(classKey: string): string {
     if (!this.classNamesCache.has(classKey)) {
@@ -181,9 +195,11 @@ export class AgendaDisplayComponent {
       this.classService.fetchClasseOnCache(classKey).then(classe => {
         if (classe) {
           this.classNamesCache.set(classKey, `${classe.year} ${classe.classe} ${classe.descrizione}`);
+          this.classe.set(`${classe.year} ${classe.classe} ${classe.descrizione}`);
+
+          console.log("classe dell'evednto *",this.classe())
         }
       });
-      return classKey; // Return key temporarily while loading
     }
     return this.classNamesCache.get(classKey) || classKey;
   }
