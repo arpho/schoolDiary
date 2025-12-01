@@ -9,6 +9,7 @@ import {
   DocumentData,
   Firestore,
   getDocs,
+  onSnapshot,
   orderBy,
   query,
   QuerySnapshot,
@@ -23,17 +24,19 @@ import {
 export class AgendaService {
     private firestore = inject(Firestore);
     collection="agenda-events"
+    cacheEvents4Class = new Map<string, AgendaEvent>();
     getAgenda4targetedClassesOnrealtime(targetedClasses: string[], callBack: (events: AgendaEvent[]) => void) {
         console.log("targetedClasse *", targetedClasses);
         try {
             const collectionRef = collection(this.firestore, this.collection);
             let q = query(collectionRef);
-           // q = query(q, where('classKey', 'in', targetedClasses));
-            q = query(q, orderBy('date', 'desc'));
+            q = query(q, where('classKey', 'in', targetedClasses));
+           // q = query(q, orderBy('date', 'desc'));
            // q = query(q, where('date', '>=', new Date()));
-            getDocs(q).then((querySnapshot: QuerySnapshot<DocumentData>) => {
+           try{
+            onSnapshot(q, (snapshot) => {
                 const events: AgendaEvent[] = [];
-                querySnapshot.forEach((doc) => {
+                snapshot.forEach((doc) => {
                     const event = new AgendaEvent(doc.data());
                     event.setKey(doc.id);
                     events.push(event);
@@ -43,9 +46,14 @@ export class AgendaService {
             });
         }
         catch (e) {
+            console.log("error fetching")
             console.log(e);
         }
     }
+    catch (e) {
+        console.log(e);
+    }
+}
 
 
 
