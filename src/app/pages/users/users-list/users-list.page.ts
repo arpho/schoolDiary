@@ -1,4 +1,5 @@
 import { Component, computed, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, OnDestroy } from '@angular/core';
+import { ActionSheetController } from '@ionic/angular/standalone';
 import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -15,14 +16,13 @@ import {
   IonIcon,
   IonList,
   IonItem,
-  IonFab,
-  IonFabButton,
-  IonFabList,
   IonBackButton,
   IonSearchbar,
   IonSelect,
   IonSelectOption,
-  IonLabel
+  IonLabel,
+  IonButton,
+  IonButtons
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
@@ -58,26 +58,61 @@ import { ClasseModel } from '../../classes/models/classModel';
     IonCardHeader,
     IonCardTitle,
     IonIcon,
-    IonItem,
     IonList,
-    IonFab,
-    IonFabButton,
-    IonFabList,
     IonBackButton,
     IonSearchbar,
     IonSelect,
     IonSelectOption,
-    IonLabel
+    IonLabel,
+    IonButton,
+    IonButtons
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class UsersListPage implements OnInit, OnDestroy {
-deleteUser(userKey: string) {
-console.log("deleteUser", userKey);
-}
-editUser(userKey: string) {
-  this.router.navigate(['user-dialog',userKey]);
-}
+  private selectedUser: UserModel | null = null;
+
+  async showUserActions(user: UserModel) {
+    console.log("showUserActions", user);
+    this.selectedUser = user;
+    const actionSheet = await this.actionSheetController.create({
+      header: `${user.lastName} ${user.firstName}`,
+      subHeader: user.email,
+      buttons: [
+        {
+          text: 'Modifica',
+          icon: 'create',
+          handler: () => {
+            this.editUser(user.key);
+          }
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            this.deleteUser(user.key);
+          }
+        },
+        {
+          text: 'Annulla',
+          role: 'cancel',
+          icon: 'close'
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+
+  deleteUser(userKey: string) {
+    console.log("deleteUser", userKey);
+    // Add your delete logic here
+  }
+
+  editUser(userKey: string) {
+    this.router.navigate(['user-dialog', userKey]);
+  }
 
   userList= signal<UserModel[]>([]);
   usersFilter= signal<()=> UserModel[]>(()=>this.userList());
@@ -93,7 +128,8 @@ editUser(userKey: string) {
     private readonly router: Router,
     private readonly toaster: ToasterService,
     private readonly fb: FormBuilder,
-    private readonly classesService: ClassiService
+    private readonly classesService: ClassiService,
+    private readonly actionSheetController: ActionSheetController
   ) {
     addIcons({
       ellipsisVertical,

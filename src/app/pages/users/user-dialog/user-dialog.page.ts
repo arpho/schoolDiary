@@ -171,7 +171,7 @@ return this.user()?.lastName + " " + this.user()?.firstName;
     // Se userKey esiste, carica l'utente
     if (userKey) {
       try {
-        const user = this.$users.fetchUserOnCache(userKey);
+        const user = await this.$users.fetchUserOnCache(userKey);
         if (user) {
           console.log("user showed", user);
           if(user instanceof UserModel){

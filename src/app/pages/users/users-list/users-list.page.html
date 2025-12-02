@@ -43,7 +43,7 @@
   <ion-list>
     @for(users of users2BeShown(); track users.key) {
         <ion-item>
-            <ion-card>
+            <ion-card (click)="showUserActions(users)">
                 <ion-card-header>
                     <ion-card-title>{{users.lastName}} {{users.firstName}}</ion-card-title>
                 </ion-card-header>
@@ -51,22 +51,11 @@
                     <p>{{users.email}}</p>
                 </ion-card-content>
             </ion-card>
-<ion-fab id="test"  vertical="bottom" horizontal="end" >
-  <ion-fab-button size="small" color="medium" (keydown.enter)="$event.preventDefault()" (keydown.space)="$event.preventDefault()">
-    <ion-icon name="ellipsis-vertical"></ion-icon>
-  </ion-fab-button>
-  <ion-fab-list side="start">
-    <ion-fab-button color="light" (click)="editUser(users.key)" (keydown.enter)="editUser(users.key)" (keydown.space)="editUser(users.key)">
-      <ion-icon name="create"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button color="danger" (click)="deleteUser(users.key)" (keydown.enter)="deleteUser(users.key)" (keydown.space)="deleteUser(users.key)">
-      <ion-icon name="trash"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button color="light">
-      <ion-icon name="close"></ion-icon>
-    </ion-fab-button>
-  </ion-fab-list>
-</ion-fab>
+<ion-buttons slot="end">
+  <ion-button (click)="$event.stopPropagation(); showUserActions(users); $event.preventDefault()">
+    <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+  </ion-button>
+</ion-buttons>
         </ion-item>
     }
 </ion-list>
