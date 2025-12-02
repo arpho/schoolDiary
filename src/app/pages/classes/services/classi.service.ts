@@ -20,6 +20,9 @@ import { ClasseModel } from '../models/classModel';
   providedIn: 'root'
 })
 export class ClassiService {
+  getAllClasses() {
+    return this.classesOnCache();
+  }
   fetchClasses4teacher(teacherKey: string) {
 
     return [];

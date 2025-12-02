@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect, input } from '@angular/core';
+import { Component, inject, signal, effect, input, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import {
   IonList,
@@ -27,6 +27,7 @@ import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
 import { AgendaEventInputComponent } from '../agenda-event-input/agenda-event-input.component';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 
 @Component({
   selector: 'app-agenda-display',
@@ -41,7 +42,7 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
               <p>{{ event.description }}</p>
               @if (!classKey() && event.classKey) {
                 <p>
-                  <ion-note color="medium">Classe: {{ fetchClassName(event.classKey) | async }}</ion-note>
+                  <ion-note color="medium">Classe: {{ fetchClassName(event.classKey) }}</ion-note>
                 </p>
               }
             </ion-label>
@@ -117,20 +118,11 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
     }
   `]
 })
-export class AgendaDisplayComponent  {
-  async fetchClassName(classKey: string) {
-  console.log("classKey fetchClassName* ", classKey);
-  let classe;
-  try {
-    classe = await this.$classes.fetchClasse(classKey)
-    console.log("classe fetchClassName*  try", classe);
-    
-  } catch (error) {
-    console.error("Errore nella registrazione dell'effect:", error);
-  }
-  const out = `${classe?.year} ${classe?.classe} ${classe?.descrizione}`
-  console.log("out fetchClassName*", out);
-  return out
+export class AgendaDisplayComponent implements OnInit {
+  classCache = new Map<string, ClasseModel>();
+  fetchClassName(classKey: string) {
+    const classe = this.classCache.get(classKey);
+   return `${classe?.year} ${classe?.classe} ${classe?.descrizione}`
 }
   classKey = input<string>();
   teacherKey = input<string>();
@@ -163,6 +155,10 @@ export class AgendaDisplayComponent  {
       
       }
     });
+  }
+  ngOnInit(): void {
+const classes = this.$classes.getAllClasses();
+this.classCache = new Map(classes.map((classe) => [classe.key, classe])); 
   }
 
 
