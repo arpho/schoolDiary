@@ -206,8 +206,6 @@ this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
         if (classe) {
           this.classNamesCache.set(classKey, `${classe.year} ${classe.classe} ${classe.descrizione}`);
           this.classe.set(`${classe.year} ${classe.classe} ${classe.descrizione}`);
-
-          console.log("classe dell'evednto *",this.classe())
         }
       });
     }

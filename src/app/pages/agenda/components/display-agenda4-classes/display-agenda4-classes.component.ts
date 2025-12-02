@@ -74,16 +74,13 @@ export class DisplayAgenda4ClassesComponent {
   ) {
 
     effect(async () => {
-      console.log("targetedClasses", this.targetedClasses());
       const classPromises = this.targetedClasses().map((classKey) => {
-        console.log("classKey", classKey);
         if (!this.$classes) {
           throw new Error('ClassiService non inizializzato');
         }
         return this.$classes.fetchClasseOnCache(classKey);
       });
       const classes = await Promise.all(classPromises);
-      console.log("classes", classes);
       this.listaClassi.set(classes);
     });
     addIcons({ add });
@@ -92,25 +89,19 @@ export class DisplayAgenda4ClassesComponent {
   // Effect as field initializer - runs in injection context
   private classesEffect = effect(async () => {
     const targetedClasses = this.targetedClasses();
-    console.log("classi target", targetedClasses);
     if (targetedClasses.length > 0 && targetedClasses[0]) {
-      console.log("got classi target", targetedClasses);
     }
     const classPromises = targetedClasses.map((classKey) => {
-      console.log("classKey", classKey);
       if (!this.$classes) {
         throw new Error('ClassiService non inizializzato');
       }
       return this.$classes.fetchClasseOnCache(classKey);
     });
     const classes = await Promise.all(classPromises);
-
-    console.log("classi", classes);
     const title = classes.length > 1 ?
       `agenda per le classi: ${classes.map((classe) => classe?.classe).join(', ')}` : `agenda per ${classes[0]?.classe}`;
     this.title.set(title);
     this.$agenda.getAgenda4targetedClassesOnrealtime(targetedClasses, (events: AgendaEvent[]) => {
-      console.log("events", events);
       this.agenda.set(events);
     });
   });
