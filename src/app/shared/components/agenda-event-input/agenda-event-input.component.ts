@@ -232,31 +232,24 @@ export class AgendaEventInputComponent {
   minDate = new Date().toISOString();
   maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
 
-  constructor() {
+  ngOnInit() {
     addIcons({ calendarOutline, timeOutline });
+    
+    // Validate form on initialization
+    this.updateValidation();
   }
 
-  ngOnInit() {
-    if (this.event) {
-      this.title = this.event.title;
-      this.description = this.event.description || '';
-      this.dataInizio = this.event.dataInizio || new Date().toISOString();
-      this.dataFine = this.event.dataFine || new Date(Date.now() + 60 * 60 * 1000).toISOString();
-      this.allDay = this.event.allDay || false;
-      this.type = this.event.type;
-    }
-  }
+  // ...
 
   onAllDayChange() {
     if (this.allDay) {
-      // Se è tutto il giorno, impostiamo l'orario a mezzanotte
+      // Se si passa a "Tutto il giorno", imposta l'ora a mezzanotte
       const startDate = new Date(this.dataInizio);
       startDate.setHours(0, 0, 0, 0);
       this.dataInizio = startDate.toISOString();
       
-      const endDate = new Date(this.dataInizio);
-      endDate.setDate(endDate.getDate() + 1); // Fine alla mezzanotte successiva
-      endDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(this.dataFine);
+      endDate.setHours(23, 59, 59, 999);
       this.dataFine = endDate.toISOString();
     } else {
       // Se non è tutto il giorno, impostiamo un orario di default (es. 1 ora dopo)
@@ -333,22 +326,33 @@ export class AgendaEventInputComponent {
       newEndDate.setHours(newEndDate.getHours() + 1); // Aggiungi 1 ora
       this.dataFine = newEndDate.toISOString();
     }
+    
+    // Update validation on change
+    this.updateValidation();
   }
   
   // Gestisce il cambio della data di fine
   onEndDateChange(event: any) {
     this.dataFine = event.detail.value;
     this.clearError('dataFine');
+    this.updateValidation();
   }
   
-  // Pulisce l'errore per un campo specifico
+  // Updates validation state for the form
+  private updateValidation() {
+    const { errors } = this.validateForm();
+    this.validationErrors = errors;
+    this.showErrors = Object.keys(errors).length > 0;
+  }
+
+  // Clears error for a specific field and updates validation
   clearError(field: string) {
-    if (this.showErrors && this.validationErrors[field]) {
+    if (this.validationErrors[field]) {
       delete this.validationErrors[field];
-      if (this.getErrorKeys().length === 0) {
-        this.showErrors = false;
-      }
+      this.showErrors = this.getErrorKeys().length > 0;
     }
+    // Re-validate the form to update error states
+    this.updateValidation();
   }
 
   // Restituisce un array con le chiavi degli errori
@@ -360,6 +364,7 @@ export class AgendaEventInputComponent {
   
   async save() {
     const { isValid, errors } = this.validateForm();
+    this.showErrors = !isValid;
     if (!isValid) {
       this.showErrorMessages(errors);
       return;
