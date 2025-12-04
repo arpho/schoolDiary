@@ -19,6 +19,7 @@ import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
 import { EventDialogComponent } from '../event-dialog/event-dialog.component';
+import { QueryCondition } from 'src/app/shared/models/queryCondition';
 
 @Component({
   selector: 'app-display-agenda4-classes',
@@ -101,9 +102,16 @@ export class DisplayAgenda4ClassesComponent {
     const title = classes.length > 1 ?
       `agenda per le classi: ${classes.map((classe) => classe?.classe).join(', ')}` : `agenda per ${classes[0]?.classe}`;
     this.title.set(title);
-    this.$agenda.getAgenda4targetedClassesOnrealtime(targetedClasses, (events: AgendaEvent[]) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    console.log("today",today.toISOString());
+    this.$agenda.getAgenda4targetedClassesOnrealtime((events: AgendaEvent[]) => {
       this.agenda.set(events);
-    });
+    },[
+      new QueryCondition('classKey', 'in', targetedClasses),
+  
+    //  new QueryCondition('dataInizio', '>=', today.toISOString())
+    ]);
   });
 
 }
