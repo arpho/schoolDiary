@@ -25,13 +25,15 @@ import {
   arrowForwardOutline,
   checkmarkCircleOutline,
   checkmarkDoneOutline,
-  closeCircleOutline
+  closeCircleOutline,
+  eyeOutline
 } from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
 import { AgendaEventInputComponent } from '../agenda-event-input/agenda-event-input.component';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+
 
 @Component({
   selector: 'app-agenda-display',
@@ -167,11 +169,12 @@ export class AgendaDisplayComponent implements OnInit {
       trashOutline, 
       peopleOutline,
       timeOutline,
+      eyeOutline,
       calendarOutline,
       arrowForwardOutline,
-      checkmarkCircleOutline: 'checkmark-circle-outline',
-      checkmarkDoneOutline: 'checkmark-done-outline',
-      closeCircleOutline: 'close-circle-outline'
+      'checkmark-circle-outline': checkmarkCircleOutline,
+      'checkmark-done-outline': checkmarkDoneOutline,
+      'close-circle-outline': closeCircleOutline,
     });
 
     // Update events signal when eventsInput changes

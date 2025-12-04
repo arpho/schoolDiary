@@ -17,6 +17,7 @@ import {
   updateDoc,
   where
 }                                                                                             from '@angular/fire/firestore';
+import { QueryCondition } from '../models/queryCondition';
 
 @Injectable({
     providedIn: 'root'
@@ -25,13 +26,16 @@ export class AgendaService {
     private firestore = inject(Firestore);
     collection="agenda-events"
     cacheEvents4Class = new Map<string, AgendaEvent>();
-    getAgenda4targetedClassesOnrealtime(targetedClasses: string[], callBack: (events: AgendaEvent[]) => void) {
-        console.log("targetedClasse *", targetedClasses);
+    getAgenda4targetedClassesOnrealtime( callBack: (events: AgendaEvent[]) => void,queries:QueryCondition[]) {
+        
         try {
             const collectionRef = collection(this.firestore, this.collection);
             let q = query(collectionRef);
-            q = query(q, where('classKey', 'in', targetedClasses));
-           // q = query(q, orderBy('date', 'desc'));
+         
+            queries.forEach(condition => {
+                q = query(q, where(condition.field, condition.operator, condition.value));
+            });
+          //  q = query(q, orderBy('dataInizio', 'desc'));
            // q = query(q, where('date', '>=', new Date()));
            try{
             onSnapshot(q, (snapshot) => {
