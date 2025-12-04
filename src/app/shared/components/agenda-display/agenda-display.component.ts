@@ -1,6 +1,7 @@
 import { Component, inject, signal, effect, input, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import {
+  AlertController,
   IonList,
   IonItem,
   IonLabel,
@@ -21,7 +22,10 @@ import {
   peopleOutline,
   timeOutline,
   calendarOutline,
-  arrowForwardOutline
+  arrowForwardOutline,
+  checkmarkCircleOutline,
+  checkmarkDoneOutline,
+  closeCircleOutline
 } from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
@@ -38,7 +42,12 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
           <ion-item>
             <ion-icon [name]="getIcon(event.type)" slot="start"></ion-icon>
             <ion-label>
-              <h2>{{ event.title }}</h2>
+              <h2 [class.completed]="event.done">
+                {{ event.title }}
+                @if (event.done) {
+                  <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
+                }
+              </h2>
               <p>{{ event.description }}</p>
               @if (!classKey() && event.classKey) {
                 <p>
@@ -72,6 +81,15 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
             <ion-item-option color="danger" (click)="deleteEvent(event)">
               <ion-icon name="trash-outline"></ion-icon>
             </ion-item-option>
+            <ion-item-option 
+              [color]="event.done ? 'medium' : 'success'" 
+              (click)="toggleDone(event)">
+              <ion-icon 
+                [name]="event.done ? 'close-circle-outline' : 'checkmark-circle-outline'"
+                [color]="event.done ? 'medium' : 'success'">
+              </ion-icon>
+            </ion-item-option>
+
           </ion-item-options>
         </ion-item-sliding>
       }
@@ -113,6 +131,11 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
       font-size: 0.8em;
       color: var(--ion-color-medium);
     }
+    .completed {
+      text-decoration: line-through;
+      color: var(--ion-color-medium);
+      opacity: 0.8;
+    }
     ion-item-sliding.all-day ion-item {
       --background: var(--ion-color-light);
     }
@@ -122,20 +145,21 @@ export class AgendaDisplayComponent implements OnInit {
   classCache = new Map<string, ClasseModel>();
   fetchClassName(classKey: string) {
     const classe = this.classCache.get(classKey);
-   return `${classe?.year} ${classe?.classe} ${classe?.descrizione}`
+   return `${classe?.year} ${classe?.classe}`
 }
   classKey = input<string>();
   teacherKey = input<string>();
   eventsInput = input<AgendaEvent[]>();
 
-  private agendaService = inject(AgendaService);
-  private modalCtrl = inject(ModalController);
+  private agendaService = inject(AgendaService)
+  private modalCtrl = inject(ModalController)
+  private alertCtrl = inject(AlertController)
   private $classes = inject(ClassiService);
 
   events = signal<AgendaEvent[]>([]);
 
   constructor() {
-    addIcons({ 
+    addIcons({
       bookOutline, 
       helpCircleOutline, 
       documentTextOutline, 
@@ -144,7 +168,10 @@ export class AgendaDisplayComponent implements OnInit {
       peopleOutline,
       timeOutline,
       calendarOutline,
-      arrowForwardOutline
+      arrowForwardOutline,
+      checkmarkCircleOutline: 'checkmark-circle-outline',
+      checkmarkDoneOutline: 'checkmark-done-outline',
+      closeCircleOutline: 'close-circle-outline'
     });
 
     // Update events signal when eventsInput changes
@@ -205,7 +232,7 @@ this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
       this.$classes.fetchClasseOnCache(classKey).then(classe => {
         if (classe) {
           this.classNamesCache.set(classKey, `${classe.year} ${classe.classe} ${classe.descrizione}`);
-          this.classe.set(`${classe.year} ${classe.classe} ${classe.descrizione}`);
+          this.classe.set(`${classe.year} ${classe.classe} `);
         }
       });
     }
@@ -225,8 +252,58 @@ this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
   }
 
   async deleteEvent(event: AgendaEvent) {
-    if (event.key) {
-      await this.agendaService.deleteEvent(event.key);
+    if (!event.key) return;
+
+    const alert = await this.alertCtrl.create({
+      header: 'Conferma eliminazione',
+      message: 'Sei sicuro di voler eliminare questo evento?',
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Elimina',
+          handler: async () => {
+            try {
+              await this.agendaService.deleteEvent(event.key!);
+            } catch (error) {
+              console.error('Errore durante l\'eliminazione dell\'evento:', error);
+              const errorAlert = await this.alertCtrl.create({
+                header: 'Errore',
+                message: 'Si è verificato un errore durante l\'eliminazione dell\'evento.',
+                buttons: ['OK']
+              });
+              await errorAlert.present();
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async toggleDone(event: AgendaEvent) {
+    if (!event.key) return;
+    
+    try {
+      // Toggle the done status
+      event.done = !event.done;
+      // Update the event in the database
+      await this.agendaService.updateEvent(event);
+    } catch (error) {
+      console.error('Errore durante l\'aggiornamento dello stato dell\'evento:', error);
+      // Revert the change in case of error
+      event.done = !event.done;
+      
+      const errorAlert = await this.alertCtrl.create({
+        header: 'Errore',
+        message: 'Si è verificato un errore durante l\'aggiornamento dello stato dell\'evento.',
+        buttons: ['OK']
+      });
+      await errorAlert.present();
     }
   }
 }

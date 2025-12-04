@@ -25,6 +25,7 @@ export class AgendaEvent implements IAgendaEvent {
     dataInizio: string = ''; // ISO string
     dataFine: string = '';   // ISO string
     classKey: string = '';
+    done: boolean = false;
     teacherKey: string = '';
     type: EventType = 'other';
     targetClasses: string[] = []; // Array di chiavi o ID delle classi target
@@ -72,6 +73,7 @@ export class AgendaEvent implements IAgendaEvent {
         return {
             key: this.key,
             id: this.id,
+            done: this.done,
             title: this.title,
             description: this.description,
             dataInizio: this.dataInizio,
