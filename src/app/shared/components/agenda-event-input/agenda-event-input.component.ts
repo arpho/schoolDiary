@@ -229,12 +229,38 @@ export class AgendaEventInputComponent {
   dataFine = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 ora dopo
   allDay = false;
   type: EventType = 'homework';
+  done = false;
+  targetClasses: string[] = [];
+  id?: string;
   minDate = new Date().toISOString();
   maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
 
   ngOnInit() {
     addIcons({ calendarOutline, timeOutline });
-    
+
+    // Se stiamo modificando un evento esistente, popola TUTTI i campi
+    if (this.event) {
+      console.log('Editing event:', this.event);
+      this.title = this.event.title || '';
+      this.description = this.event.description || '';
+      this.dataInizio = this.event.dataInizio || new Date().toISOString();
+      this.dataFine = this.event.dataFine || new Date(Date.now() + 60 * 60 * 1000).toISOString();
+      this.allDay = this.event.allDay || false;
+      this.type = this.event.type || 'homework';
+      // New fields
+      this.done = this.event.done || false;
+      this.targetClasses = this.event.targetClasses || [];
+      this.id = this.event.id || undefined; // Assuming 'id' might be optional or generated
+
+      // Assicurati che classKey e teacherKey siano impostati dall'evento se non già forniti
+      if (this.event.classKey && !this.classKey) {
+        this.classKey = this.event.classKey;
+      }
+      if (this.event.teacherKey && !this.teacherKey) {
+        this.teacherKey = this.event.teacherKey;
+      }
+    }
+
     // Validate form on initialization
     this.updateValidation();
   }
@@ -247,7 +273,7 @@ export class AgendaEventInputComponent {
       const startDate = new Date(this.dataInizio);
       startDate.setHours(0, 0, 0, 0);
       this.dataInizio = startDate.toISOString();
-      
+
       const endDate = new Date(this.dataFine);
       endDate.setHours(23, 59, 59, 999);
       this.dataFine = endDate.toISOString();
@@ -256,7 +282,7 @@ export class AgendaEventInputComponent {
       const startDate = new Date(this.dataInizio);
       startDate.setHours(12, 0, 0, 0); // Mezzogiorno
       this.dataInizio = startDate.toISOString();
-      
+
       const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 ora dopo
       this.dataFine = endDate.toISOString();
     }
@@ -268,17 +294,17 @@ export class AgendaEventInputComponent {
 
   validateForm(): { isValid: boolean; errors: { [key: string]: string } } {
     const errors: { [key: string]: string } = {};
-    
+
     if (!this.title?.trim()) {
       errors['title'] = 'Il titolo è obbligatorio';
       console.log('Titolo obbligatorio');
     }
-    
+
     if (!this.dataInizio) {
       errors['dataInizio'] = 'La data di inizio è obbligatoria';
       console.log('Data inizio obbligatoria');
     }
-    
+
     if (!this.dataFine) {
       errors['dataFine'] = 'La data di fine è obbligatoria';
       console.log('Data fine obbligatoria');
@@ -286,27 +312,27 @@ export class AgendaEventInputComponent {
       errors['dataFine'] = 'La data di fine non può essere precedente alla data di inizio';
       console.log('Data fine non può essere precedente alla data di inizio');
     }
-    
+
     if (!this.type) {
       errors['type'] = 'Il tipo di evento è obbligatorio';
       console.log('Tipo evento obbligatorio');
     }
-    
+
     if (!this.classKey) {
       errors['classKey'] = 'Seleziona una classe';
       console.log('Classe obbligatoria');
     }
-    
+
     return {
       isValid: Object.keys(errors).length === 0,
       errors
     };
   }
-  
+
   private showErrorMessages(errors: { [key: string]: string }) {
     this.validationErrors = errors;
     this.showErrors = true;
-    
+
     // Scroll al primo campo con errore
     const firstError = Object.keys(errors)[0];
     if (firstError) {
@@ -319,25 +345,25 @@ export class AgendaEventInputComponent {
   onStartDateChange(event: any) {
     this.dataInizio = event.detail.value;
     this.clearError('dataInizio');
-    
+
     // Se la data di fine è precedente alla nuova data di inizio, aggiorniamo anche quella
     if (this.dataInizio && this.dataFine && new Date(this.dataInizio) > new Date(this.dataFine)) {
       const newEndDate = new Date(this.dataInizio);
       newEndDate.setHours(newEndDate.getHours() + 1); // Aggiungi 1 ora
       this.dataFine = newEndDate.toISOString();
     }
-    
+
     // Update validation on change
     this.updateValidation();
   }
-  
+
   // Gestisce il cambio della data di fine
   onEndDateChange(event: any) {
     this.dataFine = event.detail.value;
     this.clearError('dataFine');
     this.updateValidation();
   }
-  
+
   // Updates validation state for the form
   private updateValidation() {
     const { errors } = this.validateForm();
@@ -361,7 +387,7 @@ export class AgendaEventInputComponent {
   }
 
 
-  
+
   async save() {
     const { isValid, errors } = this.validateForm();
     this.showErrors = !isValid;
@@ -372,6 +398,7 @@ export class AgendaEventInputComponent {
 
     const eventData = new AgendaEvent({
       key: this.event?.key,
+      id: this.id || this.event?.id,
       title: this.title,
       description: this.description,
       dataInizio: this.dataInizio,
@@ -380,6 +407,8 @@ export class AgendaEventInputComponent {
       type: this.type,
       classKey: this.classKey,
       teacherKey: this.teacherKey,
+      done: this.done,
+      targetClasses: this.targetClasses.length > 0 ? this.targetClasses : (this.classKey ? [this.classKey] : []),
       creationDate: this.event?.creationDate || Date.now()
     });
 
