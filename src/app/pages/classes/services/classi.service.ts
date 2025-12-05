@@ -1,18 +1,26 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import {
   Firestore,
   collection,
   doc,
-  setDoc,
-  where,
-  query,
-  getDocs,
-  addDoc,
   getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  where,
   onSnapshot,
-  deleteDoc
+  DocumentData,
+  Query,
+  QueryConstraint,
+  QueryDocumentSnapshot,
+  Unsubscribe,
 } from '@angular/fire/firestore';
+import { SubscriptionService } from 'src/app/shared/services/subscription.service';
 import { ClasseModel } from '../models/classModel';
+import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 
 
 
@@ -30,10 +38,11 @@ export class ClassiService {
   }
   classesOnCache = signal<ClasseModel[]>([]);
 
+  private subscriptionService = inject(SubscriptionService);
+  private unsubscribeSnapshot?: Unsubscribe;
+
   constructor() {
-    this.getClassiOnRealtime((classi) => {
-      this.classesOnCache.set(classi);
-    });
+    this.subscribeToClassiUpdates();
   }
 
   ngOnInit(): void {
@@ -80,9 +89,9 @@ export class ClassiService {
     return new ClasseModel(rawClasse.data()).setKey(rawClasse.id);
   }
 
-  addClasse(classe: ClasseModel) {
-    const collectionRef = collection(this.firestore, this.collection);
-    return addDoc(collectionRef, { ...classe });
+  async addClasse(classe: ClasseModel) {
+    const docRef = doc(collection(this.firestore, this.collection));
+    return setDoc(docRef, { ...classe });
   }
 
   updateClasse(classeKey: string, classe: ClasseModel) {
@@ -90,14 +99,55 @@ export class ClassiService {
     return setDoc(docRef, { ...classe });
   }
 
-  getClassiOnRealtime(callback: (classi: ClasseModel[]) => void) {
+  /**
+   * Sottoscrive agli aggiornamenti in tempo reale delle classi
+   * @param callback Funzione chiamata ad ogni aggiornamento con l'array delle classi
+   * @returns Funzione per annullare la sottoscrizione
+   */
+  private subscribeToClassiUpdates() {
     const collectionRef = collection(this.firestore, this.collection);
-    onSnapshot(collectionRef, (snapshot) => {
-      const classi: ClasseModel[] = [];
-      snapshot.forEach((docSnap) => {
-        classi.push(new ClasseModel(docSnap.data()).setKey(docSnap.id));
-      });
-      callback(classi);
+    
+    // Annulla eventuali sottoscrizioni precedenti
+    if (this.unsubscribeSnapshot) {
+      this.unsubscribeSnapshot();
+    }
+
+    this.unsubscribeSnapshot = onSnapshot(
+      collectionRef, 
+      (snapshot) => {
+        const classi: ClasseModel[] = [];
+        snapshot.forEach((docSnap) => {
+          classi.push(new ClasseModel(docSnap.data()).setKey(docSnap.id));
+        });
+        this.classesOnCache.set(classi);
+      },
+      (error) => {
+        console.error('Errore durante la sottoscrizione alle classi:', error);
+        // Potresti voler emettere un evento o gestire l'errore in altro modo
+      }
+    );
+  }
+
+  /**
+   * Ottiene le classi in tempo reale con gestione degli errori
+   * @param callback Funzione chiamata ad ogni aggiornamento
+   * @returns Funzione per annullare la sottoscrizione
+   */
+  /**
+   * Sottoscrive agli aggiornamenti in tempo reale delle classi
+   * @param callback Funzione chiamata ad ogni aggiornamento con l'array delle classi
+   * @returns Funzione per annullare la sottoscrizione
+   */
+  getClassiOnRealtime(callback: (classi: ClasseModel[]) => void): () => void {
+    // Prima chiamata sincrona con i dati correnti
+    callback([...this.classesOnCache()]);
+    
+    // Sottoscrizione agli aggiornamenti
+    const subscription = this.subscriptionService.onDestroy$.subscribe(() => {
+      callback([...this.classesOnCache()]);
     });
+    
+    // Restituisci una funzione per annullare la sottoscrizione
+    return () => subscription.unsubscribe();
   }
 }
