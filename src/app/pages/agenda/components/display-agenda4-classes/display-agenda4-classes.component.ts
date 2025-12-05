@@ -1,14 +1,13 @@
 import { Component, ChangeDetectionStrategy, effect, input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { 
-  IonList, 
-  IonListHeader, 
-  IonItem, 
-  IonLabel, 
-  IonFab, 
-  IonFabButton, 
+import {
+  IonList,
+  IonListHeader,
+  IonItem,
+  IonLabel,
+  IonFab,
+  IonFabButton,
   IonIcon,
-  IonContent,
   ModalController
 } from '@ionic/angular/standalone';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
@@ -36,7 +35,6 @@ import { QueryCondition } from 'src/app/shared/models/queryCondition';
     IonFab,
     IonFabButton,
     IonIcon,
-    IonContent,
     AgendaDisplayComponent
   ]
 })
@@ -104,13 +102,13 @@ export class DisplayAgenda4ClassesComponent {
     this.title.set(title);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    console.log("today",today.toISOString());
+    console.log("today", today.toISOString());
     this.$agenda.getAgenda4targetedClassesOnrealtime((events: AgendaEvent[]) => {
       this.agenda.set(events);
-    },[
+    }, [
       new QueryCondition('classKey', 'in', targetedClasses),
-  
-    //  new QueryCondition('dataInizio', '>=', today.toISOString())
+
+      //  new QueryCondition('dataInizio', '>=', today.toISOString())
     ]);
   });
 
