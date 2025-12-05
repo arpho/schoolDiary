@@ -1,191 +1,169 @@
 <ion-header>
-  <ion-back-button
-    text="Indietro"
-    class="back-button"
-    defaultHref="/classes-list"></ion-back-button>
   <ion-toolbar>
-    <ion-title align="center">Dashboard Classe  {{ classe().classe}}  </ion-title>
+    <ion-back-button slot="start" text="Indietro" class="back-button" defaultHref="/classes-list"></ion-back-button>
+    <ion-title align="center">Dashboard Classe {{ classe().classe}} </ion-title>
+    <ion-button slot="end" fill="clear" (click)="toggleSidebar()">
+      <ion-icon name="menu"></ion-icon>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <form (ngsubmit)="save()" [formGroup]="formClass" class="black-form">
-    <ion-tabs (ionTabsDidChange)="setSelectedTab($event.tab)" [selectedTab]="selectedTab">
-      <ion-tab-bar slot="top" class="custom-tab-bar">
-        <ion-tab-button 
-          tab="generalita" 
-          [class.active-tab]="selectedTab === 'generalita'">
-          <ion-label>Generalità</ion-label>
-        </ion-tab-button>
-        
-        <ion-tab-button 
-          tab="studenti" 
-          [class.active-tab]="selectedTab === 'studenti'">
-          <ion-label>Studenti</ion-label>
-        </ion-tab-button>
-        
-        <ion-tab-button 
-          tab="annotazioni" 
-          [class.active-tab]="selectedTab === 'annotazioni'">
-          <ion-label>Annotazioni</ion-label>
-        </ion-tab-button>
-        
-        <ion-tab-button 
-          tab="attivita" 
-          [class.active-tab]="selectedTab === 'attivita'">
-          <ion-label>Attività</ion-label>
-        </ion-tab-button>
-        
-        <ion-tab-button 
-          tab="gruppi" 
-          [class.active-tab]="selectedTab === 'gruppi'">
-          <ion-label>Gruppi</ion-label>
-        </ion-tab-button>
-        
-        <ion-tab-button 
-          tab="pdp" 
-          [class.active-tab]="selectedTab === 'pdp'">
-          <ion-label>PDP</ion-label>
-        </ion-tab-button>
-        
-        <ion-tab-button 
-          tab="agenda" 
-          [class.active-tab]="selectedTab === 'agenda'">
-          <ion-label>Agenda</ion-label>
-        </ion-tab-button>
-      </ion-tab-bar>
+<!-- Contenuto principale con sidebar -->
+<ion-content id="main-content">
+  <div class="content-wrapper">
+    <!-- Sidebar laterale -->
+    <div class="sidebar" [class.sidebar-open]="sidebarOpen">
+      <div class="sidebar-header">
+        <h3>Menu Navigazione</h3>
+        <ion-button fill="clear" size="small" (click)="toggleSidebar()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </div>
 
-      <ion-tab tab="generalita">
-        <ion-content>
-          <ion-card>
-            <ion-card-content>
-              <ion-input
-                class="custom-input"
-                label="Nome Classe"
-                required
-                formControlName="classe"
-                fill="outline"
-                labelplacement="floating">
-                <ion-label slot="floating" class="custom-label">Nome Classe</ion-label>
-              </ion-input>
-              <ion-input
-                class="custom-input"
-                label="Anno"
-                formControlName="year"
-                fill="outline"
-                required
-                labelplacement="floating">
-                <ion-label slot="floating" class="custom-label">Anno</ion-label>
-              </ion-input>
-              <ion-textarea
-                class="custom-input"
-                label="Descrizione"
-                rows="4"
-                formControlName="descrizione"
-                fill="outline"
-                labelplacement="floating">
-                <ion-label slot="floating" class="custom-label">Descrizione</ion-label>
-              </ion-textarea>
-              <ion-label>Coordinatore</ion-label>
-              <ion-input
-                class="custom-input"
-                label="Coordinatore"
-                formControlName="coordinatore"
-                fill="outline"
-                required
-                labelplacement="floating">
-                <ion-label slot="floating" class="custom-label">Coordinatore</ion-label>
-              </ion-input>
-              <ion-label>Segretario</ion-label>
-              <ion-input
-                class="custom-input"
-                label="Segretario"
-                formControlName="segretario"
-                fill="outline"
-                required
-                labelplacement="floating">
-                <ion-label slot="floating" class="custom-label">Segretario</ion-label>
-              </ion-input>
-            </ion-card-content>
-            <div class="ion-padding">
-              <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
-              <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
-            </div>
-          </ion-card>
+      <div class="sidebar-content">
+        <div class="menu-item" (click)="setSelectedTab('generalita')" [class.active]="selectedTab === 'generalita'">
+          <ion-icon name="information-circle"></ion-icon>
+          <span>Generalità</span>
+        </div>
 
-        </ion-content>
-      </ion-tab>
-      <ion-tab tab="pdp">
-        <ion-content>
-          <ion-card>
-            <ion-card-content>
-          <app-students-with-pd-p [classe]="classe()"></app-students-with-pd-p>
-            </ion-card-content>
-          </ion-card>
-        </ion-content>
-      </ion-tab>
+        <div class="menu-item" (click)="setSelectedTab('studenti')" [class.active]="selectedTab === 'studenti'">
+          <ion-icon name="people"></ion-icon>
+          <span>Studenti</span>
+        </div>
 
-      <ion-tab tab="studenti">
-        <ion-content>
-          <ion-card>
-            <ion-card-content>
-          <app-list-student4class [classkey]="classkey()"></app-list-student4class>
-            </ion-card-content>
-          </ion-card>
-        </ion-content>
-      </ion-tab>
+        <div class="menu-item" (click)="setSelectedTab('annotazioni')" [class.active]="selectedTab === 'annotazioni'">
+          <ion-icon name="chatbox"></ion-icon>
+          <span>Annotazioni</span>
+        </div>
 
-      <ion-tab tab="annotazioni">
-        <ion-content>
-          <ion-card>
-            <ion-card-content>
+        <div class="menu-item" (click)="setSelectedTab('attivita')" [class.active]="selectedTab === 'attivita'">
+          <ion-icon name="list"></ion-icon>
+          <span>Attività</span>
+        </div>
+
+        <div class="menu-item" (click)="setSelectedTab('gruppi')" [class.active]="selectedTab === 'gruppi'">
+          <ion-icon name="people-circle"></ion-icon>
+          <span>Gruppi</span>
+        </div>
+
+        <div class="menu-item" (click)="setSelectedTab('pdp')" [class.active]="selectedTab === 'pdp'">
+          <ion-icon name="school"></ion-icon>
+          <span>PDP</span>
+        </div>
+
+        <div class="menu-item" (click)="setSelectedTab('agenda')" [class.active]="selectedTab === 'agenda'">
+          <ion-icon name="calendar"></ion-icon>
+          <span>Agenda</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay per chiudere la sidebar -->
+    <div class="sidebar-overlay" [class.visible]="sidebarOpen" (click)="toggleSidebar()"></div>
+
+    <!-- Contenuto principale -->
+    <div class="main-content">
+      <form (ngsubmit)="save()" [formGroup]="formClass" class="black-form">
+
+        <!-- Contenuto Generalità -->
+        @if (selectedTab === 'generalita') {
+        <ion-card>
+          <ion-card-content>
+            <ion-input class="custom-input" label="Nome Classe" required formControlName="classe" fill="outline"
+              labelplacement="floating">
+              <ion-label slot="floating" class="custom-label">Nome Classe</ion-label>
+            </ion-input>
+            <ion-input class="custom-input" label="Anno" formControlName="year" fill="outline" required
+              labelplacement="floating">
+              <ion-label slot="floating" class="custom-label">Anno</ion-label>
+            </ion-input>
+            <ion-textarea class="custom-input" label="Descrizione" rows="4" formControlName="descrizione" fill="outline"
+              labelplacement="floating">
+              <ion-label slot="floating" class="custom-label">Descrizione</ion-label>
+            </ion-textarea>
+            <ion-label>Coordinatore</ion-label>
+            <ion-input class="custom-input" label="Coordinatore" formControlName="coordinatore" fill="outline" required
+              labelplacement="floating">
+              <ion-label slot="floating" class="custom-label">Coordinatore</ion-label>
+            </ion-input>
+            <ion-label>Segretario</ion-label>
+            <ion-input class="custom-input" label="Segretario" formControlName="segretario" fill="outline" required
+              labelplacement="floating">
+              <ion-label slot="floating" class="custom-label">Segretario</ion-label>
+            </ion-input>
+          </ion-card-content>
+          <div class="ion-padding">
+            <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
+            <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
+          </div>
+        </ion-card>
+        }
+
+        <!-- Contenuto PDP -->
+        @if (selectedTab === 'pdp') {
+        <ion-card>
+          <ion-card-content>
+            <app-students-with-pd-p [classe]="classe()"></app-students-with-pd-p>
+          </ion-card-content>
+        </ion-card>
+        }
+
+        <!-- Contenuto Studenti -->
+        @if (selectedTab === 'studenti') {
+        <ion-card>
+          <ion-card-content>
+            <app-list-student4class [classkey]="classkey()"></app-list-student4class>
+          </ion-card-content>
+        </ion-card>
+        }
+
+        <!-- Contenuto Annotazioni -->
+        @if (selectedTab === 'annotazioni') {
+        <ion-card>
+          <ion-card-content>
             <app-reserved-notes4classes [classe]="classe()"></app-reserved-notes4classes>
-            </ion-card-content>
-          </ion-card>
-        </ion-content>
-      </ion-tab>
+          </ion-card-content>
+        </ion-card>
+        }
 
-      <ion-tab tab="attivita">
-        <ion-content>
-          <ion-card>
-            <ion-card-content>
+        <!-- Contenuto Attività -->
+        @if (selectedTab === 'attivita') {
+        <ion-card>
+          <ion-card-content>
             <app-list-activities4class [classkey]="classkey()" [teacherkey]="teacherkey()"></app-list-activities4class>
-            </ion-card-content>
-          </ion-card>
-        </ion-content>
-      </ion-tab>
+          </ion-card-content>
+        </ion-card>
+        }
 
-      <ion-tab tab="gruppi">
-        <ion-content>
-          <ion-card>
-            <ion-card-content>
-      <app-groups-manager [classkey]="classkey()"></app-groups-manager>
-            </ion-card-content>
-          </ion-card>
-        </ion-content>
-      </ion-tab>
+        <!-- Contenuto Gruppi -->
+        @if (selectedTab === 'gruppi') {
+        <ion-card>
+          <ion-card-content>
+            <app-groups-manager [classkey]="classkey()"></app-groups-manager>
+          </ion-card-content>
+        </ion-card>
+        }
 
-      <!-- Tab Agenda -->
-      <ion-tab tab="agenda">
-        <ion-content>
-          <ion-card>
-            <ion-card-content>
-              <!-- Aggiungi questo per debug -->
-              <div *ngIf="!classe()?.key" style="color: red; padding: 10px;">
-                Attenzione: classe().key è vuoto o non definito!
-              </div>
-              
-              <app-display-agenda4-classes 
-                *ngIf="classe()?.key"
-                [targetedClasses]="[classe().key]">
-              </app-display-agenda4-classes>
-            </ion-card-content>
-          </ion-card>
-        </ion-content>
-      </ion-tab>
+        <!-- Contenuto Agenda -->
+        @if (selectedTab === 'agenda') {
+        <ion-card>
+          <ion-card-content>
+            <!-- Aggiungi questo per debug -->
+            @if (!classe()?.key) {
+            <div style="color: red; padding: 10px;">
+              Attenzione: classe().key è vuoto o non definito!
+            </div>
+            }
 
-      <!-- Pulsanti fuori dai tab ma all'interno del form -->
-      
-    </ion-tabs>
-  </form>
+            @if (classe()?.key) {
+            <app-display-agenda4-classes [targetedClasses]="[classe().key]">
+            </app-display-agenda4-classes>
+            }
+          </ion-card-content>
+        </ion-card>
+        }
+
+      </form>
+    </div>
+  </div>
 </ion-content>

@@ -16,12 +16,13 @@ import {
   IonInput,
   IonTextarea,
   IonButton,
-  IonTabs,
-  IonTab,
-  IonTabBar,
-  IonTabButton,
+  IonMenu,
+  IonMenuButton,
+  IonList,
+  IonItem,
   IonLabel,
-  IonBackButton
+  IonBackButton,
+  IonIcon
 } from '@ionic/angular/standalone';
 import {
   CommonModule
@@ -43,13 +44,15 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ListStudent4classComponent } from '../components/list-student4class/list-student4class.component';
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { ReservedNotes4ClassesComponent } from '../components/reserved-notes4classes/reserved-notes4classes.component';
-import { ListActivities4classComponent } from  "../components/listActivities4class/list-activities4class/list-activities4class.component"
+import { ListActivities4classComponent } from "../components/listActivities4class/list-activities4class/list-activities4class.component"
 import { UsersService } from 'src/app/shared/services/users.service';
 import { GroupsManagerComponent } from '../components/groups-manager/groups-manager.component';
 import { StudentsWithPdPComponent } from '../components/students-with-pd-p/students-with-pd-p.component';
 import { DisplayAgenda4ClassesComponent } from 'src/app/pages/agenda/components/display-agenda4-classes/display-agenda4-classes.component';
 import { EventDialogComponent } from '../../agenda/components/event-dialog/event-dialog.component';
 import { AgendaEvent } from '../../agenda/models/agendaEvent';
+import { addIcons } from 'ionicons';
+import { menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close } from 'ionicons/icons';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -64,11 +67,12 @@ import { AgendaEvent } from '../../agenda/models/agendaEvent';
     IonToolbar,
     IonTextarea,
     IonBackButton,
-    IonTabs,
-    IonTab,
-    IonTabBar,
-    IonTabButton,
+    IonMenu,
+    IonMenuButton,
+    IonList,
+    IonItem,
     IonLabel,
+    IonIcon,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -84,17 +88,29 @@ import { AgendaEvent } from '../../agenda/models/agendaEvent';
 export class ClasseDialogPage implements OnInit {
   // Gestione tab attivo
   selectedTab: string = 'generalita';
-  
+
+  // Gestione sidebar
+  sidebarOpen = false;
+
   // Metodo per cambiare tab
-  setSelectedTab(tab: string) {
+  async setSelectedTab(tab: string) {
     console.log('Tab selezionato:', tab);
     this.selectedTab = tab;
-    
+
+    // Chiudi la sidebar dopo la selezione
+    this.sidebarOpen = false;
+
     // Forza l'aggiornamento del componente quando si seleziona il tab agenda
     if (tab === 'agenda') {
       this.cdr.detectChanges();
       console.log('Change detection forzato per il tab agenda');
     }
+  }
+
+  // Metodo per aprire/chiudere la sidebar
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+    console.log('Sidebar toggled, sidebarOpen:', this.sidebarOpen);
   }
 
   classkey = signal<string>('');
@@ -115,9 +131,12 @@ export class ClasseDialogPage implements OnInit {
     private service: ClassiService,
     private route: ActivatedRoute,
     private toaster: ToasterService,
-    private $users:UsersService,
+    private $users: UsersService,
     private cdr: ChangeDetectorRef
   ) {
+    // Register icons
+    addIcons({ menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close });
+
     // Initialize with empty model
     this.classe.set(new ClasseModel({
       year: '',
@@ -135,10 +154,10 @@ export class ClasseDialogPage implements OnInit {
     console.log("ngOnInit classe dialog**")
     const classkey = this.route.snapshot.paramMap.get('classkey');
     console.log("classkey**", classkey);
-    if(classkey){
-    this.classkey.set(classkey);
+    if (classkey) {
+      this.classkey.set(classkey);
     }
-  
+
     if (classkey) {
       if (this.classkey()) {
         this.isEditMode = true;
@@ -169,28 +188,28 @@ export class ClasseDialogPage implements OnInit {
       coordinatore: this.formClass.value.coordinatore || '',
       segretario: this.formClass.value.segretario || ''
     };
-    
+
     // Create a new instance with the form values
     const classeObj = new ClasseModel(formValues);
-    
+
     // Set the key if it exists
     if (this.classkey()) {
       classeObj.setKey(this.classkey()!);
     }
-    
+
     console.log("saving classeObj", classeObj);
-    
+
     try {
       if (this.classkey()) {
         await this.service.updateClasse(this.classkey()!, classeObj);
       } else {
         await this.service.addClasse(classeObj);
       }
-      
-      const toastMessage = this.classkey() 
-        ? "Classe aggiornata con successo" 
+
+      const toastMessage = this.classkey()
+        ? "Classe aggiornata con successo"
         : "Classe aggiunta con successo";
-        
+
       this.toaster.presentToast({
         message: toastMessage,
         duration: 2000,
@@ -198,7 +217,7 @@ export class ClasseDialogPage implements OnInit {
       });
 
     } catch (error) {
-      this.toaster.presentToast({message:"Errore durante l'aggiornamento della classe",duration:2000,position:"bottom"});
+      this.toaster.presentToast({ message: "Errore durante l'aggiornamento della classe", duration: 2000, position: "bottom" });
     }
   }
 
@@ -222,16 +241,16 @@ export class ClasseDialogPage implements OnInit {
       });
 
       await modal.present();
-      
+
       const { data } = await modal.onDidDismiss();
-      
+
       if (data?.saved && data.event) {
         const event = new AgendaEvent(data.event);
         console.log('Evento salvato con successo:', event);
-        
+
         // Qui puoi salvare l'evento nel database o fare altre operazioni necessarie
         // Esempio: await this.eventService.saveEvent(event);
-        
+
         // Mostra un messaggio di conferma all'utente
         this.toaster.presentToast({
           message: 'Evento salvato con successo',
@@ -241,7 +260,7 @@ export class ClasseDialogPage implements OnInit {
       }
     } catch (error) {
       console.error('Errore nell\'apertura del form evento:', error);
-      this.toaster.presentToast({message:'Errore durante l\'apertura del form evento',duration:2000,position:"bottom"});
+      this.toaster.presentToast({ message: 'Errore durante l\'apertura del form evento', duration: 2000, position: "bottom" });
     }
   }
 }
