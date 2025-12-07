@@ -24,17 +24,17 @@ export class GroupsService {
   readonly firestore = inject(Firestore);
   readonly $usersService = inject(UsersService);
 
-  constructor() {}
-/**
- * Aggiorna in modo atomico i dati di due gruppi (origine e destinazione)
- * utilizzando una transazione batch di Firestore.
- * 
- * @param originGroup Il gruppo di origine da aggiornare
- * @param destinationGroup Il gruppo di destinazione da aggiornare
- * @returns Promise che si risolve quando l'operazione batch è completata
- */
-  UpdateOriginAndDestinationGroups(originGroup:GroupModel,destinationGroup:GroupModel) {
-      // Crea un'operazione batch per eseguire più operazioni atomicamente
+  constructor() { }
+  /**
+   * Aggiorna in modo atomico i dati di due gruppi (origine e destinazione)
+   * utilizzando una transazione batch di Firestore.
+   * 
+   * @param originGroup Il gruppo di origine da aggiornare
+   * @param destinationGroup Il gruppo di destinazione da aggiornare
+   * @returns Promise che si risolve quando l'operazione batch è completata
+   */
+  UpdateOriginAndDestinationGroups(originGroup: GroupModel, destinationGroup: GroupModel) {
+    // Crea un'operazione batch per eseguire più operazioni atomicamente
     const batch = writeBatch(this.firestore);
     batch.update(doc(this.firestore, `${this.collection}/${originGroup.key}`), originGroup.serialize());
     batch.update(doc(this.firestore, `${this.collection}/${destinationGroup.key}`), destinationGroup.serialize());
@@ -52,10 +52,10 @@ export class GroupsService {
       where('classKey', '==', classKey)
     );
 
-onSnapshot(q, async (querySnapshot) => {
+    return onSnapshot(q, async (querySnapshot) => {
       const groups: GroupModel[] = [];
       for (const doc of querySnapshot.docs) {
-        const group = new GroupModel({ ...doc.data(), key: doc.id },this.$usersService);
+        const group = new GroupModel({ ...doc.data(), key: doc.id }, this.$usersService);
         await group.fetchStudents();
         groups.push(group);
       }
@@ -77,7 +77,7 @@ onSnapshot(q, async (querySnapshot) => {
     );
 
     const querySnapshot = await getDocs(q);
-    
+
     if (querySnapshot.empty) {
       return null;
     }
@@ -96,7 +96,7 @@ onSnapshot(q, async (querySnapshot) => {
    */
   async updateGroup(group: GroupModel): Promise<void> {
     const groupRef = doc(this.firestore, `${this.collection}/${group.key}`);
-    console.log("updating Group",group, group.serialize())
+    console.log("updating Group", group, group.serialize())
     await setDoc(groupRef, group.serialize(), { merge: true });
   }
 
@@ -106,7 +106,7 @@ onSnapshot(q, async (querySnapshot) => {
    * @returns Promise that resolves with the created group's ID
    */
   async createGroup(group: GroupModel): Promise<string> {
-    console.log("creazione gruppo",group)
+    console.log("creazione gruppo", group)
     const docRef = await addDoc(collection(this.firestore, this.collection), group.serialize());
     return docRef.id;
   }

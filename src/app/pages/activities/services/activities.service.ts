@@ -42,30 +42,30 @@ export class ActivitiesService {
   }
 
   async ngOnInit(): Promise<void> {
-  const user = await this.$users.getLoggedUser();
-  if (user) {
-    this.getActivities4teacherOnRealtime(user.key, (activities: ActivityModel[]) => {
-      this.activitiesOnCache.set(activities);
-    });
+    const user = await this.$users.getLoggedUser();
+    if (user) {
+      this.getActivities4teacherOnRealtime(user.key, (activities: ActivityModel[]) => {
+        this.activitiesOnCache.set(activities);
+      });
+    }
   }
-}
 
   async fetchActivityOnCache(activityKey: string): Promise<ActivityModel | undefined> {
     // Cerca prima in cache
     let activity = this.activitiesOnCache().find(activity => activity.key === activityKey);
-    
+
     // Se non trovata in cache, recupera da Firebase
     if (!activity) {
       try {
         const docRef = doc(this.firestore, this.collection, activityKey);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
           // Crea l'attività dai dati di Firebase
           activity = new ActivityModel();
           activity.build(docSnap.data());
           activity.setKey(docSnap.id);
-          
+
           // Aggiorna la cache con la nuova attività
           this.activitiesOnCache.update(activities => [...activities, activity!]);
         }
@@ -74,7 +74,7 @@ export class ActivitiesService {
         throw error;
       }
     }
-    
+
     return activity;
   }
 
@@ -101,10 +101,10 @@ export class ActivitiesService {
 
   async addActivity(activity: ActivityModel): Promise<ActivityModel> {
     const collectionRef = collection(this.firestore, this.collection);
-    const docref = await addDoc(collectionRef, activity.serialize()); 
- const docSnap = await getDoc(docref);
- const newActivity = new ActivityModel(docSnap.data()).setKey(docSnap.id);  
- this.activitiesOnCache.update(activities => [...activities, newActivity]);
+    const docref = await addDoc(collectionRef, activity.serialize());
+    const docSnap = await getDoc(docref);
+    const newActivity = new ActivityModel(docSnap.data()).setKey(docSnap.id);
+    this.activitiesOnCache.update(activities => [...activities, newActivity]);
     return newActivity.setKey(docSnap.id);
   }
 
@@ -125,19 +125,19 @@ export class ActivitiesService {
     queries?: QueryCondition[]
   ) {
     const collectionRef = collection(this.firestore, this.collection);
-    let q = query(collectionRef, where('teacherKey', '==', teachersKey),orderBy('date', 'desc'));
+    let q = query(collectionRef, where('teacherKey', '==', teachersKey), orderBy('date', 'desc'));
 
-    if(queries) {
+    if (queries) {
       queries.forEach((condition: QueryCondition) => {
         q = query(q, where(condition.field, condition.operator, condition.value));
       });
     }
-      const activities: ActivityModel[] = [];
-    onSnapshot(q, (snapshot) => {
+    const activities: ActivityModel[] = [];
+    return onSnapshot(q, (snapshot) => {
       snapshot.forEach((docSnap) => {
         activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
-        });
-        callback(activities);
       });
-  }     
+      callback(activities);
+    });
+  }
 }
