@@ -39,7 +39,18 @@ export class UsersService implements OnInit {
   private auth = inject(Auth);
   private firestore = inject(Firestore);
   private MyAuth = inject(AuthService);
-  private collection = 'userProfiles';
+  private collectionName = 'userProfiles';
+
+  // Store Firebase API functions to avoid injection context warnings
+  private collectionFn = collection;
+  private queryFn = query;
+  private whereFn = where;
+  private getDocsFn = getDocs;
+  private addDocFn = addDoc;
+  private onSnapshotFn = onSnapshot;
+  private getDocFn = getDoc;
+  private setDocFn = setDoc;
+  private docFn = doc;
 
   constructor(
     private $classes: ClassiService
@@ -99,15 +110,15 @@ export class UsersService implements OnInit {
   }
 
   getUsersByClass(classKey: string, callback: (users: UserModel[]) => void, queryConditions: QueryCondition[] = []): () => void {
-    const collectionRef = collection(this.firestore, this.collection);
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
     const conditions = [
-      where('classKey', '==', classKey),
+      this.whereFn('classKey', '==', classKey),
       ...queryConditions.map(condition => condition.toWhere())
     ];
 
-    const queryRef = query(collectionRef, ...conditions);
+    const queryRef = this.queryFn(collectionRef, ...conditions);
 
-    return onSnapshot(queryRef, async (snapshot) => {
+    return this.onSnapshotFn(queryRef, async (snapshot) => {
       const users: UserModel[] = [];
 
       for (const doc of snapshot.docs) {
@@ -181,8 +192,8 @@ export class UsersService implements OnInit {
     }
 
     try {
-      const docRef = doc(this.firestore, 'userProfiles', userKey);
-      const docSnap = await getDoc(docRef);
+      const docRef = this.docFn(this.firestore, 'userProfiles', userKey);
+      const docSnap = await this.getDocFn(docRef);
 
       if (!docSnap.exists()) {
         console.warn(`Utente con ID ${userKey} non trovato su Firestore`);
@@ -219,8 +230,8 @@ export class UsersService implements OnInit {
 
   async updateUser(userKey: string, user: UserModel): Promise<void> {
     try {
-      const userRef = doc(this.firestore, 'userProfiles', userKey);
-      await setDoc(userRef, user.serialize(), { merge: true });
+      const userRef = this.docFn(this.firestore, 'userProfiles', userKey);
+      await this.setDocFn(userRef, user.serialize(), { merge: true });
     } catch (error) {
       console.error('Errore durante l\'aggiornamento dell\'utente:', error);
       throw error;
@@ -228,15 +239,15 @@ export class UsersService implements OnInit {
   }
 
   getUsersOnRealTime(cb: (users: UserModel[]) => void, queryConditions?: QueryCondition[], orConditions?: OrCondition) {
-    let q = query(collection(this.firestore, this.collection));
+    let q = this.queryFn(this.collectionFn(this.firestore, this.collectionName));
     if (queryConditions) {
-      q = query(q, ...queryConditions?.map((condition) => condition.toWhere()) || []);
+      q = this.queryFn(q, ...queryConditions?.map((condition) => condition.toWhere()) || []);
     }
     if (orConditions) {
-      q = query(q, orConditions.toWhere());
+      q = this.queryFn(q, orConditions.toWhere());
       console.log("orConditions", orConditions);
     }
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const unsubscribe = this.onSnapshotFn(q, (querySnapshot) => {
       const users: UserModel[] = [];
       querySnapshot.forEach((doc) => {
         const user = new UserModel(doc.data()).setKey(doc.id);
@@ -371,11 +382,11 @@ export class UsersService implements OnInit {
     }
 
     user.setKey(createdUser.user.uid);
-    const collectionRef = collection(this.firestore, this.collection);
-    const userRef = doc(collectionRef, user.key);
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    const userRef = this.docFn(collectionRef, user.key);
     console.log('userRef', userRef);
 
-    await setDoc(userRef, user.serialize());
+    await this.setDocFn(userRef, user.serialize());
     return createdUser.user.uid;
   }
 
@@ -385,19 +396,22 @@ export class UsersService implements OnInit {
     return auth.signOut();
   }
 
-  getUserByUid(uid: string): Promise<UserModel | null> {
-    const userRef = doc(this.firestore, `userProfiles/${uid}`);
-    return new Promise((resolve) => {
-      onSnapshot(userRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          const user = new UserModel(data).setKey(uid);
-          resolve(user);
-        } else {
-          console.log('No user found');
-          resolve(null);
-        }
-      });
-    });
+  async getUserByUid(uid: string): Promise<UserModel | null> {
+    try {
+      const userRef = this.docFn(this.firestore, `userProfiles/${uid}`);
+      const snapshot = await this.getDocFn(userRef);
+
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const user = new UserModel(data).setKey(uid);
+        return user;
+      } else {
+        console.log('No user found');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching user by UID:', error);
+      return null;
+    }
   }
 }

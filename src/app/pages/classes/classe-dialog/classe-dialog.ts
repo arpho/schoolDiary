@@ -109,8 +109,13 @@ export class ClasseDialogPage implements OnInit {
 
   // Metodo per aprire/chiudere la sidebar
   toggleSidebar() {
+    console.log('toggleSidebar called! Current state:', this.sidebarOpen);
     this.sidebarOpen = !this.sidebarOpen;
-    console.log('Sidebar toggled, sidebarOpen:', this.sidebarOpen);
+    console.log('Sidebar toggled, new sidebarOpen value:', this.sidebarOpen);
+    console.log('Sidebar element should now have class:', this.sidebarOpen ? 'sidebar-open' : 'closed');
+
+    // Forza il rilevamento delle modifiche
+    this.cdr.detectChanges();
   }
 
   classkey = signal<string>('');

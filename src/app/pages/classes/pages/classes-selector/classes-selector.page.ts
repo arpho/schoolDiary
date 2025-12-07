@@ -8,18 +8,18 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-   IonContent,
-   IonList,
-   IonItem,
-   IonHeader,
-   IonTitle,
-   IonToolbar,
-   IonSelectOption,
-   IonSelect,
-   IonCheckbox,
-   IonFabButton,
-   IonIcon,
-   IonLabel
+  IonContent,
+  IonList,
+  IonItem,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonSelectOption,
+  IonSelect,
+  IonCheckbox,
+  IonFabButton,
+  IonIcon,
+  IonLabel
 } from '@ionic/angular/standalone';
 import { ClasseModel } from '../../models/classModel';
 import { ClassiService } from '../../services/classi.service';
@@ -51,9 +51,9 @@ import { checkmark } from 'ionicons/icons';
   ]
 })
 export class ClassesSelectorPage implements OnInit {
-close() {
-this.$modal.dismiss(this.selectedClasses);
-}
+  close() {
+    this.$modal.dismiss(this.selectedClasses);
+  }
 
   constructor(
     private $classes: ClassiService,
@@ -64,18 +64,18 @@ this.$modal.dismiss(this.selectedClasses);
       checkmark
     });
   }
-isClassSelected(classe: ClasseModel) {
-  return this.selectedClasses.some((selectedClass) => selectedClass.key === classe.key);
-}
-selectedClass(classe: ClasseModel, event: any) {
-  console.log("selectedClass", classe);
-  console.log("event", event);
-  if(event.detail.checked){
-    this.selectedClasses.push(classe);
-  }else{
-    this.selectedClasses.splice(this.selectedClasses.indexOf(classe), 1);
+  isClassSelected(classe: ClasseModel) {
+    return this.selectedClasses.some((selectedClass) => selectedClass.key === classe.key);
   }
-}
+  selectedClass(classe: ClasseModel, event: any) {
+    console.log("selectedClass", classe);
+    console.log("event", event);
+    if (event.detail.checked) {
+      this.selectedClasses.push(classe);
+    } else {
+      this.selectedClasses.splice(this.selectedClasses.indexOf(classe), 1);
+    }
+  }
   @Input() selectedClasses: ClasseModel[] = [];
   classi = signal<ClasseModel[]>([]);
   anniScolastici = computed(() => {
@@ -88,15 +88,16 @@ selectedClass(classe: ClasseModel, event: any) {
     return new Set(anniScolastici);
   });
   makeClassTitle(classe: ClasseModel) {
-      return `${classe.classe}`;
+    return `${classe.classe}`;
   }
 
 
   ngOnInit() {
     console.log("selectedClasses", this.selectedClasses);
-    this.$classes.getClassiOnRealtime((classi) => {
-      this.classi.set(classi.sort((a, b) => this.makeClassTitle(a).localeCompare(this.makeClassTitle(b))));
-    });
+    this.$classes.getClassiOnRealtime()
+      .subscribe((classi) => {
+        this.classi.set(classi.sort((a, b) => this.makeClassTitle(a).localeCompare(this.makeClassTitle(b))));
+      });
   }
 
 }

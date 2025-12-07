@@ -68,13 +68,14 @@ export class ProfilePage implements OnInit {
     console.log("userKey", this.userKey());
 
     // Fetch class list
-    this.classiService.getClassiOnRealtime((classi) => {
-      this.listaClassi.set(classi);
-      console.log('Classi caricate:', this.listaClassi());
-    });
+    this.classiService.getClassiOnRealtime()
+      .subscribe((classi) => {
+        this.listaClassi.set(classi);
+        console.log('Classi caricate:', this.listaClassi());
+      });
 
-    this.$user.fetchUser(this.userKey()).then((user: UserModel|null) => {
-      if(user){
+    this.$user.fetchUser(this.userKey()).then((user: UserModel | null) => {
+      if (user) {
         this.user.set(user);
         this.isClassSelectionEnabled.set(user.role === UsersRole.ADMIN);
         this.profileForm.patchValue({

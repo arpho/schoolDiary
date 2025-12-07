@@ -59,7 +59,7 @@ export class ClassesListComponent implements OnInit, OnDestroy {
   classiList = signal<ClasseModel[]>([]);
   private sub: Subscription = new Subscription();
 
-  sortedClassiList = computed(() => 
+  sortedClassiList = computed(() =>
     [...this.classiList()].sort((a, b) => {
       const keyA = `${a.classe}${a.year}`;
       const keyB = `${b.classe}${b.year}`;
@@ -80,9 +80,10 @@ export class ClassesListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.sub.add(
-      this.service.getClassiOnRealtime((classi) => {
-        this.classiList.set(classi);
-      })
+      this.service.getClassiOnRealtime()
+        .subscribe((classi) => {
+          this.classiList.set(classi);
+        })
     );
   }
 

@@ -28,7 +28,19 @@ export class EvaluationService {
   private evaluationCache = new Map<string, Evaluation[]>();
   private loadingPromises = new Map<string, Promise<Evaluation[]>>();
   private firestore = inject(Firestore);
-  private collection = 'valutazioni';
+  private collectionName = 'valutazioni';
+
+  // Store Firebase API functions to avoid injection context warnings
+  private collectionFn = collection;
+  private queryFn = query;
+  private whereFn = where;
+  private getDocsFn = getDocs;
+  private addDocFn = addDoc;
+  private onSnapshotFn = onSnapshot;
+  private deleteDocFn = deleteDoc;
+  private getDocFn = getDoc;
+  private setDocFn = setDoc;
+  private docFn = doc;
 
   private getCacheKey(studentKey: string, teacherKey: string, subjectKey?: string): string {
     const baseKey = `${studentKey}_${teacherKey}`;
@@ -40,18 +52,18 @@ export class EvaluationService {
     teacherKey: string,
     subjectKey?: string
   ): Promise<Evaluation[]> {
-    const collectionRef = collection(this.firestore, this.collection);
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
     const conditions = [
-      where('studentKey', '==', studentKey),
-      where('teacherKey', '==', teacherKey)
+      this.whereFn('studentKey', '==', studentKey),
+      this.whereFn('teacherKey', '==', teacherKey)
     ];
 
     if (subjectKey) {
-      conditions.push(where('subjectKey', '==', subjectKey));
+      conditions.push(this.whereFn('subjectKey', '==', subjectKey));
     }
 
-    const q = query(collectionRef, ...conditions);
-    const querySnapshot = await getDocs(q);
+    const q = this.queryFn(collectionRef, ...conditions);
+    const querySnapshot = await this.getDocsFn(q);
 
     return querySnapshot.docs.map(doc =>
       new Evaluation(doc.data()).setKey(doc.id)
@@ -154,19 +166,19 @@ export class EvaluationService {
     callback: (evaluations: Evaluation[]) => void,
     subjectKey?: string
   ) {
-    const collectionRef = collection(this.firestore, this.collection);
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
     const conditions = [
-      where('studentKey', '==', studentKey),
-      where('teacherKey', '==', teacherKey)
+      this.whereFn('studentKey', '==', studentKey),
+      this.whereFn('teacherKey', '==', teacherKey)
     ];
 
     if (subjectKey) {
-      conditions.push(where('subjectKey', '==', subjectKey));
+      conditions.push(this.whereFn('subjectKey', '==', subjectKey));
     }
 
-    const q = query(collectionRef, ...conditions);
+    const q = this.queryFn(collectionRef, ...conditions);
 
-    return onSnapshot(q, (snapshot) => {
+    return this.onSnapshotFn(q, (snapshot) => {
       const evaluations = snapshot.docs.map(doc =>
         new Evaluation(doc.data()).setKey(doc.id)
       );
@@ -181,8 +193,8 @@ export class EvaluationService {
 
   // Metodi per la gestione delle valutazioni
   async fetchEvaluation(evaluationKey: string): Promise<Evaluation> {
-    const docRef = doc(this.firestore, this.collection, evaluationKey);
-    const docSnap = await getDoc(docRef);
+    const docRef = this.docFn(this.firestore, this.collectionName, evaluationKey);
+    const docSnap = await this.getDocFn(docRef);
     if (!docSnap.exists()) {
       throw new Error('Valutazione non trovata');
     }
@@ -190,8 +202,8 @@ export class EvaluationService {
   }
 
   async addEvaluation(evaluation: Evaluation) {
-    const docRef = await addDoc(
-      collection(this.firestore, this.collection),
+    const docRef = await this.addDocFn(
+      this.collectionFn(this.firestore, this.collectionName),
       {
         ...evaluation.serialize(),
         lastUpdateDate: new Date().toISOString()
@@ -209,8 +221,8 @@ export class EvaluationService {
       throw new Error('Impossibile aggiornare una valutazione senza chiave');
     }
 
-    await setDoc(
-      doc(this.firestore, this.collection, evaluation.key),
+    await this.setDocFn(
+      this.docFn(this.firestore, this.collectionName, evaluation.key),
       {
         ...evaluation.serialize(),
         lastUpdateDate: new Date().toISOString()
@@ -225,7 +237,7 @@ export class EvaluationService {
       throw new Error('Impossibile eliminare una valutazione senza chiave');
     }
 
-    await deleteDoc(doc(this.firestore, this.collection, evaluation.key));
+    await this.deleteDocFn(this.docFn(this.firestore, this.collectionName, evaluation.key));
     this.invalidateCache(evaluation);
   }
 
@@ -294,13 +306,13 @@ export class EvaluationService {
 
   // Metodi legacy per retrocompatibilità
   getEvaluationsOnRealtime(callback: (evaluations: Evaluation[]) => void, queries?: QueryCondition[]) {
-    const collectionRef = collection(this.firestore, this.collection);
-    const q = !queries ? collectionRef : query(
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    const q = !queries ? collectionRef : this.queryFn(
       collectionRef,
-      ...queries.map(q => where(q.field, q.operator, q.value))
+      ...queries.map(q => this.whereFn(q.field, q.operator, q.value))
     );
 
-    return onSnapshot(q, (snapshot) => {
+    return this.onSnapshotFn(q, (snapshot) => {
       const evaluations = snapshot.docs.map(doc =>
         new Evaluation(doc.data()).setKey(doc.id)
       );
@@ -322,9 +334,9 @@ export class EvaluationService {
     this.getEvaluationsOnRealtime(callback, [
       new QueryCondition('classKey', '==', classKey)
     ]);
-    const collectionRef = collection(this.firestore, this.collection);
-    const q = query(collectionRef, where('classeKey', '==', classKey));
-    return onSnapshot(q, (snapshot) => {
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    const q = this.queryFn(collectionRef, this.whereFn('classeKey', '==', classKey));
+    return this.onSnapshotFn(q, (snapshot) => {
       const evaluations: Evaluation[] = [];
       snapshot.forEach((doc) => {
         evaluations.push(new Evaluation(doc.data()).setKey(doc.id));

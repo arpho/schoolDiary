@@ -1,13 +1,13 @@
-import { 
-  Component, 
-  Input, 
-  OnInit, 
-  OnDestroy, 
-  Output, 
-  EventEmitter, 
-  forwardRef, 
-  signal, 
-  effect, 
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  Output,
+  EventEmitter,
+  forwardRef,
+  signal,
+  effect,
   inject,
   DestroyRef,
   model
@@ -34,7 +34,7 @@ import { ClassesSelectorPage } from '../../pages/classes-selector/classes-select
     FormsModule,
     IonFabButton,
     IonFab
-    ],
+  ],
   templateUrl: './classes-field.component.html',
   styleUrls: ['./classes-field.component.scss'],
   providers: [
@@ -48,13 +48,13 @@ import { ClassesSelectorPage } from '../../pages/classes-selector/classes-select
 export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() disabled: boolean = false;
   @Output() classeschange = new EventEmitter<ClasseModel[]>();
-  
+
   classes = model<ClasseModel[]>([]);
   classi = signal<ClasseModel[]>([]);
-  
-  onChange: (value: ClasseModel[]) => void = () => {};
-  onTouched: () => void = () => {};
-  
+
+  onChange: (value: ClasseModel[]) => void = () => { };
+  onTouched: () => void = () => { };
+
   private destroyRef = inject(DestroyRef);
   private classiService = inject(ClassiService);
   private modalController = inject(ModalController);
@@ -73,9 +73,9 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
     });
 
   }
-  
+
   private setupClassesEffect() {
-  
+
 
     // Pulisci l'effect quando il componente viene distrutto
 
@@ -88,9 +88,9 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
         selectedClasses: [...this.classes()]
       }
     });
-    
+
     const { data } = await modal.onDidDismiss();
-    
+
     if (data) {
       console.log("Classi selezionate:", data);
       this.classes.set(data);
@@ -99,14 +99,15 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
 
   ngOnInit() {
     console.log("ngOnInit - classi*:", this.classes());
-    
+
     // Configura l'effect dopo l'inizializzazione
     this.setupClassesEffect();
-    
+
     // Carica le classi disponibili
-    this.classiService.getClassiOnRealtime((classi) => {
-      this.classi.set(classi);
-    });
+    this.classiService.getClassiOnRealtime()
+      .subscribe((classi) => {
+        this.classi.set(classi);
+      });
   }
 
   ngOnDestroy() {

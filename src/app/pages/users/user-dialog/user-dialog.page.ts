@@ -41,14 +41,14 @@ import { documentTextOutline, personOutline, sparklesOutline } from 'ionicons/ic
     Evaluation4StudentComponent,
     ReactiveFormsModule,
     FormsModule
-]
+  ]
 })
 export class UserDialogPage implements OnInit {
   @ViewChild('tabs') tabs!: IonTabs;
-  
+
   // Gestione tab attivo
   selectedTab: string = 'generalita';
-  
+
 
 
   // Handle tab changes
@@ -58,8 +58,8 @@ export class UserDialogPage implements OnInit {
     }
   }
   nomeStudente() {
-return this.user()?.lastName + " " + this.user()?.firstName;
-}
+    return this.user()?.lastName + " " + this.user()?.firstName;
+  }
   editedUser($event: any | UserModel) {
     console.log("editedUser*", $event);
     this.user.set(new UserModel($event));
@@ -69,18 +69,18 @@ return this.user()?.lastName + " " + this.user()?.firstName;
   // Variabili di stato
   userKey: string = ""
   user = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
-  
-  @Input() 
+
+  @Input()
   set classKey(value: string | null) {
     if (value) {
       this._updateUserClass(value);
     }
   }
-  
+
   get classKey(): string | null {
     return this.user()?.classKey || null;
   }
-  
+
   // Metodo privato per aggiornare la classe dell'utente
   private _updateUserClass(classKeyValue: string) {
     const currentUser = this.user();
@@ -90,7 +90,7 @@ return this.user()?.lastName + " " + this.user()?.firstName;
         ...(currentUser.classes || []).filter(c => c !== classKeyValue), // Rimuovi il valore se già presente
         classKeyValue
       ]));
-      
+
       const updatedUser = new UserModel({
         ...currentUser,
         classes: updatedClasses,
@@ -130,7 +130,7 @@ return this.user()?.lastName + " " + this.user()?.firstName;
       'person': personOutline,
       'sparkles': sparklesOutline,
     });
-    
+
     // Inizializzazione nel constructor
 
 
@@ -156,44 +156,45 @@ return this.user()?.lastName + " " + this.user()?.firstName;
     }
     const userKey = this.route.snapshot.paramMap.get('userKey');
     console.log("userKey", userKey);
-    
+
     // Imposta la userKey nella proprietà del componente
     if (userKey) {
       this.userKey = userKey;
     }
-    
+
     // Se classKey è presente, imposta la classe predefinita
     const classKeyValue = this.classKey;
     if (classKeyValue) {
       this._updateUserClass(classKeyValue);
     }
-    
+
     // Se userKey esiste, carica l'utente
     if (userKey) {
       try {
         const user = await this.$users.fetchUserOnCache(userKey);
         if (user) {
           console.log("user showed", user);
-          if(user instanceof UserModel){
+          if (user instanceof UserModel) {
             this.user.set(user);
           }
         }
-      
+
       } catch (error) {
         console.error("Errore nel caricamento dell'utente:", error);
       }
-    }  else{
+    } else {
       console.log("nuovo studente")
     }
 
     // Inizializza le classi
-    this.$classes.getClassiOnRealtime((classi) => {
-      this.elencoClassi.set(classi);
-    });
+    this.$classes.getClassiOnRealtime()
+      .subscribe((classi) => {
+        this.elencoClassi.set(classi);
+      });
 
     // Inizializza i ruoli
     const rolesKey = Object.keys(UsersRole);
-    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length/2);
+    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
   }
 
   save() {
@@ -204,25 +205,25 @@ return this.user()?.lastName + " " + this.user()?.firstName;
       classes: user.classes,
       classKey: user.classe
     };
-    if(user.key){
-    this.$users.updateUser(user.key, user).then(() => {
-      console.log("user updated");
-      this.toaster.presentToast({message: "User aggiornato con successo", duration: 2000, position: "bottom"});
-    }).catch((error: any) => {
-      console.log("error updating user", error);
-      this.toaster.presentToast({message: "Errore durante l'aggiornamento del user", duration: 2000, position: "bottom"});
-    });
+    if (user.key) {
+      this.$users.updateUser(user.key, user).then(() => {
+        console.log("user updated");
+        this.toaster.presentToast({ message: "User aggiornato con successo", duration: 2000, position: "bottom" });
+      }).catch((error: any) => {
+        console.log("error updating user", error);
+        this.toaster.presentToast({ message: "Errore durante l'aggiornamento del user", duration: 2000, position: "bottom" });
+      });
 
-    this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
-      const usersClaims = await this.$users.getCustomClaims4LoggedUser();
-      this.toaster.presentToast({message: "Claims aggiornati con successo", duration: 2000, position: "bottom"});
-    }).catch((error: any) => {
-      this.toaster.presentToast({message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom"});
-    });
+      this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
+        const usersClaims = await this.$users.getCustomClaims4LoggedUser();
+        this.toaster.presentToast({ message: "Claims aggiornati con successo", duration: 2000, position: "bottom" });
+      }).catch((error: any) => {
+        this.toaster.presentToast({ message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom" });
+      });
+    }
+    else {
+
+    }
+
   }
-  else{
-    
-}
-
-}
 }

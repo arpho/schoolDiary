@@ -29,11 +29,12 @@ import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
 import {
-   create,
-   close,
-   save,
-   trash,
-   ellipsisVertical } from 'ionicons/icons';
+  create,
+  close,
+  save,
+  trash,
+  ellipsisVertical
+} from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ClassiService } from '../../classes/services/classi.service';
@@ -114,10 +115,10 @@ export class UsersListPage implements OnInit, OnDestroy {
     this.router.navigate(['user-dialog', userKey]);
   }
 
-  userList= signal<UserModel[]>([]);
-  usersFilter= signal<()=> UserModel[]>(()=>this.userList());
-  users2BeShown= computed(()=>this.usersFilter()().sort((a,b)=>this.factoryName(a).localeCompare(this.factoryName(b))));
-  classes= signal<ClasseModel[]>([]);
+  userList = signal<UserModel[]>([]);
+  usersFilter = signal<() => UserModel[]>(() => this.userList());
+  users2BeShown = computed(() => this.usersFilter()().sort((a, b) => this.factoryName(a).localeCompare(this.factoryName(b))));
+  classes = signal<ClasseModel[]>([]);
   filterUserForm!: FormGroup;
   usersRole = UsersRole; // Make UsersRole available in template
 
@@ -140,10 +141,11 @@ export class UsersListPage implements OnInit, OnDestroy {
     });
 
     // Sottoscrizione per il caricamento delle classi
-    this.classesService.getClassiOnRealtime((classi) => {
-      console.log('Classi ricevute dal servizio:', classi);
-      this.classes.set(classi);
-    });
+    this.classesService.getClassiOnRealtime()
+      .subscribe((classi) => {
+        console.log('Classi ricevute dal servizio:', classi);
+        this.classes.set(classi);
+      });
   }
 
   private factoryName(user: UserModel): string {
@@ -152,7 +154,7 @@ export class UsersListPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeForm();
-    
+
     const cb = (users: UserModel[]) => {
       this.userList.set(users);
     };
@@ -184,30 +186,30 @@ export class UsersListPage implements OnInit, OnDestroy {
     const searchTerm = values?.searchTerm?.toLowerCase() || '';
     const selectedClass = values?.selectedClass || '';
     const selectedRole = values?.selectedRole ? parseInt(values.selectedRole) : null;
-    
+
     this.usersFilter.set(() => {
       let filteredUsers = this.userList();
-      
+
       // Filtro per testo
       if (searchTerm) {
-        filteredUsers = filteredUsers.filter(user => 
-          user.firstName?.toLowerCase().includes(searchTerm) || 
+        filteredUsers = filteredUsers.filter(user =>
+          user.firstName?.toLowerCase().includes(searchTerm) ||
           user.lastName?.toLowerCase().includes(searchTerm) ||
           user.email?.toLowerCase().includes(searchTerm) ||
           this.factoryName(user).toLowerCase().includes(searchTerm)
         );
       }
-      
+
       // Filtro per classe
       if (selectedClass) {
         filteredUsers = filteredUsers.filter(user => user.classKey === selectedClass);
       }
-      
+
       // Filtro per ruolo
       if (selectedRole !== null) {
         filteredUsers = filteredUsers.filter(user => user.role === selectedRole);
       }
-      
+
       return filteredUsers;
     });
   }
