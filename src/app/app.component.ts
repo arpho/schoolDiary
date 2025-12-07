@@ -1,32 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { ClassiService } from './pages/classes/services/classi.service';
 import { UsersService } from './shared/services/users.service';
 import { ActivitiesService } from './pages/activities/services/activities.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent implements OnInit {
+  private auth = inject(Auth);
+
   constructor(
     private router: Router,
     private classiService: ClassiService,
     private usersService: UsersService,
     private activitiesService: ActivitiesService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.setupAuthListener();
   }
 
   private setupAuthListener() {
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(this.auth, (user) => {
       const currentUrl = this.router.url;
-      
+
       // Allow access to reset-password page regardless of auth state
       if (currentUrl.includes('reset-password')) {
         return;

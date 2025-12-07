@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonButtons, IonBackButton } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { getAuth, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { Auth, reauthenticateWithCredential, EmailAuthProvider } from '@angular/fire/auth';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UsersService } from 'src/app/shared/services/users.service';
 
@@ -30,6 +30,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
 })
 export class ResetPasswordPage implements OnInit {
   resetPasswordForm!: FormGroup;
+  private auth = inject(Auth);
 
   constructor(
     private router: Router,
@@ -54,9 +55,8 @@ export class ResetPasswordPage implements OnInit {
 
   private validateOldPassword(control: FormControl): Promise<{ [key: string]: any } | null> {
     return new Promise((resolve) => {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      
+      const user = this.auth.currentUser;
+
       if (!user || !control.value) {
         resolve(null);
         return;
@@ -80,11 +80,11 @@ export class ResetPasswordPage implements OnInit {
   private matchPassword(control: FormGroup): { mismatch: boolean } | null {
     const password = control.get('newPassword')?.value;
     const confirmPassword = control.get('retypePassword')?.value;
-    
+
     if (!password || !confirmPassword) {
       return null;
     }
-    
+
     return password === confirmPassword ? null : { mismatch: true };
   }
 
@@ -95,11 +95,10 @@ export class ResetPasswordPage implements OnInit {
 
   onSubmit(): void {
     if (this.resetPasswordForm.valid) {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      
+      const user = this.auth.currentUser;
+
       if (user) {
-        this.$users.updatePassword(user,this.resetPasswordForm.get('newPassword')?.value)
+        this.$users.updatePassword(user, this.resetPasswordForm.get('newPassword')?.value)
           .then(() => {
             console.log('Password updated successfully');
             this.router.navigate(['/dashboard']);

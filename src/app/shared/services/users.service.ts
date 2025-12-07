@@ -52,6 +52,12 @@ export class UsersService implements OnInit {
   private setDocFn = setDoc;
   private docFn = doc;
 
+  // Store Auth functions to avoid injection context warnings
+  private getAuthFn = getAuth;
+  private sendPasswordResetEmailFn = sendPasswordResetEmail;
+  private createUserWithEmailAndPasswordFn = createUserWithEmailAndPassword;
+  private updatePasswordFn = updatePassword;
+
   constructor(
     private $classes: ClassiService
   ) {
@@ -69,7 +75,7 @@ export class UsersService implements OnInit {
   }
 
   updatePassword(user: User, newPassword: string) {
-    return updatePassword(user, newPassword);
+    return this.updatePasswordFn(user, newPassword);
   }
 
   async getUser(userKey: string): Promise<UserModel | null> {
@@ -81,8 +87,8 @@ export class UsersService implements OnInit {
 
     // If not in cache, fetch from Firestore
     try {
-      const docRef = doc(this.firestore, 'userProfiles', userKey);
-      const docSnap = await getDoc(docRef);
+      const docRef = this.docFn(this.firestore, 'userProfiles', userKey);
+      const docSnap = await this.getDocFn(docRef);
 
       if (docSnap.exists()) {
         const userData = new UserModel(docSnap.data()).setKey(docSnap.id);
@@ -98,8 +104,8 @@ export class UsersService implements OnInit {
   }
 
   sendPasswordRecoverEmail(email: string): Promise<boolean> {
-    const auth = getAuth();
-    return sendPasswordResetEmail(auth, email)
+    const auth = this.getAuthFn();
+    return this.sendPasswordResetEmailFn(auth, email)
       .then(() => {
         return true;
       })
@@ -279,7 +285,7 @@ export class UsersService implements OnInit {
 
   getCustomClaims4LoggedUser(): Promise<any> {
     return new Promise((resolve) => {
-      const auth = getAuth();
+      const auth = this.getAuthFn();
       auth.currentUser?.getIdTokenResult(true).then((tokenResult) => {
         resolve(tokenResult.claims);
       });
@@ -369,8 +375,8 @@ export class UsersService implements OnInit {
    * }
    */
   async signupUser(user: UserModel): Promise<string> {
-    const auth = getAuth();
-    const createdUser = await createUserWithEmailAndPassword(
+    const auth = this.getAuthFn();
+    const createdUser = await this.createUserWithEmailAndPasswordFn(
       auth,
       user.email,
       user.password
@@ -391,7 +397,7 @@ export class UsersService implements OnInit {
   }
 
   logout(): Promise<void> {
-    const auth = getAuth();
+    const auth = this.getAuthFn();
     console.log('auth', auth);
     return auth.signOut();
   }
