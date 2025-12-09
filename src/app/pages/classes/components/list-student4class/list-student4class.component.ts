@@ -157,18 +157,6 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     addIcons({
       cloudupload: cloudUploadOutline, add
     });
-
-
-
-
-
-    // Verifica che il componente venga effettivamente caricato
-    setTimeout(() => {
-      console.log('🔍 Controlla se il componente è nel DOM con:',
-        'document.querySelector(\'app-list-student4class\')');
-      console.log('📋 Controlla il template con:',
-        'document.querySelector(\'app-list-student4class\')?.innerHTML');
-    }, 1000);
   }
 
 
@@ -211,6 +199,7 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
   }
 
   private setStudents(users: UserModel[]): void {
+    console.log("setStudents", users);
     this._students.set(users);
   }
 
