@@ -1,36 +1,154 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title align="center">Nuova attività</ion-title>
+    <ion-title>{{ activity.key ? 'Modifica' : 'Nuova' }} Attività</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="closeDialog()">Chiudi</ion-button>
+      <ion-button (click)="onCancel()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <form [formGroup]="activityForm" (ngSubmit)="closeDialog()">
-    <ion-item>
-      <ion-label position="floating">Titolo</ion-label>
-      <ion-input formControlName="title"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Descrizione</ion-label>
-      <ion-textarea formControlName="description"></ion-textarea>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Classe</ion-label>
-      <ion-select formControlName="classKey">
-        @for (classe of listaClassi; track classe.key) {
-          <ion-select-option [value]="classe.key">
-            {{ classe.classe }} {{ classe.year }}
-          </ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Data</ion-label>
-      <ion-datetime presentation="date" formControlName="date" displayFormat="DD/MM/YYYY"></ion-datetime>
-    </ion-item>
+<ion-content class="ion-padding">
+  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container">
+    <ion-card class="form-card">
+      <ion-card-header>
+        <ion-card-title class="ion-text-center">
+          <ion-icon name="create" class="ion-margin-end"></ion-icon>
+          Dettagli Attività
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <!-- Titolo -->
+        <ion-item lines="full" class="ion-margin-bottom">
+          <ion-label position="floating">Titolo <span class="required">*</span></ion-label>
+          <ion-input 
+            formControlName="title"
+            type="text"
+            required>
+          </ion-input>
+          <ion-note slot="error" *ngIf="(titleControl?.touched || isSubmitted) && titleControl?.errors?.['required']">
+            Il titolo è obbligatorio
+          </ion-note>
+          <ion-note slot="error" *ngIf="titleControl?.errors?.['minlength']">
+            Il titolo deve essere di almeno 3 caratteri
+          </ion-note>
+        </ion-item>
+
+        <!-- Descrizione -->
+        <ion-item lines="full" class="ion-margin-bottom">
+          <ion-label position="floating">Descrizione <span class="required">*</span></ion-label>
+          <ion-textarea 
+            formControlName="description"
+            rows="4"
+            required>
+          </ion-textarea>
+          <ion-note slot="error" *ngIf="(descriptionControl?.touched || isSubmitted) && descriptionControl?.errors?.['required']">
+            La descrizione è obbligatoria
+          </ion-note>
+          <ion-note slot="error" *ngIf="descriptionControl?.errors?.['minlength']">
+            La descrizione deve essere di almeno 10 caratteri
+          </ion-note>
+        </ion-item>
+
+        <ion-grid>
+          <ion-row>
+            <!-- Classe -->
+            <ion-col size="12" size-md="6">
+              <ion-item lines="full" class="ion-margin-bottom">
+                <ion-label position="floating">Classe <span class="required">*</span></ion-label>
+                <ion-select 
+                  formControlName="classKey"
+                  interface="action-sheet"
+                  cancelText="Annulla"
+                  okText="Seleziona"
+                  required>
+                  <ion-select-option value="">Seleziona una classe</ion-select-option>
+                  @for (classe of listaClassi; track classe.key) {
+                    <ion-select-option [value]="classe.key">
+                      {{ classe.classe }} {{ classe.year }}
+                    </ion-select-option>
+                  }
+                </ion-select>
+                <ion-note slot="error" *ngIf="(classKeyControl?.touched || isSubmitted) && classKeyControl?.errors?.['required']">
+                  Seleziona una classe
+                </ion-note>
+              </ion-item>
+            </ion-col>
+
+            <!-- Data -->
+            <ion-col size="12" size-md="6">
+              <ion-item lines="full" class="ion-margin-bottom">
+                <ion-label position="stacked">Data <span class="required">*</span></ion-label>
+                <ion-datetime 
+                  formControlName="date"
+                  presentation="date"
+                  [min]="minDate"
+                  [max]="dueDateControl?.value || ''"
+                  showDefaultButtons="true"
+                  showDefaultTimeLabel="true"
+                  doneText="OK"
+                  cancelText="Annulla"
+                  required>
+                </ion-datetime>
+                <ion-note slot="error" *ngIf="(dateControl?.touched || isSubmitted) && dateControl?.errors?.['required']">
+                  Seleziona una data
+                </ion-note>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <!-- Data di scadenza -->
+          <ion-row>
+            <ion-col size="12">
+              <ion-item lines="full" class="ion-margin-bottom">
+                <ion-label position="stacked">Data di scadenza (opzionale)</ion-label>
+                <ion-datetime 
+                  formControlName="dueDate"
+                  presentation="date"
+                  [min]="dateControl?.value || minDate"
+                  showDefaultButtons="true"
+                  showDefaultTimeLabel="true"
+                  doneText="OK"
+                  cancelText="Annulla">
+                </ion-datetime>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Pulsanti Azione -->
+    <div class="form-actions">
+      <ion-button 
+        type="submit" 
+        expand="block" 
+        [disabled]="isLoading || activityForm.invalid"
+        [color]="activityForm.valid ? 'primary' : 'medium'">
+        <ion-spinner *ngIf="isLoading" name="crescent" class="ion-margin-end"></ion-spinner>
+        <ion-icon 
+          slot="start" 
+          [name]="activityForm.valid ? 'checkmark-circle' : 'close-circle'"
+          [color]="activityForm.valid ? 'success' : 'medium'">
+        </ion-icon>
+        {{ activity.key ? 'Aggiorna' : 'Crea' }} attività
+      </ion-button>
+
+      <ion-button 
+        type="button" 
+        expand="block" 
+        fill="outline" 
+        (click)="onCancel()"
+        [disabled]="isLoading">
+        Annulla
+      </ion-button>
+    </div>
   </form>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
 </ion-content>
-<ion-button (click)="saveActivity()">Salva</ion-button>

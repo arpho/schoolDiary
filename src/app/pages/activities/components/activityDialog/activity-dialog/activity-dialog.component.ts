@@ -1,34 +1,52 @@
-import { Component, EventEmitter, Input, OnInit, Output, effect, inject, model } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivityModel } from '../../../models/activityModel';
-import { ClasseModel }  from 'src/app/pages/classes/models/classModel';
-import { ModalController,
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { ModalController } from '@ionic/angular/standalone';
+
+// Ionic Components
+import { 
   IonDatetime,
   IonItem,
   IonLabel,
   IonInput,
-    IonSelect,
+  IonSelect,
   IonSelectOption,
   IonButton,
   IonContent,
   IonHeader,
   IonTitle,
   IonToolbar,
-  IonList,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
   IonIcon,
-  IonFab,
-  IonFabButton,
   IonTextarea,
-  IonFabList,
-  IonBackButton,
-  IonCardSubtitle,
- } from '@ionic/angular/standalone';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+  IonButtons,
+  IonNote,
+  IonRow,
+  IonCol,
+  IonGrid,
+  IonSpinner
+} from '@ionic/angular/standalone';
+
+// Icons
+import { addIcons } from 'ionicons';
+import { 
+  arrowBack, 
+  calendarOutline, 
+  timeOutline, 
+  schoolOutline, 
+  personOutline, 
+  create, 
+  warning, 
+  checkmarkCircleOutline, 
+  closeCircleOutline,
+  close
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-activity-dialog',
@@ -38,95 +56,149 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-   IonDatetime,
-   IonItem,
-   IonLabel,
-   IonInput,
-   IonSelect,
-   IonSelectOption,
-   IonButton,
-   IonContent,
-   IonHeader,
-   IonTitle,
-   IonToolbar,
-   IonItem,
-   IonList,
-   IonCard,
-   IonCardContent,
-   IonCardHeader,
-   IonCardTitle,
-   IonIcon,
-   IonFab,
-   IonFabButton,
-   IonFabList,
-   IonBackButton,
-     IonCardSubtitle,
-   IonButton,
-   IonTextarea
+    FormsModule,
+    // Ionic Components
+    IonDatetime,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonSelect,
+    IonSelectOption,
+    IonButton,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonIcon,
+    IonTextarea,
+    IonButtons,
+    IonNote,
+    IonRow,
+    IonCol,
+    IonGrid,
+    IonSpinner
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ActivityDialogComponent implements OnInit {
-  saveActivity() {
-    this.modalController.dismiss(this.activity()); 
-  }
-
-  closeDialog() {
-    this.modalController.dismiss();
-  }
-  onClassChange($event: any) {
-    this.activity.set(new ActivityModel({
-      ...this.activity(),
-      classKey: $event.target.value
-    }));
-  }
-  onDescriptionChange($event: any) {
-    this.activity.set(new ActivityModel({
-      ...this.activity(),
-      description: $event.target.value
-    }));
-  }
-  onTitleChange($event: any) {
-    this.activity.set(new ActivityModel({
-      ...this.activity(),
-      title: $event.target.value
-    }));
-  }
-  activity = model<ActivityModel>(new ActivityModel());
-  activityForm: FormGroup = new FormGroup({
-    title: new FormControl(''),
-    description: new FormControl(''),
-    classKey: new FormControl(''),
-    date: new FormControl('')
-  });
-
-
   @Input() listaClassi: ClasseModel[] = [];
-  @Input() selectedClass: string = '';
+  @Input() selectedClass = '';
+  @Input() activity: ActivityModel = new ActivityModel();
+  
+  activityForm!: FormGroup;
+  isSubmitted = false;
+  minDate = new Date().toISOString();
+  isLoading = false;
+  
+  // Form controls for easier access
+  get titleControl() { return this.activityForm.get('title'); }
+  get descriptionControl() { return this.activityForm.get('description'); }
+  get classKeyControl() { return this.activityForm.get('classKey'); }
+  get dateControl() { return this.activityForm.get('date'); }
+  get dueDateControl() { return this.activityForm.get('dueDate'); }
+
   constructor(
     private fb: FormBuilder,
     private modalController: ModalController
-  ){
-    effect(() => {
-      console.log("selectedClass", this.selectedClass);
-      this.activityForm.get('classKey')?.setValue(this.selectedClass);
-    })
+  ) {
+    addIcons({
+      arrowBack,
+      calendarOutline,
+      timeOutline,
+      schoolOutline,
+      personOutline,
+      create,
+      warning,
+      checkmarkCircleOutline,
+      closeCircleOutline,
+      close
+    });
   }
-  ngOnInit() {
-    const activityValue = this.activity();
 
-    // Inizializza il form con i valori dell'activity
+  ngOnInit(): void {
+    this.initializeForm();
+    
+    // Subscribe to date changes to update min/max dates
+    this.dateControl?.valueChanges.subscribe(() => {
+      if (this.dateControl?.value && this.dueDateControl?.value && 
+          new Date(this.dateControl.value) > new Date(this.dueDateControl.value)) {
+        this.dueDateControl?.setValue(null);
+      }
+    });
+  }
+
+  private initializeForm(): void {
     this.activityForm = this.fb.group({
-      title: [activityValue.title || '', Validators.required],
-      description: [activityValue.description || '', Validators.required],
-      classKey: [activityValue.classKey || '', Validators.required],
-      date: [activityValue.date || new Date().toISOString(), Validators.required]
-    });
-
-    // Sincronizza il form con l'oggetto activity
-    this.activityForm.valueChanges.subscribe((value) => {
-      this.activity.set(new ActivityModel(value).setKey(this.activity().key).setTeacherKey(this.activity().teacherKey));
+      title: [this.activity?.title || '', [
+        Validators.required, 
+        Validators.minLength(3),
+        Validators.maxLength(100)
+      ]],
+      description: [this.activity?.description || '', [
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(500)
+      ]],
+      classKey: [this.activity?.classKey || this.selectedClass || '', [
+        Validators.required
+      ]],
+      date: [this.activity?.date || this.minDate, [
+        Validators.required
+      ]],
+      dueDate: [this.activity?.dueDate || null]
     });
   }
+
+  async onSubmit(): Promise<void> {
+    this.isSubmitted = true;
+    
+    // Mark all fields as touched to trigger validation messages
+    this.markFormGroupTouched(this.activityForm);
+    
+    if (this.activityForm.invalid) {
+      return;
+    }
+    
+    this.isLoading = true;
+    
+    try {
+      // Create activity object from form values
+      const formValue = this.activityForm.value;
+      const activity: ActivityModel = {
+        ...this.activity, // Preserve existing properties if editing
+        ...formValue
+      };
+      
+      await this.modalController.dismiss(activity);
+    } catch (error) {
+      console.error('Error saving activity:', error);
+      // In a real app, you might want to show an error toast/message
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  closeDialog(): void {
+    this.modalController.dismiss();
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  onCancel(): void {
+    this.modalController.dismiss(null, 'cancel');
+  }
+
+
 
 }

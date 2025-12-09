@@ -25,63 +25,160 @@
       </ion-button>
     </div>
   } @else if (activity) {
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title align="center">{{ activity.title }}</ion-card-title>
-        <ion-card-subtitle>
-          <ion-icon name="calendar-outline"></ion-icon>
-          {{ activity.date | date:'dd/MM/yyyy' }}
-          @if (activity.dueDate) {
-            <br>
-            <ion-icon name="time-outline"></ion-icon>
-            Scadenza: {{ activity.dueDate | date:'dd/MM/yyyy' }}
+    <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" *ngIf="activityForm">
+      <ion-card>
+        <ion-card-header>
+          @if (isEditMode) {
+            <ion-item>
+              <ion-input 
+                formControlName="title" 
+                label="Titolo" 
+                label-placement="floating"
+                placeholder="Inserisci il titolo">
+              </ion-input>
+            </ion-item>
+            <ion-note color="danger" *ngIf="titleControl?.invalid && (titleControl?.dirty || titleControl?.touched || isSubmitted)">
+              @if (titleControl?.errors?.['required']) {
+                <span>Il titolo è obbligatorio</span>
+              }
+              @if (titleControl?.errors?.['minlength']) {
+                <span>Il titolo deve essere di almeno 3 caratteri</span>
+              }
+              @if (titleControl?.errors?.['maxlength']) {
+                <span>Il titolo non può superare i 100 caratteri</span>
+              }
+            </ion-note>
+          } @else {
+            <ion-card-title align="center">{{ activity.title }}</ion-card-title>
           }
-        </ion-card-subtitle>
-      </ion-card-header>
+          
+          @if (isEditMode) {
+            <ion-item>
+              <ion-datetime 
+                formControlName="date"
+                label="Data"
+                [min]="minDate"
+                presentation="date"
+                locale="it-IT">
+              </ion-datetime>
+            </ion-item>
+            <ion-note color="danger" *ngIf="dateControl?.invalid && (dateControl?.dirty || dateControl?.touched || isSubmitted)">
+              La data è obbligatoria
+            </ion-note>
 
-      <ion-card-content>
-        <h3>Descrizione:</h3>
-        <p class="activity-description">
-          {{ activity.description || 'Nessuna descrizione disponibile' }}
-        </p>
+            <ion-item>
+              <ion-datetime 
+                formControlName="dueDate"
+                label="Scadenza (opzionale)"
+                [min]="activityForm.get('date')?.value || minDate"
+                presentation="date"
+                locale="it-IT">
+              </ion-datetime>
+            </ion-item>
+          } @else {
+            <ion-card-subtitle>
+              <ion-icon name="calendar-outline"></ion-icon>
+              {{ activity.date | date:'dd/MM/yyyy' }}
+              @if (activity.dueDate) {
+                <br>
+                <ion-icon name="time-outline"></ion-icon>
+                Scadenza: {{ activity.dueDate | date:'dd/MM/yyyy' }}
+              }
+            </ion-card-subtitle>
+          }
+        </ion-card-header>
 
-        <ion-grid class="ion-margin-top">
-          <ion-row>
-            <ion-col size="6">
-              <ion-item lines="none">
-                <ion-icon slot="start" name="school-outline"></ion-icon>
-                <ion-label>Classe</ion-label>
-                <ion-note slot="end">
-                  @if (classe()) {
-                    {{ classe()?.classe }}
-                  } @else {
-                    <ion-spinner name="dots" class="small-spinner"></ion-spinner>
-                  }
-                </ion-note>
-              </ion-item>
-            </ion-col>
-            <ion-col size="6">
-              <ion-item lines="none">
-                <ion-icon slot="start" name="person-outline"></ion-icon>
-                <ion-label>Insegnante</ion-label>
-                <ion-note slot="end">
-                  @if (teacher()) {
-                    {{ teacher()?.firstName }} {{ teacher()?.lastName }}
-                  } @else {
-                    <ion-spinner name="dots" class="small-spinner"></ion-spinner>
-                  }
-                </ion-note>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
+        <ion-card-content>
+          <h3>Descrizione:</h3>
+          @if (isEditMode) {
+            <ion-item>
+              <ion-textarea 
+                formControlName="description"
+                label="Descrizione"
+                label-placement="floating"
+                placeholder="Inserisci la descrizione"
+                rows="4">
+              </ion-textarea>
+            </ion-item>
+            <ion-note color="danger" *ngIf="descriptionControl?.invalid && (descriptionControl?.dirty || descriptionControl?.touched || isSubmitted)">
+              @if (descriptionControl?.errors?.['required']) {
+                <span>La descrizione è obbligatoria</span>
+              }
+              @if (descriptionControl?.errors?.['minlength']) {
+                <span>La descrizione deve essere di almeno 10 caratteri</span>
+              }
+              @if (descriptionControl?.errors?.['maxlength']) {
+                <span>La descrizione non può superare i 500 caratteri</span>
+              }
+            </ion-note>
+          } @else {
+            <p class="activity-description">
+              {{ activity.description || 'Nessuna descrizione disponibile' }}
+            </p>
+          }
 
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="editActivity()">
-        <ion-icon name="create"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
+          <ion-grid class="ion-margin-top">
+            <ion-row>
+              <ion-col size="6">
+                <ion-item lines="none">
+                  <ion-icon slot="start" name="school-outline"></ion-icon>
+                  <ion-label>Classe</ion-label>
+                  <ion-note slot="end">
+                    @if (classe()) {
+                      {{ classe()?.classe }}
+                    } @else {
+                      <ion-spinner name="dots" class="small-spinner"></ion-spinner>
+                    }
+                  </ion-note>
+                </ion-item>
+              </ion-col>
+              <ion-col size="6">
+                <ion-item lines="none">
+                  <ion-icon slot="start" name="person-outline"></ion-icon>
+                  <ion-label>Insegnante</ion-label>
+                  <ion-note slot="end">
+                    @if (teacher()) {
+                      {{ teacher()?.firstName }} {{ teacher()?.lastName }}
+                    } @else {
+                      <ion-spinner name="dots" class="small-spinner"></ion-spinner>
+                    }
+                  </ion-note>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+
+      @if (isEditMode) {
+        <div class="ion-padding">
+          <ion-button 
+            expand="block" 
+            type="submit" 
+            [disabled]="activityForm.invalid || isLoading"
+            class="ion-margin-bottom">
+            <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+            Salva modifiche
+          </ion-button>
+          
+          <ion-button 
+            expand="block" 
+            fill="outline" 
+            (click)="onCancelEdit()"
+            [disabled]="isLoading">
+            <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+            Annulla
+          </ion-button>
+        </div>
+      }
+    </form>
+
+    @if (!isEditMode) {
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="toggleEditMode()" [disabled]="isLoading">
+          <ion-icon name="create"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    }
   }
 </ion-content>
