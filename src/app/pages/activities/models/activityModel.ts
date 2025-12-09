@@ -5,6 +5,7 @@ export class ActivityModel {
   classKey: string = '';
   description: string = '';
   teacherKey: string = '';
+  dueDate: string = '';
 
   constructor(args?: any) {
     this.build(args);
@@ -33,7 +34,8 @@ export class ActivityModel {
       date: this.date,
       classKey: this.classKey,
       description: this.description,
-      teacherKey: this.teacherKey
+      teacherKey: this.teacherKey,
+      dueDate: this.dueDate
     };
   }
 }

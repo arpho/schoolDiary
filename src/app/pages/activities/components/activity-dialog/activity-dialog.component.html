@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">Annulla</ion-button>
+    </ion-buttons>
+    <ion-title>{{ activityKey ? 'Modifica' : 'Nuova' }} Attività</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [strong]="true">Salva</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="activityForm" (ngSubmit)="save()">
+    <ion-item>
+      <ion-label position="floating">Titolo <ion-text color="danger">*</ion-text></ion-label>
+      <ion-input formControlName="title" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Descrizione</ion-label>
+      <ion-textarea formControlName="description" rows="4"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Data</ion-label>
+      <ion-datetime-button datetime="datetime"></ion-datetime-button>
+      <ion-modal [keepcontentsmounted]="true">
+        <ng-template>
+          <ion-datetime 
+            id="datetime"
+            formControlName="date"
+            [showdefaultbuttons]="true"
+            [min]="minDate"
+            [max]="maxDate">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Scadenza (opzionale)</ion-label>
+      <ion-datetime-button datetime="dueDate"></ion-datetime-button>
+      <ion-modal [keepcontentsmounted]="true">
+        <ng-template>
+          <ion-datetime 
+            id="dueDate"
+            formControlName="dueDate"
+            [showdefaultbuttons]="true"
+            [min]="minDate"
+            [max]="maxDate">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <div class="ion-padding">
+      <ion-button expand="block" type="submit" [disabled]="activityForm.invalid">
+        <ion-icon slot="start" name="save"></ion-icon>
+        Salva
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

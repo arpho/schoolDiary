@@ -1,0 +1,84 @@
+ion-list {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+ion-item {
+  --padding-start: 16px;
+  --padding-end: 8px;
+  --inner-padding-end: 8px;
+  --min-height: 80px;
+  --background: var(--ion-item-background, #fff);
+  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--ion-color-dark);
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--ion-color-medium);
+    margin: 4px 0;
+    white-space: normal;
+  }
+
+  ion-buttons {
+    margin: 0;
+    padding: 0;
+  }
+
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 0;
+    --padding-bottom: 0;
+    margin: 0;
+    height: 100%;
+    --border-radius: 0;
+  }
+}
+
+ion-item:last-child {
+  margin-bottom: 0;
+}
+
+// Stile per lo stato di nessun elemento
+ion-item:only-child {
+  --background: transparent;
+  box-shadow: none;
+  text-align: center;
+  --min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  ion-label {
+    opacity: 0.7;
+  }
+}
+
+// Stile per la scrollbar su WebKit
+ion-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+ion-list::-webkit-scrollbar-track {
+  background: var(--ion-color-light);
+}
+
+ion-list::-webkit-scrollbar-thumb {
+  background: var(--ion-color-medium);
+  border-radius: 4px;
+}

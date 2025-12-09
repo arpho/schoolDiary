@@ -1,13 +1,21 @@
 <ion-list>
   @for (activity of activitieslist(); track activity.key) {
-    <ion-item>
-      <ion-label>
+    <ion-item class="activity-item" button detail="false" (click)="showActions(activity, $event)">
+      <ion-label class="activity-content">
         <h2>{{ activity.title }}</h2>
-        <p>{{ activity.description }}</p>
-        <p class="ion-text-small">
-          {{ activity.date | date }}
+        <p>{{ activity.description || 'Nessuna descrizione' }}</p>
+        <p class="activity-date">
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ activity.date | date:'dd/MM/yyyy' }}
+          @if (activity.dueDate) {
+            <span> - Scadenza: {{ activity.dueDate | date:'dd/MM/yyyy' }}</span>
+          }
         </p>
       </ion-label>
+    </ion-item>
+  } @empty {
+    <ion-item>
+      <ion-label class="ion-text-center">Nessuna attività trovata</ion-label>
     </ion-item>
   }
 </ion-list>

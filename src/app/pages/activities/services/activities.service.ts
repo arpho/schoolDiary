@@ -99,6 +99,41 @@ export class ActivitiesService {
     }
   }
 
+  /**
+   * Recupera un'attività specifica dal database
+   * @param activityKey - La chiave univoca dell'attività
+   * @returns Una Promise che si risolve con l'oggetto ActivityModel o undefined se non trovato
+   */
+  async getActivity(activityKey: string): Promise<ActivityModel | undefined> {
+    try {
+      // Cerca prima nella cache
+      const cachedActivity = this.activitiesOnCache().find(a => a.key === activityKey);
+      if (cachedActivity) {
+        return cachedActivity;
+      }
+
+      // Se non trovato in cache, cerca nel database
+      const docRef = doc(this.firestore, this.collection, activityKey);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const activity = new ActivityModel();
+        activity.build(docSnap.data());
+        activity.setKey(docSnap.id);
+        
+        // Aggiorna la cache
+        this.activitiesOnCache.update(activities => [...activities, activity]);
+        
+        return activity;
+      }
+      
+      return undefined;
+    } catch (error) {
+      console.error('Error getting activity:', error);
+      throw error;
+    }
+  }
+
   async addActivity(activity: ActivityModel): Promise<ActivityModel> {
     const collectionRef = collection(this.firestore, this.collection);
     const docref = await addDoc(collectionRef, activity.serialize());

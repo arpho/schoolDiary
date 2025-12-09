@@ -1,10 +1,31 @@
-import { Component, OnInit, OnDestroy, effect, model } from '@angular/core';
-import { input, signal } from '@angular/core';
+import { Component, effect, input, signal } from '@angular/core';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { DatePipe } from '@angular/common';
-import { IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
+import { 
+  IonList, 
+  IonItem, 
+  IonLabel, 
+  IonIcon,
+  IonButton,
+  IonButtons,
+  IonText,
+  IonTextarea,
+  ActionSheetController,
+  ModalController,
+  AlertController,
+  ToastController
+} from '@ionic/angular/standalone';
+import { 
+  ellipsisVertical, 
+  create, 
+  trash, 
+  eye, 
+  close 
+} from 'ionicons/icons';
+import { ActivityDialogComponent } from 'src/app/pages/activities/components/activity-dialog/activity-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-activities4class',
@@ -14,8 +35,9 @@ import { IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
   imports: [
     DatePipe,
     IonList,
-    IonItem,
-    IonLabel
+    IonItem, 
+    IonLabel,
+    IonIcon
   ]
 })
 export class ListActivities4classComponent {
@@ -24,8 +46,15 @@ export class ListActivities4classComponent {
   activitieslist = signal<ActivityModel[]>([]);
 
   constructor(
-    private activitiesService: ActivitiesService
+    private activitiesService: ActivitiesService,
+    private actionSheetCtrl: ActionSheetController,
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private router: Router
   ) {
+      // Le icone sono registrate globalmente in app.module.ts
+    
     // Effetto che si attiva quando i valori cambiano
     effect(() => {
       const currentClassKey = this.classkey();
@@ -37,6 +66,138 @@ export class ListActivities4classComponent {
     });
   }
 
+  /**
+   * Mostra il menu delle azioni per un'attività
+   */
+  async showActions(activity: ActivityModel, event?: Event) {
+    // Prevent default click behavior if event is provided
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    // Navigate to activity detail page
+    this.router.navigate(['/activity-detail', activity.key]);
+    return; // Exit to prevent showing action sheet for now
+    
+    // The following code will be used when we want to show the action sheet again
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Azioni',
+      buttons: [
+        {
+          text: 'Visualizza',
+          icon: 'eye',
+          handler: () => {
+            this.viewActivity(activity);
+          }
+        },
+        {
+          text: 'Modifica',
+          icon: 'create',
+          handler: () => {
+            this.editActivity(activity);
+          }
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            this.confirmDelete(activity);
+          }
+        },
+        {
+          text: 'Annulla',
+          icon: 'close',
+          role: 'cancel'
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+
+  /**
+   * Visualizza i dettagli di un'attività
+   */
+  private viewActivity(activity: ActivityModel) {
+    this.router.navigate(['/activity-details', activity.key]);
+  }
+
+  /**
+   * Modifica un'attività esistente
+   */
+  private async editActivity(activity: ActivityModel) {
+    const modal = await this.modalCtrl.create({
+      component: ActivityDialogComponent,
+      componentProps: {
+        activityKey: activity.key,
+        classKey: this.classkey(),
+        teacherKey: this.teacherkey()
+      }
+    });
+    
+    await modal.present();
+    
+    const { data } = await modal.onWillDismiss();
+    if (data?.saved) {
+      // Ricarica le attività se è stato salvato qualcosa
+      this.updateActivities();
+    }
+  }
+
+  /**
+   * Conferma l'eliminazione di un'attività
+   */
+  private async confirmDelete(activity: ActivityModel) {
+    const alert = await this.alertCtrl.create({
+      header: 'Conferma eliminazione',
+      message: `Sei sicuro di voler eliminare l'attività "${activity.title}"?`,
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel'
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          handler: () => {
+            this.deleteActivity(activity);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  /**
+   * Elimina un'attività
+   */
+  private async deleteActivity(activity: ActivityModel) {
+    try {
+      await this.activitiesService.deleteActivity(activity.key);
+      this.showToast('Attività eliminata con successo');
+    } catch (error) {
+      console.error('Errore durante l\'eliminazione dell\'attività:', error);
+      this.showToast('Si è verificato un errore durante l\'eliminazione', 'danger');
+    }
+  }
+
+  /**
+   * Mostra un toast di notifica
+   */
+  private async showToast(message: string, color: string = 'success') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'bottom'
+    });
+    
+    await toast.present();
+  }
+
   private updateActivities() {
     const currentClassKey = this.classkey();
     const currentTeacherKey = this.teacherkey();
@@ -44,9 +205,6 @@ export class ListActivities4classComponent {
     if (!currentClassKey || !currentTeacherKey) {
       return;
     }
-
-    console.log("classkey**", currentClassKey);
-    console.log("teacherkey**", currentTeacherKey);
 
     // Creo le condizioni di query
     const query: QueryCondition[] = [

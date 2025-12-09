@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title align="center">Dettaglio Attività</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (isLoading) {
+    <div class="ion-text-center ion-padding">
+      <ion-spinner></ion-spinner>
+      <p>Caricamento in corso...</p>
+    </div>
+  } @else if (error) {
+    <div class="ion-text-center ion-padding">
+      <ion-icon name="warning" size="large" color="danger"></ion-icon>
+      <p>{{ error }}</p>
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon slot="start" name="arrow-back"></ion-icon>
+        Torna indietro
+      </ion-button>
+    </div>
+  } @else if (activity) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title align="center">{{ activity.title }}</ion-card-title>
+        <ion-card-subtitle>
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ activity.date | date:'dd/MM/yyyy' }}
+          @if (activity.dueDate) {
+            <br>
+            <ion-icon name="time-outline"></ion-icon>
+            Scadenza: {{ activity.dueDate | date:'dd/MM/yyyy' }}
+          }
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <h3>Descrizione:</h3>
+        <p class="activity-description">
+          {{ activity.description || 'Nessuna descrizione disponibile' }}
+        </p>
+
+        <ion-grid class="ion-margin-top">
+          <ion-row>
+            <ion-col size="6">
+              <ion-item lines="none">
+                <ion-icon slot="start" name="school-outline"></ion-icon>
+                <ion-label>Classe</ion-label>
+                <ion-note slot="end">
+                  @if (classe()) {
+                    {{ classe()?.classe }}
+                  } @else {
+                    <ion-spinner name="dots" class="small-spinner"></ion-spinner>
+                  }
+                </ion-note>
+              </ion-item>
+            </ion-col>
+            <ion-col size="6">
+              <ion-item lines="none">
+                <ion-icon slot="start" name="person-outline"></ion-icon>
+                <ion-label>Insegnante</ion-label>
+                <ion-note slot="end">
+                  @if (teacher()) {
+                    {{ teacher()?.firstName }} {{ teacher()?.lastName }}
+                  } @else {
+                    <ion-spinner name="dots" class="small-spinner"></ion-spinner>
+                  }
+                </ion-note>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="editActivity()">
+        <ion-icon name="create"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+</ion-content>
