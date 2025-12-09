@@ -31,6 +31,8 @@ import { ClassiService } from '../../classes/services/classi.service';
 import { UsersService } from '../../../shared/services/users.service';
 import { ClasseModel } from '../../classes/models/classModel';
 import { UserModel } from '../../../shared/models/userModel';
+import { create } from 'domain';
+import { personOutline, warning } from 'ionicons/icons';
 // Icons will be used directly in the template with their string names
 
 @Component({
@@ -79,7 +81,15 @@ export class ActivityDetailComponent implements OnInit {
   error: string | null = null;
 
   constructor() {
-    // No need to register icons as we'll use them directly in the template
+  addIcons({
+    'arrow-back': arrowBack,
+    'calendar-outline': calendarOutline,
+    'time-outline': timeOutline,
+    'school-outline': schoolOutline,
+    'person-outline': personOutline,
+    'create': create,
+    'warning': warning
+  });
   }
 
   async ngOnInit() {
