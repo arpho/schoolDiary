@@ -110,11 +110,9 @@
 
         <!-- Contenuto Studenti -->
         @if (selectedTab === 'studenti') {
-        <ion-card>
-          <ion-card-content>
-            <app-list-student4class [classkey]="classkey()"></app-list-student4class>
-          </ion-card-content>
-        </ion-card>
+        <div class="tab-content">
+          <app-list-student4class [classkey]="classkey()"></app-list-student4class>
+        </div>
         }
 
         <!-- Contenuto Annotazioni -->
