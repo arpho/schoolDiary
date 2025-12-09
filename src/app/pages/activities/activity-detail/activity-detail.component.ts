@@ -280,7 +280,7 @@ export class ActivityDetailComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['..'], { relativeTo: this.route });
+    this.router.navigate(['/activities']);
   }
 
   // Keep the editActivity method if you still need it for navigation
