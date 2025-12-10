@@ -21,13 +21,13 @@
 
       <ion-card-content>
         <!-- Titolo -->
-        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(titleControl?.touched || isSubmitted) && titleControl?.invalid" [class.ion-valid]="titleControl?.valid && (titleControl?.touched || isSubmitted)">
+        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(titleControl?.touched || isSubmitted) &amp;&amp; titleControl?.invalid" [class.ion-valid]="titleControl?.valid &amp;&amp; (titleControl?.touched || isSubmitted)">
           <ion-label position="floating">Titolo <span class="required">*</span></ion-label>
           <ion-input 
             formControlName="title"
             type="text"
             required
-            aria-invalid="{{ (titleControl?.touched || isSubmitted) && titleControl?.invalid ? 'true' : 'false' }}"
+            [attr.aria-invalid]="(titleControl?.touched || isSubmitted) &amp;&amp; titleControl?.invalid ? 'true' : 'false'"
             aria-describedby="title-errors">
           </ion-input>
           
@@ -56,13 +56,13 @@
         </ion-item>
 
         <!-- Descrizione -->
-        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(descriptionControl?.touched || isSubmitted) && descriptionControl?.invalid" [class.ion-valid]="descriptionControl?.valid && (descriptionControl?.touched || isSubmitted)">
+        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(descriptionControl?.touched || isSubmitted) &amp;&amp; descriptionControl?.invalid" [class.ion-valid]="descriptionControl?.valid &amp;&amp; (descriptionControl?.touched || isSubmitted)">
           <ion-label position="floating">Descrizione <span class="required">*</span></ion-label>
           <ion-textarea 
             formControlName="description"
             rows="4"
             required
-            aria-invalid="{{ (descriptionControl?.touched || isSubmitted) && descriptionControl?.invalid ? 'true' : 'false' }}"
+            [attr.aria-invalid]="(descriptionControl?.touched || isSubmitted) &amp;&amp; descriptionControl?.invalid ? 'true' : 'false'"
             aria-describedby="description-errors">
           </ion-textarea>
           
@@ -77,7 +77,7 @@
               @if (descriptionControl?.errors?.['minlength']) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
-                  La descrizione deve essere di almeno 10 caratteri
+                  La data di scadenza deve essere successiva alla data dell'attività
                 </ion-note>
               }
               @if (descriptionControl?.errors?.['maxlength']) {
@@ -95,14 +95,14 @@
             <!-- Classe -->
             <ion-col size="12" size-md="6">
               <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid" [class.ion-valid]="classKeyControl?.valid && (classKeyControl?.touched || isSubmitted)">
-                <ion-label position="floating">Classe <span class="required">*</span></ion-label>
+                <ion-label position="stacked">Classe <span class="required">*</span></ion-label>
                 <ion-select 
                   formControlName="classKey"
                   interface="action-sheet"
-                  cancelText="Annulla"
-                  okText="Seleziona"
+                  canceltext="Annulla"
+                  oktext="Seleziona"
                   required
-                  aria-invalid="{{ (classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid ? 'true' : 'false' }}"
+                  [attr.aria-invalid]="(classKeyControl?.touched || isSubmitted) &amp;&amp; classKeyControl?.invalid ? 'true' : 'false'"
                   aria-describedby="class-errors">
                   <ion-select-option value="">Seleziona una classe</ion-select-option>
                   @for (classe of listaClassi; track classe.key) {
@@ -125,19 +125,19 @@
 
             <!-- Data -->
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dateControl?.touched || isSubmitted) && dateControl?.invalid" [class.ion-valid]="dateControl?.valid && (dateControl?.touched || isSubmitted)">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dateControl?.touched || isSubmitted) &amp;&amp; dateControl?.invalid" [class.ion-valid]="dateControl?.valid &amp;&amp; (dateControl?.touched || isSubmitted)">
                 <ion-label position="stacked">Data <span class="required">*</span></ion-label>
                 <ion-datetime 
                   formControlName="date"
                   presentation="date"
                   [min]="minDate"
                   [max]="dueDateControl?.value || ''"
-                  showDefaultButtons="true"
-                  showDefaultTimeLabel="true"
-                  doneText="OK"
-                  cancelText="Annulla"
+                  showdefaultbuttons="true"
+                  showdefaulttimelabel="true"
+                  donetext="OK"
+                  canceltext="Annulla"
                   required
-                  aria-invalid="{{ (dateControl?.touched || isSubmitted) && dateControl?.invalid ? 'true' : 'false' }}"
+                  [attr.aria-invalid]="(dateControl?.touched || isSubmitted) &amp;&amp; dateControl?.invalid ? 'true' : 'false'"
                   aria-describedby="date-errors">
                 </ion-datetime>
                 
@@ -170,17 +170,17 @@
           <!-- Data di scadenza -->
           <ion-row>
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dueDateControl?.touched || isSubmitted) && dueDateControl?.invalid" [class.ion-valid]="dueDateControl?.valid && dueDateControl?.touched">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dueDateControl?.touched || isSubmitted) &amp;&amp; dueDateControl?.invalid" [class.ion-valid]="dueDateControl?.valid &amp;&amp; dueDateControl?.touched">
                 <ion-label position="stacked">Data Scadenza (opzionale)</ion-label>
                 <ion-datetime 
                   formControlName="dueDate"
                   presentation="date"
                   [min]="dateControl?.value || minDate"
-                  showDefaultButtons="true"
-                  showDefaultTimeLabel="true"
-                  doneText="OK"
-                  cancelText="Annulla"
-                  aria-invalid="{{ (dueDateControl?.touched || isSubmitted) && dueDateControl?.invalid ? 'true' : 'false' }}"
+                  showdefaultbuttons="true"
+                  showdefaulttimelabel="true"
+                  donetext="OK"
+                  canceltext="Annulla"
+                  [attr.aria-invalid]="(dueDateControl?.touched || isSubmitted) &amp;&amp; dueDateControl?.invalid ? 'true' : 'false'"
                   aria-describedby="due-date-errors">
                 </ion-datetime>
                 
@@ -203,26 +203,17 @@
 
     <!-- Pulsanti Azione -->
     <div class="form-actions">
-      <ion-button 
-        type="submit" 
-        expand="block" 
-        [disabled]="isLoading || activityForm.invalid"
-        [color]="activityForm.valid ? 'primary' : 'medium'">
-        <ion-spinner *ngIf="isLoading" name="crescent" class="ion-margin-end"></ion-spinner>
-        <ion-icon 
-          slot="start" 
-          [name]="activityForm.valid ? 'checkmark-circle' : 'close-circle'"
-          [color]="activityForm.valid ? 'success' : 'medium'">
-        </ion-icon>
-        {{ activity.key ? 'Aggiorna' : 'Crea' }} attività
+      <ion-button type="submit" expand="block" [disabled]="isLoading || activityForm.invalid" class="ion-margin-top">
+        @if (!isLoading) {
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        }
+        @if (isLoading) {
+          <ion-spinner name="crescent"></ion-spinner>
+        }
+        {{ activity.key ? 'Aggiorna' : 'Crea' }} Attività
       </ion-button>
 
-      <ion-button 
-        type="button" 
-        expand="block" 
-        fill="outline" 
-        (click)="onCancel()"
-        [disabled]="isLoading">
+      <ion-button type="button" expand="block" fill="outline" (click)="onCancel()" [disabled]="isLoading">
         Annulla
       </ion-button>
     </div>
