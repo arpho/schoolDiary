@@ -11,37 +11,17 @@
 
 <ion-content class="ion-padding">
   <div class="modal-content">
-    <!-- Error Summary -->
-    @if (isSubmitted && activityForm?.invalid) {
-      <div class="error-summary ion-margin-bottom" role="alert">
+    <!-- Error Message -->
+    @if (isSubmitted && activityForm?.invalid && errorMessage) {
+      <div class="error-message ion-margin-bottom" role="alert">
         <ion-item color="danger" lines="none" class="ion-no-padding">
           <ion-icon name="warning" slot="start"></ion-icon>
           <ion-label class="ion-text-wrap">
-            <h3>Ci sono degli errori nel modulo</h3>
-            <ul class="error-list">
-              @if (titleControl?.errors && titleControl.errors['required']) {
-                <li>• Il titolo è obbligatorio</li>
-              }
-              @if (titleControl?.errors && titleControl.errors['minlength']) {
-                <li>• Il titolo deve essere di almeno 3 caratteri</li>
-              }
-              @if (titleControl?.errors && titleControl.errors['maxlength']) {
-                <li>• Il titolo non può superare i 100 caratteri</li>
-              }
-            @if (descriptionControl?.errors && descriptionControl.errors['maxlength']) {
-              <li>• La descrizione non può superare i 500 caratteri</li>
-            }
-            @if (classKeyControl?.errors && classKeyControl.errors['required']) {
-              <li>• La classe è obbligatoria</li>
-            }
-            @if (subjectControl?.errors?.['required']) {
-              <li>• La materia è obbligatoria</li>
-            }
-          </ul>
-        </ion-label>
-      </ion-item>
-    </div>
-  }
+            {{ errorMessage }}
+          </ion-label>
+        </ion-item>
+      </div>
+    }
 
   <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
     <input type="submit" style="display: none" [disabled]="activityForm.invalid">

@@ -97,6 +97,9 @@ export class ActivityDialogComponent implements OnInit {
   minDate = new Date().toISOString();
   isLoading = false;
   
+  // Error message that updates in real-time
+  errorMessage = '';
+  
   // Form controls for easier access
   get titleControl() { return this.activityForm.get('title'); }
   get descriptionControl() { return this.activityForm.get('description'); }
@@ -104,6 +107,54 @@ export class ActivityDialogComponent implements OnInit {
   get subjectControl() { return this.activityForm.get('subject'); }
   get dateControl() { return this.activityForm.get('date'); }
   get dueDateControl() { return this.activityForm.get('dueDate'); }
+  
+  // Update error message based on form state
+  private updateErrorMessage(): void {
+    if (!this.isSubmitted) {
+      this.errorMessage = '';
+      return;
+    }
+
+    const errors: string[] = [];
+
+    if (this.titleControl?.errors?.['required']) {
+      errors.push('Il titolo è obbligatorio');
+    } else if (this.titleControl?.errors?.['minlength']) {
+      errors.push('Il titolo deve essere di almeno 3 caratteri');
+    } else if (this.titleControl?.errors?.['maxlength']) {
+      errors.push('Il titolo non può superare i 100 caratteri');
+    }
+
+    if (this.descriptionControl?.errors?.['required']) {
+      errors.push('La descrizione è obbligatoria');
+    } else if (this.descriptionControl?.errors?.['minlength']) {
+      errors.push('La descrizione deve essere di almeno 10 caratteri');
+    } else if (this.descriptionControl?.errors?.['maxlength']) {
+      errors.push('La descrizione non può superare i 500 caratteri');
+    }
+
+    if (this.classKeyControl?.errors?.['required']) {
+      errors.push('La classe è obbligatoria');
+    }
+
+    if (this.subjectControl?.errors?.['required']) {
+      errors.push('La materia è obbligatoria');
+    }
+
+    if (this.dateControl?.errors?.['required']) {
+      errors.push('La data è obbligatoria');
+    } else if (this.dateControl?.errors?.['matDatepickerMin']) {
+      errors.push('La data non può essere precedente a oggi');
+    } else if (this.dateControl?.errors?.['matDatepickerMax']) {
+      errors.push('La data non può essere successiva alla data di scadenza');
+    }
+
+    if (this.dueDateControl?.errors?.['matDatepickerMin']) {
+      errors.push('La data di scadenza non può essere precedente alla data di inizio');
+    }
+
+    this.errorMessage = errors.length > 0 ? errors.join('. ') + '.' : '';
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -125,6 +176,13 @@ export class ActivityDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    
+    // Subscribe to form value changes to update error message
+    this.activityForm.valueChanges.subscribe(() => {
+      if (this.isSubmitted) {
+        this.updateErrorMessage();
+      }
+    });
     
     // Subscribe to date changes to update min/max dates
     this.dateControl?.valueChanges.subscribe(() => {
@@ -159,9 +217,7 @@ export class ActivityDialogComponent implements OnInit {
 
   async onSubmit(): Promise<void> {
     this.isSubmitted = true;
-    
-    // Mark all fields as touched to trigger validation messages
-    this.markFormGroupTouched(this.activityForm);
+    this.updateErrorMessage();
     
     if (this.activityForm.invalid) {
       return;
