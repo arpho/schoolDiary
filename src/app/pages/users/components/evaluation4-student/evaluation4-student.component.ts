@@ -37,7 +37,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { Evaluation2PdfComponent } from 'src/app/pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component';
 import { EvaluationPage } from 'src/app/pages/evaluations/evaluation/evaluation.page';
 import { Router } from '@angular/router';
-import { ActionSheetController } from '@ionic/angular/standalone';
+import { ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
 @Component({
   selector: 'app-evaluation4-student',
   templateUrl: './evaluation4-student.component.html',
@@ -65,6 +65,8 @@ import { ActionSheetController } from '@ionic/angular/standalone';
 })
 export class Evaluation4StudentComponent  implements OnInit {
   private actionSheetCtrl = inject(ActionSheetController);
+  private alertCtrl = inject(AlertController);
+  private toastCtrl = inject(ToastController);
   async openActionSheet(evaluation: Evaluation, evente:Event) {
   evente.stopPropagation();
 console.log("openActionSheet", evaluation);
@@ -75,7 +77,9 @@ const actionSheet = await this.actionSheetCtrl.create({
       text: 'Modifica',
       icon: 'create',
       handler: () => {
-        this.editEvaluation(evaluation);
+        if (evaluation && evaluation.key) {
+          this.editEvaluation(evaluation);
+        }
         actionSheet.dismiss();
         return false;
       }
@@ -94,7 +98,7 @@ const actionSheet = await this.actionSheetCtrl.create({
       role: 'destructive',
       icon: 'trash',
       handler: () => {
-        this.deleteEvaluation(evaluation);
+        this.confirmDelete(evaluation);
         actionSheet.dismiss();
         return false;
       }
@@ -148,9 +152,54 @@ await modal.present();  */
 
 this.router.navigate(['/pdf-evaluation',valutazione.key]);
 }
-deleteEvaluation(valutazione: Evaluation) {
-console.log("deleteEvaluation chiamato", valutazione);
-}
+  async confirmDelete(evaluation: Evaluation) {
+    const alert = await this.alertCtrl.create({
+      header: 'Conferma eliminazione',
+      message: `Sei sicuro di voler eliminare la valutazione "${evaluation.description}" per lo studente ${await this.fetchStudentName(evaluation.studentKey)}?`,
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel'
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          handler: () => {
+            this.deleteEvaluation(evaluation);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async deleteEvaluation(evaluationKey: Evaluation) {
+    try {
+      // Chiama il servizio per eliminare la valutazione
+      await this.$evaluation.deleteEvaluation(evaluationKey);
+      
+      // Aggiorna la lista delle valutazioni
+      const updatedList = this.evaluationsList().filter(e => e.key !== evaluationKey.key);
+      this.evaluationsList.set(updatedList);
+      
+      // Mostra un feedback all'utente
+      this.showToast('Valutazione eliminata con successo');
+    } catch (error) {
+      console.error('Errore durante l\'eliminazione della valutazione:', error);
+      this.showToast('Si è verificato un errore durante l\'eliminazione', 'danger');
+    }
+  }
+
+  private async showToast(message: string, color: string = 'success') {
+    const toast = await this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      color: color,
+      position: 'bottom'
+    });
+    await toast.present();
+  }
 archiveEvaluation(valutazione: Evaluation) {
 console.log("archiveEvaluation chiamato", valutazione);
 }
@@ -169,6 +218,7 @@ this.router.navigate(['/edit-evaluation',valutazione.key]);
   activitiesMap = signal<Map<string, ActivityModel>>(new Map());
   modalCtrl = inject(ModalController);  
   private router = inject(Router);
+
   constructor() { 
     this.ngOnInit()
     addIcons({
@@ -242,5 +292,10 @@ console.log("getEvaluation4studentAndTeacher", evaluations);
     if (!activityKey) return undefined;
     return this.activitiesMap().get(activityKey);
   }
-
+  async fetchStudentName( studentKey: string) {
+    const student = await this.$users.getUser(studentKey);
+    return  student?.lastName + ' ' + student?.firstName;
+  }
 }
+
+

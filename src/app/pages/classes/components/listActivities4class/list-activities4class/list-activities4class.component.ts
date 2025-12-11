@@ -86,6 +86,7 @@ export class ListActivities4classComponent {
         {
           text: 'Modifica',
           icon: 'create',
+          role: 'edit',
           handler: () => {
             this.editActivity(activity);
           }
@@ -151,14 +152,7 @@ export class ListActivities4classComponent {
           text: 'Annulla',
           role: 'cancel'
         },
-        {
-          role:'edit',
-          text: 'Modifica',
-          handler: () => {
-            this.editActivity(activity);
-          }
 
-        },
         {
           text: 'Elimina',
           role: 'destructive',
