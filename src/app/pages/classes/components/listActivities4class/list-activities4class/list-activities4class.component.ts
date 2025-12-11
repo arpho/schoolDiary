@@ -77,20 +77,12 @@ export class ListActivities4classComponent {
     }
     
     // Navigate to activity detail page
-    this.router.navigate(['/activity-detail', activity.key]);
-    return; // Exit to prevent showing action sheet for now
+
     
     // The following code will be used when we want to show the action sheet again
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Azioni',
       buttons: [
-        {
-          text: 'Visualizza',
-          icon: 'eye',
-          handler: () => {
-            this.viewActivity(activity);
-          }
-        },
         {
           text: 'Modifica',
           icon: 'create',
@@ -155,8 +147,17 @@ export class ListActivities4classComponent {
       message: `Sei sicuro di voler eliminare l'attività "${activity.title}"?`,
       buttons: [
         {
+        
           text: 'Annulla',
           role: 'cancel'
+        },
+        {
+          role:'edit',
+          text: 'Modifica',
+          handler: () => {
+            this.editActivity(activity);
+          }
+
         },
         {
           text: 'Elimina',
@@ -216,6 +217,7 @@ export class ListActivities4classComponent {
     this.activitiesService.getActivities4teacherOnRealtime(
       currentTeacherKey,
       (activities: ActivityModel[]) => {
+        console.log("activities", activities);
         this.activitieslist.set(activities);
       },
       query
