@@ -52,6 +52,9 @@ import {
   selector: 'app-activity-dialog',
   templateUrl: './activity-dialog.component.html',
   styleUrls: ['./activity-dialog.component.scss'],
+  host: {
+    'style': '--height: 90%; --border-radius: 16px; --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);'
+  },
   standalone: true,
   imports: [
     CommonModule,
@@ -98,6 +101,7 @@ export class ActivityDialogComponent implements OnInit {
   get titleControl() { return this.activityForm.get('title'); }
   get descriptionControl() { return this.activityForm.get('description'); }
   get classKeyControl() { return this.activityForm.get('classKey'); }
+  get subjectControl() { return this.activityForm.get('subject'); }
   get dateControl() { return this.activityForm.get('date'); }
   get dueDateControl() { return this.activityForm.get('dueDate'); }
 

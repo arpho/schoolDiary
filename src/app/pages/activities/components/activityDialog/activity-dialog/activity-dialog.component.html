@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{ activity.key ? 'Modifica' : 'Nuova' }} Attività</ion-title>
+    <ion-title>{{ activity?.key ? 'Modifica' : 'Nuova' }} Attività</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="onCancel()">
         <ion-icon slot="icon-only" name="close"></ion-icon>
@@ -10,7 +10,41 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container">
+  <div class="modal-content">
+    <!-- Error Summary -->
+    @if (isSubmitted && activityForm?.invalid) {
+      <div class="error-summary ion-margin-bottom" role="alert">
+        <ion-item color="danger" lines="none" class="ion-no-padding">
+          <ion-icon name="warning" slot="start"></ion-icon>
+          <ion-label class="ion-text-wrap">
+            <h3>Ci sono degli errori nel modulo</h3>
+            <ul class="error-list">
+              @if (titleControl?.errors && titleControl.errors['required']) {
+                <li>• Il titolo è obbligatorio</li>
+              }
+              @if (titleControl?.errors && titleControl.errors['minlength']) {
+                <li>• Il titolo deve essere di almeno 3 caratteri</li>
+              }
+              @if (titleControl?.errors && titleControl.errors['maxlength']) {
+                <li>• Il titolo non può superare i 100 caratteri</li>
+              }
+            @if (descriptionControl?.errors && descriptionControl.errors['maxlength']) {
+              <li>• La descrizione non può superare i 500 caratteri</li>
+            }
+            @if (classKeyControl?.errors && classKeyControl.errors['required']) {
+              <li>• La classe è obbligatoria</li>
+            }
+            @if (subjectControl?.errors?.['required']) {
+              <li>• La materia è obbligatoria</li>
+            }
+          </ul>
+        </ion-label>
+      </ion-item>
+    </div>
+  }
+
+  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
+    <input type="submit" style="display: none" [disabled]="activityForm.invalid">
     <ion-card class="form-card">
       <ion-card-header>
         <ion-card-title class="ion-text-center">
@@ -94,7 +128,7 @@
           <ion-row>
             <!-- Classe -->
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid" [class.ion-valid]="classKeyControl?.valid && (classKeyControl?.touched || isSubmitted)">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(classKeyControl?.touched || isSubmitted) &amp;&amp; classKeyControl?.invalid" [class.ion-valid]="classKeyControl?.valid &amp;&amp; (classKeyControl?.touched || isSubmitted)">
                 <ion-label position="stacked">Classe <span class="required">*</span></ion-label>
                 <ion-select 
                   formControlName="classKey"
@@ -217,12 +251,26 @@
         Annulla
       </ion-button>
     </div>
-  </form>
-
-  <!-- Loading -->
-  @if (isLoading) {
-    <div class="loading-overlay">
-      <ion-spinner name="crescent"></ion-spinner>
-    </div>
-  }
+    </form>
+  </div>
+  
+  <ion-footer>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-button (click)="onSubmit()" [disabled]="activityForm?.invalid || isLoading" color="primary">
+          @if (isLoading) {
+            <ion-spinner name="crescent" color="light"></ion-spinner>
+          } @else {
+            <ion-icon slot="start" name="checkmark"></ion-icon>
+            {{ activity?.key ? 'Aggiorna' : 'Salva' }}
+          }
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
 </ion-content>
+@if (isLoading) {
+  <div class="loading-overlay">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+}

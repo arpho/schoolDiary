@@ -158,31 +158,44 @@ export class Evaluation4pagesComponent implements OnInit {
   async openActivityDialog() {
     const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
     console.log("teacher", teacher);
+    
     let classi: ClasseModel[] = [];
     if (teacher?.classes) {
       const classKeys = teacher.classesKey;
-      classi = (await Promise.all(classKeys.map(classKey => this.$classes.fetchClasseOnCache(classKey))))
-        .filter((classe: ClasseModel | undefined): classe is ClasseModel => classe !== undefined);
+      classi = (await Promise.all(
+        classKeys.map(classKey => this.$classes.fetchClasseOnCache(classKey))
+      )).filter((classe: ClasseModel | undefined): classe is ClasseModel => classe !== undefined);
     }
 
-    const activity = signal<ActivityModel>(new ActivityModel({
-      teacherKey: teacher?.key,
-      classKey: this.classKey,
-      date: new Date().toISOString()
-    }));
-    const classi4Teacher = teacher?.classi;
+    const activity = signal<ActivityModel>(
+      new ActivityModel({
+        teacherKey: teacher?.key,
+        classKey: this.classKey(),
+        date: new Date().toISOString()
+      })
+    );
+
     const modal = await this.modalCtrl.create({
       component: ActivityDialogComponent,
       componentProps: {
-        listaClassi: classi4Teacher,
+        listaClassi: classi,
         activity: activity,
         selectedClass: this.classKey()
-      }
+      },
+      cssClass: 'auto-height',
+      backdropDismiss: false,
+      showBackdrop: true,
+      mode: 'ios',
+      initialBreakpoint: 0.9,
+      breakpoints: [0, 0.5, 0.9]
     });
+
     await modal.present();
+
     const result = await modal.onDidDismiss();
     if (result.data) {
       const newActivity = await this.$activites.addActivity(activity());
+      console.log("newActivity", newActivity);
       this.evaluationform.patchValue({
         activityKey: newActivity.key
       });
