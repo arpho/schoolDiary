@@ -28,6 +28,8 @@ import { addIcons } from 'ionicons';
 import { calendarOutline, timeOutline } from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
+import { ClassiService } from '../../../pages/classes/services/classi.service';
+import { ClasseModel } from '../../../pages/classes/models/classModel';
 
 @Component({
   selector: 'app-agenda-event-input',
@@ -49,9 +51,11 @@ import { AgendaService } from '../../services/agenda.service';
           [class.ion-invalid]="showErrors && validationErrors['title']"
           (ionInput)="clearError('title')">
         </ion-input>
-        <ion-note slot="error" *ngIf="showErrors && validationErrors['title']" color="danger">
-          {{ validationErrors['title'] }}
-        </ion-note>
+        @if (showErrors && validationErrors['title']) {
+          <ion-note slot="error" color="danger">
+            {{ validationErrors['title'] }}
+          </ion-note>
+        }
       </ion-item>
       
       <ion-item>
@@ -79,9 +83,11 @@ import { AgendaService } from '../../services/agenda.service';
             </ion-datetime>
           </ng-template>
         </ion-modal>
-        <ion-note slot="error" *ngIf="showErrors && validationErrors['dataInizio']" color="danger">
-          {{ validationErrors['dataInizio'] }}
-        </ion-note>
+        @if (showErrors && validationErrors['dataInizio']) {
+          <ion-note slot="error" color="danger">
+            {{ validationErrors['dataInizio'] }}
+          </ion-note>
+        }
       </ion-item>
 
       <ion-item [class.ion-invalid]="showErrors && validationErrors['dataFine']" data-field="dataFine">
@@ -99,9 +105,11 @@ import { AgendaService } from '../../services/agenda.service';
             </ion-datetime>
           </ng-template>
         </ion-modal>
-        <ion-note slot="error" *ngIf="showErrors && validationErrors['dataFine']" color="danger">
-          {{ validationErrors['dataFine'] }}
-        </ion-note>
+        @if (showErrors && validationErrors['dataFine']) {
+          <ion-note slot="error" color="danger">
+            {{ validationErrors['dataFine'] }}
+          </ion-note>
+        }
       </ion-item>
 
       <ion-item [class.ion-invalid]="showErrors && validationErrors['type']" data-field="type">
@@ -118,9 +126,31 @@ import { AgendaService } from '../../services/agenda.service';
           <ion-select-option value="meeting">Riunione</ion-select-option>
           <ion-select-option value="other">Altro</ion-select-option>
         </ion-select>
-        <ion-note slot="error" *ngIf="showErrors && validationErrors['type']" color="danger">
-          {{ validationErrors['type'] }}
-        </ion-note>
+        @if (showErrors && validationErrors['type']) {
+          <ion-note slot="error" color="danger">
+            {{ validationErrors['type'] }}
+          </ion-note>
+        }
+      </ion-item>
+
+      <ion-item [class.ion-invalid]="showErrors && validationErrors['classKey']" data-field="classKey">
+        <ion-label>Classe <ion-text color="danger">*</ion-text></ion-label>
+        <ion-select 
+          [(ngModel)]="selectedClassKey" 
+          placeholder="Seleziona classe"
+          [class.ion-invalid]="showErrors && validationErrors['classKey']"
+          (ionChange)="onClassChange()">
+          @for (classe of classes; track classe.key) {
+            <ion-select-option [value]="classe.key">
+              {{ classe.classe }} - {{ classe.year }}
+            </ion-select-option>
+          }
+        </ion-select>
+        @if (showErrors && validationErrors['classKey']) {
+          <ion-note slot="error" color="danger">
+            {{ validationErrors['classKey'] }}
+          </ion-note>
+        }
       </ion-item>
 
       <ion-button expand="block" class="ion-margin-top" (click)="save()" [disabled]="!validateForm().isValid">
@@ -129,16 +159,20 @@ import { AgendaService } from '../../services/agenda.service';
       </ion-button>
 
       <!-- Area errori -->
-      <div *ngIf="showErrors && getErrorKeys().length > 0" class="error-container ion-margin-top">
-        <ion-text color="danger">
-          <h4>Si sono verificati i seguenti errori:</h4>
-          <ul class="error-list">
-            <li *ngFor="let key of getErrorKeys()">
-              <ion-icon name="warning" color="danger"></ion-icon> {{ validationErrors[key] }}
-            </li>
-          </ul>
-        </ion-text>
-      </div>
+      @if (showErrors && getErrorKeys().length > 0) {
+        <div class="error-container ion-margin-top">
+          <ion-text color="danger">
+            <h4>Si sono verificati i seguenti errori:</h4>
+            <ul class="error-list">
+              @for (key of getErrorKeys(); track key) {
+                <li>
+                  <ion-icon name="warning" color="danger"></ion-icon> {{ validationErrors[key] }}
+                </li>
+              }
+            </ul>
+          </ion-text>
+        </div>
+      }
     </ion-content>
   `,
   standalone: true,
@@ -222,6 +256,11 @@ export class AgendaEventInputComponent {
 
   private modalCtrl = inject(ModalController);
   private agendaService = inject(AgendaService);
+  private classiService = inject(ClassiService);
+  
+  // Lista delle classi disponibili
+  classes: ClasseModel[] = [];
+  selectedClassKey: string = '';
 
   title = '';
   description = '';
@@ -235,8 +274,31 @@ export class AgendaEventInputComponent {
   minDate = new Date().toISOString();
   maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
 
-  ngOnInit() {
+  async ngOnInit() {
     addIcons({ calendarOutline, timeOutline });
+
+    // Carica la lista delle classi
+    try {
+      // Usa getClassiOnRealtime() invece di getClasses()
+      const subscription = this.classiService.getClassiOnRealtime().subscribe(classes => {
+        this.classes = classes;
+        
+        // Se c'è una classe selezionata, impostala
+        if (this.classKey) {
+          this.selectedClassKey = this.classKey;
+        } else if (this.event?.classKey) {
+          this.selectedClassKey = this.event.classKey;
+        } else if (this.classes.length > 0) {
+          // Se non c'è una classe selezionata, seleziona la prima disponibile
+          this.selectedClassKey = this.classes[0].key;
+        }
+      });
+      
+      // Ricordati di fare l'unsubscribe quando il componente viene distrutto
+      // Puoi aggiungere un ngOnDestroy() se necessario
+    } catch (error) {
+      console.error('Errore nel caricamento delle classi:', error);
+    }
 
     // Se stiamo modificando un evento esistente, popola TUTTI i campi
     if (this.event) {
@@ -294,6 +356,10 @@ export class AgendaEventInputComponent {
 
   validateForm(): { isValid: boolean; errors: { [key: string]: string } } {
     const errors: { [key: string]: string } = {};
+
+    if (!this.selectedClassKey) {
+      errors['classKey'] = 'Seleziona una classe';
+    }
 
     if (!this.title?.trim()) {
       errors['title'] = 'Il titolo è obbligatorio';
@@ -362,6 +428,15 @@ export class AgendaEventInputComponent {
     this.dataFine = event.detail.value;
     this.clearError('dataFine');
     this.updateValidation();
+  }
+
+  // Gestisce il cambio della classe selezionata
+  onClassChange() {
+    if (this.selectedClassKey) {
+      this.classKey = this.selectedClassKey;
+      this.clearError('classKey');
+      this.updateValidation();
+    }
   }
 
   // Updates validation state for the form
