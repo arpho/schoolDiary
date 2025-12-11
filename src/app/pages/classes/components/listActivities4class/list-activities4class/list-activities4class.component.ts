@@ -206,7 +206,10 @@ export class ListActivities4classComponent {
       new QueryCondition('classKey', '==', currentClassKey),
       new QueryCondition('teacherKey', '==', currentTeacherKey)
     ];
-
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+console.log(today.toISOString());
+query.push(new QueryCondition('data', '>=', today.toISOString()));
     // Sottoscrivo al servizio getActivitiesOnRealtime
     this.activitiesService.getActivities4teacherOnRealtime(
       currentTeacherKey,

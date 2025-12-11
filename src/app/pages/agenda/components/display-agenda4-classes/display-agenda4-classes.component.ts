@@ -108,7 +108,7 @@ export class DisplayAgenda4ClassesComponent {
     }, [
       new QueryCondition('classKey', 'in', targetedClasses),
 
-      //  new QueryCondition('dataInizio', '>=', today.toISOString())
+      new QueryCondition('dataInizio', '>=', today.toISOString())
     ]);
   });
 

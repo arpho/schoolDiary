@@ -161,9 +161,11 @@ export class ActivitiesService {
   ) {
     const collectionRef = collection(this.firestore, this.collection);
     let q = query(collectionRef, where('teacherKey', '==', teachersKey), orderBy('date', 'desc'));
-
+console.log("queries", queries)
     if (queries) {
       queries.forEach((condition: QueryCondition) => {
+        console.log("condition", condition);
+        console.log(condition.field, condition.operator, condition.value);
         q = query(q, where(condition.field, condition.operator, condition.value));
       });
     }
