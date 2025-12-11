@@ -29,6 +29,16 @@ ion-header {
   padding: 0;
 }
 
+/* Form Container */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: calc(100vh - 200px); /* Altezza massima meno spazio per header e footer */
+  overflow-y: auto;
+  padding-bottom: 80px; /* Spazio per il footer */
+}
+
 /* Form Card */
 .form-card {
   flex: 1;
@@ -255,6 +265,60 @@ ion-note[slot="error"] {
 
 .form-card {
   animation: fadeIn 0.3s ease-out;
+}
+
+/* Fixed Footer */
+ion-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--ion-background-color);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  
+  ion-toolbar {
+    --background: transparent;
+    --border-width: 0;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+  }
+  
+  ion-button {
+    --padding-start: 24px;
+    --padding-end: 24px;
+    --border-radius: 8px;
+    font-weight: 600;
+    text-transform: none;
+    
+    &[color="primary"] {
+      --box-shadow: 0 4px 8px rgba(var(--ion-color-primary-rgb), 0.2);
+    }
+  }
+}
+
+/* Error Message Styling */
+.error-message {
+  ion-item {
+    --background: var(--ion-color-danger);
+    --color: #ffffff;
+    --border-radius: 8px;
+    margin-bottom: 16px;
+    
+    ion-label {
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+    
+    ion-icon {
+      color: #ffffff;
+      font-size: 1.5em;
+      margin-right: 8px;
+    }
+  }
 }
 
 /* Custom Scrollbar */

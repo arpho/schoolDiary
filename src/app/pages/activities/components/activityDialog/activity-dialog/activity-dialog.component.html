@@ -12,19 +12,16 @@
 <ion-content class="ion-padding">
   <div class="modal-content">
     <!-- Error Message -->
-    @if (isSubmitted && activityForm?.invalid && errorMessage) {
-      <div class="error-message ion-margin-bottom" role="alert">
-        <ion-item color="danger" lines="none" class="ion-no-padding">
-          <ion-icon name="warning" slot="start"></ion-icon>
-          <ion-label class="ion-text-wrap">
-            {{ errorMessage }}
-          </ion-label>
-        </ion-item>
-      </div>
-    }
+    <div class="error-message ion-margin-bottom" role="alert" [class.hidden]="!errorMessage">
+      <ion-item color="danger" lines="none" class="ion-no-padding">
+        <ion-icon name="warning" slot="start"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          {{ errorMessage }}
+        </ion-label>
+      </ion-item>
+    </div>
 
-  <form [formgroup]="activityForm" (ngsubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
-    <button type="submit" style="display: none" [disabled]="activityForm.invalid">Invia</button>
+  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
     <ion-card class="form-card">
       <ion-card-header>
         <ion-card-title class="ion-text-center">
@@ -38,7 +35,7 @@
         <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(titleControl?.touched || isSubmitted) && titleControl?.invalid" [class.ion-valid]="titleControl?.valid && (titleControl?.touched || isSubmitted)">
           <ion-label position="floating">Titolo <span class="required">*</span></ion-label>
           <ion-input 
-            formcontrolname="title"
+            formControlName="title"
             type="text"
             required
             [attr.aria-invalid]="(titleControl?.touched || isSubmitted) && titleControl?.invalid ? 'true' : 'false'"
@@ -261,23 +258,31 @@
       </ion-button>
     </div>
     </form>
-  </div>
   
-  <ion-footer>
+  <!-- Footer con pulsanti di azione -->
+  <ion-footer class="ion-no-border">
     <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button (click)="onCancel()" fill="clear" color="medium">
+          <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+          Annulla
+        </ion-button>
+      </ion-buttons>
       <ion-buttons slot="end">
-        <ion-button (click)="onSubmit()" [disabled]="activityForm?.invalid || isLoading" color="primary">
+        <ion-button (click)="onSubmit()" [disabled]="activityForm?.invalid || isLoading" [strong]="true" color="primary">
           @if (isLoading) {
             <ion-spinner name="crescent" color="light"></ion-spinner>
           } @else {
-            <ion-icon slot="start" name="checkmark"></ion-icon>
+            <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
             {{ activity?.key ? 'Aggiorna' : 'Salva' }}
           }
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-footer>
+  </div> <!-- Chiusura div.modal-content -->
 </ion-content>
+
 @if (isLoading) {
   <div class="loading-overlay">
     <ion-spinner name="crescent"></ion-spinner>

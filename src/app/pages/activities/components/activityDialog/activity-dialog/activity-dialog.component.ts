@@ -46,7 +46,9 @@ import {
   warning, 
   checkmarkCircleOutline, 
   closeCircleOutline,
-  close
+  close,
+  calendar,
+  checkmark
 } from 'ionicons/icons';
 
 @Component({
@@ -116,11 +118,6 @@ export class ActivityDialogComponent implements OnInit {
   
   // Update error message based on form state
   private updateErrorMessage(): void {
-    if (!this.isSubmitted) {
-      this.errorMessage = '';
-      return;
-    }
-
     const errors: string[] = [];
 
     if (this.titleControl?.errors?.['required']) {
@@ -158,7 +155,6 @@ export class ActivityDialogComponent implements OnInit {
     if (this.dueDateControl?.errors?.['matDatepickerMin']) {
       errors.push('La data di scadenza non può essere precedente alla data di inizio');
     }
-
     this.errorMessage = errors.length > 0 ? errors.join('. ') + '.' : '';
   }
 
@@ -167,18 +163,7 @@ export class ActivityDialogComponent implements OnInit {
     private modalController: ModalController,
     private datePipe: DatePipe
   ) {
-    addIcons({
-      arrowBack,
-      calendarOutline,
-      timeOutline,
-      schoolOutline,
-      personOutline,
-      create,
-      warning,
-      checkmarkCircleOutline,
-      closeCircleOutline,
-      close
-    });
+    addIcons({close,warning,create,calendar,checkmarkCircleOutline,checkmark,arrowBack,calendarOutline,timeOutline,schoolOutline,personOutline,closeCircleOutline});
   }
 
   ngOnInit(): void {
@@ -186,9 +171,7 @@ export class ActivityDialogComponent implements OnInit {
     
     // Subscribe to form value changes to update error message
     this.activityForm.valueChanges.subscribe(() => {
-      if (this.isSubmitted) {
-        this.updateErrorMessage();
-      }
+      this.updateErrorMessage();
     });
     
     // Subscribe to date changes to update min/max dates
@@ -235,10 +218,12 @@ export class ActivityDialogComponent implements OnInit {
     try {
       // Create activity object from form values
       const formValue = this.activityForm.value;
+      console.log("formValue", formValue);
       const activity: ActivityModel = {
         ...this.activity, // Preserve existing properties if editing
         ...formValue
       };
+      console.log("activity", activity);
       
       await this.modalController.dismiss(activity);
     } catch (error) {

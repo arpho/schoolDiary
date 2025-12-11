@@ -157,7 +157,6 @@ export class Evaluation4pagesComponent implements OnInit {
   }
   async openActivityDialog() {
     const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
-    console.log("teacher", teacher);
     
     let classi: ClasseModel[] = [];
     if (teacher?.classes) {
@@ -194,14 +193,13 @@ export class Evaluation4pagesComponent implements OnInit {
 
     const result = await modal.onDidDismiss();
     if (result.data) {
-      const newActivity = await this.$activites.addActivity(activity());
-      console.log("newActivity", newActivity);
+      const activity = new ActivityModel(result.data);
+      const newActivity = await this.$activites.addActivity(activity);
+      this.activities.set([...this.activities(), newActivity]);
       this.evaluationform.patchValue({
         activityKey: newActivity.key
       });
       this.evaluationform.updateValueAndValidity();
-      this.activities.set([...this.activities(), newActivity]);
-      console.log("activityForm", this.evaluationform.value);
     }
   }
   async saveEvaluation() {
