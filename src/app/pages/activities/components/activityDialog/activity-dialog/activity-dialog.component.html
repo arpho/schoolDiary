@@ -23,8 +23,8 @@
       </div>
     }
 
-  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
-    <input type="submit" style="display: none" [disabled]="activityForm.invalid">
+  <form [formgroup]="activityForm" (ngsubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
+    <button type="submit" style="display: none" [disabled]="activityForm.invalid">Invia</button>
     <ion-card class="form-card">
       <ion-card-header>
         <ion-card-title class="ion-text-center">
@@ -35,13 +35,13 @@
 
       <ion-card-content>
         <!-- Titolo -->
-        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(titleControl?.touched || isSubmitted) &amp;&amp; titleControl?.invalid" [class.ion-valid]="titleControl?.valid &amp;&amp; (titleControl?.touched || isSubmitted)">
+        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(titleControl?.touched || isSubmitted) && titleControl?.invalid" [class.ion-valid]="titleControl?.valid && (titleControl?.touched || isSubmitted)">
           <ion-label position="floating">Titolo <span class="required">*</span></ion-label>
           <ion-input 
-            formControlName="title"
+            formcontrolname="title"
             type="text"
             required
-            [attr.aria-invalid]="(titleControl?.touched || isSubmitted) &amp;&amp; titleControl?.invalid ? 'true' : 'false'"
+            [attr.aria-invalid]="(titleControl?.touched || isSubmitted) && titleControl?.invalid ? 'true' : 'false'"
             aria-describedby="title-errors">
           </ion-input>
           
@@ -76,12 +76,12 @@
             formControlName="description"
             rows="4"
             required
-            [attr.aria-invalid]="(descriptionControl?.touched || isSubmitted) &amp;&amp; descriptionControl?.invalid ? 'true' : 'false'"
+            [attr.aria-invalid]="(descriptionControl?.touched || isSubmitted) && descriptionControl?.invalid ? 'true' : 'false'"
             aria-describedby="description-errors">
           </ion-textarea>
           
           <div id="description-errors" class="error-messages">
-            @if ((descriptionControl?.touched || isSubmitted) && descriptionControl?.errors) {
+            @if ((descriptionControl?.touched || isSubmitted) && descriptionControl?.invalid) {
               @if (descriptionControl?.errors?.['required']) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
@@ -91,7 +91,7 @@
               @if (descriptionControl?.errors?.['minlength']) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
-                  La data di scadenza deve essere successiva alla data dell'attività
+                  La descrizione deve essere di almeno 3 caratteri
                 </ion-note>
               }
               @if (descriptionControl?.errors?.['maxlength']) {
@@ -108,15 +108,15 @@
           <ion-row>
             <!-- Classe -->
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(classKeyControl?.touched || isSubmitted) &amp;&amp; classKeyControl?.invalid" [class.ion-valid]="classKeyControl?.valid &amp;&amp; (classKeyControl?.touched || isSubmitted)">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid" [class.ion-valid]="classKeyControl?.valid && (classKeyControl?.touched || isSubmitted)">
                 <ion-label position="stacked">Classe <span class="required">*</span></ion-label>
                 <ion-select 
                   formControlName="classKey"
                   interface="action-sheet"
-                  canceltext="Annulla"
-                  oktext="Seleziona"
+                  cancelText="Annulla"
+                  okText="Seleziona"
                   required
-                  [attr.aria-invalid]="(classKeyControl?.touched || isSubmitted) &amp;&amp; classKeyControl?.invalid ? 'true' : 'false'"
+                  [attr.aria-invalid]="(classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid ? 'true' : 'false'"
                   aria-describedby="class-errors">
                   <ion-select-option value="">Seleziona una classe</ion-select-option>
                   @for (classe of listaClassi; track classe.key) {
@@ -127,11 +127,13 @@
                 </ion-select>
                 
                 <div id="class-errors" class="error-messages">
-                  @if ((classKeyControl?.touched || isSubmitted) && classKeyControl?.errors?.['required']) {
-                    <ion-note color="danger">
-                      <ion-icon name="warning" slot="start"></ion-icon>
-                      Seleziona una classe
-                    </ion-note>
+                  @if ((classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid) {
+                    @if (classKeyControl?.errors?.['required']) {
+                      <ion-note color="danger">
+                        <ion-icon name="warning" slot="start"></ion-icon>
+                        Seleziona una classe
+                      </ion-note>
+                    }
                   }
                 </div>
               </ion-item>
@@ -139,24 +141,37 @@
 
             <!-- Data -->
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dateControl?.touched || isSubmitted) &amp;&amp; dateControl?.invalid" [class.ion-valid]="dateControl?.valid &amp;&amp; (dateControl?.touched || isSubmitted)">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dateControl?.touched || isSubmitted) && dateControl?.invalid" [class.ion-valid]="dateControl?.valid && (dateControl?.touched || isSubmitted)">
                 <ion-label position="stacked">Data <span class="required">*</span></ion-label>
-                <ion-datetime 
-                  formControlName="date"
-                  presentation="date"
-                  [min]="minDate"
-                  [max]="dueDateControl?.value || ''"
-                  showdefaultbuttons="true"
-                  showdefaulttimelabel="true"
-                  donetext="OK"
-                  canceltext="Annulla"
-                  required
-                  [attr.aria-invalid]="(dateControl?.touched || isSubmitted) &amp;&amp; dateControl?.invalid ? 'true' : 'false'"
-                  aria-describedby="date-errors">
-                </ion-datetime>
+                
+                <!-- Date Button -->
+                <ion-button
+                  expand="block"
+                  fill="outline"
+                  class="datetime-button"
+                  (click)="openDatetimePicker('date')">
+                  <ion-icon name="calendar" slot="start"></ion-icon>
+                  {{ formatDate(activityForm.get('date')?.value) }}
+                </ion-button>
+                
+                <!-- Hidden Datetime Picker -->
+                @if (currentDatetimeField === 'date') {
+                  <ion-datetime
+                    class="datetime-picker"
+                    presentation="date"
+                    [value]="activityForm.get('date')?.value"
+                    [min]="minDate"
+                    [max]="dueDateControl?.value || ''"
+                    (ionChange)="onDatetimeChange($event, 'date')"
+                    (ionCancel)="currentDatetimeField = null"
+                    [showDefaultButtons]="true"
+                    doneText="OK"
+                    cancelText="Annulla">
+                  </ion-datetime>
+                }
                 
                 <div id="date-errors" class="error-messages">
-                  @if ((dateControl?.touched || isSubmitted) && dateControl?.errors) {
+                  @if ((dateControl?.touched || isSubmitted) && dateControl?.invalid) {
                     @if (dateControl?.errors?.['required']) {
                       <ion-note color="danger">
                         <ion-icon name="warning" slot="start"></ion-icon>
@@ -172,7 +187,7 @@
                     @if (dateControl?.errors?.['matDatepickerMax']) {
                       <ion-note color="danger">
                         <ion-icon name="warning" slot="start"></ion-icon>
-                        La data non può essere successiva alla data di scadenza
+                        La data non può essere successiva al termine attività
                       </ion-note>
                     }
                   }
@@ -181,29 +196,43 @@
             </ion-col>
           </ion-row>
 
-          <!-- Data di scadenza -->
+          <!-- Termine attività -->
           <ion-row>
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dueDateControl?.touched || isSubmitted) &amp;&amp; dueDateControl?.invalid" [class.ion-valid]="dueDateControl?.valid &amp;&amp; dueDateControl?.touched">
-                <ion-label position="stacked">Data Scadenza (opzionale)</ion-label>
-                <ion-datetime 
-                  formControlName="dueDate"
-                  presentation="date"
-                  [min]="dateControl?.value || minDate"
-                  showdefaultbuttons="true"
-                  showdefaulttimelabel="true"
-                  donetext="OK"
-                  canceltext="Annulla"
-                  [attr.aria-invalid]="(dueDateControl?.touched || isSubmitted) &amp;&amp; dueDateControl?.invalid ? 'true' : 'false'"
-                  aria-describedby="due-date-errors">
-                </ion-datetime>
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dueDateControl?.touched || isSubmitted) && dueDateControl?.invalid" [class.ion-valid]="dueDateControl?.valid && dueDateControl?.touched">
+                <ion-label position="stacked">Termine attività (opzionale)</ion-label>
+                
+                <!-- Due Date Button -->
+                <ion-button
+                  expand="block"
+                  fill="outline"
+                  class="datetime-button"
+                  (click)="openDatetimePicker('dueDate')">
+                  <ion-icon name="calendar" slot="start"></ion-icon>
+                  {{ formatDate(activityForm.get('dueDate')?.value) || 'Seleziona data' }}
+                </ion-button>
+                
+                <!-- Hidden Datetime Picker -->
+                @if (currentDatetimeField === 'dueDate') {
+                  <ion-datetime
+                    class="datetime-picker"
+                    presentation="date"
+                    [value]="activityForm.get('dueDate')?.value"
+                    [min]="dateControl?.value || minDate"
+                    (ionchange)="onDatetimeChange($event, 'dueDate')"
+                    (ioncancel)="currentDatetimeField = null"
+                    [showdefaultbuttons]="true"
+                    donetext="OK"
+                    canceltext="Annulla">
+                  </ion-datetime>
+                }
                 
                 <div id="due-date-errors" class="error-messages">
                   @if ((dueDateControl?.touched || isSubmitted) && dueDateControl?.errors) {
                     @if (dueDateControl?.errors?.['matDatepickerMin']) {
                       <ion-note color="danger">
                         <ion-icon name="warning" slot="start"></ion-icon>
-                        La data di scadenza non può essere precedente alla data di inizio
+                        Il termine attività non può essere precedente alla data di inizio
                       </ion-note>
                     }
                   }

@@ -1,10 +1,11 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivityModel } from '../../../models/activityModel';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { ModalController } from '@ionic/angular/standalone';
+import { IonDatetimeCustomEvent, DatetimeChangeEventDetail } from '@ionic/core';
 
 // Ionic Components
 import { 
@@ -52,6 +53,7 @@ import {
   selector: 'app-activity-dialog',
   templateUrl: './activity-dialog.component.html',
   styleUrls: ['./activity-dialog.component.scss'],
+  providers: [DatePipe],
   host: {
     'style': '--height: 90%; --border-radius: 16px; --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);'
   },
@@ -83,7 +85,8 @@ import {
     IonRow,
     IonCol,
     IonGrid,
-    IonSpinner
+    IonSpinner,
+    DatePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -99,6 +102,9 @@ export class ActivityDialogComponent implements OnInit {
   
   // Error message that updates in real-time
   errorMessage = '';
+  
+  // Current datetime being edited
+  currentDatetimeField: 'date' | 'dueDate' | null = null;
   
   // Form controls for easier access
   get titleControl() { return this.activityForm.get('title'); }
@@ -158,7 +164,8 @@ export class ActivityDialogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private datePipe: DatePipe
   ) {
     addIcons({
       arrowBack,
@@ -244,6 +251,28 @@ export class ActivityDialogComponent implements OnInit {
 
   closeDialog(): void {
     this.modalController.dismiss();
+  }
+
+  // Open datetime picker
+  async openDatetimePicker(field: 'date' | 'dueDate') {
+    this.currentDatetimeField = field;
+  }
+
+  // Handle datetime change
+  onDatetimeChange(event: Event, field: 'date' | 'dueDate') {
+    const customEvent = event as IonDatetimeCustomEvent<DatetimeChangeEventDetail>;
+    const value = customEvent.detail.value;
+    if (value) {
+      this.activityForm.get(field)?.setValue(value);
+      this.activityForm.get(field)?.markAsTouched();
+    }
+    this.currentDatetimeField = null;
+  }
+
+  // Format date for display
+  formatDate(dateString: string): string {
+    if (!dateString) return 'Seleziona data';
+    return this.datePipe.transform(dateString, 'dd/MM/yyyy') || 'Seleziona data';
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
