@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, inject, ViewChild } from '@angular/core';
-import { ModalController, IonDatetime } from '@ionic/angular/standalone';
+import { ModalController, IonDatetime, IonDatetimeButton } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -66,7 +66,7 @@ export class EventDialogComponent implements OnInit {
     { value: 'other', label: 'Altro' }
   ];
 
-  // Date constraints
+  // Date constraints - using ISO strings for min/max dates
   minDate: string = new Date().toISOString();
   maxDate: string = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
 

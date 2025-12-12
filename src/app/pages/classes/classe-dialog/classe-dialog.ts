@@ -10,23 +10,7 @@ import {
 } from '@angular/core';
 
 type TabType = 'generalita' | 'attivita' | 'pdp' | 'studenti' | 'note' | 'eventi' | 'gruppi' | 'agenda' | 'annotazioni';
-import {
-  ModalController,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonInput,
-  IonTextarea,
-  IonButton,
-  IonMenu,
-  IonMenuButton,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonBackButton,
-  IonIcon
-} from '@ionic/angular/standalone';
+import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonTextarea, IonButton, IonMenu, IonMenuButton, IonList, IonItem, IonLabel, IonBackButton, IonIcon, IonCardContent } from '@ionic/angular/standalone';
 import {
   CommonModule
 } from '@angular/common';
@@ -87,8 +71,9 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
     ListActivities4classComponent,
     GroupsManagerComponent,
     StudentsWithPdPComponent,
-    DisplayAgenda4ClassesComponent
-  ],
+    DisplayAgenda4ClassesComponent,
+    IonCardContent
+],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ClasseDialogPage implements OnInit {

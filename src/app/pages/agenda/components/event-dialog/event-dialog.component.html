@@ -59,35 +59,49 @@
     <!-- Data e Ora Inizio -->
     <ion-item>
       <ion-label>Inizio <span class="required">*</span></ion-label>
-      <ion-datetime
-        #startDatetime
-        name="dataInizio"
-        [(ngModel)]="event.dataInizio"
-        (ionChange)="onStartDateChange()"
-        [showDefaultButtons]="true"
-        [presentation]="event.allDay ? 'date' : 'date-time'"
-        [readonly]="event.allDay"
-        [min]="minDate"
-        [max]="maxDate"
-        required>
-      </ion-datetime>
+      <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="startDatetime"
+            #startDatetime
+            name="dataInizio"
+            [(ngModel)]="event.dataInizio"
+            (ionChange)="onStartDateChange()"
+            [presentation]="event.allDay ? 'date' : 'date-time'"
+            [min]="minDate"
+            [max]="maxDate"
+            [showDefaultButtons]="true"
+            required>
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
     </ion-item>
 
     <!-- Data e Ora Fine -->
     <ion-item>
       <ion-label>Fine <span class="required">*</span></ion-label>
-      <ion-datetime
-        #endDatetime
-        name="dataFine"
-        [(ngModel)]="event.dataFine"
-        (ionChange)="onEndDateChange()"
-        [showDefaultButtons]="true"
-        [presentation]="event.allDay ? 'date' : 'date-time'"
-        [readonly]="event.allDay"
-        [min]="event.dataInizio || minDate"
-        [max]="maxDate"
-        required>
-      </ion-datetime>
+      <ion-datetime-button 
+        datetime="endDatetime" 
+        [disabled]="!event.dataInizio">
+      </ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="endDatetime"
+            #endDatetime
+            name="dataFine"
+            [(ngModel)]="event.dataFine"
+            (ionChange)="onEndDateChange()"
+            [presentation]="event.allDay ? 'date' : 'date-time'"
+            [min]="event.dataInizio || minDate"
+            [max]="maxDate"
+            [showDefaultButtons]="true"
+            [disabled]="!event.dataInizio"
+            required>
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
     </ion-item>
 
     <!-- Messaggio di errore per data fine precedente a data inizio -->
