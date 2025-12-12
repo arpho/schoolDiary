@@ -65,7 +65,7 @@
 
     <!-- Contenuto principale -->
     <div class="main-content">
-      <form [formgroup]="formClass" (ngsubmit)="save()" class="black-form">
+      <form [formGroup]="formClass" (ngSubmit)="save()" class="black-form">
 
         <!-- Contenuto Generale -->
         @if (selectedTab === 'generalita' && classe()) {
@@ -97,14 +97,15 @@
           <div class="ion-padding">
               <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
               <button type="submit" ion-button color="primary">Salva</button>
-              @if (selectedTab === 'attivita' && selectedTab === 'attivita') {
-                <ion-button (click)="openAddActivityDialog()" color="primary" expand="block" class="add-activity-button">
-                  <ion-icon name="add" slot="start"></ion-icon>
-                  Aggiungi Attività
-                </ion-button>
-              }
           </div>
         </ion-card>
+        }
+
+        @if (selectedTab === 'attivita') {
+          <ion-button (click)="openAddActivityDialog()" color="primary" expand="block" class="add-activity-button">
+            <ion-icon name="add" slot="start"></ion-icon>
+            Aggiungi Attività
+          </ion-button>
         }
 
         <!-- Contenuto PDP -->

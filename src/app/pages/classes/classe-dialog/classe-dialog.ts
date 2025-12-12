@@ -8,6 +8,8 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy
 } from '@angular/core';
+
+type TabType = 'generalita' | 'attivita' | 'pdp' | 'studenti' | 'note' | 'eventi' | 'gruppi' | 'agenda' | 'annotazioni';
 import {
   ModalController,
   IonHeader,
@@ -53,7 +55,7 @@ import { DisplayAgenda4ClassesComponent } from 'src/app/pages/agenda/components/
 import { EventDialogComponent } from '../../agenda/components/event-dialog/event-dialog.component';
 import { AgendaEvent } from '../../agenda/models/agendaEvent';
 import { addIcons } from 'ionicons';
-import { menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close } from 'ionicons/icons';
+import { menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close, add } from 'ionicons/icons';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -62,6 +64,7 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     IonButton,
     IonInput,
     IonContent,
@@ -90,13 +93,13 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
 })
 export class ClasseDialogPage implements OnInit {
   // Gestione tab attivo
-  selectedTab: string = 'generalita';
+  selectedTab: TabType = 'generalita';
 
   // Gestione sidebar
   sidebarOpen = false;
 
   // Metodo per cambiare scheda e chiudere il menu
-  selectTab(tab: string) {
+  selectTab(tab: TabType) {
     this.selectedTab = tab;
     this.sidebarOpen = false;  // Chiude il menu
     this.cdr.detectChanges();  // Forza l'aggiornamento della vista
@@ -139,7 +142,7 @@ export class ClasseDialogPage implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     // Register icons
-    addIcons({ menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close });
+    addIcons({menu,close,informationCircle,people,chatbox,list,add,peopleCircle,calendar,school});
 
     // Initialize with empty model
     this.classe.set(new ClasseModel({
