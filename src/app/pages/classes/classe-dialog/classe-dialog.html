@@ -23,40 +23,40 @@
       </div>
 
       <div class="sidebar-content">
-        <div class="menu-item" (click)="setSelectedTab('generalita')" [class.active]="selectedTab === 'generalita'">
-          <ion-icon name="information-circle"></ion-icon>
-          <span>Generalità</span>
-        </div>
-
-        <div class="menu-item" (click)="setSelectedTab('studenti')" [class.active]="selectedTab === 'studenti'">
-          <ion-icon name="people"></ion-icon>
-          <span>Studenti</span>
-        </div>
-
-        <div class="menu-item" (click)="setSelectedTab('annotazioni')" [class.active]="selectedTab === 'annotazioni'">
-          <ion-icon name="chatbox"></ion-icon>
-          <span>Annotazioni</span>
-        </div>
-
-        <div class="menu-item" (click)="setSelectedTab('attivita')" [class.active]="selectedTab === 'attivita'">
-          <ion-icon name="list"></ion-icon>
-          <span>Attività</span>
-        </div>
-
-        <div class="menu-item" (click)="setSelectedTab('gruppi')" [class.active]="selectedTab === 'gruppi'">
-          <ion-icon name="people-circle"></ion-icon>
-          <span>Gruppi</span>
-        </div>
-
-        <div class="menu-item" (click)="setSelectedTab('pdp')" [class.active]="selectedTab === 'pdp'">
-          <ion-icon name="school"></ion-icon>
-          <span>PDP</span>
-        </div>
-
-        <div class="menu-item" (click)="setSelectedTab('agenda')" [class.active]="selectedTab === 'agenda'">
+        <ion-item button (click)="selectTab('generalita')" [class.active]="selectedTab === 'generalita'">
+          <ion-icon name="information-circle" slot="start"></ion-icon>
+          <ion-label>Generali</ion-label>
+        </ion-item>
+        <ion-item button (click)="selectTab('studenti')" [class.active]="selectedTab === 'studenti'">
+          <ion-icon name="people" slot="start"></ion-icon>
+          <ion-label>Studenti</ion-label>
+        </ion-item>
+        <ion-item button (click)="selectTab('annotazioni')" [class.active]="selectedTab === 'annotazioni'">
+          <ion-icon name="chatbox" slot="start"></ion-icon>
+          <ion-label>Annotazioni</ion-label>
+        </ion-item>
+        <ion-item button (click)="selectTab('attivita')" [class.active]="selectedTab === 'attivita'">
+          <ion-icon name="list" slot="start"></ion-icon>
+          <ion-label>Attività</ion-label>
+        </ion-item>
+        @if (selectedTab === 'attivita') {
+          <ion-button (click)="openAddActivityDialog()" color="primary" expand="block" class="add-activity-button">
+            <ion-icon name="add" slot="start"></ion-icon>
+            Aggiungi Attività
+          </ion-button>
+        }
+        <ion-item button (click)="selectTab('pdp')" [class.active]="selectedTab === 'pdp'">
+          <ion-icon name="people-circle" slot="start"></ion-icon>
+          <ion-label>PDP</ion-label>
+        </ion-item>
+        <ion-item button (click)="selectTab('gruppi')" [class.active]="selectedTab === 'gruppi'">
+          <ion-icon name="people" slot="start"></ion-icon>
+          <ion-label>Gruppi</ion-label>
+        </ion-item>
+        <ion-item button (click)="selectTab('agenda')" [class.active]="selectedTab === 'agenda'">
           <ion-icon name="calendar"></ion-icon>
           <span>Agenda</span>
-        </div>
+        </ion-item>
       </div>
     </div>
 
@@ -65,83 +65,110 @@
 
     <!-- Contenuto principale -->
     <div class="main-content">
-      <form (ngsubmit)="save()" [formGroup]="formClass" class="black-form">
+      <form [formgroup]="formClass" (ngsubmit)="save()" class="black-form">
 
-        <!-- Contenuto Generalità -->
-        @if (selectedTab === 'generalita') {
+        <!-- Contenuto Generale -->
+        @if (selectedTab === 'generalita' && classe()) {
         <ion-card>
           <ion-card-content>
-            <ion-input class="custom-input" label="Nome Classe" required formControlName="classe" fill="outline"
+            <ion-input class="custom-input" label="Nome Classe" required formcontrolname="classe" fill="outline"
               labelplacement="floating">
-              <ion-label slot="floating" class="custom-label">Nome Classe</ion-label>
+              <ion-label slot="floating" class="custom-label">Classe &amp; Sezione</ion-label>
             </ion-input>
-            <ion-input class="custom-input" label="Anno" formControlName="year" fill="outline" required
+            <ion-input class="custom-input" label="Anno" formcontrolname="year" fill="outline" required
               labelplacement="floating">
-              <ion-label slot="floating" class="custom-label">Anno</ion-label>
+              <ion-label slot="floating" class="custom-label">Anno Scolastico</ion-label>
             </ion-input>
-            <ion-textarea class="custom-input" label="Descrizione" rows="4" formControlName="descrizione" fill="outline"
+            <ion-textarea class="custom-input" label="Descrizione" rows="4" formcontrolname="descrizione" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Descrizione</ion-label>
             </ion-textarea>
             <ion-label>Coordinatore</ion-label>
-            <ion-input class="custom-input" label="Coordinatore" formControlName="coordinatore" fill="outline" required
+            <ion-input class="custom-input" label="Coordinatore" formcontrolname="coordinatore" fill="outline" required
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Coordinatore</ion-label>
             </ion-input>
             <ion-label>Segretario</ion-label>
-            <ion-input class="custom-input" label="Segretario" formControlName="segretario" fill="outline" required
+            <ion-input class="custom-input" label="Segretario" formcontrolname="segretario" fill="outline" required
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Segretario</ion-label>
             </ion-input>
           </ion-card-content>
           <div class="ion-padding">
-            <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
-            <ion-button (click)="save()" type="submit" color="primary">Salva</ion-button>
+              <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
+              <button type="submit" ion-button color="primary">Salva</button>
+              @if (selectedTab === 'attivita' && selectedTab === 'attivita') {
+                <ion-button (click)="openAddActivityDialog()" color="primary" expand="block" class="add-activity-button">
+                  <ion-icon name="add" slot="start"></ion-icon>
+                  Aggiungi Attività
+                </ion-button>
+              }
           </div>
         </ion-card>
         }
 
         <!-- Contenuto PDP -->
         @if (selectedTab === 'pdp') {
-        <ion-card>
-          <ion-card-content>
-            <app-students-with-pd-p [classe]="classe()"></app-students-with-pd-p>
-          </ion-card-content>
-        </ion-card>
+          @defer (on immediate) {
+            <ion-card>
+              <ion-card-content>
+                <app-students-with-pd-p [classe]="classe()"></app-students-with-pd-p>
+              </ion-card-content>
+            </ion-card>
+          } @loading {
+            <ion-spinner class="loading-spinner"></ion-spinner>
+          }
         }
 
         <!-- Contenuto Studenti -->
         @if (selectedTab === 'studenti') {
-        <div class="tab-content">
-          <app-list-student4class [classkey]="classkey()"></app-list-student4class>
-        </div>
+          @defer (on immediate) {
+            <div class="tab-content">
+              <app-list-student4class [classkey]="classkey()"></app-list-student4class>
+            </div>
+          } @loading {
+            <ion-spinner class="loading-spinner"></ion-spinner>
+          }
         }
 
         <!-- Contenuto Annotazioni -->
         @if (selectedTab === 'annotazioni') {
-        <ion-card>
-          <ion-card-content>
-            <app-reserved-notes4classes [classe]="classe()"></app-reserved-notes4classes>
-          </ion-card-content>
-        </ion-card>
+          @defer (on immediate) {
+            <ion-card>
+              <ion-card-content>
+                <app-reserved-notes4classes [classe]="classe()"></app-reserved-notes4classes>
+              </ion-card-content>
+            </ion-card>
+          } @loading {
+            <ion-spinner class="loading-spinner"></ion-spinner>
+          }
         }
 
         <!-- Contenuto Attività -->
         @if (selectedTab === 'attivita') {
-        <ion-card>
-          <ion-card-content>
-            <app-list-activities4class [classkey]="classkey()" [teacherkey]="teacherkey()"></app-list-activities4class>
-          </ion-card-content>
-        </ion-card>
+          @defer (on immediate) {
+            <ion-card>
+              <ion-card-content>
+                <app-display-agenda4-classes [classkey]="classkey()" [teacherkey]="teacherkey()" [targetedclasses]="[classkey()]" [targetedClasses]="[classkey()]">
+                </app-display-agenda4-classes>
+              </ion-card-content>
+            </ion-card>
+          } @loading {
+            <ion-spinner class="loading-spinner"></ion-spinner>
+          }
         }
 
         <!-- Contenuto Gruppi -->
         @if (selectedTab === 'gruppi') {
-        <ion-card>
-          <ion-card-content>
-            <app-groups-manager [classkey]="classkey()"></app-groups-manager>
-          </ion-card-content>
-        </ion-card>
+          @defer (on immediate) {
+            <ion-card>
+              <ion-card-content>
+                <app-groups-manager [classkey]="classkey()"></app-groups-manager>
+              </ion-card-content>
+            </ion-card>
+          } @loading {
+            <ion-spinner class="loading-spinner"></ion-spinner>
+          }
         }
 
         <!-- Contenuto Agenda -->

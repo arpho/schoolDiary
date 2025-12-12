@@ -5,7 +5,8 @@ import {
   input,
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   ModalController,
@@ -58,7 +59,9 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
   templateUrl: './classe-dialog.html',
   styleUrls: ['./classe-dialog.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ReactiveFormsModule,
     IonButton,
     IonInput,
     IonContent,
@@ -92,15 +95,11 @@ export class ClasseDialogPage implements OnInit {
   // Gestione sidebar
   sidebarOpen = false;
 
-  // Metodo per cambiare tab
-  async setSelectedTab(tab: string) {
-    console.log('Tab selezionato:', tab);
+  // Metodo per cambiare scheda e chiudere il menu
+  selectTab(tab: string) {
     this.selectedTab = tab;
-
-    // Chiudi la sidebar dopo la selezione
-    this.sidebarOpen = false;
-
-    // Forza l'aggiornamento del componente quando si seleziona il tab agenda
+    this.sidebarOpen = false;  // Chiude il menu
+    this.cdr.detectChanges();  // Forza l'aggiornamento della vista
     if (tab === 'agenda') {
       this.cdr.detectChanges();
       console.log('Change detection forzato per il tab agenda');
@@ -228,6 +227,12 @@ export class ClasseDialogPage implements OnInit {
 
   dismiss() {
     this.modalCtrl.dismiss();
+  }
+
+  async openAddActivityDialog() {
+    // Implementazione del metodo per aprire il dialog di aggiunta attività
+    // Questo è un placeholder - implementa la logica effettiva qui
+    console.log('Apertura dialog aggiunta attività');
   }
 
   async addNewEvent() {
