@@ -9,11 +9,13 @@ import {
   IonList, 
   IonItem, 
   IonLabel, 
+  IonButton, 
   IonIcon, 
   IonText, 
   IonFabButton, 
   IonFab,
-  ModalController
+  ModalController,
+  IonButtons
 } from '@ionic/angular/standalone';
 import { SubjectModel } from './models/subjectModel';
 import { signal } from '@angular/core';
@@ -22,6 +24,7 @@ import { SubjectService } from './services/subjects/subject.service';
 import { addIcons } from 'ionicons';
 import { add, addOutline, bookOutline } from 'ionicons/icons';
 import { CreateSubjectPage } from './pages/create-subject/create-subject.page';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
 
 @Component({
   selector: 'app-subjects-list',
@@ -58,16 +61,32 @@ export class SubjectsListPage implements OnInit, OnDestroy {
     const { data } = await modal.onDidDismiss();
     
     if (data) {
-      const newSubject = new SubjectModel({
-        name: data.name,
-        color: data.color,
-        // Altri campi predefiniti
-        description: '',
-        icon: 'book-outline',
-        classeDiConcorso: data.classeDiConcorso
-      });
-     console.log("newSubject ",newSubject) 
-   //   this.$subjects.createSubject(newSubject);
+      try {
+        const newSubject = new SubjectModel({
+          name: data.name,
+          color: data.color,
+          // Altri campi predefiniti
+          description: '',
+          icon: 'book-outline',
+          classeDiConcorso: data.classeDiConcorso || ''
+        });
+        
+        await this.$subjects.createSubject(newSubject);
+        
+        this.toaster.showToast({
+          message: 'Materia creata con successo!',
+          duration: 2000,
+          position: 'top'
+        }, 'success');
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Si è verificato un errore durante la creazione della materia';
+        console.error('Errore durante la creazione della materia:', error);
+        this.toaster.showToast({
+          message: errorMessage,
+          duration: 3000,
+          position: 'top'
+        }, 'danger');
+      }
     }
   }
   subjectsList = signal<SubjectModel[]>([]);
@@ -75,9 +94,10 @@ export class SubjectsListPage implements OnInit, OnDestroy {
   private $subjects = inject(SubjectService);
 
   constructor(
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private toaster: ToasterService
   ) {
-    addIcons({bookOutline,add});
+    addIcons({bookOutline, add});
   }
 
   ngOnInit() {
