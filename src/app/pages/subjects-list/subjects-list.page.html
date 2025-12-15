@@ -1,10 +1,42 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title align="center">Materie</ion-title>
+    <ion-title>Materie</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if   (subjectsList().length > 0) {
+    <ion-list>
+      @for (subject of subjectsList(); track subject.key) {
+        <ion-item button detail [style]="'--background: ' + (subject.color ? subject.color + '20' : 'transparent')">
+          @if (subject.icon) {
+            <ion-icon [name]="subject.icon" slot="start" [color]="subject.color || 'primary'"></ion-icon>
+          }
+          <ion-label>
+            <h2 [style.color]="subject.color || 'inherit'">{{ subject.name }}</h2>
+            @if (subject.description) {
+              <p class="ion-text-wrap">{{ subject.description }}</p>
+            }
+            @if (subject.classeDiConcorso) {
+              <p class="ion-text-wrap">
+                <ion-text color="medium">{{ subject.classeDiConcorso }}</ion-text>
+              </p>
+            }
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <div class="ion-text-center ion-padding">
+      <ion-icon name="book-outline" size="large" color="medium"></ion-icon>
+      <h3>Nessuna materia trovata</h3>
+      <p>Aggiungi una nuova materia per iniziare</p>
+    </div>
+  } 
 
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addSubject()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
- 

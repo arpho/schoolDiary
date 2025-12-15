@@ -1,13 +1,51 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>createSubject</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Annulla</ion-button>
+    </ion-buttons>
+    <ion-title>Nuova Materia</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [strong]="true">Salva</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">createSubject</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-input
+      [(ngModel)]="name"
+      label="Nome materia"
+      label-placement="stacked"
+      placeholder="Inserisci il nome della materia"
+      [clearInput]="true"
+      autofocus>
+    </ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      [(ngModel)]="classeDiConcorso"
+      label="Classe di concorso (opzionale)"
+      label-placement="stacked"
+      placeholder="Es. A012 - MATEMATICA"
+      [clearInput]="true">
+    </ion-input>
+  </ion-item>
+
+  <div class="ion-margin-vertical">
+    <ion-label>Seleziona un colore</ion-label>
+    <div class="color-palette">
+      @for (color of colorPalette; track color) {
+        <button
+          type="button"
+          class="color-option"
+          [style.background]="color"
+          [class.selected]="color === selectedColor"
+          (click)="selectColor(color)"
+          [attr.aria-label]="'Colore ' + color">
+          
+        </button>
+      }
+    </div>
+  </div>
 </ion-content>
