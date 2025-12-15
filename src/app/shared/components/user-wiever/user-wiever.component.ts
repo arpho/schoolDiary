@@ -1,4 +1,4 @@
-import { Component, input, signal, inject } from '@angular/core';
+import { Component, input, signal, inject, effect } from '@angular/core';
 import { UsersService } from '../../services/users.service';
 import { UserModel } from '../../models/userModel';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonLabel } from "@ionic/angular/standalone";
@@ -15,20 +15,18 @@ export class UserWieverComponent {
   user = signal<UserModel | undefined>(undefined);
 
   constructor() {
-    this.updateUser();
-  }
-
-  updateUser() {
-    const key = this.userkey();
-    if (key) {
-      const user = this.usersService.fetchUserOnCache(key);   
-      if(user instanceof UserModel){
-        this.user.set(user);
-      }
+    effect(async ()=>{ 
+  const userKey = this.userkey();
+  if(userKey){
+    const user = await this.usersService.fetchUserOnCache(userKey);   
+    if(user instanceof UserModel){
+      this.user.set(user);
     }
   }
-
-  ngOnChanges() {
-    this.updateUser();
+    })
+  
   }
+
+
+
 }
