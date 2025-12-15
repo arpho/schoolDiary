@@ -26,7 +26,8 @@ import {
   checkmarkCircleOutline,
   checkmarkDoneOutline,
   closeCircleOutline,
-  eyeOutline
+  eyeOutline,
+  micOutline
 } from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
@@ -172,6 +173,7 @@ export class AgendaDisplayComponent implements OnInit {
       eyeOutline,
       calendarOutline,
       arrowForwardOutline,
+      micOutline,
       'checkmark-circle-outline': checkmarkCircleOutline,
       'checkmark-done-outline': checkmarkDoneOutline,
       'close-circle-outline': closeCircleOutline,
@@ -220,7 +222,7 @@ this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
     switch (type) {
       case 'homework': return 'book-outline';
       case 'test': return 'help-circle-outline';
-      case 'interrogation': return 'people-outline';
+      case 'interrogation': return 'mic-outline';
       case 'note': return 'document-text-outline';
       default: return 'help-circle-outline';
     }
