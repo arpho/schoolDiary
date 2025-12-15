@@ -115,5 +115,13 @@ export const routes: Routes = [
   {
     path: 'subjects-list',
     loadComponent: () => import('./pages/subjects-list/subjects-list.page').then( m => m.SubjectsListPage)
+  },
+  {
+    path: 'edit-subject/:subjectKey',
+    loadComponent: () => import('./pages/subjects-list/pages/edit-subject/edit-subject.page').then( m => m.EditSubjectPage)
+  },
+  {
+    path: 'create-subject',
+    loadComponent: () => import('./pages/subjects-list/pages/create-subject/create-subject.page').then( m => m.CreateSubjectPage)
   }
 ];
