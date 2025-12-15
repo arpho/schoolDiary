@@ -1,51 +1,98 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="cancel()">Annulla</ion-button>
+      <ion-button (click)="cancel()" aria-label="Annulla">
+        <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-title>Nuova Materia</ion-title>
+    <ion-title>{{ isEditMode ? 'Modifica' : 'Nuova' }} Materia</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="save()" [strong]="true">Salva</ion-button>
+      <ion-button (click)="save()" [strong]="true" [disabled]="!name.trim()">
+        Salva
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-item>
-    <ion-input
-      [(ngModel)]="name"
-      label="Nome materia"
-      label-placement="stacked"
-      placeholder="Inserisci il nome della materia"
-      [clearInput]="true"
-      autofocus>
-    </ion-input>
-  </ion-item>
+  <ion-list>
+    <ion-item>
+      <ion-label position="stacked">Nome Materia <span class="required">*</span></ion-label>
+      <ion-input 
+        [ngModel]="name" 
+        (ngModelChange)="onNameChange($event)"
+        type="text" 
+        placeholder="Inserisci il nome della materia"
+        clearinput="true"
+        required
+        aria-required="true">
+      </ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-input
-      [(ngModel)]="classeDiConcorso"
-      label="Classe di concorso (opzionale)"
-      label-placement="stacked"
-      placeholder="Es. A012 - MATEMATICA"
-      [clearInput]="true">
-    </ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Classe di Concorso (opzionale)</ion-label>
+      <ion-input 
+        [ngModel]="classeDiConcorso"
+        (ngModelChange)="onClasseDiConcorsoChange($event)"
+        type="text" 
+        placeholder="Inserisci la classe di concorso"
+        clearinput="true">
+      </ion-input>
+    </ion-item>
 
-  <div class="ion-margin-vertical">
-    <ion-label>Seleziona un colore</ion-label>
-    <div class="color-palette">
-      @for (color of colorPalette; track color) {
-        <button
-          type="button"
-          class="color-option"
-          [style.background]="color"
-          [class.selected]="color === selectedColor"
+    <ion-item>
+      <ion-label>Colore</ion-label>
+      <div class="color-palette">
+        <button 
+          *ngFor="let color of colorPalette" 
+          [style.background]="color" 
+          [class.selected]="selectedColor === color"
           (click)="selectColor(color)"
-          [attr.aria-label]="'Colore ' + color">
-          
+          type="button"
+          [attr.aria-label]="'Seleziona colore ' + color"
+          [attr.aria-pressed]="selectedColor === color">
+          <span class="visually-hidden">Colore {{ color }}</span>
         </button>
-      }
-    </div>
-  </div>
+      </div>
+    </ion-item>
+  </ion-list>
 </ion-content>
+
+<style>
+  .required {
+    color: var(--ion-color-danger);
+  }
+  
+  .color-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
+  }
+  
+  .color-palette button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .color-palette button.selected {
+    border-color: var(--ion-color-dark);
+    transform: scale(1.1);
+  }
+  
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

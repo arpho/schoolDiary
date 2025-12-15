@@ -5,25 +5,65 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  @if   (subjectsList().length > 0) {
+  @if (subjectsList().length > 0) {
     <ion-list>
       @for (subject of subjectsList(); track subject.key) {
-        <ion-item button detail [style]="'--background: ' + (subject.color ? subject.color + '20' : 'transparent')">
-          @if (subject.icon) {
-            <ion-icon [name]="subject.icon" slot="start" [color]="subject.color || 'primary'"></ion-icon>
-          }
-          <ion-label>
-            <h2 [style.color]="subject.color || 'inherit'">{{ subject.name }}</h2>
-            @if (subject.description) {
-              <p class="ion-text-wrap">{{ subject.description }}</p>
+        <ion-item-sliding>
+          <ion-item button detail [style.--background]="subject.color + '20'">
+            @if (subject.icon) {
+              <ion-icon 
+                [name]="subject.icon" 
+                slot="start" 
+                [color]="subject.color || 'primary'"
+                aria-hidden="true">
+              </ion-icon>
+            } @else {
+              <ion-icon 
+                name="book-outline" 
+                slot="start" 
+                [color]="subject.color || 'primary'"
+                aria-hidden="true">
+              </ion-icon>
             }
-            @if (subject.classeDiConcorso) {
-              <p class="ion-text-wrap">
-                <ion-text color="medium">{{ subject.classeDiConcorso }}</ion-text>
-              </p>
-            }
-          </ion-label>
-        </ion-item>
+            <ion-label>
+              <h2 [style.color]="subject.color || 'inherit'">{{ subject.name }}</h2>
+              @if (subject.description) {
+                <p class="ion-text-wrap">{{ subject.description }}</p>
+              }
+              @if (subject.classeDiConcorso) {
+                <p class="ion-text-wrap">
+                  <ion-text color="medium">{{ subject.classeDiConcorso }}</ion-text>
+                </p>
+              }
+            </ion-label>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <!-- Pulsante Modifica -->
+            <ion-item-option 
+              color="primary" 
+              (click)="editSubject(subject)"
+              aria-label="Modifica materia">
+              <ion-icon 
+                slot="icon-only" 
+                name="create-outline"
+                aria-hidden="true">
+              </ion-icon>
+            </ion-item-option>
+
+            <!-- Pulsante Elimina -->
+            <ion-item-option 
+              color="danger" 
+              (click)="deleteSubject(subject)"
+              aria-label="Elimina materia">
+              <ion-icon 
+                slot="icon-only" 
+                name="trash-outline"
+                aria-hidden="true">
+              </ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
       }
     </ion-list>
   } @else {
@@ -35,8 +75,8 @@
   } 
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addSubject()">
-      <ion-icon name="add"></ion-icon>
+    <ion-fab-button (click)="addSubject()" aria-label="Aggiungi nuova materia">
+      <ion-icon name="add" aria-hidden="true"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

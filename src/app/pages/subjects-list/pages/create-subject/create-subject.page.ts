@@ -1,18 +1,33 @@
-import { Component } from '@angular/core';
+import { Component, inject, model, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   IonContent, 
-  IonHeader, 
+  IonHeader,
+  IonToolbar, 
   IonTitle, 
-  IonToolbar,
+  IonButton, 
+  IonButtons, 
+  IonIcon,
   IonInput,
-  IonButton,
-  IonButtons,
-  IonLabel,
   IonItem,
+  IonLabel,
+  IonList,
   ModalController
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { closeOutline } from 'ionicons/icons';
+
+// Interfaccia per i parametri del modale
+export interface CreateSubjectModalProps {
+  subject?: {
+    name: string;
+    color: string;
+    classeDiConcorso?: string;
+    description?: string;
+    icon?: string;
+  };
+}
 
 // Palette di colori predefinita
 const COLOR_PALETTE = [
@@ -27,26 +42,54 @@ const COLOR_PALETTE = [
   styleUrls: ['./create-subject.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
+    IonHeader,
     IonContent, 
-    IonHeader, 
-    IonTitle, 
     IonToolbar, 
-    IonInput, 
+    IonTitle, 
     IonButton, 
     IonButtons, 
+    IonIcon,
+    IonInput,
+    IonItem,
     IonLabel,
-    IonItem
+    IonList,
+    CommonModule, 
+    FormsModule
   ]
 })
-export class CreateSubjectPage {
-  name = '';
-  classeDiConcorso = '';
+export class CreateSubjectPage implements OnInit {
+  // Model per il binding bidirezionale
+  subject = model<{
+    name: string;
+    color: string;
+    classeDiConcorso?: string;
+    description?: string;
+    icon?: string;
+  } | null>(null);
+  
+  name: string = '';
+  color: string = '#3880ff';
+  classeDiConcorso: string = '';
+  isEditMode = false;
   selectedColor = '#3880ff';
   colorPalette = COLOR_PALETTE;
 
-  constructor(private modalController: ModalController) {}
+  private modalCtrl = inject(ModalController);
+  
+  constructor() {
+    addIcons({ closeOutline });
+  }
+
+  ngOnInit() {
+    const subjectValue = this.subject();
+    if (subjectValue) {
+      this.isEditMode = true;
+      this.name = subjectValue.name || '';
+      this.color = subjectValue.color || '#3880ff';
+      this.selectedColor = subjectValue.color || '#3880ff';
+      this.classeDiConcorso = subjectValue.classeDiConcorso || '';
+    }
+  }
 
   selectColor(color: string) {
     this.selectedColor = color;
@@ -54,15 +97,28 @@ export class CreateSubjectPage {
 
   save() {
     if (this.name.trim()) {
-      this.modalController.dismiss({
+      // Aggiorna il model con i nuovi valori
+      this.subject.set({
+        ...this.subject(),
         name: this.name.trim(),
         color: this.selectedColor,
-        classeDiConcorso: this.classeDiConcorso.trim() || undefined
+        classeDiConcorso: this.classeDiConcorso?.trim()
       });
+      
+      // Chiudi il modale con conferma
+      this.modalCtrl.dismiss(undefined, 'confirm');
     }
   }
 
   cancel() {
-    this.modalController.dismiss();
+    this.modalCtrl.dismiss(null, 'cancel');
+  }
+
+  onNameChange(value: string) {
+    this.name = value?.trim() || '';
+  }
+
+  onClasseDiConcorsoChange(value: string) {
+    this.classeDiConcorso = value?.trim() || '';
   }
 }
