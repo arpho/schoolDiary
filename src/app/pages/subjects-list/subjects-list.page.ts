@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ɵflushModuleScopingQueueAsMuchAsPossible } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -28,6 +28,7 @@ import { addIcons } from 'ionicons';
 import { add, addOutline, bookOutline, createOutline, trashOutline } from 'ionicons/icons';
 import { CreateSubjectPage } from './pages/create-subject/create-subject.page';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-subjects-list',
@@ -99,9 +100,9 @@ export class SubjectsListPage implements OnInit, OnDestroy {
   private unsubscribe = inject(UnsubscribeService);
   private $subjects = inject(SubjectService);
 
-  async editSubject(subject: any) {
+  async editSubject(subject: SubjectModel) {
     // Crea una copia dell'oggetto per evitare modifiche dirette
-    const subjectCopy = { ...subject };
+    const subjectCopy = signal(new SubjectModel(subject));
     
     const modal = await this.modalCtrl.create({
       component: CreateSubjectPage,
@@ -115,7 +116,9 @@ export class SubjectsListPage implements OnInit, OnDestroy {
       if (result.role === 'confirm') {
         // Non è più necessario gestire result.data poiché il model è già aggiornato
         // grazie al binding bidirezionale
-        this.$subjects.updateSubject(subjectCopy)
+        const editedSubject = subjectCopy()
+        console.log("editedSubject", editedSubject)
+        this.$subjects.updateSubject(editedSubject)
           .then(() => this.toaster.showToast({
             message: 'Materia aggiornata con successo!',
             duration: 2000,

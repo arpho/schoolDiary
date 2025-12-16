@@ -17,6 +17,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
+import { SubjectModel } from '../../models/subjectModel';
 
 // Interfaccia per i parametri del modale
 export interface CreateSubjectModalProps {
@@ -89,6 +90,9 @@ export class CreateSubjectPage implements OnInit {
       this.selectedColor = subjectValue.color || '#3880ff';
       this.classeDiConcorso = subjectValue.classeDiConcorso || '';
     }
+    else{
+      console.log("nessuna materia passata")
+    }
   }
 
   selectColor(color: string) {
@@ -98,15 +102,15 @@ export class CreateSubjectPage implements OnInit {
   save() {
     if (this.name.trim()) {
       // Aggiorna il model con i nuovi valori
-      this.subject.set({
+      this.subject.set( new SubjectModel({
         ...this.subject(),
         name: this.name.trim(),
         color: this.selectedColor,
         classeDiConcorso: this.classeDiConcorso?.trim()
-      });
+      }));
       
       // Chiudi il modale con conferma
-      this.modalCtrl.dismiss(undefined, 'confirm');
+      this.modalCtrl.dismiss(this.subject(), 'confirm');
     }
   }
 
