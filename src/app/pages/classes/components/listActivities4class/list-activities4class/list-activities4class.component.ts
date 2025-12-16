@@ -22,8 +22,7 @@ import {
   create, 
   trash, 
   eye, 
-  close 
-} from 'ionicons/icons';
+  close, calendarOutline } from 'ionicons/icons';
 import { ActivityDialogComponent } from 'src/app/pages/activities/components/activity-dialog/activity-dialog.component';
 import { Router } from '@angular/router';
 

@@ -48,7 +48,7 @@ export class ActivitiesService {
       callback([...activities]); // Return a new array reference to trigger change detection
     });
     
-    return () => subscription(); // Return an unsubscribe function
+    return () => subscription; // Return an unsubscribe function
   }
   private activitiesOnCache = signal<ActivityModel[]>([]);
   private collection = 'activities';

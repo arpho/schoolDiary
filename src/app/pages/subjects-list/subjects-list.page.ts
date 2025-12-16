@@ -173,7 +173,11 @@ export class SubjectsListPage implements OnInit, OnDestroy {
   ngOnInit() {
    const subscription = this.$subjects.fetchSubjectListOnRealTime(
       (subjects: SubjectModel[]) => {
-        this.subjectsList.set(subjects);
+        console.log("Raw subjects from Firestore:", JSON.parse(JSON.stringify(subjects)));
+        console.log("Subjects count:", subjects.length);
+        console.log("Subjects keys:", subjects.map(s => s.key));
+        
+        this.subjectsList.set([...subjects]);
       }
     );
     this.unsubscribe.add(subscription);

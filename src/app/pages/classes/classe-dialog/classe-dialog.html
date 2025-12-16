@@ -147,15 +147,11 @@
 
         <!-- Contenuto Attività -->
         @if (selectedTab === 'attivita') {
-          @defer (on immediate) {
             <ion-card>
               <ion-card-content>
-                <app-list-activities4class [classkey]="classkey()"></app-list-activities4class>
+                <app-list-activities4class-bis [classkey]="classkey()"></app-list-activities4class-bis>
               </ion-card-content>
             </ion-card>
-          } @loading {
-            <ion-spinner class="loading-spinner"></ion-spinner>
-          }
         }
 
         <!-- Contenuto Gruppi -->

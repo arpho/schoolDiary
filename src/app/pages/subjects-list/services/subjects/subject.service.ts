@@ -14,6 +14,7 @@ import {
   DocumentReference,
   DocumentData
 } from '@angular/fire/firestore';
+import { Subject } from 'rxjs';
 import { SubjectModel } from '../../models/subjectModel';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
@@ -46,30 +47,48 @@ export class SubjectService {
       
    }
 
-   fetchSubjectListOnRealTime(callback: (subjects: SubjectModel[]) => void, queries?: QueryCondition[]) {
-    const collectionRef = collection(this.firestore, this.collectionName);
-    let q = query(collectionRef)
-console.log("queries", queries)
-    if (queries) {
+  private unsubscribeSubject = new Subject<void>();
+  private currentSubscription: (() => void) | null = null;
+
+  fetchSubjectListOnRealTime(callback: (subjects: SubjectModel[]) => void, queries: QueryCondition[] = []): () => void {
+    // Annulla la sottoscrizione precedente
+    this.unsubscribeSubject.next();
+    
+    let q = query(collection(this.firestore, this.collectionName));
+    if (queries.length > 0) {
       queries.forEach((condition: QueryCondition) => {
-        console.log("condition", condition);
-        console.log(condition.field, condition.operator, condition.value);
         q = query(q, where(condition.field, condition.operator, condition.value));
       });
     }
+    
     const subjects: SubjectModel[] = [];
-   const subscription =  onSnapshot(q, (snapshot) => {
-      snapshot.forEach((docSnap) => {
-        subjects.push(new SubjectModel(docSnap.data()).setKey(docSnap.id));
-      });
-      callback(subjects);
+    
+    const unsubscribe = onSnapshot(q, {
+      next: (snapshot) => {
+        subjects.length = 0; // Svuota l'array mantenendo il riferimento
+        snapshot.forEach((docSnap) => {
+          subjects.push(new SubjectModel(docSnap.data()).setKey(docSnap.id));
+        });
+        callback([...subjects]); // Invia una copia dell'array
+      },
+      error: (error) => console.error("Error fetching subjects:", error)
     });
-    return subscription;
-    }
+
+    // Salva la funzione di unsubscribe
+    this.currentSubscription = unsubscribe;
+    
+    // Restituisci una funzione per annullare la sottoscrizione
+    return () => {
+      if (this.currentSubscription) {
+        this.currentSubscription();
+        this.currentSubscription = null;
+      }
+    };
+  }
 
   updateSubject(subject: SubjectModel): Promise<void> {
     const docRef = doc(this.firestore, this.collectionName, subject.key);
-    return setDoc(docRef, subject.serialize());
+    return setDoc(docRef, subject.serialize(), { merge: true });
   }
 
   deleteSubject(subjectKey: string): Promise<void> {
