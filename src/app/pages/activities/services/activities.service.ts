@@ -29,6 +29,27 @@ import { UsersService } from 'src/app/shared/services/users.service';
   providedIn: 'root'
 })
 export class ActivitiesService {
+  fetchActivitiesOnRealTime(callback: (activities: ActivityModel[]) => void, queries?: QueryCondition[]) {
+    const collectionRef = collection(this.firestore, this.collection);
+    let q = query(collectionRef);
+    
+    if (queries) {
+      queries.forEach((condition: QueryCondition) => {
+        q = query(q, where(condition.field, condition.operator, condition.value));
+      });
+    }
+    
+    const activities: ActivityModel[] = [];
+    const subscription = onSnapshot(q, (snapshot) => {
+      activities.length = 0; // Clear the array while keeping the reference
+      snapshot.forEach((docSnap) => {
+        activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
+      });
+      callback([...activities]); // Return a new array reference to trigger change detection
+    });
+    
+    return () => subscription(); // Return an unsubscribe function
+  }
   private activitiesOnCache = signal<ActivityModel[]>([]);
   private collection = 'activities';
   private firestore = inject(Firestore);
