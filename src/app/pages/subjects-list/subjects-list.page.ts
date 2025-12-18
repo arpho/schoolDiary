@@ -19,6 +19,7 @@ import {
   IonItemSliding,
   IonItemOptions,
   IonItemOption,
+  IonBackButton,
   IonItemSliding as IonItemSlidingType
 } from '@ionic/angular/standalone';
 import { SubjectModel } from './models/subjectModel';
@@ -49,6 +50,8 @@ import { Subject } from 'rxjs';
     IonText,
     IonFabButton,
     IonFab,
+    IonBackButton,
+    IonButtons,
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
@@ -166,12 +169,7 @@ export class SubjectsListPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private toaster: ToasterService
   ) {
-    addIcons({ 
-      bookOutline, 
-      add,
-      'create-outline': createOutline,
-      'trash-outline': trashOutline
-    });
+    addIcons({bookOutline,add,createOutline,trashOutline});
   }
 
   ngOnInit() {
