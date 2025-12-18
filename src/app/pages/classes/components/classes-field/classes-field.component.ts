@@ -21,6 +21,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IonItem, IonList, IonButton, IonIcon, ModalController, IonFabButton, IonFab } from "@ionic/angular/standalone";
 import { ClassesSelectorPage } from '../../pages/classes-selector/classes-selector.page';
+import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
 @Component({
   selector: 'app-classes-field',
   standalone: true,
@@ -49,7 +50,7 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
   @Input() disabled: boolean = false;
   @Output() classeschange = new EventEmitter<ClasseModel[]>();
 
-  classes = model<ClasseModel[]>([]);
+  classes = model<AssignedClass[]>([]);
   classi = signal<ClasseModel[]>([]);
 
   onChange: (value: ClasseModel[]) => void = () => { };
@@ -114,7 +115,7 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
     // Pulizia aggiuntiva se necessaria
   }
 
-  writeValue(value: ClasseModel[]): void {
+  writeValue(value: AssignedClass[]): void {
     console.log("writeValue", value);
     if (value && JSON.stringify(this.classes()) !== JSON.stringify(value)) {
       this.classes.set([...value]);

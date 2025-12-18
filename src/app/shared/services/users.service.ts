@@ -20,6 +20,7 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { ClassiService } from '../../../app/pages/classes/services/classi.service';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { OrCondition, QueryCondition } from '../models/queryCondition';
+import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
 
 interface ClaimsResponse {
   message?: string;
@@ -138,9 +139,9 @@ export class UsersService implements OnInit {
           );
 
           const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
-          user.classi = classi;
+          
         } else {
-          user.classi = [];
+          user.assignedClases = [];
         }
 
         users.push(user);
@@ -222,9 +223,9 @@ export class UsersService implements OnInit {
         );
 
         const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
-        user.classi = classi;
+        user.assignedClases = classi;
       } else {
-        user.classi = [];
+        user.assignedClases = [];
       }
 
       return user;
@@ -266,7 +267,7 @@ export class UsersService implements OnInit {
           }
         });
 
-        user.classi = classes;
+        user.assignedClases = classes;
 
         users.push(user);
       });
@@ -298,15 +299,19 @@ export class UsersService implements OnInit {
         if (user) {
           const loggedUser = await this.getUserByUid(user.uid);
           if (loggedUser) {
-            const classes: ClasseModel[] = [];
-            loggedUser.classes?.forEach(async (classKey: string) => {
-              const classe = await this.$classes.fetchClasseOnCache(classKey);
-              if (classe) {
-                classes.push(classe);
+            const classes: AssignedClass[] = [];
+           if (loggedUser.assignedClases.length>0){
+            loggedUser.assignedClases.forEach(async (classe: AssignedClass) => {
+              const classeBase = await this.$classes.fetchClasseOnCache(classe.key);
+              if (classeBase) {
+                classes.push(new AssignedClass({...classe, ...classeBase}));
               }
             });
+           }  
+            
+            
 
-            loggedUser.classi = classes;
+            loggedUser.assignedClases = classes;
           }
 
           resolve(loggedUser);

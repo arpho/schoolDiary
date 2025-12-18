@@ -135,7 +135,7 @@ export class UserDialogPage implements OnInit {
 
 
     effect(() => {
-      this.usersClasses.set(this.user().classi);
+      this.usersClasses.set(this.user().assignedClases);
     });
   }
 

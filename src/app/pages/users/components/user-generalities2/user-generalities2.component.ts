@@ -152,7 +152,7 @@ export class UserGeneralities2Component implements OnInit {
     console.log("logged user*", loggedUser)
     const user = this.user();
     if (loggedUser) {
-      this.elencoClassi.set(loggedUser.classi)
+      this.elencoClassi.set(loggedUser.assignedClases)
     }
     console.log("elenco classi*", this.elencoClassi())
     console.log('User input changed on effect*:', user);
