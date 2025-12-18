@@ -2,7 +2,6 @@ import { Component, OnInit, Input, signal, effect, ViewChild } from '@angular/co
 import { ModalController, IonBackButton, IonContent, IonHeader, IonIcon, IonTabs, IonTabBar, IonTabButton, IonTitle, IonToolbar, IonTab, IonLabel } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserGeneralitiesComponent } from '../components/user-generalities/user-generalities.component';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
@@ -30,7 +29,6 @@ import { documentTextOutline, personOutline, sparklesOutline } from 'ionicons/ic
     IonIcon,
     IonTitle,
     IonToolbar,
-    UserGeneralitiesComponent,
     UserGeneralities2Component,
     IonTabs,
     IonTabBar,

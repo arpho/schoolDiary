@@ -34,7 +34,6 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { Evaluation4StudentComponent } from '../evaluation4-student/evaluation4-student.component';
 import { ReservedNotes4studentComponent } from '../reserved-notes4student/reserved-notes4student.component';
-import { UserGeneralitiesComponent } from '../user-generalities/user-generalities.component';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { IonTextareaCustomEvent } from '@ionic/core';
 import { ClassesFieldComponent } from 'src/app/pages/classes/components/classes-field/classes-field.component';
