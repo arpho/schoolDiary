@@ -18,7 +18,8 @@ import {
   IonButtons,
   IonItemSliding,
   IonItemOptions,
-  IonItemOption
+  IonItemOption,
+  IonItemSliding as IonItemSlidingType
 } from '@ionic/angular/standalone';
 import { SubjectModel } from './models/subjectModel';
 import { signal } from '@angular/core';
@@ -100,22 +101,22 @@ export class SubjectsListPage implements OnInit, OnDestroy {
   private unsubscribe = inject(UnsubscribeService);
   private $subjects = inject(SubjectService);
 
-  async editSubject(subject: SubjectModel) {
+  async editSubject(subject: SubjectModel, slidingItem: IonItemSlidingType) {
+    // Chiudi lo sliding item
+    await slidingItem.close();
+    
     // Crea una copia dell'oggetto per evitare modifiche dirette
     const subjectCopy = signal(new SubjectModel(subject));
     
     const modal = await this.modalCtrl.create({
       component: CreateSubjectPage,
       componentProps: {
-        // Usa la sintassi con parentesi quadre per il binding bidirezionale
         'subject': subjectCopy
       }
     });
 
     modal.onDidDismiss().then((result) => {
       if (result.role === 'confirm') {
-        // Non è più necessario gestire result.data poiché il model è già aggiornato
-        // grazie al binding bidirezionale
         const editedSubject = subjectCopy()
         console.log("editedSubject", editedSubject)
         this.$subjects.updateSubject(editedSubject)
@@ -138,8 +139,11 @@ export class SubjectsListPage implements OnInit, OnDestroy {
     await modal.present();
   }
 
-  async deleteSubject(subject: SubjectModel) {
+  async deleteSubject(subject: SubjectModel, slidingItem: IonItemSlidingType) {
     try {
+      // Chiudi lo sliding item
+      await slidingItem.close();
+      
       if (subject.key) {
         await this.$subjects.deleteSubject(subject.key);
         this.toaster.showToast({
