@@ -24,6 +24,7 @@ import { ActivityModel } from '../../models/activityModel';
 import { ActivitiesService } from '../../services/activities.service';
 // Import delle icone gestite a livello globale
 import { close, save } from 'ionicons/icons';
+import { UsersService } from 'src/app/shared/services/users.service';
 
 @Component({
   selector: 'app-activity-dialog',
@@ -63,7 +64,7 @@ export class ActivityDialogComponent implements OnInit {
   teacherKey?: string;
   minDate = new Date().toISOString();
   maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
-
+ $users=inject(UsersService)
   constructor(private formBuilder: FormBuilder) {
     // Inizializzazione del form
     this.activityForm = this.formBuilder.group({
@@ -104,15 +105,16 @@ export class ActivityDialogComponent implements OnInit {
     }
 
     const formValue = this.activityForm.value;
+    const teacher = await this.$users.getLoggedUser()
     
     // Crea un'istanza di ActivityModel con i valori del form
     const activity = new ActivityModel({
       title: formValue.title,
       description: formValue.description,
       date: formValue.date,
+      teacherKey: teacher? teacher.key : '',
       dueDate: formValue.dueDate || null,
       classKey: this.classKey || '',
-      teacherKey: this.teacherKey || ''
     });
 
     try {
