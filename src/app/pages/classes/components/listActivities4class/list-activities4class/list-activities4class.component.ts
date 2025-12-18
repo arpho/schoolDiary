@@ -1,8 +1,11 @@
-import { Component, effect, input, signal } from '@angular/core';
-import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
+import { Component, effect, input, OnDestroy, signal, WritableSignal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
+import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
-import { DatePipe } from '@angular/common';
+import { UnsubscribeService } from 'src/app/shared/services/unsubscribe.service';
+import { Subscription } from 'rxjs';
 import { 
   IonList, 
   IonItem, 
@@ -25,6 +28,7 @@ import {
   close, calendarOutline } from 'ionicons/icons';
 import { ActivityDialogComponent } from 'src/app/pages/activities/components/activity-dialog/activity-dialog.component';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-list-activities4class',
@@ -32,6 +36,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./list-activities4class.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     DatePipe,
     IonList,
     IonItem, 
@@ -39,10 +44,11 @@ import { Router } from '@angular/router';
     IonIcon
   ]
 })
-export class ListActivities4classComponent {
-  classkey = input<string>('');
+export class ListActivities4classComponent implements OnDestroy {
+  classkey = input.required<string>();
   teacherkey = input<string>('');
   activitieslist = signal<ActivityModel[]>([]);
+  activitiesSubscription: Subscription = new Subscription();
 
   constructor(
     private activitiesService: ActivitiesService,
@@ -53,15 +59,14 @@ export class ListActivities4classComponent {
     private router: Router
   ) {
       // Le icone sono registrate globalmente in app.module.ts
-    
+    console.log("activityies list")
     // Effetto che si attiva quando i valori cambiano
     effect(() => {
       const currentClassKey = this.classkey();
       const currentTeacherKey = this.teacherkey();
-      
-      if (currentClassKey && currentTeacherKey) {
+      console.log("currentClassKey", currentClassKey  );
+      console.log("currentTeacherKey", currentTeacherKey);
         this.updateActivities();
-      }
     });
   }
 
@@ -193,10 +198,13 @@ export class ListActivities4classComponent {
   }
 
   private updateActivities() {
+    console.log("update activities")
     const currentClassKey = this.classkey();
     const currentTeacherKey = this.teacherkey();
-    
+    console.log("currentClassKey", currentClassKey);
+    console.log("currentTeacherKey", currentTeacherKey);
     if (!currentClassKey || !currentTeacherKey) {
+      console.log("no classkey or teacherkey");
       return;
     }
 
@@ -205,10 +213,10 @@ export class ListActivities4classComponent {
       new QueryCondition('classKey', '==', currentClassKey),
       new QueryCondition('teacherKey', '==', currentTeacherKey)
     ];
+    console.log("query",query)
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 console.log(today.toISOString());
-query.push(new QueryCondition('data', '>=', today.toISOString()));
     // Sottoscrivo al servizio getActivitiesOnRealtime
     this.activitiesService.getActivities4teacherOnRealtime(
       currentTeacherKey,

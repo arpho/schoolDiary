@@ -143,9 +143,7 @@ export class ClasseDialogPage implements OnInit {
 
       this.teacherkey.set(user.key);
     }
-    console.log("ngOnInit classe dialog**")
     const classkey = this.route.snapshot.paramMap.get('classkey');
-    console.log("classkey**", classkey);
     if (classkey) {
       this.classkey.set(classkey);
     }
@@ -154,7 +152,6 @@ export class ClasseDialogPage implements OnInit {
       if (this.classkey()) {
         this.isEditMode = true;
         const editingClasse = await this.service.fetchClasse(this.classkey()!);
-        console.log("editingClasse *", editingClasse)
         this.classe.set(editingClasse);
         this.formClass.setValue({
           classe: editingClasse.classe,
@@ -164,7 +161,6 @@ export class ClasseDialogPage implements OnInit {
           descrizione: editingClasse.descrizione,
           note: editingClasse.note
         });
-        console.log("editingClasse", this.classe());
 
       }
     }

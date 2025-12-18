@@ -102,10 +102,9 @@
         }
 
         @if (selectedTab === 'attivita') {
-          <ion-button (click)="openAddActivityDialog()" color="primary" expand="block" class="add-activity-button">
-            <ion-icon name="add" slot="start"></ion-icon>
-            Aggiungi Attività
-          </ion-button>
+
+          <app-list-activities4class [classkey]="classkey()" [teacherkey]="teacherkey()"></app-list-activities4class>
+
         }
 
         <!-- Contenuto PDP -->
@@ -145,14 +144,6 @@
           }
         }
 
-        <!-- Contenuto Attività -->
-        @if (selectedTab === 'attivita') {
-            <ion-card>
-              <ion-card-content>
-                <app-list-activities4class-bis [classkey]="classkey()"></app-list-activities4class-bis>
-              </ion-card-content>
-            </ion-card>
-        }
 
         <!-- Contenuto Gruppi -->
         @if (selectedTab === 'gruppi') {
