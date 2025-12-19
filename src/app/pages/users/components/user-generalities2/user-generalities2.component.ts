@@ -38,6 +38,7 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { IonTextareaCustomEvent } from '@ionic/core';
 import { ClassesFieldComponent } from 'src/app/pages/classes/components/classes-field/classes-field.component';
 import { IonicModule, TextareaChangeEventDetail } from "@ionic/angular";
+import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
 @Component({
   selector: 'app-user-generalities2',
   templateUrl: './user-generalities2.component.html',
@@ -82,7 +83,7 @@ export class UserGeneralities2Component implements OnInit {
   rolesName: string[] = [];
   elencoClassi = signal<ClasseModel[]>([]);
 
-  usersClasses = signal<ClasseModel[]>([]);
+  usersClasses = signal<AssignedClass[]>([]);
   $UsersRole = UsersRole;
   private destroyRef = inject(DestroyRef);
   constructor(
@@ -163,7 +164,7 @@ export class UserGeneralities2Component implements OnInit {
         const classResults = await Promise.all(classPromises);
         const classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
         console.log("Classi aggiunte:", classi);
-        this.usersClasses.set(classi);
+
       }
       this.syncFormWithUser(user);
       this.logFormState();

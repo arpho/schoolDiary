@@ -50,6 +50,7 @@ import {
   calendar,
   checkmark
 } from 'ionicons/icons';
+import { UsersService } from 'src/app/shared/services/users.service';
 
 @Component({
   selector: 'app-activity-dialog',
@@ -93,6 +94,7 @@ import {
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ActivityDialogComponent implements OnInit {
+  $users = inject(UsersService);
   @Input() listaClassi: ClasseModel[] = [];
   @Input() selectedClass = '';
   @Input() activity: ActivityModel = new ActivityModel();
@@ -218,10 +220,12 @@ export class ActivityDialogComponent implements OnInit {
     try {
       // Create activity object from form values
       const formValue = this.activityForm.value;
+      const teacher = await this.$users.getLoggedUser()
       console.log("formValue", formValue);
       const activity: ActivityModel = {
         ...this.activity, // Preserve existing properties if editing
-        ...formValue
+        ...formValue,
+        teacherKey : teacher?teacher.key:""
       };
       console.log("activity", activity);
       

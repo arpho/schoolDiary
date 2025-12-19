@@ -223,7 +223,7 @@ export class UsersService implements OnInit {
         );
 
         const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
-        user.assignedClases = classi;
+       // user.assignedClases = classi.map(item=>new AssignedClass(item));
       } else {
         user.assignedClases = [];
       }
@@ -267,7 +267,7 @@ export class UsersService implements OnInit {
           }
         });
 
-        user.assignedClases = classes;
+     
 
         users.push(user);
       });

@@ -26,9 +26,10 @@ import {
   trash, 
   eye, 
   close, calendarOutline } from 'ionicons/icons';
-import { ActivityDialogComponent } from 'src/app/pages/activities/components/activity-dialog/activity-dialog.component';
+import { ActivityDialogComponent } from 'src/app/pages/activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 
 @Component({
   selector: 'app-list-activities4class',
@@ -125,12 +126,15 @@ export class ListActivities4classComponent implements OnDestroy {
    * Modifica un'attività esistente
    */
   private async editActivity(activity: ActivityModel) {
+    // Carica i dettagli completi dell'attività
+    const activityDetails = await this.activitiesService.getActivity(activity.key);
+    
     const modal = await this.modalCtrl.create({
       component: ActivityDialogComponent,
       componentProps: {
-        activityKey: activity.key,
-        classKey: this.classkey(),
-        teacherKey: this.teacherkey()
+        activity: activityDetails,
+        listaClassi: [{ key: this.classkey() } as ClasseModel], // Crea un oggetto ClasseModel con la chiave della classe
+        selectedClass: this.classkey()
       }
     });
     

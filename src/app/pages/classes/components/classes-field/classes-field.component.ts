@@ -83,6 +83,7 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
   }
 
   async selectClasses() {
+    console.log("cuiao ciao")
     const modal = await this.modalController.create({
       component: ClassesSelectorPage,
       componentProps: {
