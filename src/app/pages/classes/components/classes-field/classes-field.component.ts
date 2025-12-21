@@ -3,14 +3,13 @@ import {
   Input,
   OnInit,
   OnDestroy,
-  Output,
-  EventEmitter,
   forwardRef,
   signal,
   effect,
   inject,
   DestroyRef,
-  model
+  model,
+  output
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -48,12 +47,12 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
 })
 export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() disabled: boolean = false;
-  @Output() classeschange = new EventEmitter<ClasseModel[]>();
+  classeschange = output<AssignedClass[]>();
 
   classes = model<AssignedClass[]>([]);
   classi = signal<ClasseModel[]>([]);
 
-  onChange: (value: ClasseModel[]) => void = () => { };
+  onChange: (value: AssignedClass[]) => void = () => { };
   onTouched: () => void = () => { };
 
   private destroyRef = inject(DestroyRef);
@@ -124,8 +123,8 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
     }
   }
 
-  registerOnChange(fn: (value: ClasseModel[]) => void): void {
-    this.onChange = (value: ClasseModel[]) => {
+  registerOnChange(fn: (value: AssignedClass[]) => void): void {
+    this.onChange = (value: AssignedClass[]) => {
       fn(value);
       this.classeschange.emit(value);
     };

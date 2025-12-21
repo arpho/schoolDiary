@@ -141,7 +141,7 @@ export class UsersService implements OnInit {
           const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
           
         } else {
-          user.assignedClases = [];
+          user.assignedClasses = [];
         }
 
         users.push(user);
@@ -225,7 +225,7 @@ export class UsersService implements OnInit {
         const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
        // user.assignedClases = classi.map(item=>new AssignedClass(item));
       } else {
-        user.assignedClases = [];
+        user.assignedClasses = [];
       }
 
       return user;
@@ -300,8 +300,8 @@ export class UsersService implements OnInit {
           const loggedUser = await this.getUserByUid(user.uid);
           if (loggedUser) {
             const classes: AssignedClass[] = [];
-           if (loggedUser.assignedClases.length>0){
-            loggedUser.assignedClases.forEach(async (classe: AssignedClass) => {
+           if (loggedUser.assignedClasses.length>0){
+            loggedUser.assignedClasses.forEach(async (classe: AssignedClass) => {
               const classeBase = await this.$classes.fetchClasseOnCache(classe.key);
               if (classeBase) {
                 classes.push(new AssignedClass({...classe, ...classeBase}));
@@ -311,7 +311,7 @@ export class UsersService implements OnInit {
             
             
 
-            loggedUser.assignedClases = classes;
+            loggedUser.assignedClasses = classes;
           }
 
           resolve(loggedUser);

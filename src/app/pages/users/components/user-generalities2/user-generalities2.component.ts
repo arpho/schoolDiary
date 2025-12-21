@@ -134,9 +134,9 @@ export class UserGeneralities2Component implements OnInit {
     });
   }
 
-  // Metodo per gestire il cambiamento delle classi
-  onClassesChange(classes: ClasseModel[]) {
-    this.userForm.get('classes')?.setValue(classes);
+  onClassesChange(classes: AssignedClass[]) {
+    this.usersClasses.set(classes);
+    this.userForm.get('classes')?.setValue(classes.map(c => c.key));
   }
 
   onNoteDisabilitaChange($event: IonTextareaCustomEvent<TextareaChangeEventDetail>) {
@@ -152,9 +152,10 @@ export class UserGeneralities2Component implements OnInit {
     console.log("logged user*", loggedUser)
     const user = this.user();
     if (loggedUser) {
-      this.elencoClassi.set(loggedUser.assignedClases)
+      this.elencoClassi.set(loggedUser.assignedClasses)
     }
     console.log("elenco classi*", this.elencoClassi())
+    this.usersClasses.set(this.elencoClassi().map(c => new AssignedClass(c)))
     console.log('User input changed on effect*:', user);
     if (user.key) {
       console.log("User key:", user.key);
@@ -212,7 +213,7 @@ export class UserGeneralities2Component implements OnInit {
     const userData = {
       ...this.user(),
       ...formValue,
-      classes: formValue.classes || []
+      assignedClasses: this.usersClasses()
     };
 
     const user = new UserModel(userData);
@@ -376,6 +377,9 @@ export class UserGeneralities2Component implements OnInit {
           classKey: user.classKey || '',
           classes: user.classesKey || []
         }, { emitEvent: false });  // Aggiungi emitEvent: false
+        
+        this.usersClasses.set(user.assignedClasses || []);
+        
         this.cdr.detectChanges();  // Forza il rilevamento delle modifiche
         this.userForm.updateValueAndValidity();
         console.log("Form dopo la sincronizzazione:*", this.userForm.value)

@@ -1,7 +1,17 @@
 <ion-card>
   <ion-card-header>
     <div class="header-container">
-      <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
+      <div class="title-container">
+        <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
+        <div class="role-icons">
+          @if (isCoordinator()) {
+            <ion-icon name="school-outline" color="primary" title="Coordinatore"></ion-icon>
+          }
+          @if (isSecretary()) {
+            <ion-icon name="recording" color="secondary" title="Segretario"></ion-icon>
+          }
+        </div>
+      </div>
       @if (editable) {
         <ion-button fill="clear" (click)="edit()">
           <ion-icon name="settings-outline" slot="icon-only"></ion-icon>

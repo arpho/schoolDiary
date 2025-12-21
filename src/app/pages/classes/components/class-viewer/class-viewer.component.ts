@@ -6,7 +6,7 @@ import { SubjectService } from '../../../subjects-list/services/subjects/subject
 import { IonCardContent, IonCardHeader, IonCardTitle, IonCard, IonBadge, IonButton, IonIcon } from "@ionic/angular/standalone";
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { settingsOutline } from 'ionicons/icons';
+import { settingsOutline, schoolOutline, recording } from 'ionicons/icons';
 
 @Component({
   selector: 'app-class-viewer',
@@ -35,7 +35,7 @@ export class ClassViewerComponent implements OnInit, OnChanges {
   private $subjects = inject(SubjectService);
 
   constructor() {
-    addIcons({ settingsOutline });
+    addIcons({ settingsOutline, schoolOutline, recording });
   }
 
   ngOnInit() {
@@ -50,8 +50,8 @@ export class ClassViewerComponent implements OnInit, OnChanges {
   }
 
   private resolveSubjects() {
-    if (this.classe instanceof AssignedClass && this.classe.subjectsKey) {
-      const subjects = this.classe.subjectsKey
+    if (this.classe instanceof AssignedClass) {
+      const subjects = (this.classe.subjectsKey || [])
         .map(key => this.allSubjects().find(s => s.key === key))
         .filter((s): s is SubjectModel => !!s);
       this.resolvedSubjects.set(subjects);
@@ -63,6 +63,14 @@ export class ClassViewerComponent implements OnInit, OnChanges {
     } else {
       this.resolvedSubjects.set([]);
     }
+  }
+
+  isCoordinator() {
+    return (this.classe as any).coordinator === 'true' || (this.classe as any).coordinator === true;
+  }
+
+  isSecretary() {
+    return (this.classe as any).secretary === 'true' || (this.classe as any).secretary === true;
   }
 
   edit() {

@@ -13,6 +13,9 @@ import {
   IonButtons,
   IonButton,
   IonIcon,
+  IonRadioGroup,
+  IonRadio,
+  IonListHeader,
   ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -38,14 +41,19 @@ import { SubjectService } from '../../services/subjects/subject.service';
     IonCheckbox,
     IonButtons,
     IonButton,
-    IonIcon
+    IonIcon,
+    IonRadioGroup,
+    IonRadio,
+    IonListHeader
   ]
 })
 export class SubjectSelectorComponent implements OnInit {
   @Input() selectedSubjectsKey: string[] = [];
+  @Input() currentRole: 'coordinator' | 'secretary' | '' = '';
   
   subjects = signal<SubjectModel[]>([]);
   localSelectedKeys = signal<string[]>([]);
+  localSelectedRole = signal<'coordinator' | 'secretary' | ''>('');
 
   private $subjects = inject(SubjectService);
   private $modal = inject(ModalController);
@@ -56,6 +64,7 @@ export class SubjectSelectorComponent implements OnInit {
 
   ngOnInit() {
     this.localSelectedKeys.set([...this.selectedSubjectsKey]);
+    this.localSelectedRole.set(this.currentRole);
     this.$subjects.fetchSubjectListOnRealTime((subjects) => {
       this.subjects.set(subjects.sort((a, b) => a.name.localeCompare(b.name)));
     });
@@ -82,6 +91,9 @@ export class SubjectSelectorComponent implements OnInit {
   }
 
   confirm() {
-    this.$modal.dismiss(this.localSelectedKeys(), 'confirm');
+    this.$modal.dismiss({
+      subjectsKey: this.localSelectedKeys(),
+      role: this.localSelectedRole()
+    }, 'confirm');
   }
 }

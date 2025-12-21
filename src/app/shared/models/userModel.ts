@@ -24,7 +24,7 @@ export class UserModel{
   phoneNumber = ''
   role: UsersRole = UsersRole.STUDENT
   userName = ''
-  assignedClases:AssignedClass[] = []
+  assignedClasses:AssignedClass[] = []
   classesKey: string[] = []
 set classes (classes:string[]) {
   this.classesKey = classes;
@@ -68,11 +68,11 @@ serialize(){
     DSA: this.DSA,
     BES: this.BES,
     ADHD: this.ADHD,
-    assignedClasses: this.assignedClases.map((classe) => classe.serialize()),
+    assignedClasses: this.assignedClasses.map((classe) => classe.serialize()),
     noteDisabilita: this.noteDisabilita,
     pdpUrl: this.pdpUrl,
     userName: this.userName,
-    classes: this.assignedClases.map((classe) => classe.key)
+    classes: this.assignedClasses.map((classe) => classe.key)
   }
 }
 }

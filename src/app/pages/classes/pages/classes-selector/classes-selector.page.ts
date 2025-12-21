@@ -99,16 +99,20 @@ export class ClassesSelectorPage implements OnInit {
   }
 
   async openSubjectSelector(assignedClass: AssignedClass) {
+    const currentRole = assignedClass.coordinator ? 'coordinator' : (assignedClass.secretary ? 'secretary' : '');
     const modal = await this.$modal.create({
       component: SubjectSelectorComponent,
       componentProps: {
-        selectedSubjectsKey: assignedClass.subjectsKey
+        selectedSubjectsKey: assignedClass.subjectsKey,
+        currentRole: currentRole
       }
     });
     await modal.present();
-    const { data, role } = await modal.onDidDismiss();
-    if (role === 'confirm' && data) {
-      assignedClass.subjectsKey = data;
+    const { data, role: modalRole } = await modal.onDidDismiss();
+    if (modalRole === 'confirm' && data) {
+      assignedClass.subjectsKey = data.subjectsKey;
+      assignedClass.coordinator = data.role === 'coordinator' ? 'true' : ''; // Using 'true' string to match potential model expectation if it's string
+      assignedClass.secretary = data.role === 'secretary' ? 'true' : '';
     }
   }
 
