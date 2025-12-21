@@ -90,7 +90,7 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
         selectedClasses: [...this.classes()]
       }
     });
-
+await modal.present();
     const { data } = await modal.onDidDismiss();
 
     if (data) {

@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Seleziona Materie</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()" strong="true">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    @for (subject of subjects(); track subject.key) {
+      <ion-item>
+        <div slot="start" class="color-dot" [style.background-color]="subject.color"></div>
+        <ion-checkbox 
+          label-placement="end" 
+          (ionChange)="toggleSubject(subject.key, $event)"
+          [checked]="isSubjectSelected(subject.key)"
+          alignment="start">
+          <ion-label>
+            <h2>{{ subject.name }}</h2>
+            <p>{{ subject.classeDiConcorso }}</p>
+          </ion-label>
+        </ion-checkbox>
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>
