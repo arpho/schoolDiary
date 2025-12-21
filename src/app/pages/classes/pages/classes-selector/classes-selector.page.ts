@@ -26,7 +26,9 @@ import { ClassiService } from '../../services/classi.service';
 import { ClassViewerComponent } from '../../components/class-viewer/class-viewer.component';
 import { ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { checkmark } from 'ionicons/icons';
+import { checkmark, settingsOutline } from 'ionicons/icons';
+import { AssignedClass } from '../../../subjects-list/models/assignedClass';
+import { SubjectSelectorComponent } from '../../../subjects-list/components/subject-selector/subject-selector.component';
 @Component({
   selector: 'app-classes-selector',
   templateUrl: './classes-selector.page.html',
@@ -47,7 +49,8 @@ import { checkmark } from 'ionicons/icons';
     IonCheckbox,
     IonFabButton,
     IonIcon,
-    IonLabel
+    IonLabel,
+    SubjectSelectorComponent
   ]
 })
 export class ClassesSelectorPage implements OnInit {
@@ -61,22 +64,55 @@ export class ClassesSelectorPage implements OnInit {
   ) {
 
     addIcons({
-      checkmark
+      checkmark,
+      settingsOutline
     });
   }
-  isClassSelected(classe: ClasseModel) {
-    return this.selectedClasses.some((selectedClass) => selectedClass.key === classe.key);
+
+  getSelectedAssignedClass(classe: ClasseModel) {
+    return this.selectedClasses.find((selectedClass) => selectedClass.key === classe.key);
   }
-  selectedClass(classe: ClasseModel, event: any) {
+
+  async editSubjects(classe: ClasseModel) {
+    const assignedClass = this.getSelectedAssignedClass(classe);
+    if (assignedClass) {
+      await this.openSubjectSelector(assignedClass);
+    }
+  }
+
+  isClassSelected(classe: ClasseModel) {
+    return !!this.getSelectedAssignedClass(classe);
+  }
+  async selectedClass(classe: ClasseModel, event: any) {
     console.log("selectedClass", classe);
     console.log("event", event);
     if (event.detail.checked) {
-      this.selectedClasses.push(classe);
+      const assignedClass = new AssignedClass(classe);
+      this.selectedClasses.push(assignedClass);
+      await this.openSubjectSelector(assignedClass);
     } else {
-      this.selectedClasses.splice(this.selectedClasses.indexOf(classe), 1);
+      const index = this.selectedClasses.findIndex(c => c.key === classe.key);
+      if (index > -1) {
+        this.selectedClasses.splice(index, 1);
+      }
     }
   }
-  @Input() selectedClasses: ClasseModel[] = [];
+
+  async openSubjectSelector(assignedClass: AssignedClass) {
+    const modal = await this.$modal.create({
+      component: SubjectSelectorComponent,
+      componentProps: {
+        selectedSubjectsKey: assignedClass.subjectsKey
+      }
+    });
+    await modal.present();
+    const { data, role } = await modal.onDidDismiss();
+    if (role === 'confirm' && data) {
+      assignedClass.subjectsKey = data;
+    }
+  }
+
+  @Input() selectedClasses: AssignedClass[] = [];
   classi = signal<ClasseModel[]>([]);
   anniScolastici = computed(() => {
     const anniScolastici: string[] = [];

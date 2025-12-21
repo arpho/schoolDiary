@@ -91,6 +91,7 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
       }
     });
 
+    await modal.present();
     const { data } = await modal.onDidDismiss();
 
     if (data) {

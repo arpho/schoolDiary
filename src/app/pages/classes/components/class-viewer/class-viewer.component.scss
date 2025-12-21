@@ -1,0 +1,18 @@
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subjects-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.subject-badge {
+    font-weight: normal;
+    text-transform: none;
+    border-radius: 4px;
+}

@@ -1,8 +1,21 @@
 <ion-card>
   <ion-card-header>
-    <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
+    <div class="header-container">
+      <ion-card-title>{{classe.classe}} {{classe.year}}</ion-card-title>
+      @if (editable) {
+        <ion-button fill="clear" (click)="edit()">
+          <ion-icon name="settings-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      }
+    </div>
   </ion-card-header>
   <ion-card-content>
-
+    <div class="subjects-container">
+      @for (subject of resolvedSubjects(); track subject.key) {
+        <ion-badge [style.--background]="subject.color" class="subject-badge">
+          {{ subject.name }}
+        </ion-badge>
+      }
+    </div>
   </ion-card-content>
 </ion-card>
