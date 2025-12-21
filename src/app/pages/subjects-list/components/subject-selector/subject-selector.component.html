@@ -37,7 +37,12 @@
     <ion-list-header>
       <ion-label>Materie insegnate</ion-label>
     </ion-list-header>
-    @for (subject of subjects(); track subject.key) {
+    <ion-searchbar 
+      (ionInput)="searchTerm.set($event.detail.value || '')" 
+      placeholder="Cerca materia..."
+      class="ion-padding-horizontal">
+    </ion-searchbar>
+    @for (subject of filteredSubjects(); track subject.key) {
       <ion-item>
         <div slot="start" class="color-dot" [style.background-color]="subject.color"></div>
         <ion-checkbox 

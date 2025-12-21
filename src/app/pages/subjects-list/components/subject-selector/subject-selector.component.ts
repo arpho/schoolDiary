@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -16,6 +16,7 @@ import {
   IonRadioGroup,
   IonRadio,
   IonListHeader,
+  IonSearchbar,
   ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -44,7 +45,8 @@ import { SubjectService } from '../../services/subjects/subject.service';
     IonIcon,
     IonRadioGroup,
     IonRadio,
-    IonListHeader
+    IonListHeader,
+    IonSearchbar
   ]
 })
 export class SubjectSelectorComponent implements OnInit {
@@ -54,6 +56,16 @@ export class SubjectSelectorComponent implements OnInit {
   subjects = signal<SubjectModel[]>([]);
   localSelectedKeys = signal<string[]>([]);
   localSelectedRole = signal<'coordinator' | 'secretary' | ''>('');
+  searchTerm = signal('');
+
+  filteredSubjects = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    if (!term) return this.subjects();
+    return this.subjects().filter(s => 
+      s.name.toLowerCase().includes(term) || 
+      s.classeDiConcorso.toLowerCase().includes(term)
+    );
+  });
 
   private $subjects = inject(SubjectService);
   private $modal = inject(ModalController);

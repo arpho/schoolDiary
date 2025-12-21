@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, DestroyRef, effect, inject, input, OnInit
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
-import { list, save } from 'ionicons/icons/index';
+import { list, saveOutline, listCircleOutline, documentTextOutline } from 'ionicons/icons';
 import {
   IonContent,
   IonItem,
@@ -94,8 +94,9 @@ export class UserGeneralities2Component implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     addIcons({
-      'save': 'save-outline',
-      'pdf': 'pdf-outline'
+      'save': saveOutline,
+      'pdf': documentTextOutline,
+      'listCircleOutline': listCircleOutline
     });
 
 
@@ -128,10 +129,6 @@ export class UserGeneralities2Component implements OnInit {
         console.warn('User is null or undefined*');
       }
     }, { allowSignalWrites: true });
-    addIcons({
-      'save': 'save-outline',
-      'listCircleOutline': 'list-circle-outline',
-    });
   }
 
   onClassesChange(classes: AssignedClass[]) {
