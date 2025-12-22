@@ -19,7 +19,8 @@ import {
   IonCheckbox,
   IonFabButton,
   IonIcon,
-  IonLabel
+  IonLabel,
+  IonButton
 } from '@ionic/angular/standalone';
 import { ClasseModel } from '../../models/classModel';
 import { ClassiService } from '../../services/classi.service';
