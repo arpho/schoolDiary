@@ -7,12 +7,20 @@
     </ion-button>
   </div>
 
-  <div class="filter-container" style="padding: 0 16px;">
+  <div class="filter-container" style="padding: 0 16px; display: flex; gap: 8px;">
     <ion-select [ngModel]="filterType()" (ngModelChange)="filterType.set($event)" interface="popover"
-      placeholder="Filtra per media">
-      <ion-select-option value="all">Tutti</ion-select-option>
+      placeholder="Filtra per media" style="flex: 1;">
+      <ion-select-option value="all">Filtra per media</ion-select-option>
       <ion-select-option value="insufficient">Insufficienti (< 6)</ion-select-option>
-          <ion-select-option value="sufficient">Sufficienti (>= 6)</ion-select-option>
+      <ion-select-option value="sufficient">Sufficienti (>= 6)</ion-select-option>
+    </ion-select>
+
+    <ion-select [ngModel]="selectedSubjectKey()" (ngModelChange)="selectedSubjectKey.set($event)" interface="popover"
+      placeholder="Materia" style="flex: 1;">
+      <ion-select-option value="all">Tutte le materie</ion-select-option>
+      @for (subject of subjects(); track subject.key) {
+        <ion-select-option [value]="subject.key">{{subject.name}}</ion-select-option>
+      }
     </ion-select>
   </div>
 
@@ -25,7 +33,7 @@
             <ion-card-title>{{student.lastName}} {{student.firstName}}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()">
+            <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()" [subjectKey]="selectedSubjectKey()">
             </app-student-average-grade-display>
           </ion-card-content>
         </ion-card>

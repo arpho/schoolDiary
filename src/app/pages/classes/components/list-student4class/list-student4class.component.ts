@@ -19,6 +19,7 @@ import {
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation/evaluation.service';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { addIcons } from 'ionicons';
@@ -145,6 +146,19 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     this.router.navigate(['/evaluation', studentKey, this.classkey, teacher?.key]);
   }
 
+  deleteStudent(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
+  editStudent(arg0: string) {
+    this.router.navigate(['/user-dialog', arg0]);
+  }
+
+  readonly _students = signal<UserModel[]>([]);
+  readonly studentAverages = signal<Map<string, number>>(new Map());
+  readonly filterType = signal<string>('all');
+  readonly subjects = signal<SubjectModel[]>([]);
+  readonly selectedSubjectKey = signal<string>('all');
+
   constructor(
     private $users: UsersService,
     private $evaluations: EvaluationService,
@@ -157,19 +171,16 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     addIcons({
       cloudupload: cloudUploadOutline, add
     });
-  }
 
-
-  deleteStudent(arg0: string) {
-    throw new Error('Method not implemented.');
+    // Re-load averages whenever subjectKey or classKey changes
+    effect(() => {
+      const classKey = this.classkey;
+      const subjectKey = this.selectedSubjectKey();
+      if (classKey) {
+        this.loadAveragesForStudents();
+      }
+    });
   }
-  editStudent(arg0: string) {
-    this.router.navigate(['/user-dialog', arg0]);
-  }
-
-  readonly _students = signal<UserModel[]>([]);
-  readonly studentAverages = signal<Map<string, number>>(new Map());
-  readonly filterType = signal<string>('all');
 
   filteredStudents = computed(() => {
     const students = this._students();
@@ -208,10 +219,14 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     if (teacher) {
       console.log("teacher key# in listStudent4class", teacher.key)
       this.teacherkey.set(teacher.key);
+      
+      if (this.classkey) {
+        const teacherSubjects = await this.$users.getSubjectsByTeacherAndClass(teacher.key, this.classkey);
+        this.subjects.set(teacherSubjects);
+      }
     }
     if (this.classkey) {
       this.loadStudents();
-
     }
   }
 
@@ -224,20 +239,30 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
   private loadStudents() {
     this.$users.getUsersByClass(this.classkey, (users: UserModel[]) => {
       this.setStudents(users);
-      // Carica le medie per tutti gli studenti
-      users.forEach(student => {
-        this.$evaluations.fetchAverageGrade4StudentAndTeacher(
-          student.key,
-          this.teacherkey(),
-          (average) => {
-            this.studentAverages.update(map => {
-              const newMap = new Map(map);
-              newMap.set(student.key, average);
-              return newMap;
-            });
-          }
-        );
-      });
+      this.loadAveragesForStudents();
+    });
+  }
+
+  private loadAveragesForStudents() {
+    const users = this._students();
+    const teacherKey = this.teacherkey();
+    const subjectKey = this.selectedSubjectKey() === 'all' ? undefined : this.selectedSubjectKey();
+
+    if (!teacherKey) return;
+
+    users.forEach(student => {
+      this.$evaluations.fetchAverageGrade4StudentAndTeacher(
+        student.key,
+        teacherKey,
+        (average) => {
+          this.studentAverages.update(map => {
+            const newMap = new Map(map);
+            newMap.set(student.key, average);
+            return newMap;
+          });
+        },
+        subjectKey
+      );
     });
   }
 
