@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { QueryFieldFilterConstraint } from 'firebase/firestore';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { filter, save } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import {
@@ -98,7 +98,7 @@ export class Evaluation4pagesComponent implements OnInit {
       data: [new Date().toISOString()],
       grid: [''],
       activityKey: [''],
-      subjectKey: [''],
+      subjectKey: ['', [Validators.required]],
       classKey: [this.classKey],
       studentKey: [this.studentKey]
     }, { validators: [this.gridValidator()] });
@@ -184,6 +184,7 @@ export class Evaluation4pagesComponent implements OnInit {
       new ActivityModel({
         teacherKey: teacher?.key,
         classKey: this.classKey(),
+        subjectsKey: this.evaluationform.get('subjectKey')?.value,
         date: new Date().toISOString()
       })
     );
@@ -192,7 +193,8 @@ export class Evaluation4pagesComponent implements OnInit {
       component: ActivityDialogComponent,
       componentProps: {
         listaClassi: classi,
-        activity: activity,
+        listaMaterie: this.subjects(),
+        activity: activity(),
         selectedClass: this.classKey()
       },
       cssClass: 'auto-height',

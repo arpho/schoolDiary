@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivityModel } from '../../../models/activityModel';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 import { ModalController } from '@ionic/angular/standalone';
 import { IonDatetimeCustomEvent, DatetimeChangeEventDetail } from '@ionic/core';
 
@@ -96,6 +97,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
 export class ActivityDialogComponent implements OnInit {
   $users = inject(UsersService);
   @Input() listaClassi: ClasseModel[] = [];
+  @Input() listaMaterie: SubjectModel[] = [];
   @Input() selectedClass = '';
   @Input() activity: ActivityModel = new ActivityModel();
   
@@ -114,7 +116,7 @@ export class ActivityDialogComponent implements OnInit {
   get titleControl() { return this.activityForm.get('title'); }
   get descriptionControl() { return this.activityForm.get('description'); }
   get classKeyControl() { return this.activityForm.get('classKey'); }
-  get subjectControl() { return this.activityForm.get('subject'); }
+  get subjectControl() { return this.activityForm.get('subjectsKey'); }
   get dateControl() { return this.activityForm.get('date'); }
   get dueDateControl() { return this.activityForm.get('dueDate'); }
   
@@ -198,6 +200,9 @@ export class ActivityDialogComponent implements OnInit {
         Validators.maxLength(500)
       ]],
       classKey: [this.activity?.classKey || this.selectedClass || '', [
+        Validators.required
+      ]],
+      subjectsKey: [this.activity?.subjectsKey || '', [
         Validators.required
       ]],
       date: [this.activity?.date || this.minDate, [

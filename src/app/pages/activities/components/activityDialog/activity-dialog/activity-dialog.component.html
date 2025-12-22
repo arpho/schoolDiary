@@ -135,6 +135,39 @@
                 </div>
               </ion-item>
             </ion-col>
+            
+            <!-- Materia -->
+            <ion-col size="12" size-md="6">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(subjectControl?.touched || isSubmitted) && subjectControl?.invalid" [class.ion-valid]="subjectControl?.valid && (subjectControl?.touched || isSubmitted)">
+                <ion-label position="stacked">Materia <span class="required">*</span></ion-label>
+                <ion-select 
+                  formControlName="subjectsKey"
+                  interface="action-sheet"
+                  cancelText="Annulla"
+                  okText="Seleziona"
+                  required
+                  [attr.aria-invalid]="(subjectControl?.touched || isSubmitted) && subjectControl?.invalid ? 'true' : 'false'"
+                  aria-describedby="subject-errors">
+                  <ion-select-option value="">Seleziona una materia</ion-select-option>
+                  @for (materia of listaMaterie; track materia.key) {
+                    <ion-select-option [value]="materia.key">
+                      {{ materia.name }}
+                    </ion-select-option>
+                  }
+                </ion-select>
+                
+                <div id="subject-errors" class="error-messages">
+                  @if ((subjectControl?.touched || isSubmitted) && subjectControl?.invalid) {
+                    @if (subjectControl?.errors?.['required']) {
+                      <ion-note color="danger">
+                        <ion-icon name="warning" slot="start"></ion-icon>
+                        Seleziona una materia
+                      </ion-note>
+                    }
+                  }
+                </div>
+              </ion-item>
+            </ion-col>
 
             <!-- Data -->
             <ion-col size="12" size-md="6">
