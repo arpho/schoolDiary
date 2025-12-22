@@ -41,6 +41,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ActivityDialogComponent } from 'src/app/pages/activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 @Component({
   selector: 'app-evaluation4pages',
   templateUrl: './evaluation4pages.component.html',
@@ -82,6 +83,7 @@ export class Evaluation4pagesComponent implements OnInit {
   grid = signal<Grids>(new Grids());
   griglie = signal<Grids[]>([]);
   student = signal<UserModel>(new UserModel());
+  subjects = signal<SubjectModel[]>([]);
   isGridValid = signal<boolean>(false);
   $users = inject(UsersService);
   // Inizializzo il form nel costruttore invece che nella dichiarazione
@@ -96,6 +98,7 @@ export class Evaluation4pagesComponent implements OnInit {
       data: [new Date().toISOString()],
       grid: [''],
       activityKey: [''],
+      subjectKey: [''],
       classKey: [this.classKey],
       studentKey: [this.studentKey]
     }, { validators: [this.gridValidator()] });
@@ -118,6 +121,8 @@ export class Evaluation4pagesComponent implements OnInit {
     });
   }
 
+
+
   async ngOnInit() {
     const classKey = this.route.snapshot.paramMap.get('classKey');
     const studentKey = this.route.snapshot.paramMap.get('studentKey');
@@ -135,6 +140,15 @@ export class Evaluation4pagesComponent implements OnInit {
       this.student.set(student);
       this.title.set("Valutazione studente " + student.lastName + " " + student.firstName);
     }
+
+    if (teacherKey && classKey) {
+      const teacherSubjects = await this.$users.getSubjectsByTeacherAndClass(teacherKey, classKey);
+      this.subjects.set(teacherSubjects);
+      if (teacherSubjects.length > 0) {
+        this.evaluationform.patchValue({ subjectKey: teacherSubjects[0].key });
+      }
+    }
+
     this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
       if (gridKey) {
         const grid = this.griglie().find((grid) => grid.key === gridKey);

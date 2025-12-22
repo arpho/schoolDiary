@@ -86,6 +86,21 @@ export class SubjectService {
     };
   }
 
+  async fetchSubject(subjectKey: string): Promise<SubjectModel | undefined> {
+    const docRef = doc(this.firestore, this.collectionName, subjectKey);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return new SubjectModel(docSnap.data()).setKey(docSnap.id);
+    }
+    return undefined;
+  }
+
+  async fetchSubjectsByKeys(subjectKeys: string[]): Promise<SubjectModel[]> {
+    const promises = subjectKeys.map(key => this.fetchSubject(key));
+    const results = await Promise.all(promises);
+    return results.filter((s): s is SubjectModel => s !== undefined);
+  }
+
   updateSubject(subject: SubjectModel): Promise<void> {
     const docRef = doc(this.firestore, this.collectionName, subject.key);
     return setDoc(docRef, subject.serialize(), { merge: true });

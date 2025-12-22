@@ -21,6 +21,8 @@ import { ClassiService } from '../../../app/pages/classes/services/classi.servic
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { OrCondition, QueryCondition } from '../models/queryCondition';
 import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
+import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 
 interface ClaimsResponse {
   message?: string;
@@ -40,6 +42,7 @@ export class UsersService implements OnInit {
   private auth = inject(Auth);
   private firestore = inject(Firestore);
   private MyAuth = inject(AuthService);
+  private $subjects = inject(SubjectService);
   private collectionName = 'userProfiles';
 
   // Store Firebase API functions to avoid injection context warnings
@@ -424,5 +427,22 @@ export class UsersService implements OnInit {
       console.error('Error fetching user by UID:', error);
       return null;
     }
+  }
+
+  /**
+   * Ritorna le materie insegnate da un docente in una classe
+   */
+  async getSubjectsByTeacherAndClass(teacherKey: string, classKey: string): Promise<SubjectModel[]> {
+    const teacher = await this.fetchUser(teacherKey);
+    if (!teacher || !teacher.assignedClasses) {
+      return [];
+    }
+
+    const assignedClass = teacher.assignedClasses.find(c => c.key === classKey);
+    if (!assignedClass || !assignedClass.subjectsKey || assignedClass.subjectsKey.length === 0) {
+      return [];
+    }
+
+    return this.$subjects.fetchSubjectsByKeys(assignedClass.subjectsKey);
   }
 }

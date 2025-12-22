@@ -27,6 +27,17 @@
       </ion-item>
 
       <ion-item>
+        <ion-label position="floating">Materia</ion-label>
+        <ion-select formControlName="subjectKey" placeholder="Seleziona materia">
+          @for(subject of subjects(); track subject.key) {
+            <ion-select-option [value]="subject.key">
+              {{subject.name}}
+            </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
         <ion-label position="floating">Attività</ion-label>
         <ion-select formControlName="activityKey" placeholder="Seleziona attività">
           @for(activity of activities(); track activity.key) {
