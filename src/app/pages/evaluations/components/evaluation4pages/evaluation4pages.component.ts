@@ -42,6 +42,7 @@ import { ActivityDialogComponent } from 'src/app/pages/activities/components/act
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
+import { UnsubscribeService } from 'src/app/shared/services/unsubscribe.service';
 @Component({
   selector: 'app-evaluation4pages',
   templateUrl: './evaluation4pages.component.html',
@@ -72,7 +73,8 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
     IonBackButton,
     IonNote,
     EvaluateGridComponent
-  ]
+  ],
+  providers: [UnsubscribeService]
 })
 export class Evaluation4pagesComponent implements OnInit {
   studentKey = signal<string>("");
@@ -109,16 +111,42 @@ export class Evaluation4pagesComponent implements OnInit {
     private gridsService: GridsService,
     private modalCtrl: ModalController,
     private $classes: ClassiService,
-    private router: Router
+    private router: Router,
+    private unsubscribe: UnsubscribeService
   ) {
     addIcons({
       save,
     });
     this.initializeForm();
-    this.gridsService.getGridsOnRealtime((grids: Grids[]) => {
+    const subGrids = this.gridsService.getGridsOnRealtime((grids: Grids[]) => {
       console.log("grids", grids);
       this.griglie.set(grids);
     });
+    this.unsubscribe.add(subGrids);
+  }
+
+  private activitiesUnsub?: () => void;
+
+  private loadActivities(subjectKey: string) {
+    if (this.activitiesUnsub) {
+      this.activitiesUnsub();
+    }
+
+    const conditions = [
+      new QueryCondition("classKey", "==", this.classKey()),
+      new QueryCondition("subjectsKey", "==", subjectKey)
+    ];
+
+    this.activitiesUnsub = this.$activites.getActivities4teacherOnRealtime(
+      this.teacherKey(),
+      (activities: ActivityModel[]) => {
+        console.log("activities", activities);
+        this.activities.set(activities);
+      },
+      conditions
+    );
+
+    this.unsubscribe.add(this.activitiesUnsub);
   }
 
 
@@ -131,10 +159,7 @@ export class Evaluation4pagesComponent implements OnInit {
     this.classKey.set(classKey!);
     this.studentKey.set(studentKey!);
     this.teacherKey.set(teacherKey!);
-    this.$activites.getActivities4teacherOnRealtime(teacherKey!, (activities: ActivityModel[]) => {
-      console.log("activities", activities);
-      this.activities.set(activities);
-    }, [new QueryCondition("classKey", "==", classKey!)]);
+
     const student = await this.$users.getUser(studentKey!);
     if (student != null) {
       this.student.set(student);
@@ -149,7 +174,21 @@ export class Evaluation4pagesComponent implements OnInit {
       }
     }
 
-    this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
+    const subSubject = this.evaluationform.controls['subjectKey'].valueChanges.subscribe((subjectKey: string | null) => {
+      if (subjectKey) {
+        console.log("subjectKey changed", subjectKey);
+        this.loadActivities(subjectKey);
+      }
+    });
+    this.unsubscribe.add(subSubject);
+
+    // Caricamento iniziale se presente
+    const initialSubject = this.evaluationform.get('subjectKey')?.value;
+    if (initialSubject) {
+      this.loadActivities(initialSubject);
+    }
+
+    const subGrid = this.evaluationform.controls['grid'].valueChanges.subscribe((gridKey: string | null) => {
       if (gridKey) {
         const grid = this.griglie().find((grid) => grid.key === gridKey);
         if (grid) {
@@ -157,7 +196,9 @@ export class Evaluation4pagesComponent implements OnInit {
         }
       }
     });
-    this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
+    this.unsubscribe.add(subGrid);
+
+    const subActivity = this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
       if (activityKey) {
         const activity = this.activities().find((activity) => activity.key === activityKey);
         if (activity) {
@@ -166,8 +207,7 @@ export class Evaluation4pagesComponent implements OnInit {
         }
       }
     });
-
-
+    this.unsubscribe.add(subActivity);
   }
   async openActivityDialog() {
     const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
