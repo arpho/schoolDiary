@@ -15,6 +15,16 @@
       </ion-select>
     </ion-item>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-select label="Filtra per materia" label-placement="floating" (ionChange)="onSubjectChange($event)" [value]="selectedSubjectKey()">
+        <ion-select-option value="all">Tutte le materie</ion-select-option>
+        @for(subject of subjectsList(); track subject.key) {
+          <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">

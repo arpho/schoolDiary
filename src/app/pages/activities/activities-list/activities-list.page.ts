@@ -4,6 +4,8 @@ import { ActivityModel } from '../models/activityModel';
 import { UsersService } from '../../../shared/services/users.service';
 import { UserModel } from '../../../shared/models/userModel';
 import { ActivitiesService } from '../services/activities.service';
+import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
@@ -56,7 +58,10 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
   private classiService = inject(ClassiService);
   private classesList = signal<ClasseModel[]>([]);
   private modalController = inject(ModalController);
+  private subjectService = inject(SubjectService);
   selectedClassKey = signal<string>('all');
+  selectedSubjectKey = signal<string>('all');
+  subjectsList = signal<SubjectModel[]>([]);
   private activitiesSubscription?: () => void;
 
 
@@ -110,10 +115,19 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
 
 
 
-  async ngOnInit() {
+   async ngOnInit() {
     const user = await this.usersService.getLoggedUser();
     if (user) {
       this.loggedUser.set(user);
+      
+      // Load unique subjects from assigned classes
+      if (user.assignedClasses) {
+        const allSubjectKeys = user.assignedClasses.reduce((acc, c) => acc.concat(c.subjectsKey || []), [] as string[]);
+        const subjectKeys = Array.from(new Set(allSubjectKeys));
+        const subjects = await this.subjectService.fetchSubjectsByKeys(subjectKeys);
+        this.subjectsList.set(subjects);
+      }
+
       this.loadActivities();
     }
   }
@@ -127,11 +141,20 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
     }
 
     const classKey = this.selectedClassKey();
+    const subjectKey = this.selectedSubjectKey();
+    
     let conditions: QueryCondition[] = [];
+    
+    // Class filter
     if (classKey !== 'all') {
-      conditions = [new QueryCondition('classKey', '==', classKey)];
+      conditions.push(new QueryCondition('classKey', '==', classKey));
     } else {
-      conditions = [new QueryCondition('classKey', 'in', user.classesKey)];
+      conditions.push(new QueryCondition('classKey', 'in', user.classesKey));
+    }
+
+    // Subject filter
+    if (subjectKey !== 'all') {
+      conditions.push(new QueryCondition('subjectKey', '==', subjectKey));
     }
 
     this.activitiesSubscription = this.activitiesService.getActivities4teacherOnRealtime(
@@ -146,6 +169,11 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
 
   onClassChange(event: any) {
     this.selectedClassKey.set(event.detail.value);
+    this.loadActivities();
+  }
+
+  onSubjectChange(event: any) {
+    this.selectedSubjectKey.set(event.detail.value);
     this.loadActivities();
   }
 
