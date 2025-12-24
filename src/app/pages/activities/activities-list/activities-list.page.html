@@ -5,6 +5,16 @@
     </ion-buttons>
     <ion-title align="center">Attività</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-select label="Filtra per classe" label-placement="floating" (ionChange)="onClassChange($event)" [value]="selectedClassKey()">
+        <ion-select-option value="all">Tutte le classi</ion-select-option>
+        @for(classe of loggedUser()?.assignedClasses; track classe.key) {
+          <ion-select-option [value]="classe.key">{{ classe.classe }} {{ classe.year }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">

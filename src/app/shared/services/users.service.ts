@@ -302,19 +302,16 @@ export class UsersService implements OnInit {
         if (user) {
           const loggedUser = await this.getUserByUid(user.uid);
           if (loggedUser) {
-            const classes: AssignedClass[] = [];
-           if (loggedUser.assignedClasses.length>0){
-            loggedUser.assignedClasses.forEach(async (classe: AssignedClass) => {
-              const classeBase = await this.$classes.fetchClasseOnCache(classe.key);
-              if (classeBase) {
-                classes.push(new AssignedClass({...classe, ...classeBase}));
-              }
-            });
-           }  
-            
-            
-
-            loggedUser.assignedClasses = classes;
+            if (loggedUser.assignedClasses && loggedUser.assignedClasses.length > 0) {
+              const classesPromises = loggedUser.assignedClasses.map(async (classe: AssignedClass) => {
+                const classeBase = await this.$classes.fetchClasseOnCache(classe.key);
+                if (classeBase) {
+                  return new AssignedClass({ ...classe, ...classeBase });
+                }
+                return new AssignedClass(classe);
+              });
+              loggedUser.assignedClasses = await Promise.all(classesPromises);
+            }
           }
 
           resolve(loggedUser);

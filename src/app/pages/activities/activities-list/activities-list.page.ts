@@ -1,5 +1,5 @@
-import { Component, OnInit, signal, inject, effect } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonFab, IonFabButton, IonFabList, IonBackButton, IonButtons, IonCardSubtitle, IonButton, AlertInput } from '@ionic/angular/standalone';
+import { Component, OnInit, signal, inject, effect, OnDestroy } from '@angular/core';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonFab, IonFabButton, IonFabList, IonBackButton, IonButtons, IonCardSubtitle, IonButton, AlertInput, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { ActivityModel } from '../models/activityModel';
 import { UsersService } from '../../../shared/services/users.service';
 import { UserModel } from '../../../shared/models/userModel';
@@ -10,6 +10,7 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ModalController } from '@ionic/angular';
 import { ActivityDialogComponent } from '../components/activityDialog/activity-dialog/activity-dialog.component';
 import { DatePipe } from '@angular/common';
+import { user } from '@angular/fire/auth';
 
 
 @Component({
@@ -36,10 +37,12 @@ import { DatePipe } from '@angular/common';
     IonButtons,
     IonCardSubtitle,
     IonButton,
-    DatePipe
+    DatePipe,
+    IonSelect,
+    IonSelectOption
   ]
 })
-export class ActivitiesListPage implements OnInit {
+export class ActivitiesListPage implements OnInit, OnDestroy {
 
   activity = signal<ActivityModel>(new ActivityModel({
     title: '',
@@ -53,6 +56,8 @@ export class ActivitiesListPage implements OnInit {
   private classiService = inject(ClassiService);
   private classesList = signal<ClasseModel[]>([]);
   private modalController = inject(ModalController);
+  selectedClassKey = signal<string>('all');
+  private activitiesSubscription?: () => void;
 
 
   constructor() {
@@ -105,24 +110,49 @@ export class ActivitiesListPage implements OnInit {
 
 
 
-  ngOnInit() {
-    this.usersService.getLoggedUser().then((user: UserModel | null) => {
+  async ngOnInit() {
+    const user = await this.usersService.getLoggedUser();
+    if (user) {
       this.loggedUser.set(user);
-      if (user?.classes) {
-        // Get activities for all classes the user is in
-        const classKey = user.classKey;
-        console.log("classKey", classKey);
+      this.loadActivities();
+    }
+  }
 
-        this.activitiesService.getActivities4teacherOnRealtime(
-          user.key,
-          (activities: ActivityModel[]) => {
-            console.log("activities", activities);
-            this.activitiesList.set(activities);
-          },
-          [new QueryCondition('classKey', 'in', classKey)]
-        );
-      }
-    });
+  loadActivities() {
+    const user = this.loggedUser();
+    if (!user) return;
+
+    if (this.activitiesSubscription) {
+      this.activitiesSubscription();
+    }
+
+    const classKey = this.selectedClassKey();
+    let conditions: QueryCondition[] = [];
+    if (classKey !== 'all') {
+      conditions = [new QueryCondition('classKey', '==', classKey)];
+    } else {
+      conditions = [new QueryCondition('classKey', 'in', user.classesKey)];
+    }
+
+    this.activitiesSubscription = this.activitiesService.getActivities4teacherOnRealtime(
+      user.key,
+      (activities: ActivityModel[]) => {
+        console.log("activities", activities);
+        this.activitiesList.set(activities);
+      },
+      conditions
+    );
+  }
+
+  onClassChange(event: any) {
+    this.selectedClassKey.set(event.detail.value);
+    this.loadActivities();
+  }
+
+  ngOnDestroy() {
+    if (this.activitiesSubscription) {
+      this.activitiesSubscription();
+    }
   }
 
 }
