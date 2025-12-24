@@ -70,7 +70,10 @@ import { StudentAverageGradeDisplayComponent } from '../student-average-grade-di
   ]
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
-  dataInizioPeriodo = signal<string>(new Date(new Date().getMonth() >= 8 ? new Date().getFullYear() : new Date().getFullYear() - 1, 8, 1).toISOString());
+  dataInizioPeriodo = signal<string>(
+    localStorage.getItem('dataInizioPeriodo') || 
+    new Date(new Date().getFullYear(), 0, 2).toISOString()
+  );
   async showActionSheet(student: UserModel) {
     console.log("action for", student)
 
@@ -218,7 +221,9 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
   }
 
   onDateChange(event: any) {
-    this.dataInizioPeriodo.set(event.detail.value);
+    const newDate = event.detail.value;
+    this.dataInizioPeriodo.set(newDate);
+    localStorage.setItem('dataInizioPeriodo', newDate);
   }
 
   private setStudents(users: UserModel[]): void {
