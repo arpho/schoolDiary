@@ -257,11 +257,16 @@ export class EvaluationService {
     studentKey: string,
     teacherKey: string,
     callback: (averageGrade: number) => void,
-    subjectKey?: string
+    subjectKey?: string,
+    startDate?: string
   ) {
     this.getEvaluation4studentAndTeacher(studentKey, teacherKey, (evaluations) => {
-      const total = evaluations.reduce((sum, Myeval) => sum + (Myeval.gradeInDecimal || 0), 0);
-      callback(evaluations.length > 0 ? total / evaluations.length : 0);
+      let filteredEvaluations = evaluations;
+      if (startDate) {
+        filteredEvaluations = evaluations.filter(e => e.data >= startDate);
+      }
+      const total = filteredEvaluations.reduce((sum, Myeval) => sum + (Myeval.gradeInDecimal || 0), 0);
+      callback(filteredEvaluations.length > 0 ? total / filteredEvaluations.length : 0);
     }, subjectKey);
   }
 
@@ -269,11 +274,16 @@ export class EvaluationService {
     studentKey: string,
     teacherKey: string,
     callback: (result: EvaluationCount) => void,
-    subjectKey?: string
+    subjectKey?: string,
+    startDate?: string
   ) {
     this.getEvaluation4studentAndTeacher(studentKey, teacherKey, (evaluations) => {
-      const total = evaluations.reduce((sum, myEval) => sum + (myEval.gradeInDecimal || 0), 0);
-      const count = evaluations.length;
+      let filteredEvaluations = evaluations;
+      if (startDate) {
+        filteredEvaluations = evaluations.filter(e => e.data >= startDate);
+      }
+      const total = filteredEvaluations.reduce((sum, myEval) => sum + (myEval.gradeInDecimal || 0), 0);
+      const count = filteredEvaluations.length;
       callback({
         averageGrade: count > 0 ? total / count : 0,
         evaluationscount: count

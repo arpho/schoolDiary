@@ -15,7 +15,10 @@ import {
   IonIcon,
   IonButton,
   IonSelect,
-  IonSelectOption
+  IonSelectOption,
+  IonDatetimeButton,
+  IonDatetime,
+  IonModal
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation/evaluation.service';
@@ -58,12 +61,16 @@ import { StudentAverageGradeDisplayComponent } from '../student-average-grade-di
     IonButton,
     IonSelect,
     IonSelectOption,
+    IonDatetimeButton,
+    IonDatetime,
+    IonModal,
     CommonModule,
     FormsModule,
     StudentAverageGradeDisplayComponent
   ]
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
+  dataInizioPeriodo = signal<string>(new Date(new Date().getMonth() >= 8 ? new Date().getFullYear() : new Date().getFullYear() - 1, 8, 1).toISOString());
   async showActionSheet(student: UserModel) {
     console.log("action for", student)
 
@@ -172,10 +179,11 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
       cloudupload: cloudUploadOutline, add
     });
 
-    // Re-load averages whenever subjectKey or classKey changes
+    // Re-load averages whenever subjectKey, classKey or dataInizioPeriodo changes
     effect(() => {
       const classKey = this.classkey;
       const subjectKey = this.selectedSubjectKey();
+      const date = this.dataInizioPeriodo();
       if (classKey) {
         this.loadAveragesForStudents();
       }
@@ -207,6 +215,10 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
 
   get students(): UserModel[] {
     return this._students();
+  }
+
+  onDateChange(event: any) {
+    this.dataInizioPeriodo.set(event.detail.value);
   }
 
   private setStudents(users: UserModel[]): void {
@@ -247,6 +259,7 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     const users = this._students();
     const teacherKey = this.teacherkey();
     const subjectKey = this.selectedSubjectKey() === 'all' ? undefined : this.selectedSubjectKey();
+    const startDate = this.dataInizioPeriodo();
 
     if (!teacherKey) return;
 
@@ -261,7 +274,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
             return newMap;
           });
         },
-        subjectKey
+        subjectKey,
+        startDate
       );
     });
   }

@@ -33,6 +33,7 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
   student = input.required<UserModel>();
   teacherkey = input.required<string>();
   subjectKey = input<string>('all');
+  startDate = input<string>('');
   
   averagegrade = signal<number>(0);
   evaluationscount = signal<number>(0);
@@ -46,6 +47,7 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
   constructor() { 
     effect(() => {
       const subject = this.subjectKey() === 'all' ? undefined : this.subjectKey();
+      const date = this.startDate();
       this.loading.set(true);
       this.$evaluations.fetchAverageGradeWhitCount4StudentAndTeacher(
         this.student().key, 
@@ -56,7 +58,8 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
           this.loading.set(false);
           this.visibilityStatus.emit({studentKey:this.student().key,visibility:true});
         }, 
-        subject
+        subject,
+        date
       );
     });
 
