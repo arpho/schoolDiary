@@ -1,5 +1,23 @@
-
-@if (evaluationscount() > 0) {
+@if (loading()) {
+  <div class="grade-display-container">
+    <ion-card class="grade-card skeleton-card">
+      <ion-card-content class="ion-text-center">
+        <div class="skeleton-icon-container">
+          <ion-skeleton-text animated style="width: 40px; height: 40px; margin: 0 auto; border-radius: 50%; opacity: 0.3;"></ion-skeleton-text>
+        </div>
+        <h2 class="grade-value">
+          <ion-skeleton-text animated style="width: 50px; margin: 8px auto; height: 32px; opacity: 0.3;"></ion-skeleton-text>
+        </h2>
+        <p class="grade-label">
+          <ion-skeleton-text animated style="width: 80px; margin: 5px auto; height: 14px; opacity: 0.3;"></ion-skeleton-text>
+        </p>
+        <div class="skeleton-badge-container">
+          <ion-skeleton-text animated style="width: 120px; margin: 12px auto; height: 26px; border-radius: 12px; opacity: 0.3;"></ion-skeleton-text>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+} @else if (evaluationscount() > 0) {
   <div class="grade-display-container">
     <ion-card class="grade-card" [style]="getCardBackground(averagegrade())">
       <ion-card-content class="ion-text-center">

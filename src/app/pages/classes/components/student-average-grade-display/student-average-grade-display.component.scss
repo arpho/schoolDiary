@@ -42,6 +42,18 @@
     font-size: 0.8rem;
     border-radius: 16px;
   }
+
+  &.skeleton-card {
+    --background: #f0f0f0;
+    
+    .skeleton-icon-container {
+      margin-bottom: 8px;
+    }
+    
+    .skeleton-badge-container {
+      margin-top: 12px;
+    }
+  }
 }
 
 .no-evaluations-card {

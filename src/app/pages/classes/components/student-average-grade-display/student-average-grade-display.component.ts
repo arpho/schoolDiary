@@ -6,7 +6,8 @@ import {
   IonBadge, 
   IonCard, 
   IonCardContent, 
-  IonIcon
+  IonIcon,
+  IonSkeletonText
 } from "@ionic/angular/standalone";
 import { UserModel } from 'src/app/shared/models/userModel';
 import { filter } from 'rxjs';
@@ -24,7 +25,8 @@ import { clipboardOutline, documentText, statsChart } from 'ionicons/icons';
     IonBadge,
     IonCard,
     IonCardContent,
-    IonIcon
+    IonIcon,
+    IonSkeletonText
   ],
 })
 export class StudentAverageGradeDisplayComponent implements OnInit {
@@ -34,6 +36,7 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
   
   averagegrade = signal<number>(0);
   evaluationscount = signal<number>(0);
+  loading = signal<boolean>(true);
   visibilityStatus = output<{studentKey:string,visibility:boolean}>();
 
   $evaluations = inject(EvaluationService);
@@ -43,12 +46,14 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
   constructor() { 
     effect(() => {
       const subject = this.subjectKey() === 'all' ? undefined : this.subjectKey();
+      this.loading.set(true);
       this.$evaluations.fetchAverageGradeWhitCount4StudentAndTeacher(
         this.student().key, 
         this.teacherkey(), 
         (result: {averageGrade: number, evaluationscount: number}) => {
           this.averagegrade.set(result.averageGrade);
           this.evaluationscount.set(result.evaluationscount);
+          this.loading.set(false);
           this.visibilityStatus.emit({studentKey:this.student().key,visibility:true});
         }, 
         subject
