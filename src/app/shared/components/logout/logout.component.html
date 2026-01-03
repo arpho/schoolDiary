@@ -1,7 +1,7 @@
 <div class="logout-container">
   <p class="welcome-message">Benvenuto {{loggedUser().email}}</p>
   <ion-fab id="test" vertical="bottom" horizontal="end">
-    <ion-fab-button size="small" color="medium">
+    <ion-fab-button color="medium">
       @if (gravatarUrl()) {
         <img [src]="gravatarUrl()" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
       } @else {

@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, signal, effect, ViewChild } from '@angular/core';
-import { ModalController, IonBackButton, IonContent, IonHeader, IonIcon, IonTabs, IonTabBar, IonTabButton, IonTitle, IonToolbar, IonTab, IonLabel } from '@ionic/angular/standalone';
+import { ModalController, IonBackButton, IonContent, IonHeader, IonIcon, IonTabs, IonTabBar, IonTabButton, IonTitle, IonToolbar, IonTab, IonLabel, IonGrid, IonRow, IonCol, IonItemDivider, IonList, IonItem, IonInput, IonButton } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DocumentModel } from 'src/app/pages/classes/models/documentModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
@@ -13,7 +14,8 @@ import { ReservedNotes4studentComponent } from "../components/reserved-notes4stu
 import { Evaluation4StudentComponent } from "../components/evaluation4-student/evaluation4-student.component";
 import { UserGeneralities2Component } from '../components/user-generalities2/user-generalities2.component';
 import { addIcons } from 'ionicons';
-import { documentTextOutline, personOutline, sparklesOutline } from 'ionicons/icons';
+import { documentTextOutline, personOutline, sparklesOutline, trash, add } from 'ionicons/icons';
+import { AlertController } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-user-dialog',
@@ -23,22 +25,29 @@ import { documentTextOutline, personOutline, sparklesOutline } from 'ionicons/ic
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     IonBackButton,
     IonContent,
     IonHeader,
     IonIcon,
     IonTitle,
     IonToolbar,
-    UserGeneralities2Component,
     IonTabs,
     IonTabBar,
     IonTabButton,
     IonTab,
-    ReservedNotes4studentComponent,
     IonLabel,
-    Evaluation4StudentComponent,
-    ReactiveFormsModule,
-    FormsModule
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonItemDivider,
+    IonList,
+    IonItem,
+    IonInput,
+    IonButton,
+    UserGeneralities2Component,
+    ReservedNotes4studentComponent,
+    Evaluation4StudentComponent
   ]
 })
 export class UserDialogPage implements OnInit {
@@ -100,6 +109,11 @@ export class UserDialogPage implements OnInit {
   usersClasses = signal<ClasseModel[]>([]);
   elencoClassi = signal<ClasseModel[]>([]);
   loggedUser = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
+  
+  // PDP Links Management
+  pdpList = signal<DocumentModel[]>([]);
+  initialPdpList: string = '[]';
+  
   rolesValue: any[] = [];
   rolesName: string[] = [];
   userForm: FormGroup = new FormGroup({
@@ -120,13 +134,16 @@ export class UserDialogPage implements OnInit {
     private readonly $classes: ClassiService,
     private readonly toaster: ToasterService,
     private readonly router: Router,
-    private readonly modalCtrl: ModalController
+    private readonly modalCtrl: ModalController,
+    private readonly alertCtrl: AlertController
   ) {
     console.log("UserDialogPage constructor");
     addIcons({
       'document-text': documentTextOutline,
       'person': personOutline,
       'sparkles': sparklesOutline,
+      'trash': trash,
+      'add': add
     });
 
     // Inizializzazione nel constructor
@@ -174,6 +191,13 @@ export class UserDialogPage implements OnInit {
           console.log("user showed", user);
           if (user instanceof UserModel) {
             this.user.set(user);
+            // Initialize PDP list
+            if (user.pdpUrl && Array.isArray(user.pdpUrl)) {
+              this.pdpList.set(JSON.parse(JSON.stringify(user.pdpUrl)));
+            } else {
+              this.pdpList.set([]);
+            }
+            this.initialPdpList = JSON.stringify(this.pdpList());
           }
         }
 
@@ -195,9 +219,49 @@ export class UserDialogPage implements OnInit {
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
   }
 
+  addPdp() {
+    this.pdpList.update(list => [...list, new DocumentModel()]);
+  }
+
+  removePdp(index: number) {
+    this.pdpList.update(list => list.filter((_, i) => i !== index));
+  }
+
+  hasUnsavedChanges(): boolean {
+    const pdpChanged = JSON.stringify(this.pdpList()) !== this.initialPdpList;
+    return this.userForm.dirty || pdpChanged;
+  }
+
+  async dismiss() {
+    if (this.hasUnsavedChanges()) {
+      const alert = await this.alertCtrl.create({
+        header: 'Modifiche non salvate',
+        message: 'Hai delle modifiche non salvate. Sei sicuro di voler uscire? Le modifiche andranno perse.',
+        buttons: [
+          {
+            text: 'Annulla',
+            role: 'cancel'
+          },
+          {
+            text: 'Esci senza salvare',
+            role: 'destructive',
+            handler: () => {
+              this.modalCtrl.dismiss();
+            }
+          }
+        ]
+      });
+      await alert.present();
+    } else {
+      this.modalCtrl.dismiss();
+    }
+  }
+
   save() {
     const user = this.user();
     user.key = this.user()?.key;
+    user.pdpUrl = this.pdpList(); // Save PDP links
+    
     const claims = {
       role: user.role,
       classes: user.classes,
