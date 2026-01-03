@@ -1,3 +1,5 @@
+import { DocumentModel } from "./documentModel";
+
 export interface IClasseModel {
   id?: string;
   year: string;
@@ -8,6 +10,7 @@ export interface IClasseModel {
   coordinatore: string;
   segretario: string;
   key: string;
+  verbali: DocumentModel[];
 }
 
 export class ClasseModel implements IClasseModel {
@@ -17,6 +20,7 @@ export class ClasseModel implements IClasseModel {
   descrizione: string = "";
   note: string = "";
   archived: boolean = false;
+  verbali: DocumentModel[] = [];
   coordinatore: string = "";
   segretario: string = "";
   key: string = "";
@@ -38,6 +42,7 @@ serialize() {
     classe: this.classe,
     description: this.descrizione,
     note: this.note,
+    verbali: this.verbali.map((verbale) => verbale.serialize()),
     archived: this.archived,
     coordinatore: this.coordinatore,
     segretario: this.segretario,

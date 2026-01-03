@@ -7,35 +7,72 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">login</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <form [formGroup]="loginForm" id="loginForm">
-    <ion-item>
-      <ion-label position="floating">Email</ion-label>
-      <ion-input type="email" (change)="onEmailChange($event)" formControlName="email"></ion-input>
-      @if (loginForm.get('email')!.hasError('required')) {
-      <p class="error" >Email is required</p>
-      }
-    </ion-item>
+  <div class="login-container">
+    <ion-card class="login-card">
+      <ion-card-content>
+        <div class="logo-container">
+          <ion-icon name="log-in-outline" class="logo-icon"></ion-icon>
+          <h2>Welcome Back</h2>
+          <p>Please sign in to continue</p>
+        </div>
 
-    <ion-item>
-      <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" (change)="onPasswordChange($event)" formControlName="password"></ion-input>
-      @if (loginForm.get('password')!.hasError('required')) {
-      <p class="error" >Password is required</p>
-      }
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <ion-item lines="none" class="custom-input">
+            <ion-input
+              label="Email"
+              labelPlacement="floating"
+              fill="outline"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              errorText="Valid email is required">
+              <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
+            </ion-input>
+          </ion-item>
+          
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <div class="error-message">
+              <ion-text color="danger">
+                <small>Please enter a valid email address</small>
+              </ion-text>
+            </div>
+          }
 
-@if (loginForm.get('password')!.hasError('minlength')) {
-      <p  class="error" >Password must be 8 char long</p>
-    }
-    </ion-item>
-    <ion-button type="submit" [disabled]="!loginForm.valid" (click)="login()">Login</ion-button>
-    <div id="links">
-  <a [routerLink]="['/recover-password']">Forgot password?</a>
-  <a [routerLink]="['/signup']">Don't have an account?</a>
+          <ion-item lines="none" class="custom-input">
+            <ion-input
+              label="Password"
+              labelPlacement="floating"
+              fill="outline"
+              type="password"
+              formControlName="password"
+              placeholder="Enter your password">
+              <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
+
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <div class="error-message">
+              <ion-text color="danger">
+                <small>Password must be at least 8 characters</small>
+              </ion-text>
+            </div>
+          }
+
+          <div class="forgot-password">
+            <a [routerLink]="['/recover-password']">Forgot Password?</a>
+          </div>
+
+          <ion-button expand="block" type="submit" [disabled]="!loginForm.valid" class="login-button">
+            Login
+          </ion-button>
+
+          <div class="signup-link">
+            <span>Don't have an account? </span>
+            <a [routerLink]="['/signup']">Sign up</a>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
   </div>
-  </form>
 </ion-content>

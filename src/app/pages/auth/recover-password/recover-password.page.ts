@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from '../../../shared/services/users.service';
 import { ToasterService } from '../../../shared/services/toaster.service';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton, IonCard, IonCardContent, IonIcon, IonText } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { mailOutline, personOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-recover-password',
@@ -15,17 +18,28 @@ import { ToasterService } from '../../../shared/services/toaster.service';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    IonicModule
+    IonContent,
+    IonHeader, 
+    IonTitle, 
+    IonToolbar, 
+    IonItem, 
+    IonInput, 
+    IonButton, 
+    IonCard, 
+    IonCardContent, 
+    IonIcon, 
+    IonText
   ]
 })
 export class RecoverPasswordPage implements OnInit {
   recoverForm: FormGroup;
+  
+  private fb = inject(FormBuilder);
+  private usersService = inject(UsersService);
+  private toaster = inject(ToasterService);
 
-  constructor(
-    private fb: FormBuilder,
-    private usersService: UsersService,
-    private toaster: ToasterService
-  ) {
+  constructor() {
+    addIcons({ mailOutline, personOutline });
     this.recoverForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });

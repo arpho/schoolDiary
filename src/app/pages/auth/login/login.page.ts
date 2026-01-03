@@ -1,7 +1,9 @@
 import { ChangeDetectorRef, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton, IonInputPasswordToggle, IonCard, IonCardContent, IonIcon, IonText } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { mailOutline, lockClosedOutline, logInOutline, personAddOutline, helpCircleOutline } from 'ionicons/icons';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Auth, authState, signInAnonymously, signOut, User, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
 import { Router, RouterModule } from '@angular/router';
@@ -15,18 +17,20 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
   imports: [
     IonButton,
     IonInput,
-    IonLabel,
     IonItem,
     IonContent,
     IonHeader,
     IonTitle,
     IonToolbar,
-    IonLabel,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    IonInputPasswordToggle
+    IonInputPasswordToggle,
+    IonCard,
+    IonCardContent,
+    IonIcon,
+    IonText
   ]
 })
 export class LoginPage implements OnInit {
@@ -35,53 +39,32 @@ export class LoginPage implements OnInit {
   private router = inject(Router);
   private $toaster = inject(ToasterService);
 
-
-  email= signal<string>('');
-password= signal<string>('');
-formValue= computed(() => {
-  const out = {
-    email: this.email(),
-    password: this.password()
-  }
-  return out
-})
-isFormValid= computed(() => {
-  return this.formValue() && this.formValue()?.email && this.formValue()?.password
-})
-
-onPasswordChange($event: any) {
-if($event.target){
-this.password.set($event.target?.value)
-}
-}
-onEmailChange($event: any) {
-if($event.target){
-this.email.set($event.target?.value)
-}
-}
-loginForm: FormGroup
-
-  error: boolean= false;
+  loginForm: FormGroup;
+  error: boolean = false;
   errorMessage: any;
   afAuth: AngularFireAuth;
+
   constructor() {
+    addIcons({ mailOutline, lockClosedOutline, logInOutline, personAddOutline, helpCircleOutline });
     this.afAuth = inject(AngularFireAuth);
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
-    }); }
+    });
+  }
 
   ngOnInit() {
-console.log("init login page")
+    console.log("init login page")
   }
+
   login() {
     if (this.loginForm.valid) {
-    console.log( this.email,this.password);
+      const { email, password } = this.loginForm.value;
       console.log('Login form submitted:', this.loginForm.value);
 
-    this.afAuth
-      .signInWithEmailAndPassword(this.email(), this.password())
-      .catch((error: { message: any; }) => {
+      this.afAuth
+        .signInWithEmailAndPassword(email, password)
+        .catch((error: { message: any; }) => {
         console.log(error.message);
         this.$toaster.presentToast({message: String(error.message), position: "bottom"});
         this.error = true;

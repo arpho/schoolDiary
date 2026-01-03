@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 type TabType = 'generalita' | 'attivita' | 'pdp' | 'studenti' | 'note' | 'eventi' | 'gruppi' | 'agenda' | 'annotazioni';
-import { ModalController, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonTextarea, IonButton, IonMenu, IonMenuButton, IonList, IonItem, IonLabel, IonBackButton, IonIcon, IonCardContent } from '@ionic/angular/standalone';
+import { ModalController, AlertController, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonTextarea, IonButton, IonMenu, IonMenuButton, IonList, IonItem, IonLabel, IonBackButton, IonIcon, IonCardContent, IonGrid, IonRow, IonCol, IonItemDivider } from '@ionic/angular/standalone';
 import {
   CommonModule
 } from '@angular/common';
@@ -26,6 +26,7 @@ import {
   ClassiService,
 } from '../services/classi.service';
 import { ClasseModel } from '../models/classModel';
+import { DocumentModel } from '../models/documentModel';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ListStudent4classComponent } from '../components/list-student4class/list-student4class.component';
@@ -39,7 +40,7 @@ import { DisplayAgenda4ClassesComponent } from 'src/app/pages/agenda/components/
 import { EventDialogComponent } from '../../agenda/components/event-dialog/event-dialog.component';
 import { AgendaEvent } from '../../agenda/models/agendaEvent';
 import { addIcons } from 'ionicons';
-import { menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close, add } from 'ionicons/icons';
+import { menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close, add, trash } from 'ionicons/icons';
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -72,7 +73,11 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
     GroupsManagerComponent,
     StudentsWithPdPComponent,
     DisplayAgenda4ClassesComponent,
-    IonCardContent
+    IonCardContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonItemDivider
 ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -118,23 +123,27 @@ export class ClasseDialogPage implements OnInit {
   });
   isEditMode: boolean = false;
 
+  initialVerbali: string = '[]';
+
   constructor(
     private modalCtrl: ModalController,
     private service: ClassiService,
     private route: ActivatedRoute,
     private toaster: ToasterService,
     private $users: UsersService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private alertCtrl: AlertController
   ) {
     // Register icons
-    addIcons({menu,close,informationCircle,people,chatbox,list,add,peopleCircle,calendar,school});
+    addIcons({menu,close,informationCircle,people,chatbox,list,add,peopleCircle,calendar,school,trash});
 
     // Initialize with empty model
     this.classe.set(new ClasseModel({
       year: '',
       classe: '',
       descrizione: '',
-      note: ''
+      note: '',
+      verbali: []
     }));
   }
   async ngOnInit(): Promise<void> {
@@ -153,6 +162,8 @@ export class ClasseDialogPage implements OnInit {
         this.isEditMode = true;
         const editingClasse = await this.service.fetchClasse(this.classkey()!);
         this.classe.set(editingClasse);
+        this.verbaliList.set(editingClasse.verbali || []);
+        this.initialVerbali = JSON.stringify(this.verbaliList());
         this.formClass.setValue({
           classe: editingClasse.classe,
           year: editingClasse.year,
@@ -166,6 +177,16 @@ export class ClasseDialogPage implements OnInit {
     }
   }
 
+  verbaliList = signal<DocumentModel[]>([]);
+
+  addVerbale() {
+    this.verbaliList.update(list => [...list, new DocumentModel()]);
+  }
+
+  removeVerbale(index: number) {
+    this.verbaliList.update(list => list.filter((_, i) => i !== index));
+  }
+
   async save() {
     // Get form values with fallback to empty strings for required fields
     const formValues = {
@@ -174,7 +195,8 @@ export class ClasseDialogPage implements OnInit {
       descrizione: this.formClass.value.descrizione || '',
       note: this.formClass.value.note || '',
       coordinatore: this.formClass.value.coordinatore || '',
-      segretario: this.formClass.value.segretario || ''
+      segretario: this.formClass.value.segretario || '',
+      verbali: this.verbaliList()
     };
 
     // Create a new instance with the form values
@@ -194,6 +216,9 @@ export class ClasseDialogPage implements OnInit {
         await this.service.addClasse(classeObj);
       }
 
+      this.formClass.markAsPristine();
+      this.initialVerbali = JSON.stringify(this.verbaliList());
+
       const toastMessage = this.classkey()
         ? "Classe aggiornata con successo"
         : "Classe aggiunta con successo";
@@ -209,8 +234,34 @@ export class ClasseDialogPage implements OnInit {
     }
   }
 
-  dismiss() {
-    this.modalCtrl.dismiss();
+  hasUnsavedChanges(): boolean {
+    const verbaliChanged = JSON.stringify(this.verbaliList()) !== this.initialVerbali;
+    return this.formClass.dirty || verbaliChanged;
+  }
+
+  async dismiss() {
+    if (this.hasUnsavedChanges()) {
+      const alert = await this.alertCtrl.create({
+        header: 'Modifiche non salvate',
+        message: 'Hai delle modifiche non salvate. Sei sicuro di voler uscire? Le modifiche andranno perse.',
+        buttons: [
+          {
+            text: 'Annulla',
+            role: 'cancel'
+          },
+          {
+            text: 'Esci senza salvare',
+            role: 'destructive',
+            handler: () => {
+              this.modalCtrl.dismiss();
+            }
+          }
+        ]
+      });
+      await alert.present();
+    } else {
+      this.modalCtrl.dismiss();
+    }
   }
 
   async openAddActivityDialog() {

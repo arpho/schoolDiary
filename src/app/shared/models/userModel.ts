@@ -1,6 +1,7 @@
 import { ClasseModel } from "src/app/pages/classes/models/classModel";
 import { UsersRole } from "./usersRole";
 import { AssignedClass } from "src/app/pages/subjects-list/models/assignedClass";
+import { DocumentModel } from "src/app/pages/classes/models/documentModel";
 
 
 export class UserModel{
@@ -17,7 +18,7 @@ export class UserModel{
   BES = false
   ADHD = false
   noteDisabilita = ''
-  pdpUrl = ''
+  pdpUrl:DocumentModel[] = []
   lastName = ''
   password = ''
   classKey: string = ''

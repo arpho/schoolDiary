@@ -93,10 +93,42 @@
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Segretario</ion-label>
             </ion-input>
+
+            <ion-item-divider class="ion-margin-top">
+              <ion-label>Link ai Verbali</ion-label>
+              <ion-button slot="end" fill="clear" (click)="addVerbale()">
+                <ion-icon name="add" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item-divider>
+
+            <ion-list>
+              @for (verbale of verbaliList(); track $index) {
+                <ion-item>
+                  <ion-input [(ngModel)]="verbale.descrizione" [ngModelOptions]="{standalone: true}" placeholder="Descrizione" class="ion-margin-end"></ion-input>
+                  <ion-input [(ngModel)]="verbale.path" [ngModelOptions]="{standalone: true}" placeholder="URL Link"></ion-input>
+                  <ion-button slot="end" fill="clear" color="danger" (click)="removeVerbale($index)">
+                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              }
+            </ion-list>
           </ion-card-content>
+
           <div class="ion-padding">
-              <ion-button type="button" color="medium" (click)="dismiss()">Annulla</ion-button>
-              <button type="submit" ion-button color="primary">Salva</button>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6">
+                  <ion-button expand="block" color="medium" (click)="dismiss()">
+                    Annulla
+                  </ion-button>
+                </ion-col>
+                <ion-col size="6">
+                  <ion-button expand="block" type="submit" color="primary">
+                    Salva
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
           </div>
         </ion-card>
         }

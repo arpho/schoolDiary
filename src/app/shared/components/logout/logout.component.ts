@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
+import { md5 } from '../../utils/md5';
 import { IonFabButton, IonIcon, IonFab, IonFabList } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -43,13 +44,19 @@ this.router.navigate(['/profile',userKey]);
     });
   }
 
+  gravatarUrl = signal<string>('');
+
   async ngOnInit() {
-    const user= await this.$user.getLoggedUser();
-    console.log("user",user)
-    if(user){
-    this.loggedUser.set(user);
-    const claims= await this.$user.getCustomClaims4LoggedUser();
-    console.log("claims",claims)
+    const user = await this.$user.getLoggedUser();
+    console.log("user", user);
+    if (user) {
+      this.loggedUser.set(user);
+      if (user.email) {
+        const hash = md5(user.email.trim().toLowerCase());
+        this.gravatarUrl.set(`https://www.gravatar.com/avatar/${hash}?d=mp&s=200`);
+      }
+      const claims = await this.$user.getCustomClaims4LoggedUser();
+      console.log("claims", claims);
     }
   }
 
