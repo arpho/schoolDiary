@@ -1,23 +1,39 @@
-<div class="logout-container">
-  <p class="welcome-message">Benvenuto {{loggedUser().email}}</p>
-  <ion-fab id="test" vertical="bottom" horizontal="end">
-    <ion-fab-button color="medium">
-      @if (gravatarUrl()) {
-        <img [src]="gravatarUrl()" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-      } @else {
-        <ion-icon name="person"></ion-icon>
-      }
-    </ion-fab-button>
-    <ion-fab-list side="start">
-      <ion-fab-button color="light" (click)="logout()">
-        <ion-icon name="log-out"></ion-icon>
-      </ion-fab-button>
-      <ion-fab-button color="light">
-        <ion-icon name="key"></ion-icon>
-      </ion-fab-button>
-    <ion-fab-button color="light" (click)="openProfile()">
-      <ion-icon name="body-outline"></ion-icon>
-    </ion-fab-button>
-    </ion-fab-list>
-  </ion-fab>
-</div>
+<ion-button id="user-menu-trigger" fill="clear">
+  <div class="user-info">
+    @if (loggedUser().email) {
+      <ion-text class="user-email ion-hide-sm-down">{{ loggedUser().email }}</ion-text>
+    }
+    @if (gravatarUrl()) {
+      <ion-avatar slot="start" class="user-avatar">
+        <img [src]="gravatarUrl()" alt="User Avatar" />
+      </ion-avatar>
+    } @else {
+      <ion-icon name="person-circle-outline" size="large"></ion-icon>
+    }
+  </div>
+</ion-button>
+
+<ion-popover trigger="user-menu-trigger" dismissOnSelect="true">
+  <ng-template>
+    <ion-content>
+      <ion-list lines="none">
+        
+        <ion-item button (click)="openProfile()" detail="false">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>Profilo</ion-label>
+        </ion-item>
+
+        <ion-item button (click)="changePassword()" detail="false">
+          <ion-icon name="key-outline" slot="start"></ion-icon>
+          <ion-label>Cambia Password</ion-label>
+        </ion-item>
+
+        <ion-item button (click)="logout()" detail="false" lines="none" color="danger">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          <ion-label>Logout</ion-label>
+        </ion-item>
+
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-popover>

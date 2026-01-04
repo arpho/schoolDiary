@@ -1,0 +1,17 @@
+<div class="agenda-container">
+  <ion-list>
+    <ion-list-header>
+      <ion-label class="ion-text-center">{{ title() }}</ion-label>
+    </ion-list-header>
+
+    @if (events().length > 0) {
+      <app-agenda-display [eventsInput]="events()"></app-agenda-display>
+    } @else {
+      <ion-item>
+        <ion-label class="ion-text-center">
+          <p>{{ emptyMessage() }}</p>
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+</div>

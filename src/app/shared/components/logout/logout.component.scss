@@ -1,22 +1,32 @@
-.logout-container {
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 15px;
-    padding: 5px;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .user-email {
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    text-transform: none;
+    font-weight: normal;
+  }
 }
 
-#test {
-  position: relative;
-  margin: 0;
-  top: unset;
-  right: unset;
+ion-button#user-menu-trigger {
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 4px;
+  --padding-end: 4px;
 }
 
-ion-fab-button {
-  --background: var(--ion-color-medium-tint);
-  --background-activated: var(--ion-color-medium);
-  --icon-color: var(--ion-color-light);
+ion-popover {
+  --width: 200px;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+
+  img {
+    object-fit: cover;
+  }
 }

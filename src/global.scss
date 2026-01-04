@@ -105,7 +105,7 @@ ion-modal::part(backdrop) {
     --background: var(--ion-color-primary);
     --color: var(--ion-color-primary-contrast);
   }
-  
+
   ion-button[color="primary"] {
     --background: var(--ion-color-primary);
     --color: var(--ion-color-primary-contrast);
@@ -136,4 +136,8 @@ ion-modal::part(backdrop) {
   position: relative;
   inset: auto;
   margin: auto;
+}
+
+ion-toolbar {
+  --min-height: 60px;
 }

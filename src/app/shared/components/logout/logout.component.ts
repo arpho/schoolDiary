@@ -1,17 +1,29 @@
 import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { md5 } from '../../utils/md5';
-import { IonFabButton, IonIcon, IonFab, IonFabList } from '@ionic/angular/standalone';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { 
+  IonButton, 
+  IonIcon, 
+  IonPopover, 
+  IonContent, 
+  IonList, 
+  IonItem, 
+  IonLabel, 
+  IonAvatar, 
+  IonText 
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  bodyOutline,
-  ellipsisVertical,
-  key,
-  logOut,
-  person
+  personCircleOutline,
+  logOutOutline,
+  keyOutline,
+  personOutline
 } from 'ionicons/icons';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { Router } from '@angular/router';
 import { UserModel } from 'src/app/shared/models/userModel';
+
 @Component({
   selector: 'app-logout',
   templateUrl: './logout.component.html',
@@ -19,28 +31,34 @@ import { UserModel } from 'src/app/shared/models/userModel';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CommonModule,
+    RouterModule,
+    IonButton,
     IonIcon,
-    IonFabButton,
-    IonFab,
-    IonFabList
+    IonPopover,
+    IonContent,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonAvatar,
+    IonText
   ]
 })
 export class LogoutComponent implements OnInit {
- openProfile() {
-const userKey= this.loggedUser()?.key;
-this.router.navigate(['/profile',userKey]);
-}
-  loggedUser= signal<UserModel>(new UserModel());
+  openProfile() {
+    const userKey = this.loggedUser()?.key;
+    this.router.navigate(['/profile', userKey]);
+  }
+  loggedUser = signal<UserModel>(new UserModel());
   constructor(
     private $user: UsersService,
     private router: Router
   ) {
     addIcons({
-      ellipsisVertical,
-      logOut,
-      key,
-      person,
-      bodyOutline
+      personCircleOutline,
+      logOutOutline,
+      keyOutline,
+      personOutline
     });
   }
 

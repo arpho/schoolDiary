@@ -1,0 +1,24 @@
+<div class="scheduler-container">
+  <ion-datetime 
+    presentation="date" 
+    [highlightedDates]="highlightedDates()"
+    (ionChange)="onDateChange($event)"
+    [value]="selectedDate()">
+  </ion-datetime>
+
+  <div class="events-list">
+    <ion-text color="medium" class="ion-padding-start ion-margin-top ion-block">
+      <h3>Eventi del giorno</h3>
+    </ion-text>
+    
+    @if (filteredEvents().length > 0) {
+      <app-agenda-display [eventsInput]="filteredEvents()"></app-agenda-display>
+    } @else {
+      <ion-item lines="none">
+        <ion-label class="ion-text-center ion-text-wrap" color="medium">
+          Nessun evento programmato per questa data
+        </ion-label>
+      </ion-item>
+    }
+  </div>
+</div>

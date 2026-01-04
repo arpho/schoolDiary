@@ -1,8 +1,15 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title align="center">agenda</ion-title>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title align="center">{{ pageTitle() }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-label class="ion-margin-end">{{ viewModeLabel() }}</ion-label>
+      <ion-toggle (ionChange)="toggleView($event)" color="secondary">
+        <ion-icon name="calendar" slot="start"></ion-icon>
+        <ion-icon name="list" slot="end"></ion-icon>
+      </ion-toggle>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -10,8 +17,20 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">agenda</ion-title>
+      <ion-title size="large">{{ pageTitle() }}</ion-title>
     </ion-toolbar>
   </ion-header>
-  <app-display-agenda4-classes [targetedClasses]="targetedClasses()"></app-display-agenda4-classes>
+  
+  @if (viewMode() === 'list') {
+    <app-agenda-list [events]="agenda()" [title]="pageTitle()"></app-agenda-list>
+  } @else {
+    <app-agenda-scheduler [events]="agenda()"></app-agenda-scheduler>
+  }
+
+  <!-- FAB Button per aggiungere un nuovo evento -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addNewEvent()" color="primary">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

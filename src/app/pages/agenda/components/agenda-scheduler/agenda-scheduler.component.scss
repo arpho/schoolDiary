@@ -1,0 +1,19 @@
+.scheduler-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+
+    ion-datetime {
+        margin: 0 auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .events-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 80px; // Spazio per il FAB
+    }
+}
