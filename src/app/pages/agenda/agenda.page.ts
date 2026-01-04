@@ -12,12 +12,13 @@ import {
   IonFab,
   IonFabButton,
   IonIcon,
-  ModalController,
-  IonLabel
+  IonLabel,
+  ModalController
 } from '@ionic/angular/standalone';
 import { UsersService } from '../../shared/services/users.service';
 import { AgendaListComponent } from './components/agenda-list/agenda-list.component';
 import { AgendaSchedulerComponent } from './components/agenda-scheduler/agenda-scheduler.component';
+import { AgendaSchedulerToastUiComponent } from './components/agenda-scheduler-toast-ui/agenda-scheduler-toast-ui.component';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { AgendaEvent } from './models/agendaEvent';
@@ -26,6 +27,7 @@ import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { addIcons } from 'ionicons';
 import { add, calendar, list } from 'ionicons/icons';
 import { EventDialogComponent } from './components/event-dialog/event-dialog.component';
+import { AgendaEventInputComponent } from '../../shared/components/agenda-event-input/agenda-event-input.component';
 
 @Component({
   selector: 'app-agenda',
@@ -47,7 +49,9 @@ import { EventDialogComponent } from './components/event-dialog/event-dialog.com
     IonIcon,
     IonLabel,
     AgendaListComponent,
-    AgendaSchedulerComponent
+    AgendaSchedulerComponent, 
+    AgendaSchedulerToastUiComponent,
+    AgendaEventInputComponent
   ]
 })
 export class AgendaPage implements OnInit {
@@ -126,5 +130,18 @@ export class AgendaPage implements OnInit {
 
   toggleView(event: any) {
     this.viewMode.set(event.detail.checked ? 'scheduler' : 'list');
+  }
+
+  async onEventClick(event: AgendaEvent) {
+    const modal = await this.modalCtrl.create({
+      component: AgendaEventInputComponent,
+      componentProps: {
+        event: event,
+        classKey: event.classKey,
+        teacherKey: event.teacherKey
+      }
+    });
+
+    await modal.present();
   }
 }

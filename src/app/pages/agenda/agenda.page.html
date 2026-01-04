@@ -24,7 +24,7 @@
   @if (viewMode() === 'list') {
     <app-agenda-list [events]="agenda()" [title]="pageTitle()"></app-agenda-list>
   } @else {
-    <app-agenda-scheduler [events]="agenda()"></app-agenda-scheduler>
+    <app-agenda-scheduler-toast-ui [events]="agenda()" (eventClick)="onEventClick($event)"></app-agenda-scheduler-toast-ui>
   }
 
   <!-- FAB Button per aggiungere un nuovo evento -->

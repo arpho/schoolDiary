@@ -5,7 +5,7 @@
         <ion-icon name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ event?.id ? 'Modifica' : 'Nuovo' }} Evento</ion-title>
+    <ion-title>{{ event ? event.title : 'Nuovo Evento' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -17,7 +17,7 @@
       <ion-input
         type="text"
         name="title"
-        [(ngModel)]="event.title"
+        [(ngModel)]="eventData.title"
         required
         (ionChange)="onFieldChange('title')">
       </ion-input>
@@ -33,7 +33,7 @@
       <ion-label>Tipo evento</ion-label>
       <ion-select
         name="type"
-        [(ngModel)]="event.type"
+        [(ngModel)]="eventData.type"
         (ionChange)="onFieldChange('type')"
         interface="popover">
         <ion-select-option value="homework">Compito</ion-select-option>
@@ -50,7 +50,7 @@
       <ion-label>Tutto il giorno</ion-label>
       <ion-toggle
         slot="end"
-        [(ngModel)]="event.allDay"
+        [(ngModel)]="eventData.allDay"
         (ionChange)="onAllDayChange($event)"
         name="allDay">
       </ion-toggle>
@@ -66,9 +66,9 @@
             id="startDatetime"
             #startDatetime
             name="dataInizio"
-            [(ngModel)]="event.dataInizio"
+            [(ngModel)]="eventData.dataInizio"
             (ionChange)="onStartDateChange()"
-            [presentation]="event.allDay ? 'date' : 'date-time'"
+            [presentation]="eventData.allDay ? 'date' : 'date-time'"
             [min]="minDate"
             [max]="maxDate"
             [showDefaultButtons]="true"
@@ -83,7 +83,7 @@
       <ion-label>Fine <span class="required">*</span></ion-label>
       <ion-datetime-button 
         datetime="endDatetime" 
-        [disabled]="!event.dataInizio">
+        [disabled]="!eventData.dataInizio">
       </ion-datetime-button>
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
@@ -91,13 +91,13 @@
             id="endDatetime"
             #endDatetime
             name="dataFine"
-            [(ngModel)]="event.dataFine"
+            [(ngModel)]="eventData.dataFine"
             (ionChange)="onEndDateChange()"
-            [presentation]="event.allDay ? 'date' : 'date-time'"
-            [min]="event.dataInizio || minDate"
+            [presentation]="eventData.allDay ? 'date' : 'date-time'"
+            [min]="eventData.dataInizio || minDate"
             [max]="maxDate"
             [showDefaultButtons]="true"
-            [disabled]="!event.dataInizio"
+            [disabled]="!eventData.dataInizio"
             required>
           </ion-datetime>
         </ng-template>
@@ -117,14 +117,14 @@
     <ion-item>
       <ion-label position="stacked">Descrizione</ion-label>
       <ion-textarea 
-        [(ngModel)]="event.description" 
+        [(ngModel)]="eventData.description" 
         name="description" 
         rows="4" 
         maxlength="500"
         placeholder="Aggiungi una descrizione (opzionale)"
         (ionChange)="onFieldChange('description')">
       </ion-textarea>
-      <ion-note slot="helper">{{ event.description?.length || 0 }}/500 caratteri</ion-note>
+      <ion-note slot="helper">{{ eventData.description?.length || 0 }}/500 caratteri</ion-note>
     </ion-item>
 
     <!-- Selezione Classe -->
@@ -133,7 +133,7 @@
         <ion-label>Classe <span class="required">*</span></ion-label>
         <ion-select
           name="classKey"
-          [(ngModel)]="event.classKey"
+          [(ngModel)]="eventData.classKey"
           (ionChange)="onFieldChange('classKey')"
           interface="popover"
           placeholder="Seleziona una classe"
@@ -156,7 +156,7 @@
       [disabled]="!isFormValid()"
       (click)="save()">
       <ion-icon slot="start" name="save"></ion-icon>
-      {{ event.key ? 'Aggiorna' : 'Salva' }}
+      {{ eventData.key ? 'Aggiorna' : 'Salva' }}
     </ion-button>
   </form>
 </ion-content>

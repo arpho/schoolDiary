@@ -18,11 +18,17 @@
     "importHelpers": true,
     "target": "es2022",
     "module": "es2020",
-    "lib": ["es2018", "dom"],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
     "useDefineForClassFields": false,
     "paths": {
-      "@ionic/core": ["./node_modules/@ionic/core/dist/ionic-core.js"]
-    }
+      "@ionic/core": [
+        "./node_modules/@ionic/core/dist/ionic-core.js"
+      ]
+    },
+    "skipLibCheck": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
