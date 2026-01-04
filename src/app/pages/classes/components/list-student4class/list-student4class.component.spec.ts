@@ -9,8 +9,7 @@ describe('ListStudent4classComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ListStudent4classComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), ListStudent4classComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ListStudent4classComponent);

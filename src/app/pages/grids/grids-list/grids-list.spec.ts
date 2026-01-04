@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GridsListComponent } from './grids-list';
 
 import { ModalController } from '@ionic/angular';
+import { GridsService } from 'src/app/shared/services/grids/grids.service';
+import { Router } from '@angular/router';
 import { Firestore } from '@angular/fire/firestore';
 const mockModalController = {};
 
@@ -13,10 +15,8 @@ describe('GridsListPage', () => {
   TestBed.configureTestingModule({
     providers: [
       { provide: ModalController, useValue: mockModalController },
-      { provide: Firestore, useValue: {
-        collection: (...args: any[]) => ({ valueChanges: () => ({ subscribe: () => {} }) }),
-        doc: (...args: any[]) => ({ valueChanges: () => ({ subscribe: () => {} }) })
-      } }
+      { provide: GridsService, useValue: { getGridsOnRealtime: jasmine.createSpy('getGridsOnRealtime') } },
+      { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } }
     ]
   });
     fixture = TestBed.createComponent(GridsListComponent);

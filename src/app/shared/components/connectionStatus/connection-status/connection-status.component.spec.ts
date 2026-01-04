@@ -3,14 +3,17 @@ import { IonicModule } from '@ionic/angular';
 
 import { ConnectionStatusComponent } from './connection-status.component';
 
+import { addIcons } from 'ionicons';
+import { wifi, wifiOutline } from 'ionicons/icons';
+
 describe('ConnectionStatusComponent', () => {
   let component: ConnectionStatusComponent;
   let fixture: ComponentFixture<ConnectionStatusComponent>;
 
   beforeEach(waitForAsync(() => {
+    addIcons({ wifi, 'wifi-outline': wifiOutline });
     TestBed.configureTestingModule({
-      declarations: [ ConnectionStatusComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), ConnectionStatusComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConnectionStatusComponent);

@@ -3,14 +3,18 @@ import { IonicModule } from '@ionic/angular';
 
 import { UserWieverComponent } from './user-wiever.component';
 
+import { UsersService } from 'src/app/shared/services/users.service';
+
 describe('UserWieverComponent', () => {
   let component: UserWieverComponent;
   let fixture: ComponentFixture<UserWieverComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserWieverComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), UserWieverComponent],
+      providers: [
+        { provide: UsersService, useValue: {} }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(UserWieverComponent);

@@ -1,19 +1,18 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ClassWieverComponent } from './class-wiever.component';
+import { ClassViewerComponent } from './class-wiever.component';
 
-describe('ClassWieverComponent', () => {
-  let component: ClassWieverComponent;
-  let fixture: ComponentFixture<ClassWieverComponent>;
+describe('ClassViewerComponent', () => {
+  let component: ClassViewerComponent;
+  let fixture: ComponentFixture<ClassViewerComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ClassWieverComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), ClassViewerComponent]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ClassWieverComponent);
+    fixture = TestBed.createComponent(ClassViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

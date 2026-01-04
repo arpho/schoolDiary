@@ -1,5 +1,5 @@
 import { Evaluation } from './evaluation';
-import { Grids } from './grids';
+import { Grids } from 'src/app/shared/models/grids';
 
 describe('Evaluation', () => {
   let evaluation: Evaluation;
@@ -40,7 +40,7 @@ describe('Evaluation', () => {
     expect(evaluation.description).toBe(args.description);
     expect(evaluation.note).toBe(args.note);
     expect(evaluation.data).toBe(args.data);
-    expect(evaluation.grid).toBe(args.grid);
+    expect(evaluation.grid.key).toBe(args.grid.key);
     expect(evaluation.classKey).toBe(args.classKey);
     expect(evaluation.studentKey).toBe(args.studentKey);
     expect(evaluation.teacherKey).toBe(args.teacherKey);
@@ -56,7 +56,10 @@ describe('Evaluation', () => {
       grid: testGrid,
       classKey: 'class-1',
       studentKey: 'student-1',
-      teacherKey: 'teacher-1'
+      teacherKey: 'teacher-1',
+      activityKey: 'activity-1',
+      subjectKey: 'subject-1',
+      lastUpdateDate: '2025-07-22'
     };
 
     evaluation.build(args);
@@ -65,12 +68,15 @@ describe('Evaluation', () => {
     expect(serialized).toEqual({
       description: args.description,
       note: args.note,
+      subjectKey: args.subjectKey,
       data: args.data,
-      grid: args.grid.key,
+      lastUpdateDate: args.lastUpdateDate,
+      grid: evaluation.grid.serialize(),
       classKey: args.classKey,
       studentKey: args.studentKey,
       teacherKey: args.teacherKey,
-      activityKey: args.activityKey
+      activityKey: args.activityKey,
+      fullText: `${args.description} ${args.note}`
     });
   });
 

@@ -14,3 +14,4 @@ node_modules/
 
 # Token directory
 src/assets/token/
+.env

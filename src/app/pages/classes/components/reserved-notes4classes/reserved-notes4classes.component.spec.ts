@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ReservedNotes4classesComponent } from './reserved-notes4classes.component';
+import { ReservedNotes4ClassesComponent } from './reserved-notes4classes.component';
 
-describe('ReservedNotes4classesComponent', () => {
-  let component: ReservedNotes4classesComponent;
-  let fixture: ComponentFixture<ReservedNotes4classesComponent>;
+describe('ReservedNotes4ClassesComponent', () => {
+  let component: ReservedNotes4ClassesComponent;
+  let fixture: ComponentFixture<ReservedNotes4ClassesComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReservedNotes4classesComponent ],
+      declarations: [ ReservedNotes4ClassesComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ReservedNotes4classesComponent);
+    fixture = TestBed.createComponent(ReservedNotes4ClassesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

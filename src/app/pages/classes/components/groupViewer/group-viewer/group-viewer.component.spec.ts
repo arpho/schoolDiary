@@ -9,8 +9,7 @@ describe('GroupViewerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GroupViewerComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), GroupViewerComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(GroupViewerComponent);

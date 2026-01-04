@@ -68,6 +68,7 @@ describe('ValutazioneModel', () => {
       studentKey: args.studentKey,
       classeKey: args.classeKey,
       note: args.note,
+      description: '',
       data: args.data,
       grid: args.grid.serialize()
     });

@@ -9,8 +9,7 @@ describe('GroupsManagerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GroupsManagerComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), GroupsManagerComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(GroupsManagerComponent);

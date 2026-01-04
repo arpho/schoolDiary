@@ -9,8 +9,7 @@ describe('StudentsWithPdPComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ StudentsWithPdPComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), StudentsWithPdPComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(StudentsWithPdPComponent);

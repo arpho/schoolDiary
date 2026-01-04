@@ -1,12 +1,17 @@
 import { TestBed } from '@angular/core/testing';
-
 import { SubjectService } from '../subjects/subject.service';
+import { Firestore } from '@angular/fire/firestore';
 
 describe('SubjectService', () => {
   let service: SubjectService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    const firestoreMock = {}; 
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: Firestore, useValue: firestoreMock }
+      ]
+    });
     service = TestBed.inject(SubjectService);
   });
 

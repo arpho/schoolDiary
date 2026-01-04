@@ -15,6 +15,8 @@ describe('ActivityModel', () => {
     expect(model.classKey).toBe('');
     expect(model.description).toBe('');
     expect(model.teacherKey).toBe('');
+    expect(model.dueDate).toBe('');
+    expect(model.subjectsKey).toBe('');
   });
 
   it('should set key using setKey method', () => {
@@ -30,7 +32,9 @@ describe('ActivityModel', () => {
       date: '2025-07-28',
       classKey: 'class-1',
       description: 'Test description',
-      teacherKey: 'teacher-1'
+      teacherKey: 'teacher-1',
+      dueDate: '2025-07-30',
+      subjectsKey: 'subject-1'
     };
 
     model.build(args);
@@ -40,6 +44,8 @@ describe('ActivityModel', () => {
     expect(model.classKey).toBe(args.classKey);
     expect(model.description).toBe(args.description);
     expect(model.teacherKey).toBe(args.teacherKey);
+    expect(model.dueDate).toBe(args.dueDate);
+    expect(model.subjectsKey).toBe(args.subjectsKey);
   });
 
   it('should serialize correctly', () => {
@@ -49,7 +55,9 @@ describe('ActivityModel', () => {
       date: '2025-07-28',
       classKey: 'class-1',
       description: 'Test description',
-      teacherKey: 'teacher-1'
+      teacherKey: 'teacher-1',
+      dueDate: '2025-07-30',
+      subjectsKey: 'subject-1'
     };
 
     model.build(args);
@@ -61,7 +69,9 @@ describe('ActivityModel', () => {
       date: args.date,
       classKey: args.classKey,
       description: args.description,
-      teacherKey: args.teacherKey
+      teacherKey: args.teacherKey,
+      dueDate: args.dueDate,
+      subjectsKey: args.subjectsKey
     });
   });
 
@@ -73,5 +83,7 @@ describe('ActivityModel', () => {
     expect(model.classKey).toBe('');
     expect(model.description).toBe('');
     expect(model.teacherKey).toBe('');
+    expect(model.dueDate).toBe('');
+    expect(model.subjectsKey).toBe('');
   });
 });

@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DashboardPage } from './dashboard';
-
+import { UsersService } from 'src/app/shared/services/users.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Auth } from '@angular/fire/auth';
 import { Firestore } from '@angular/fire/firestore';
-const mockAuthService = {};
 
 describe('Dashboard', () => {
   let component: DashboardPage;
@@ -15,7 +14,8 @@ describe('Dashboard', () => {
     providers: [
       { provide: AuthService, useValue: {} },
       { provide: Auth, useValue: {} },
-      { provide: Firestore, useValue: { collection: () => ({ valueChanges: () => ({ subscribe: () => {} }) }) } }
+      { provide: UsersService, useValue: { getLoggedUser: jasmine.createSpy('getLoggedUser').and.returnValue(Promise.resolve()) } },
+      { provide: Firestore, useValue: {} }
     ]
   });
     fixture = TestBed.createComponent(DashboardPage);

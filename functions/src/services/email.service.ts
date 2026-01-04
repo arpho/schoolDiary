@@ -34,7 +34,7 @@ interface EmailOptions {
 }
 
 export class EmailService {
-  private mailerSend: MailerSend;
+  private mailerSend: MailerSend | undefined;
   private sender: string;
   private senderName: string;
 
@@ -49,16 +49,19 @@ export class EmailService {
       const errorMsg = "MailerSend API key non configurata. " +
         "Assicurati di aver impostato la variabile MAILERSEND_API_KEY " +
         (loadedEnvPath ? `nel file .env in ${loadedEnvPath}` : "nel file .env");
-      logger.error(errorMsg);
-      throw new Error(errorMsg);
+      logger.warn(errorMsg); // Log warning instead of error during init
+    } else {
+      this.mailerSend = new MailerSend({
+        apiKey: apiKey,
+      });
     }
-
-    this.mailerSend = new MailerSend({
-      apiKey: apiKey,
-    });
   }
 
   async sendEmail(options: EmailOptions): Promise<boolean> {
+    if (!this.mailerSend) {
+      logger.error("Cannot send email: MailerSend API key was not configured at startup.");
+      return false;
+    }
     try {
       const sentFrom = new Sender(this.sender, this.senderName);
       const recipients = [new Recipient(options.to)];

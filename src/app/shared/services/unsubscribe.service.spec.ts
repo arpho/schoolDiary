@@ -107,7 +107,7 @@ describe('UnsubscribeService', () => {
                 unsubscribe: () => {
                     throw new Error('Unsubscribe error');
                 }
-            } as Subscription;
+            } as unknown as Subscription;
 
             service.add(badSubscription);
 
