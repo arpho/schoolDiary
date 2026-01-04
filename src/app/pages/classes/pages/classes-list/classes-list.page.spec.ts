@@ -6,6 +6,9 @@ describe('ClassesListPage', () => {
   let fixture: ComponentFixture<ClassesListPage>;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [ClassesListPage]
+    });
     fixture = TestBed.createComponent(ClassesListPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
