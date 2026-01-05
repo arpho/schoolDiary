@@ -160,6 +160,9 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
       case 'homework': return 'var(--ion-color-primary)';
       case 'test': return 'var(--ion-color-danger)';
       case 'meeting': return 'var(--ion-color-warning)';
+      case 'interrogation': return 'var(--ion-color-tertiary)';
+      case 'note': return 'var(--ion-color-success)';
+      case 'other':
       default: return 'var(--ion-color-medium)';
     }
   }
