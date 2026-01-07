@@ -16,9 +16,8 @@ import {
   IonButton,
   IonSelect,
   IonSelectOption,
-  IonDatetimeButton,
-  IonDatetime,
-  IonModal
+  IonModal,
+  IonDatetime
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation/evaluation.service';
@@ -33,7 +32,8 @@ import {
   close,
   trash,
   eye,
-  add
+  add,
+  calendarOutline
 } from 'ionicons/icons';
 import { cloudUploadOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -61,7 +61,6 @@ import { StudentAverageGradeDisplayComponent } from '../student-average-grade-di
     IonButton,
     IonSelect,
     IonSelectOption,
-    IonDatetimeButton,
     IonDatetime,
     IonModal,
     CommonModule,
@@ -71,7 +70,7 @@ import { StudentAverageGradeDisplayComponent } from '../student-average-grade-di
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
   dataInizioPeriodo = signal<string>(
-    localStorage.getItem('dataInizioPeriodo') || 
+    localStorage.getItem('dataInizioPeriodo') ||
     new Date(new Date().getFullYear(), 0, 2).toISOString()
   );
   async showActionSheet(student: UserModel) {
@@ -179,7 +178,9 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
   ) {
     console.log("constructor ListStudent4classComponent#");
     addIcons({
-      cloudupload: cloudUploadOutline, add
+      cloudupload: cloudUploadOutline,
+      add,
+      calendar: calendarOutline
     });
 
     // Re-load averages whenever subjectKey, classKey or dataInizioPeriodo changes
@@ -236,7 +237,7 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     if (teacher) {
       console.log("teacher key# in listStudent4class", teacher.key)
       this.teacherkey.set(teacher.key);
-      
+
       if (this.classkey) {
         const teacherSubjects = await this.$users.getSubjectsByTeacherAndClass(teacher.key, this.classkey);
         this.subjects.set(teacherSubjects);

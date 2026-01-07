@@ -13,29 +13,33 @@
         placeholder="Filtra per media" style="flex: 1;">
         <ion-select-option value="all">Filtra per media</ion-select-option>
         <ion-select-option value="insufficient">Insufficienti (< 6)</ion-select-option>
-        <ion-select-option value="sufficient">Sufficienti (>= 6)</ion-select-option>
+            <ion-select-option value="sufficient">Sufficienti (>= 6)</ion-select-option>
       </ion-select>
-  
+
       <ion-select [ngModel]="selectedSubjectKey()" (ngModelChange)="selectedSubjectKey.set($event)" interface="popover"
         placeholder="Materia" style="flex: 1;">
         <ion-select-option value="all">Tutte le materie</ion-select-option>
         @for (subject of subjects(); track subject.key) {
-          <ion-select-option [value]="subject.key">{{subject.name}}</ion-select-option>
+        <ion-select-option [value]="subject.key">{{subject.name}}</ion-select-option>
         }
       </ion-select>
     </div>
 
     <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0;">
       <span style="font-size: 0.9rem; color: var(--ion-color-medium);">Inizio periodo:</span>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-weight: 500; font-size: 1rem; color: var(--ion-color-primary);">{{ dataInizioPeriodo() | date:'dd/MM/yyyy' }}</span>
-        <ion-datetime-button datetime="startDatePicker" id="open-date-picker"></ion-datetime-button>
+      <div id="open-date-picker" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+        <span style="font-weight: 500; font-size: 1rem; color: var(--ion-color-primary);">{{ dataInizioPeriodo() |
+          date:'dd/MM/yyyy' }}</span>
+        <ion-icon name="calendar" color="primary"></ion-icon>
       </div>
     </div>
 
-    <ion-modal [keepContentsMounted]="true" cssClass="datetime-modal" trigger="open-date-picker">
+    <ion-modal #dateModal [keepContentsMounted]="true" cssClass="datetime-modal" trigger="open-date-picker">
       <ng-template>
-        <ion-datetime id="startDatePicker" presentation="date" [value]="dataInizioPeriodo()" (ionChange)="onDateChange($event)" [showDefaultButtons]="true"></ion-datetime>
+        <ion-datetime id="startDatePicker" presentation="date" [value]="dataInizioPeriodo()"
+          (ionChange)="onDateChange($event); dateModal.dismiss()" (ionCancel)="dateModal.dismiss()"
+          [showDefaultButtons]="true">
+        </ion-datetime>
       </ng-template>
     </ion-modal>
   </div>
@@ -49,7 +53,8 @@
             <ion-card-title>{{student.lastName}} {{student.firstName}}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()" [subjectKey]="selectedSubjectKey()" [startDate]="dataInizioPeriodo()">
+            <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()"
+              [subjectKey]="selectedSubjectKey()" [startDate]="dataInizioPeriodo()">
             </app-student-average-grade-display>
           </ion-card-content>
         </ion-card>
