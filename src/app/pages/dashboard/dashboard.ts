@@ -11,6 +11,10 @@ import { DashboardStudentComponent } from 'src/app/shared/components/dashboard-s
 import { LogoutComponent } from 'src/app/shared/components/logout/logout.component';
 import { ConnectionStatusComponent } from "src/app/shared/components/connectionStatus/connection-status/connection-status.component";
 
+/**
+ * Pagina della Dashboard.
+ * Visualizza il componente dashboard appropriato (Admin, Teacher, Student) in base al ruolo dell'utente loggato.
+ */
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
@@ -25,12 +29,12 @@ import { ConnectionStatusComponent } from "src/app/shared/components/connectionS
     FormsModule,
     LogoutComponent,
     ConnectionStatusComponent
-]
+  ]
 })
 export class DashboardPage implements OnInit {
   private Users = inject(UsersService);
 
-  loggdUser= signal<UserModel>(new UserModel());
+  loggdUser = signal<UserModel>(new UserModel());
   dashboards = {
     [UsersRole.ADMIN]: DashboardAdminComponent,
     [UsersRole.TEACHER]: DashboardTeacherComponent,
@@ -39,12 +43,12 @@ export class DashboardPage implements OnInit {
 
   async ngOnInit() {
     const loggedUser = await this.Users.getLoggedUser();
-    if(loggedUser ){
-      console.log("loggedUser",loggedUser)
-   this.loggdUser.set(loggedUser)
-   console.log("loggdUser",this.loggdUser())
-   console.log("role",this.loggdUser().role)
-   console.log("dashboard",this.dashboards[this.loggdUser().role])
+    if (loggedUser) {
+      console.log("loggedUser", loggedUser)
+      this.loggdUser.set(loggedUser)
+      console.log("loggdUser", this.loggdUser())
+      console.log("role", this.loggdUser().role)
+      console.log("dashboard", this.dashboards[this.loggdUser().role])
     }
   }
 }

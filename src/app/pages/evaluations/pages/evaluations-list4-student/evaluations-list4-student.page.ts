@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
+/**
+ * Componente placeholder per la lista valutazioni studente (probabilmente non utilizzato o incompleto).
+ */
 @Component({
   selector: 'app-evaluations-list4-student',
   templateUrl: './evaluations-list4-student.page.html',

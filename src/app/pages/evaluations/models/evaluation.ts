@@ -1,5 +1,8 @@
 import { Grids } from '../../../shared/models/grids';
 
+/**
+ * Modello che rappresenta una valutazione (voto, griglia, note) assegnata ad uno studente.
+ */
 export class Evaluation {
   key: string = '';
   description: string = '';
@@ -28,25 +31,30 @@ export class Evaluation {
       if (args.grid && typeof args.grid === 'string') {
         this.grid = new Grids({ key: args.grid });
       } else {
-        this.grid =new Grids(args.grid);
+        this.grid = new Grids(args.grid);
       }
       Object.assign(this, {
         ...args,
         grid: this.grid
       });
       this.gridsKey = this.grid.key;
-      }
+    }
     return this;
   }
+
+  /** ritorna il voto totale calcolato dalla griglia */
   get voto() {
     return this.grid.voto;
   }
+
+  /** ritorna il voto massimo possibile calcolato dalla griglia */
   get votoMax() {
     return this.grid.votoMax;
   }
 
+  /** calcola il voto in decimi */
   get gradeInDecimal() {
-    return this.voto / this.votoMax*10;
+    return this.voto / this.votoMax * 10;
   }
 
   serialize() {

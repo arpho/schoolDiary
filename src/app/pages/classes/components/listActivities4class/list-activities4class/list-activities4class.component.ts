@@ -6,10 +6,10 @@ import { ActivitiesService } from 'src/app/pages/activities/services/activities.
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { UnsubscribeService } from 'src/app/shared/services/unsubscribe.service';
 import { Subscription } from 'rxjs';
-import { 
-  IonList, 
-  IonItem, 
-  IonLabel, 
+import {
+  IonList,
+  IonItem,
+  IonLabel,
   IonIcon,
   IonButton,
   IonButtons,
@@ -20,17 +20,22 @@ import {
   AlertController,
   ToastController
 } from '@ionic/angular/standalone';
-import { 
-  ellipsisVertical, 
-  create, 
-  trash, 
-  eye, 
-  close, calendarOutline } from 'ionicons/icons';
+import {
+  ellipsisVertical,
+  create,
+  trash,
+  eye,
+  close, calendarOutline
+} from 'ionicons/icons';
 import { ActivityDialogComponent } from 'src/app/pages/activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 
+/**
+ * Componente per visualizzare e gestire le attività (compiti, verifiche) di una classe.
+ * Permette di filtrare per docente e visualizzare lo stato delle attività.
+ */
 @Component({
   selector: 'app-list-activities4class',
   templateUrl: './list-activities4class.component.html',
@@ -40,7 +45,7 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
     CommonModule,
     DatePipe,
     IonList,
-    IonItem, 
+    IonItem,
     IonLabel,
     IonIcon
   ]
@@ -59,15 +64,15 @@ export class ListActivities4classComponent implements OnDestroy {
     private toastCtrl: ToastController,
     private router: Router
   ) {
-      // Le icone sono registrate globalmente in app.module.ts
+    // Le icone sono registrate globalmente in app.module.ts
     console.log("activityies list")
     // Effetto che si attiva quando i valori cambiano
     effect(() => {
       const currentClassKey = this.classkey();
       const currentTeacherKey = this.teacherkey();
-      console.log("currentClassKey", currentClassKey  );
+      console.log("currentClassKey", currentClassKey);
       console.log("currentTeacherKey", currentTeacherKey);
-        this.updateActivities();
+      this.updateActivities();
     });
   }
 
@@ -80,10 +85,10 @@ export class ListActivities4classComponent implements OnDestroy {
       event.preventDefault();
       event.stopPropagation();
     }
-    
+
     // Navigate to activity detail page
 
-    
+
     // The following code will be used when we want to show the action sheet again
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Azioni',
@@ -128,7 +133,7 @@ export class ListActivities4classComponent implements OnDestroy {
   private async editActivity(activity: ActivityModel) {
     // Carica i dettagli completi dell'attività
     const activityDetails = await this.activitiesService.getActivity(activity.key);
-    
+
     const modal = await this.modalCtrl.create({
       component: ActivityDialogComponent,
       componentProps: {
@@ -137,9 +142,9 @@ export class ListActivities4classComponent implements OnDestroy {
         selectedClass: this.classkey()
       }
     });
-    
+
     await modal.present();
-    
+
     const { data } = await modal.onWillDismiss();
     if (data?.saved) {
       // Ricarica le attività se è stato salvato qualcosa
@@ -156,7 +161,7 @@ export class ListActivities4classComponent implements OnDestroy {
       message: `Sei sicuro di voler eliminare l'attività "${activity.title}"?`,
       buttons: [
         {
-        
+
           text: 'Annulla',
           role: 'cancel'
         },
@@ -197,7 +202,7 @@ export class ListActivities4classComponent implements OnDestroy {
       color,
       position: 'bottom'
     });
-    
+
     await toast.present();
   }
 
@@ -217,10 +222,10 @@ export class ListActivities4classComponent implements OnDestroy {
       new QueryCondition('classKey', '==', currentClassKey),
       new QueryCondition('teacherKey', '==', currentTeacherKey)
     ];
-    console.log("query",query)
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-console.log(today.toISOString());
+    console.log("query", query)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    console.log(today.toISOString());
     // Sottoscrivo al servizio getActivitiesOnRealtime
     this.activitiesService.getActivities4teacherOnRealtime(
       currentTeacherKey,

@@ -29,24 +29,28 @@ import {
   GridsService
 } from 'src/app/shared/services/grids/grids.service';
 import {
-    addIcons
+  addIcons
 } from 'ionicons';
 import {
-    add,
-    share,
-    close,
-    create,
-    trash
+  add,
+  share,
+  close,
+  create,
+  trash
 } from 'ionicons/icons';
 import {
-    ModalController
+  ModalController
 } from '@ionic/angular';
 import {
-    GridsdialogPage
+  GridsdialogPage
 } from '../gridsdialog/gridsdialog';
 import { Router } from '@angular/router';
 
 
+/**
+ * Pagina che visualizza l'elenco delle griglie di valutazione disponibili.
+ * Permette di creare nuove griglie, modificarle, condividerle o eliminarle.
+ */
 @Component({
   selector: 'app-grids-list',
   templateUrl: './grids-list.html',
@@ -70,15 +74,15 @@ import { Router } from '@angular/router';
     IonIcon,
     IonItem,
     IonBackButton
-]
+  ]
 })
 export class GridsListComponent implements OnInit {
 
 
-go2GridDialog = async (gridKey: string) => {
-  console.log("go2GridDialog", gridKey);
-  this.router.navigate(['gridsdialog'],{state:{gridKey:gridKey}});
-};
+  go2GridDialog = async (gridKey: string) => {
+    console.log("go2GridDialog", gridKey);
+    this.router.navigate(['gridsdialog'], { state: { gridKey: gridKey } });
+  };
   showList = computed(() => this.gridsList().length > 0);
 
   gridsList = signal<Grids[]>([]);
@@ -87,7 +91,7 @@ go2GridDialog = async (gridKey: string) => {
     private router: Router,
     private service: GridsService
   ) {
-    addIcons({add,share,close,trash,create});
+    addIcons({ add, share, close, trash, create });
   }
 
   ngOnInit(): void {

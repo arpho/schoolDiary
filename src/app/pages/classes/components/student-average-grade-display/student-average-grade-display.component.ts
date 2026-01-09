@@ -2,10 +2,10 @@ import { Component, OnInit, effect, inject, input, output, signal } from '@angul
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { EvaluationService } from '../../../evaluations/services/evaluation/evaluation.service';
-import { 
-  IonBadge, 
-  IonCard, 
-  IonCardContent, 
+import {
+  IonBadge,
+  IonCard,
+  IonCardContent,
   IonIcon,
   IonSkeletonText
 } from "@ionic/angular/standalone";
@@ -14,6 +14,10 @@ import { filter } from 'rxjs';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { clipboardOutline, documentText, statsChart } from 'ionicons/icons';
+/**
+ * Componente per visualizzare la media voti di uno studente.
+ * Mostra un badge colorato in base alla media e il numero di valutazioni.
+ */
 @Component({
   selector: 'app-student-average-grade-display',
   templateUrl: './student-average-grade-display.component.html',
@@ -34,30 +38,30 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
   teacherkey = input.required<string>();
   subjectKey = input<string>('all');
   startDate = input<string>('');
-  
+
   averagegrade = signal<number>(0);
   evaluationscount = signal<number>(0);
   loading = signal<boolean>(true);
-  visibilityStatus = output<{studentKey:string,visibility:boolean}>();
+  visibilityStatus = output<{ studentKey: string, visibility: boolean }>();
 
   $evaluations = inject(EvaluationService);
   private sanitizer = inject(DomSanitizer);
   private router = inject(Router);
 
-  constructor() { 
+  constructor() {
     effect(() => {
       const subject = this.subjectKey() === 'all' ? undefined : this.subjectKey();
       const date = this.startDate();
       this.loading.set(true);
       this.$evaluations.fetchAverageGradeWhitCount4StudentAndTeacher(
-        this.student().key, 
-        this.teacherkey(), 
-        (result: {averageGrade: number, evaluationscount: number}) => {
+        this.student().key,
+        this.teacherkey(),
+        (result: { averageGrade: number, evaluationscount: number }) => {
           this.averagegrade.set(result.averageGrade);
           this.evaluationscount.set(result.evaluationscount);
           this.loading.set(false);
-          this.visibilityStatus.emit({studentKey:this.student().key,visibility:true});
-        }, 
+          this.visibilityStatus.emit({ studentKey: this.student().key, visibility: true });
+        },
         subject,
         date
       );
@@ -66,7 +70,7 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
     addIcons({
       clipboardOutline,
       statsChart,
-      documentText 
+      documentText
     });
   }
 
@@ -80,7 +84,7 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
     let hue: number;
     let saturation = '95%';
     let lightness = '85%';
-    
+
     if (grade >= 6) {
       hue = 60 + (grade - 6) * 15;
       saturation = '100%';
@@ -91,10 +95,10 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
       hue = 0;
       saturation = '100%';
     }
-    
+
     const color = `hsl(${hue}, ${saturation}, ${lightness})`;
     return this.sanitizer.bypassSecurityTrustStyle(`--background: ${color}`);
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }

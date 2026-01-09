@@ -7,6 +7,10 @@ import { UserModel } from 'src/app/shared/models/userModel';
 import { inject } from '@angular/core';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { Evaluation4StudentComponent } from "src/app/pages/users/components/evaluation4-student/evaluation4-student.component";
+/**
+ * Pagina per visualizzare le valutazioni specifiche di uno studente.
+ * Utilizza il componente `Evaluation4StudentComponent` per la visualizzazione dettagliata.
+ */
 @Component({
   selector: 'app-evaluations4-student',
   templateUrl: './evaluations4-student.page.html',
@@ -22,7 +26,7 @@ import { Evaluation4StudentComponent } from "src/app/pages/users/components/eval
     Evaluation4StudentComponent,
     IonBackButton,
     IonButtons
-]
+  ]
 })
 export class Evaluations4StudentPage implements OnInit {
   studentKey = '';
@@ -30,21 +34,21 @@ export class Evaluations4StudentPage implements OnInit {
   student = signal<UserModel>(new UserModel());
   $users = inject(UsersService);
 
-  constructor(private route:ActivatedRoute) {
+  constructor(private route: ActivatedRoute) {
     console.log("Evaluations4StudentPage");
-   }
+  }
 
-   ngOnInit() {
+  ngOnInit() {
     this.route.params.subscribe(async (params) => {
       this.studentKey = params['studentKey'];
       this.teacherKey = params['teacherKey'];
       console.log("studentKey", this.studentKey);
       console.log("teacherKey", this.teacherKey);
-    const user = await this.$users.getUserByUid(this.studentKey);
-    if(user){
-      this.student.set(user);
-    }
-    
+      const user = await this.$users.getUserByUid(this.studentKey);
+      if (user) {
+        this.student.set(user);
+      }
+
     });
   }
 

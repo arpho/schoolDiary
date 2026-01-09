@@ -13,12 +13,12 @@ import {
   ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  bookOutline, 
-  createOutline, 
-  documentTextOutline, 
-  helpCircleOutline, 
-  trashOutline, 
+import {
+  bookOutline,
+  createOutline,
+  documentTextOutline,
+  helpCircleOutline,
+  trashOutline,
   peopleOutline,
   timeOutline,
   calendarOutline,
@@ -36,6 +36,10 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 
 
+/**
+ * Componente per la visualizzazione della lista di eventi agenda.
+ * Permette di vedere i dettagli, segnare come completato, modificare ed eliminare eventi.
+ */
 @Component({
   selector: 'app-agenda-display',
   template: `
@@ -148,10 +152,13 @@ export class AgendaDisplayComponent implements OnInit {
   classCache = new Map<string, ClasseModel>();
   fetchClassName(classKey: string) {
     const classe = this.classCache.get(classKey);
-   return `${classe?.year} ${classe?.classe}`
-}
+    return `${classe?.year} ${classe?.classe}`
+  }
+  /** Chiave della classe per filtrare (opzionale) */
   classKey = input<string>();
+  /** Chiave del docente (opzionale) */
   teacherKey = input<string>();
+  /** Lista di eventi da visualizzare (input signal) */
   eventsInput = input<AgendaEvent[]>();
 
   private agendaService = inject(AgendaService)
@@ -163,11 +170,11 @@ export class AgendaDisplayComponent implements OnInit {
 
   constructor() {
     addIcons({
-      bookOutline, 
-      helpCircleOutline, 
-      documentTextOutline, 
-      createOutline, 
-      trashOutline, 
+      bookOutline,
+      helpCircleOutline,
+      documentTextOutline,
+      createOutline,
+      trashOutline,
       peopleOutline,
       timeOutline,
       eyeOutline,
@@ -184,13 +191,13 @@ export class AgendaDisplayComponent implements OnInit {
       const inputEvents = this.eventsInput();
       if (inputEvents) {
         this.events.set(inputEvents);
-      
+
       }
     });
   }
   ngOnInit(): void {
-const classes = this.$classes.getAllClasses();
-this.classCache = new Map(classes.map((classe) => [classe.key, classe])); 
+    const classes = this.$classes.getAllClasses();
+    this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
   }
 
 
@@ -244,6 +251,10 @@ this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
     return this.classNamesCache.get(classKey) || classKey;
   }
 
+  /**
+   * Apre il modale per la modifica di un evento.
+   * @param event L'evento da modificare.
+   */
   async editEvent(event: AgendaEvent) {
     const modal = await this.modalCtrl.create({
       component: AgendaEventInputComponent,
@@ -256,6 +267,10 @@ this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
     await modal.present();
   }
 
+  /**
+   * Richiede conferma e poi elimina l'evento.
+   * @param event L'evento da eliminare.
+   */
   async deleteEvent(event: AgendaEvent) {
     if (!event.key) return;
 
@@ -290,9 +305,13 @@ this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
     await alert.present();
   }
 
+  /**
+   * Inverte lo stato di completamento dell'evento (fatto/da fare).
+   * @param event L'evento da aggiornare.
+   */
   async toggleDone(event: AgendaEvent) {
     if (!event.key) return;
-    
+
     try {
       // Toggle the done status
       event.done = !event.done;
@@ -302,7 +321,7 @@ this.classCache = new Map(classes.map((classe) => [classe.key, classe]));
       console.error('Errore durante l\'aggiornamento dello stato dell\'evento:', error);
       // Revert the change in case of error
       event.done = !event.done;
-      
+
       const errorAlert = await this.alertCtrl.create({
         header: 'Errore',
         message: 'Si è verificato un errore durante l\'aggiornamento dello stato dell\'evento.',

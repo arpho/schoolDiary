@@ -21,6 +21,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IonItem, IonList, IonButton, IonIcon, ModalController, IonFabButton, IonFab } from "@ionic/angular/standalone";
 import { ClassesSelectorPage } from '../../pages/classes-selector/classes-selector.page';
 import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
+/**
+ * Componente form field per la selezione multipla di classi.
+ * Implementa `ControlValueAccessor` per integrarsi con i form di Angular.
+ */
 @Component({
   selector: 'app-classes-field',
   standalone: true,
@@ -81,6 +85,10 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
 
   }
 
+  /**
+   * Apre il modale per selezionare le classi.
+   * Aggiorna il valore del field con le classi selezionate.
+   */
   async selectClasses() {
     console.log("cuiao ciao")
     const modal = await this.modalController.create({
@@ -116,6 +124,9 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
     // Pulizia aggiuntiva se necessaria
   }
 
+  /**
+   * Scrive un nuovo valore nel componente (dal form model alla view).
+   */
   writeValue(value: AssignedClass[]): void {
     console.log("writeValue", value);
     if (value && JSON.stringify(this.classes()) !== JSON.stringify(value)) {
@@ -123,6 +134,9 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
     }
   }
 
+  /**
+   * Registra la funzione di callback chiamata quando il valore cambia (dalla view al form model).
+   */
   registerOnChange(fn: (value: AssignedClass[]) => void): void {
     this.onChange = (value: AssignedClass[]) => {
       fn(value);

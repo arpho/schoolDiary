@@ -7,6 +7,10 @@ import { Auth, reauthenticateWithCredential, EmailAuthProvider } from '@angular/
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UsersService } from 'src/app/shared/services/users.service';
 
+/**
+ * Pagina per il reset della password (cambio password da loggato o post-recovery?).
+ * Permette di impostare una nuova password confermando quella vecchia o semplicemente impostandone una nuova.
+ */
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.page.html',

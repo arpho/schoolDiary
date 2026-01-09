@@ -7,6 +7,10 @@ import { addIcons } from 'ionicons';
 import { chevronBack, chevronForward } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 
+/**
+ * Componente wrapper per la libreria Toast UI Calendar.
+ * Offre una visualizzazione avanzata (giorno, settimana, mese) degli eventi.
+ */
 @Component({
   selector: 'app-agenda-scheduler-toast-ui',
   templateUrl: './agenda-scheduler-toast-ui.component.html',
@@ -24,10 +28,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy {
   @ViewChild('calendar') calendarContainer!: ElementRef;
-  
+
   events = input.required<AgendaEvent[]>();
   eventClick = output<AgendaEvent>();
-  
+
   private calendarInstance: Calendar | null = null;
   currentDateDisplay = signal<string>('');
   currentView = signal<'day' | 'week' | 'month'>('day');
@@ -45,18 +49,21 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
     });
 
     effect(() => {
-        const view = this.currentView();
-        if (this.calendarInstance) {
-            this.calendarInstance.changeView(view);
-            this.updateDateDisplay();
-        }
+      const view = this.currentView();
+      if (this.calendarInstance) {
+        this.calendarInstance.changeView(view);
+        this.updateDateDisplay();
+      }
     });
   }
 
+  /**
+   * Inizializza il calendario Toast UI dopo che la view è pronta.
+   */
   ngAfterViewInit() {
     // Small delay to ensure container is ready and styles are applied
     setTimeout(() => {
-        this.initCalendar();
+      this.initCalendar();
     }, 100);
   }
 
@@ -98,65 +105,70 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
         visibleWeeksCount: 0,
       }
     });
-    
+
     // Event click listener
     this.calendarInstance.on('clickEvent', (eventObj: any) => {
-        const originalEvent = this.events().find(e => (e.id || e.key) === eventObj.event.id);
-        if (originalEvent) {
-             this.eventClick.emit(originalEvent);
-        }
+      const originalEvent = this.events().find(e => (e.id || e.key) === eventObj.event.id);
+      if (originalEvent) {
+        this.eventClick.emit(originalEvent);
+      }
     });
 
     this.updateDateDisplay();
 
     // Force render initial events if any
     if (this.events().length > 0) {
-        this.calendarInstance.createEvents(this.transformEvents(this.events()));
+      this.calendarInstance.createEvents(this.transformEvents(this.events()));
     } else {
-        // Add a test event to verify visibility
-        console.log('Adding TEST event');
-        this.calendarInstance.createEvents([{
-            id: 'test-event-1',
-            calendarId: '1',
-            title: 'TEST EVENT VISIBLE?',
-            category: 'time',
-            state: 'Free',
-            start: new Date(),
-            end: new Date(new Date().getTime() + 60 * 60 * 1000),
-            backgroundColor: 'red',
-            color: 'white'
-        }]);
+      // Add a test event to verify visibility
+      console.log('Adding TEST event');
+      this.calendarInstance.createEvents([{
+        id: 'test-event-1',
+        calendarId: '1',
+        title: 'TEST EVENT VISIBLE?',
+        category: 'time',
+        state: 'Free',
+        start: new Date(),
+        end: new Date(new Date().getTime() + 60 * 60 * 1000),
+        backgroundColor: 'red',
+        color: 'white'
+      }]);
     }
   }
 
   private transformEvents(agendaEvents: AgendaEvent[]): any[] {
     console.log('Transforming events:', agendaEvents);
     const transformed = agendaEvents.map(e => {
-        const isAllDay = e.allDay; 
-        
-        // Ensure dates are Date objects or valid ISO strings
-        let start = e.dataInizio;
-        let end = e.dataFine;
+      const isAllDay = e.allDay;
 
-        return {
-            id: e.id || e.key,
-            calendarId: '1',
-            title: e.title,
-            category: isAllDay ? 'allday' : 'time',
-            start: start,
-            end: end,
-            backgroundColor: this.getEventColor(e.type),
-            color: '#FFFFFF',
-            borderColor: this.getEventColor(e.type),
-            isReadOnly: true
-        };
+      // Ensure dates are Date objects or valid ISO strings
+      let start = e.dataInizio;
+      let end = e.dataFine;
+
+      return {
+        id: e.id || e.key,
+        calendarId: '1',
+        title: e.title,
+        category: isAllDay ? 'allday' : 'time',
+        start: start,
+        end: end,
+        backgroundColor: this.getEventColor(e.type),
+        color: '#FFFFFF',
+        borderColor: this.getEventColor(e.type),
+        isReadOnly: true
+      };
     });
     console.log('Transformed events for Toast UI:', transformed);
     return transformed;
   }
 
+  /**
+   * Restituisce il colore associato al tipo di evento.
+   * @param type Tipo di evento.
+   * @returns Colore CSS.
+   */
   private getEventColor(type: string): string {
-    switch(type) {
+    switch (type) {
       case 'homework': return 'var(--ion-color-primary)';
       case 'test': return 'var(--ion-color-danger)';
       case 'meeting': return 'var(--ion-color-warning)';
@@ -193,15 +205,15 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
       const end = this.calendarInstance.getDateRangeEnd();
 
       if (this.currentView() === 'day') {
-        this.currentDateDisplay.set(new Date(date.getTime()).toLocaleDateString('it-IT', { 
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+        this.currentDateDisplay.set(new Date(date.getTime()).toLocaleDateString('it-IT', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
         }));
       } else if (this.currentView() === 'week') {
-         const startStr = new Date(start.getTime()).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
-         const endStr = new Date(end.getTime()).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
-         this.currentDateDisplay.set(`${startStr} - ${endStr}`);
+        const startStr = new Date(start.getTime()).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+        const endStr = new Date(end.getTime()).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+        this.currentDateDisplay.set(`${startStr} - ${endStr}`);
       } else {
-         this.currentDateDisplay.set(new Date(date.getTime()).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' }));
+        this.currentDateDisplay.set(new Date(date.getTime()).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' }));
       }
     }
   }

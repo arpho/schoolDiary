@@ -1,7 +1,13 @@
-export class DocumentModel{
-  name: string="";
-  path: string="";
-  descrizione: string="";
+/**
+ * Modello che rappresenta un documento (es. verbale).
+ */
+export class DocumentModel {
+  /** Nome del documento */
+  name: string = "";
+  /** Percorso o URL del documento */
+  path: string = "";
+  /** Descrizione del documento */
+  descrizione: string = "";
 
   constructor(args?: Partial<DocumentModel>) {
     this.build(args);
@@ -13,14 +19,14 @@ export class DocumentModel{
     }
 
 
-  return this
-}
+    return this
+  }
 
-serialize() {
-  return {
-    name: this.name,
-    path: this.path,
-            descrizione: this.descrizione
-        }
-}
+  serialize() {
+    return {
+      name: this.name,
+      path: this.path,
+      descrizione: this.descrizione
+    }
+  }
 }

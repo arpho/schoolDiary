@@ -4,6 +4,10 @@ import { AgendaEvent } from '../../models/agendaEvent';
 import { IonText, IonDatetime, IonList, IonItem, IonLabel, IonNote, IonIcon } from '@ionic/angular/standalone';
 import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display/agenda-display.component';
 
+/**
+ * Componente scheduler per l'agenda.
+ * Mostra un calendario interattivo e la lista degli eventi del giorno selezionato.
+ */
 @Component({
   selector: 'app-agenda-scheduler',
   templateUrl: './agenda-scheduler.component.html',
@@ -11,11 +15,11 @@ import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    CommonModule, 
-    IonDatetime, 
-    IonList, 
-    IonItem, 
-    IonLabel, 
+    CommonModule,
+    IonDatetime,
+    IonList,
+    IonItem,
+    IonLabel,
     IonText,
     IonNote,
     IonIcon,
@@ -24,16 +28,16 @@ import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display
 })
 export class AgendaSchedulerComponent {
   events = input.required<AgendaEvent[]>();
-  
+
   selectedDate = signal<string>(new Date().toISOString());
 
   highlightedDates = computed(() => {
     const dates: { date: string, textColor: string, backgroundColor: string }[] = [];
     const eventsList = this.events();
-    
+
     // Create a Set of unique dates with events
     const uniqueDates = new Set(eventsList.map(e => {
-        return e.dataInizio.split('T')[0];
+      return e.dataInizio.split('T')[0];
     }));
 
     uniqueDates.forEach(date => {

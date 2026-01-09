@@ -10,6 +10,10 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 
+/**
+ * Pagina del profilo utente.
+ * Visualizza e permette la modifica dei dati personali dell'utente (nome, email, telefono, ecc.).
+ */
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',

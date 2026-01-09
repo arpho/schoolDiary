@@ -42,6 +42,10 @@ import { UploadStudentsComponent } from '../uploadStudents/upload-students/uploa
 import { UserDialogPage } from '../../../users/user-dialog/user-dialog.page';
 import { StudentAverageGradeDisplayComponent } from '../student-average-grade-display/student-average-grade-display.component';
 
+/**
+ * Componente per la visualizzazione e gestione della lista studenti di una classe.
+ * Permette di visualizzare le medie, aggiungere studenti, e navigare ai dettagli o valutazioni.
+ */
 @Component({
   selector: 'app-list-student4class',
   templateUrl: './list-student4class.component.html',
@@ -73,6 +77,10 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     localStorage.getItem('dataInizioPeriodo') ||
     new Date(new Date().getFullYear(), 0, 2).toISOString()
   );
+  /**
+   * Mostra un action sheet con opzioni per lo studente (modifica, nuova valutazione, ecc.).
+   * @param student Lo studente selezionato.
+   */
   async showActionSheet(student: UserModel) {
     console.log("action for", student)
 
@@ -114,6 +122,9 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     await actionSheet.present();
   }
   teacherkey = signal<string>('');
+  /**
+   * Apre il dialog per aggiungere un nuovo studente alla classe.
+   */
   async addStudent() {
     console.log("adding student", this.classkey)
     const modal = await this.$modalController.create({
@@ -140,6 +151,9 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     return this._classkey;
   }
   private _classkey: string = '';
+  /**
+   * Apre il componente per il caricamento massivo di studenti (es. da CSV).
+   */
   async uploadStudents() {
     const modal = await this.$modalController.create({
       component: UploadStudentsComponent,
@@ -149,6 +163,10 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     });
     await modal.present();
   }
+  /**
+   * Naviga alla pagina di valutazione per lo studente selezionato.
+   * @param studentKey Chiave dello studente.
+   */
   async newEvaluation(studentKey: string) {
     const teacher = await this.$users.getLoggedUser()
     console.log('🔄 ListStudent4classComponent - newEvaluation');
@@ -254,6 +272,9 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     }
   }
 
+  /**
+   * Carica la lista degli studenti della classe.
+   */
   private loadStudents() {
     this.$users.getUsersByClass(this.classkey, (users: UserModel[]) => {
       this.setStudents(users);
@@ -261,6 +282,10 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     });
   }
 
+  /**
+   * Carica le medie dei voti per gli studenti visualizzati.
+   * Filtra per materia e docente se specificati.
+   */
   private loadAveragesForStudents() {
     const users = this._students();
     const teacherKey = this.teacherkey();

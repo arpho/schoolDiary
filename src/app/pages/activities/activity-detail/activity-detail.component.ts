@@ -1,22 +1,22 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { 
-  IonInput, 
-  IonTextarea, 
-  IonDatetime, 
-  IonSelect, 
-  IonSelectOption 
+import {
+  IonInput,
+  IonTextarea,
+  IonDatetime,
+  IonSelect,
+  IonSelectOption
 } from '@ionic/angular/standalone';
-import { 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonContent, 
-  IonButton, 
-  IonIcon, 
-  IonItem, 
-  IonLabel, 
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonLabel,
   IonButtons,
   IonCard,
   IonCardHeader,
@@ -38,39 +38,43 @@ import { ClassiService } from '../../classes/services/classi.service';
 import { UsersService } from '../../../shared/services/users.service';
 import { ClasseModel } from '../../classes/models/classModel';
 import { UserModel } from '../../../shared/models/userModel';
-import { 
-  personOutline, 
-  warning, 
-  create, 
-  arrowBack, 
-  calendarOutline, 
-  timeOutline, 
-  schoolOutline, 
-  checkmarkCircleOutline, 
-  closeCircleOutline 
+import {
+  personOutline,
+  warning,
+  create,
+  arrowBack,
+  calendarOutline,
+  timeOutline,
+  schoolOutline,
+  checkmarkCircleOutline,
+  closeCircleOutline
 } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 // Icons will be used directly in the template with their string names
 
+/**
+ * Componente per la visualizzazione dei dettagli di un'attività.
+ * Permette anche la modifica e il salvataggio dei dettagli.
+ */
 @Component({
   selector: 'app-activity-detail',
   templateUrl: './activity-detail.component.html',
   styleUrls: ['./activity-detail.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     DatePipe,
     // Ionic Components
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonContent, 
-    IonButton, 
-    IonIcon, 
-    IonItem, 
-    IonLabel, 
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButton,
+    IonIcon,
+    IonItem,
+    IonLabel,
     IonButtons,
     IonCard,
     IonCardHeader,
@@ -99,9 +103,9 @@ export class ActivityDetailComponent implements OnInit {
   private classiService = inject(ClassiService);
   private usersService = inject(UsersService);
   private fb = inject(FormBuilder);
-  
+
   activityForm!: FormGroup;
-  
+
   activity: ActivityModel | null = null;
   classe = signal<ClasseModel | null>(null);
   teacher = signal<UserModel | null>(null);
@@ -125,18 +129,21 @@ export class ActivityDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Inizializza il componente recuperando l'attività dalla route e caricando i dettagli correlati.
+   */
   async ngOnInit() {
     const activityKey = this.route.snapshot.paramMap.get('activityKey');
-    
+
     if (!activityKey) {
       this.error = 'Nessuna attività specificata';
       this.isLoading = false;
       return;
     }
-    
+
     try {
       const activity = await this.activitiesService.getActivity(activityKey);
-      if(activity){
+      if (activity) {
         this.activity = activity
       }
       if (!activity) {
@@ -147,13 +154,13 @@ export class ActivityDetailComponent implements OnInit {
 
       // Initialize form with activity data
       this.initializeForm();
-      
+
       // Load class and teacher details in parallel
       await Promise.all([
         this.loadClassDetails(),
         this.loadTeacherDetails()
       ]);
-      
+
     } catch (err) {
       console.error('Errore nel caricamento dei dettagli:', err);
       this.error = 'Si è verificato un errore nel caricamento dei dettagli';
@@ -162,9 +169,12 @@ export class ActivityDetailComponent implements OnInit {
     }
   }
 
+  /**
+   * Carica i dettagli della classe associata all'attività.
+   */
   private async loadClassDetails() {
     if (!this.activity?.classKey) return;
-    
+
     try {
       const classe = await this.classiService.fetchClasse(this.activity.classKey);
       if (classe) {
@@ -177,7 +187,7 @@ export class ActivityDetailComponent implements OnInit {
 
   private async loadTeacherDetails() {
     if (!this.activity?.teacherKey) return;
-    
+
     try {
       const teacher = await this.usersService.fetchUser(this.activity.teacherKey);
       if (teacher) {
@@ -187,7 +197,7 @@ export class ActivityDetailComponent implements OnInit {
       console.error('Errore nel caricamento del docente:', error);
     }
   }
-  
+
   // Form controls for easier access
   get titleControl() { return this.activityForm.get('title'); }
   get descriptionControl() { return this.activityForm.get('description'); }
@@ -198,7 +208,7 @@ export class ActivityDetailComponent implements OnInit {
   private initializeForm(): void {
     this.activityForm = this.fb.group({
       title: [this.activity?.title || '', [
-        Validators.required, 
+        Validators.required,
         Validators.minLength(3),
         Validators.maxLength(100)
       ]],
@@ -222,9 +232,13 @@ export class ActivityDetailComponent implements OnInit {
     }
   }
 
+  /**
+   * Attiva o disattiva la modalità modifica.
+   * Se disattivata, resetta il form ai valori originali.
+   */
   toggleEditMode(): void {
     this.isEditMode = !this.isEditMode;
-    
+
     if (this.isEditMode) {
       this.classKeyControl?.enable();
     } else {
@@ -234,20 +248,23 @@ export class ActivityDetailComponent implements OnInit {
     }
   }
 
+  /**
+   * Salva le modifiche all'attività.
+   */
   async onSubmit(): Promise<void> {
     this.isSubmitted = true;
-    
+
     if (this.activityForm.invalid) {
       return;
     }
-    
+
     if (!this.activity?.key) {
       this.error = 'Impossibile salvare: ID attività mancante';
       return;
     }
-    
+
     this.isLoading = true;
-    
+
     try {
       const formValue = this.activityForm.value;
       const updatedActivity: ActivityModel = {
@@ -258,14 +275,14 @@ export class ActivityDetailComponent implements OnInit {
         date: formValue.date,
         dueDate: formValue.dueDate || null
       };
-      
+
       await this.activitiesService.updateActivity(updatedActivity.key, updatedActivity);
       this.activity = updatedActivity;
       this.isEditMode = false;
-      
+
       // Show success message or navigate
       // You might want to add a toast notification here
-      
+
     } catch (error) {
       console.error('Errore durante il salvataggio:', error);
       this.error = 'Si è verificato un errore durante il salvataggio';

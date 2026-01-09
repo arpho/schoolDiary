@@ -20,6 +20,11 @@ import {
 import { ClasseModel } from '../models/classModel';
 import { Observable, BehaviorSubject } from 'rxjs';
 
+/**
+ * Servizio per la gestione delle Classi.
+ * Gestisce il caricamento, la cache, la creazione e l'aggiornamento delle classi.
+ * Utilizza BehaviorSubject per lo stato reattivo.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -52,7 +57,8 @@ export class ClassiService {
   }
 
   /**
-   * Ottiene tutte le classi dalla cache
+   * Ottiene tutte le classi attualmente presenti nella cache locale.
+   * @returns Array di ClasseModel.
    */
   getAllClasses(): ClasseModel[] {
     return this.classesSubject.getValue();
@@ -66,7 +72,9 @@ export class ClassiService {
   }
 
   /**
-   * Ottiene una classe dalla cache o la recupera dal database
+   * Ottiene una classe dalla cache o la recupera dal database se mancante.
+   * @param classKey Chiave della classe.
+   * @returns Promise con il modello della classe.
    */
   async fetchClasseOnCache(classKey: string): Promise<ClasseModel> {
     let classe = this.classesSubject.getValue().find(c => c.key === classKey);
@@ -81,7 +89,9 @@ export class ClassiService {
   }
 
   /**
-   * Recupera multiple classi
+   * Recupera multiple classi dato un array di chiavi.
+   * @param classes Array di chiavi delle classi.
+   * @returns Promise con array di ClasseModel.
    */
   fetchClasses(classes: string[]): Promise<ClasseModel[]> {
     const classi = classes.map((classe) => this.fetchClasse(classe));
@@ -89,7 +99,9 @@ export class ClassiService {
   }
 
   /**
-   * Elimina una classe
+   * Elimina una classe da Firestore.
+   * @param key Chiave della classe.
+   * @returns Promise vuota.
    */
   deleteClasse(key: string): Promise<void> {
     const docRef = this.docFn(this.firestore, this.collectionName, key);
@@ -97,7 +109,9 @@ export class ClassiService {
   }
 
   /**
-   * Archivia una classe
+   * Archivia una classe impostando il flag archived a true.
+   * @param classKey Chiave della classe.
+   * @returns Promise vuota.
    */
   async archiviaClasse(classKey: string): Promise<void> {
     const classe = await this.fetchClasseOnCache(classKey);
@@ -111,7 +125,9 @@ export class ClassiService {
   }
 
   /**
-   * Recupera una singola classe dal database
+   * Recupera una singola classe direttamente dal database (bypassando la cache).
+   * @param classeKey Chiave della classe.
+   * @returns Promise con il modello della classe.
    */
   async fetchClasse(classeKey: string): Promise<ClasseModel> {
     const docRef = this.docFn(this.firestore, this.collectionName, classeKey);
@@ -120,7 +136,9 @@ export class ClassiService {
   }
 
   /**
-   * Aggiunge una nuova classe
+   * Aggiunge una nuova classe al database.
+   * @param classe Modello della nuova classe.
+   * @returns Promise vuota.
    */
   async addClasse(classe: ClasseModel): Promise<void> {
     const docRef = this.docFn(this.collectionFn(this.firestore, this.collectionName));
@@ -128,7 +146,10 @@ export class ClassiService {
   }
 
   /**
-   * Aggiorna una classe esistente
+   * Aggiorna i dati di una classe esistente.
+   * @param classeKey Chiave della classe.
+   * @param classe Dati aggiornati.
+   * @returns Promise vuota.
    */
   updateClasse(classeKey: string, classe: ClasseModel): Promise<void> {
     const docRef = this.docFn(this.firestore, this.collectionName, classeKey);

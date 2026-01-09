@@ -11,6 +11,10 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { archive, create, ellipsisVertical, eye, sparkles, close } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
+/**
+ * Componente per la gestione delle note riservate su uno studente.
+ * Permette visualizzazione, aggiunta, modifica ed eliminazione delle note.
+ */
 @Component({
   selector: 'app-reserved-notes4student',
   templateUrl: './reserved-notes4student.component.html',
@@ -37,7 +41,7 @@ import { addIcons } from 'ionicons';
 })
 export class ReservedNotes4studentComponent implements OnInit {
 
-  @Input() 
+  @Input()
   set studentkey(value: string) {
     console.log('studentKey set to:', value, 'Previous value:', this._studentKey);
     if (value !== this._studentKey) {
@@ -50,7 +54,7 @@ export class ReservedNotes4studentComponent implements OnInit {
     return this._studentKey;
   }
 
-  @Input() 
+  @Input()
   set ownerkey(value: string) {
     console.log('ownerKey set to:', value, 'Previous value:', this._ownerKey);
     if (value !== this._ownerKey) {
@@ -97,12 +101,12 @@ export class ReservedNotes4studentComponent implements OnInit {
     console.log("ngOnInit ReservedNotes4studentComponent");
     console.log("studentkey", this._studentKey);
     console.log("ownerkey", this._ownerKey);
-    
+
     // Load notes if we already have the required keys
     if (this._studentKey && this._ownerKey) {
       this.loadNotes();
     }
-    
+
     // Initialize real-time updates
     this.initializeNotes();
   }
@@ -144,14 +148,14 @@ export class ReservedNotes4studentComponent implements OnInit {
                 .setNote(data.note)
                 .setStudentKey(this.studentkey)
                 .setDate(new Date().toISOString());
-                console.log("note", note);
-              
+              console.log("note", note);
+
               this.notesService.addNote(note).then((docRef) => {
-                this.toast.presentToast({message:"Nota aggiunta con successo",duration:2000,position:"bottom"});
+                this.toast.presentToast({ message: "Nota aggiunta con successo", duration: 2000, position: "bottom" });
                 console.log("nota creata", note);
                 note.setKey(docRef.id);
               }).catch((error) => {
-                this.toast.presentToast({message:"Errore durante l'aggiunta della nota",duration:2000,position:"bottom"});
+                this.toast.presentToast({ message: "Errore durante l'aggiunta della nota", duration: 2000, position: "bottom" });
                 console.log("errore durante l'aggiunta della nota", error);
               });
             }
@@ -176,10 +180,10 @@ export class ReservedNotes4studentComponent implements OnInit {
           text: 'Elimina',
           handler: () => {
             this.notesService.deleteNote(noteKey).then(() => {
-              this.toast.presentToast({message:"Nota eliminata con successo",duration:2000,position:"bottom"});
+              this.toast.presentToast({ message: "Nota eliminata con successo", duration: 2000, position: "bottom" });
               console.log("nota eliminata", noteKey);
             }).catch((error) => {
-              this.toast.presentToast({message:"Errore durante l'eliminazione della nota",duration:2000,position:"bottom"});
+              this.toast.presentToast({ message: "Errore durante l'eliminazione della nota", duration: 2000, position: "bottom" });
               console.log("errore durante l'eliminazione della nota", error);
             });
           }
@@ -211,10 +215,10 @@ export class ReservedNotes4studentComponent implements OnInit {
             if (data.note) {
               note.setNote(data.note);
               this.notesService.updateNote(note.key, note).then(() => {
-                this.toast.presentToast({message:"Nota aggiornata con successo",duration:2000,position:"bottom"});
+                this.toast.presentToast({ message: "Nota aggiornata con successo", duration: 2000, position: "bottom" });
                 console.log("nota aggiornata", note);
               }).catch((error) => {
-                this.toast.presentToast({message:"Errore durante l'aggiornamento della nota",duration:2000,position:"bottom"});
+                this.toast.presentToast({ message: "Errore durante l'aggiornamento della nota", duration: 2000, position: "bottom" });
                 console.log("errore durante l'aggiornamento della nota", error);
               });
             }

@@ -19,11 +19,16 @@ import {
   IonDatetime,
   IonButton,
   IonList,
-  
-  IonIcon } from '@ionic/angular/standalone';
+
+  IonIcon
+} from '@ionic/angular/standalone';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
 import { addIcons } from 'ionicons';
 import { refreshOutline } from 'ionicons/icons';
+/**
+ * Componente popup per il filtraggio delle valutazioni.
+ * Permette di filtrare per classe, studente, attività e testo libero.
+ */
 @Component({
   selector: 'app-filter-popup',
   templateUrl: './filter-popup.component.html',
@@ -47,21 +52,21 @@ import { refreshOutline } from 'ionicons/icons';
     IonButton,
     IonList,
     IonIcon,
-]
+  ]
 })
 export class FilterPopupComponent implements OnInit {
-resetFilter() {
-this.classKey.set('');
-this.studentKey.set('');
-this.activityKey.set('');
-this.fullText.set('');
-this.filterform.patchValue({
-  classKey: '',
-  studentKey: '',
-  activityKey: '',
-  fullText: '',
-});
-}
+  resetFilter() {
+    this.classKey.set('');
+    this.studentKey.set('');
+    this.activityKey.set('');
+    this.fullText.set('');
+    this.filterform.patchValue({
+      classKey: '',
+      studentKey: '',
+      activityKey: '',
+      fullText: '',
+    });
+  }
   // Usa model invece di input per i parametri
   filter = model<QueryCondition[]>([]);
   listaClassi = model<ClasseModel[]>([]);
@@ -81,7 +86,7 @@ this.filterform.patchValue({
     fullText: new FormControl(''),
   });
 
-  constructor() { 
+  constructor() {
     addIcons({
       refresh: refreshOutline,
     })
@@ -92,7 +97,7 @@ this.filterform.patchValue({
       console.log("listaStudenti", this.listaStudenti());
     })
   }
-  
+
 
   ngOnInit() {
 
@@ -121,7 +126,7 @@ this.filterform.patchValue({
         new QueryCondition('studentKey', '==', value.studentKey),
         new QueryCondition('activityKey', '==', value.activityKey),
         new QueryCondition('fullText', '==', value.fullText)
-      ].filter((condition: QueryCondition) => condition.value !== '')); 
+      ].filter((condition: QueryCondition) => condition.value !== ''));
       console.log("filter", this.filter());
     });
   }

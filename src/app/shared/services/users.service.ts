@@ -33,6 +33,10 @@ interface ClaimsResponse {
   };
 }
 
+/**
+ * Servizio principale per la gestione degli utenti (Studenti, Docenti, Admin).
+ * Gestisce operazioni CRUD su Firestore, autenticazione e cache locale degli utenti.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -78,10 +82,21 @@ export class UsersService implements OnInit {
     // });
   }
 
+  /**
+   * Aggiorna la password dell'utente.
+   * @param user Utente Firebase.
+   * @param newPassword Nuova password.
+   * @returns Promise dell'operazione.
+   */
   updatePassword(user: User, newPassword: string) {
     return this.updatePasswordFn(user, newPassword);
   }
 
+  /**
+   * Recupera un utente dalla cache o da Firestore.
+   * @param userKey Chiave univoca dell'utente.
+   * @returns Promise contenente il modello dell'utente o null se non trovato.
+   */
   async getUser(userKey: string): Promise<UserModel | null> {
     // Check in cache first
     const cachedUser = this.usersCache.get(userKey);
@@ -107,6 +122,11 @@ export class UsersService implements OnInit {
     }
   }
 
+  /**
+   * Invia un'email per il recupero della password.
+   * @param email Email dell'utente.
+   * @returns Promise che restituisce true se l'invio ha successo, false altrimenti.
+   */
   sendPasswordRecoverEmail(email: string): Promise<boolean> {
     const auth = this.getAuthFn();
     return this.sendPasswordResetEmailFn(auth, email)
@@ -119,6 +139,13 @@ export class UsersService implements OnInit {
       });
   }
 
+  /**
+   * Sottoscrizione realtime agli utenti di una specifica classe.
+   * @param classKey Chiave della classe.
+   * @param callback Callback invocata con la lista degli utenti aggiornata.
+   * @param queryConditions Condizioni opzionali per filtrare ulteriormente.
+   * @returns Funzione per cancellare la sottoscrizione (unsubscribe).
+   */
   getUsersByClass(classKey: string, callback: (users: UserModel[]) => void, queryConditions: QueryCondition[] = []): () => void {
     const collectionRef = this.collectionFn(this.firestore, this.collectionName);
     const conditions = [
@@ -142,7 +169,7 @@ export class UsersService implements OnInit {
           );
 
           const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
-          
+
         } else {
           user.assignedClasses = [];
         }
@@ -160,6 +187,11 @@ export class UsersService implements OnInit {
     })
   }
 
+  /**
+   * Recupera un utente dalla cache signal, se non presente lo scarica da Firestore.
+   * @param userKey Chiave dell'utente.
+   * @returns Promise con il modello utente.
+   */
   async fetchUserOnCache(userKey: string): Promise<UserModel | null> {
     if (!userKey) {
       console.warn('fetchUserOnCache chiamato con userKey vuoto');
@@ -226,7 +258,7 @@ export class UsersService implements OnInit {
         );
 
         const classi = (await Promise.all(classiPromises)).filter(Boolean) as ClasseModel[];
-       // user.assignedClases = classi.map(item=>new AssignedClass(item));
+        // user.assignedClases = classi.map(item=>new AssignedClass(item));
       } else {
         user.assignedClasses = [];
       }
@@ -238,6 +270,12 @@ export class UsersService implements OnInit {
     }
   }
 
+  /**
+   * Aggiorna i dati di un utente su Firestore.
+   * @param userKey Chiave dell'utente.
+   * @param user Oggetto con i dati aggiornati.
+   * @returns Promise void.
+   */
   async updateUser(userKey: string, user: UserModel): Promise<void> {
     try {
       const userRef = this.docFn(this.firestore, 'userProfiles', userKey);
@@ -248,6 +286,13 @@ export class UsersService implements OnInit {
     }
   }
 
+  /**
+   * Sottoscrizione realtime a tutti gli utenti che soddisfano le condizioni.
+   * @param cb Callback con la lista degli utenti.
+   * @param queryConditions Condizioni AND.
+   * @param orConditions Condizioni OR.
+   * @returns Unsubscribe function.
+   */
   getUsersOnRealTime(cb: (users: UserModel[]) => void, queryConditions?: QueryCondition[], orConditions?: OrCondition) {
     let q = this.queryFn(this.collectionFn(this.firestore, this.collectionName));
     if (queryConditions) {
@@ -270,7 +315,7 @@ export class UsersService implements OnInit {
           }
         });
 
-     
+
 
         users.push(user);
       });
@@ -296,6 +341,11 @@ export class UsersService implements OnInit {
     });
   }
 
+  /**
+   * Recupera l'utente attualmente loggato.
+   * INCLUDE il recupero dei dettagli delle classi assegnate per i docenti.
+   * @returns Promise con il modello dell'utente loggato.
+   */
   getLoggedUser(): Promise<UserModel | null> {
     return new Promise((resolve) => {
       this.MyAuth.getUser().subscribe(async (user) => {
@@ -345,6 +395,11 @@ export class UsersService implements OnInit {
     }
   }
 
+  /**
+   * Crea un utente tramite Cloud Function 'createUserPlus'.
+   * @param user Utente da creare.
+   * @returns Promise con l'ID del nuovo utente.
+   */
   async createUser(user: UserModel): Promise<string> {
     const functions = getFunctions();
     const createUser = httpsCallable(functions, 'createUserPlus');
@@ -401,12 +456,21 @@ export class UsersService implements OnInit {
     return createdUser.user.uid;
   }
 
+  /**
+   * Effettua il logout dell'utente.
+   * @returns Promise del logout.
+   */
   logout(): Promise<void> {
     const auth = this.getAuthFn();
     console.log('auth', auth);
     return auth.signOut();
   }
 
+  /**
+   * Recupera un utente dato il suo UID.
+   * @param uid UID dell'utente.
+   * @returns Promise con il modello utente o null.
+   */
   async getUserByUid(uid: string): Promise<UserModel | null> {
     try {
       const userRef = this.docFn(this.firestore, `userProfiles/${uid}`);
@@ -427,7 +491,11 @@ export class UsersService implements OnInit {
   }
 
   /**
-   * Ritorna le materie insegnate da un docente in una classe
+   * Ritorna le materie insegnate da un docente in una classe specifica.
+   * Verifica le classi assegnate al docente e le materie collegate.
+   * @param teacherKey Chiave del docente.
+   * @param classKey Chiave della classe.
+   * @returns Promise con la lista delle materie.
    */
   async getSubjectsByTeacherAndClass(teacherKey: string, classKey: string): Promise<SubjectModel[]> {
     const teacher = await this.fetchUser(teacherKey);

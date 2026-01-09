@@ -20,6 +20,10 @@ import { add } from 'ionicons/icons';
 import { EventDialogComponent } from '../event-dialog/event-dialog.component';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 
+/**
+ * Componente per visualizzare l'agenda filtrata per specifiche classi.
+ * Utilizzato nei dialoghi delle classi per mostrare gli eventi correlati.
+ */
 @Component({
   selector: 'app-display-agenda4-classes',
   templateUrl: './display-agenda4-classes.component.html',

@@ -16,6 +16,10 @@ import {
   IonCardTitle,
 } from '@ionic/angular/standalone';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+/**
+ * Componente per visualizzare gli studenti con PDP/BES/DSA/ADHD.
+ * Filtra automaticamente gli studenti della classe che hanno queste segnalazioni.
+ */
 @Component({
   selector: 'app-students-with-pd-p',
   templateUrl: './students-with-pd-p.component.html',
@@ -34,32 +38,32 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     IonCardTitle,
     ReactiveFormsModule,
     FormsModule
-]
+  ]
 })
-export class StudentsWithPdPComponent  implements OnInit {
+export class StudentsWithPdPComponent implements OnInit {
   formName(user: UserModel) {
     console.log("formName", user);
-return `${user.lastName} ${user.firstName}`;
-}
-private $users = inject(UsersService);
-classe = input<ClasseModel>(new ClasseModel());
-students = signal<UserModel[]>([]);
+    return `${user.lastName} ${user.firstName}`;
+  }
+  private $users = inject(UsersService);
+  classe = input<ClasseModel>(new ClasseModel());
+  students = signal<UserModel[]>([]);
 
-  constructor() { 
+  constructor() {
     effect(() => {
       console.log("studentsWithPdPComponent", this.classe());
       const classeKey = this.classe().key;
-      if(classeKey){
+      if (classeKey) {
         this.$users.getUsersOnRealTime((users: UserModel[]) => {
           console.log("students with pdp", users);
           this.students.set(users);
-        },[new QueryCondition('classKey', '==', classeKey)],
-        new OrCondition([
-          new QueryCondition('DVA', '==', true),
-          new QueryCondition('BES', '==', true),
-          new QueryCondition('DSA', '==', true),
-          new QueryCondition('ADHD', '==', true),
-        ]))
+        }, [new QueryCondition('classKey', '==', classeKey)],
+          new OrCondition([
+            new QueryCondition('DVA', '==', true),
+            new QueryCondition('BES', '==', true),
+            new QueryCondition('DSA', '==', true),
+            new QueryCondition('ADHD', '==', true),
+          ]))
       }
 
     });

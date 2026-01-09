@@ -1,3 +1,7 @@
+/**
+ * Modello per le note riservate associate ad uno studente.
+ * Contiene il contenuto della nota, l'autore (owner), lo studente associato e la data.
+ */
 export class ReservedNotes4student {
   ownerKey = "";
   note = "";

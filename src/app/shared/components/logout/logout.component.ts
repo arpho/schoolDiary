@@ -2,16 +2,16 @@ import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/cor
 import { md5 } from '../../utils/md5';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { 
-  IonButton, 
-  IonIcon, 
-  IonPopover, 
-  IonContent, 
-  IonList, 
-  IonItem, 
-  IonLabel, 
-  IonAvatar, 
-  IonText 
+import {
+  IonButton,
+  IonIcon,
+  IonPopover,
+  IonContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonAvatar,
+  IonText
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -24,6 +24,10 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { Router } from '@angular/router';
 import { UserModel } from 'src/app/shared/models/userModel';
 
+/**
+ * Componente per il logout dell'utente.
+ * Visualizza un avatar con md5 (Gravatar) e un menu a discesa per il logout.
+ */
 @Component({
   selector: 'app-logout',
   templateUrl: './logout.component.html',
@@ -64,6 +68,10 @@ export class LogoutComponent implements OnInit {
 
   gravatarUrl = signal<string>('');
 
+  /**
+   * Inizializza il componente recuperando l'utente loggato.
+   * Calcola l'hash Gravatar per l'avatar.
+   */
   async ngOnInit() {
     const user = await this.$user.getLoggedUser();
     console.log("user", user);
@@ -78,6 +86,9 @@ export class LogoutComponent implements OnInit {
     }
   }
 
+  /**
+   * Effettua il logout e reindirizza alla pagina di login.
+   */
   async logout() {
     try {
       await this.$user.logout();

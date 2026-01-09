@@ -9,6 +9,10 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { addIcons } from 'ionicons';
 import { personOutline, mailOutline, lockClosedOutline, personAddOutline } from 'ionicons/icons';
 
+/**
+ * Pagina di registrazione utente.
+ * Gestisce la creazione di un nuovo account utente con email, password e dati anagrafici.
+ */
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.page.html',
@@ -60,7 +64,7 @@ export class SignupPage {
   signup() {
     if (this.signupForm.valid) {
       const { name, surname, email, password, passwordConfirm } = this.signupForm.value;
-      
+
       if (password !== passwordConfirm) {
         this.toaster.presentToast({ message: 'Passwords do not match', position: 'top' });
         return;
@@ -76,7 +80,7 @@ export class SignupPage {
       console.log('Signup form submitted:', formValueForModel);
       const user = new UserModel(formValueForModel);
       console.log("creating user", user);
-      
+
       this.service.signupUser(user).then(() => {
         this.toaster.presentToast({ message: 'User created successfully', position: 'top' });
       }).catch((error) => {

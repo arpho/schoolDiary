@@ -40,6 +40,10 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ClassiService } from '../../classes/services/classi.service';
 import { ClasseModel } from '../../classes/models/classModel';
 
+/**
+ * Pagina che visualizza l'elenco degli utenti.
+ * Permette di filtrare gli utenti per nome, classe e ruolo, e di gestirli (modifica/eliminazione).
+ */
 @Component({
   selector: 'app-users-list',
   templateUrl: './users-list.page.html',

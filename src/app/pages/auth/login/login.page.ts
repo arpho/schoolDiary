@@ -9,6 +9,10 @@ import { Auth, authState, signInAnonymously, signOut, User, GoogleAuthProvider, 
 import { Router, RouterModule } from '@angular/router';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+/**
+ * Pagina di login.
+ * Gestisce l'autenticazione tramite email e password utilizzando Firebase Auth.
+ */
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -65,30 +69,30 @@ export class LoginPage implements OnInit {
       this.afAuth
         .signInWithEmailAndPassword(email, password)
         .catch((error: { message: any; }) => {
-        console.log(error.message);
-        this.$toaster.presentToast({message: String(error.message), position: "bottom"});
-        this.error = true;
-        this.errorMessage = error.message;
-        this.cdr.detectChanges();
-      })
-      .then((data: any) => {
-        console.log("data",data)
-        if (data) {
-          this.error = false;
-          this.errorMessage = '';
+          console.log(error.message);
+          this.$toaster.presentToast({ message: String(error.message), position: "bottom" });
+          this.error = true;
+          this.errorMessage = error.message;
+          this.cdr.detectChanges();
+        })
+        .then((data: any) => {
+          console.log("data", data)
+          if (data) {
+            this.error = false;
+            this.errorMessage = '';
 
-          console.log("login successfull");
-          // Reindirizza alla dashboard
-          this.router.navigate(['/dashboard']);
+            console.log("login successfull");
+            // Reindirizza alla dashboard
+            this.router.navigate(['/dashboard']);
 
-        } else {
-          console.log('login failed');
-          this.$toaster.presentToast({message: 'Login failed', position: "top"});
-        }
-      });
+          } else {
+            console.log('login failed');
+            this.$toaster.presentToast({ message: 'Login failed', position: "top" });
+          }
+        });
     } else {
       console.log('Login form is invalid');
-      this.$toaster.presentToast({message: 'Login form is invalid', position: "top"});
+      this.$toaster.presentToast({ message: 'Login form is invalid', position: "top" });
     }
   }
 

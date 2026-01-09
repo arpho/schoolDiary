@@ -51,6 +51,10 @@ import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/
 import { filter } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
+/**
+ * Componente per la visualizzazione/modifica di una valutazione (utilizzato anche in modale?).
+ * Gestisce il form di valutazione e il caricamento dei dati correlati.
+ */
 @Component({
   selector: 'app-evaluation',
   templateUrl: './evaluation.page.html',

@@ -40,6 +40,10 @@ import { ClasseModel } from '../../classes/models/classModel';
 import { ActivityDialogComponent } from 'src/app/pages/activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { ClassiService } from '../../classes/services/classi.service';
 
+/**
+ * Pagina modale per la creazione, modifica e visualizzazione di una valutazione.
+ * Gestisce l'intero ciclo di vita di una valutazione tramite un dialog.
+ */
 @Component({
   selector: 'app-evaluation-dialog',
   templateUrl: './evaluation-dialog.page.html',

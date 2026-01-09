@@ -9,6 +9,10 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButt
 import { addIcons } from 'ionicons';
 import { mailOutline, personOutline } from 'ionicons/icons';
 
+/**
+ * Pagina per il recupero della password.
+ * Permette all'utente di richiedere una email per il reset della password.
+ */
 @Component({
   selector: 'app-recover-password',
   templateUrl: './recover-password.page.html',
@@ -19,21 +23,21 @@ import { mailOutline, personOutline } from 'ionicons/icons';
     ReactiveFormsModule,
     FormsModule,
     IonContent,
-    IonHeader, 
-    IonTitle, 
-    IonToolbar, 
-    IonItem, 
-    IonInput, 
-    IonButton, 
-    IonCard, 
-    IonCardContent, 
-    IonIcon, 
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonItem,
+    IonInput,
+    IonButton,
+    IonCard,
+    IonCardContent,
+    IonIcon,
     IonText
   ]
 })
 export class RecoverPasswordPage implements OnInit {
   recoverForm: FormGroup;
-  
+
   private fb = inject(FormBuilder);
   private usersService = inject(UsersService);
   private toaster = inject(ToasterService);

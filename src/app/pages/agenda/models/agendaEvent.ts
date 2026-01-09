@@ -1,5 +1,8 @@
 export type EventType = 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'other';
 
+/**
+ * Interfaccia base per un evento dell'agenda.
+ */
 export interface IAgendaEvent {
     key?: string;
     id?: string;
@@ -17,6 +20,10 @@ export interface IAgendaEvent {
     date?: string;
 }
 
+/**
+ * Classe che rappresenta un evento dell'agenda scolastica.
+ * Gestisce titolo, descrizione, date, tipo e assegnazione alle classi.
+ */
 export class AgendaEvent implements IAgendaEvent {
     key: string = '';
     id: string = '';
@@ -32,6 +39,10 @@ export class AgendaEvent implements IAgendaEvent {
     creationDate: number = Date.now();
     allDay: boolean = false; // Per eventi che durano tutto il giorno
 
+    /**
+     * Costruttore: Inizializza l'evento, gestendo la compatibilità con vecchi formati di data.
+     * @param args Oggetto parziale con i dati dell'evento.
+     */
     constructor(args?: Partial<AgendaEvent>) {
         if (args) {
             // Se c'è un vecchio campo 'date', usalo per entrambi dataInizio e dataFine
@@ -47,6 +58,11 @@ export class AgendaEvent implements IAgendaEvent {
         }
     }
 
+    /**
+     * Builder pattern per l'inizializzazione o aggiornamento.
+     * @param args Oggetto parziale con i dati.
+     * @returns L'istanza corrente.
+     */
     build(args?: Partial<AgendaEvent>) {
         if (args) {
             // Se c'è un vecchio campo 'date', usalo per entrambi dataInizio e dataFine
@@ -63,12 +79,20 @@ export class AgendaEvent implements IAgendaEvent {
         return this;
     }
 
+    /**
+     * Imposta la chiave dell'evento.
+     * @param key Chiave univoca.
+     * @returns L'istanza corrente.
+     */
     setKey(key: string) {
         this.key = key;
         return this;
     }
 
-    // Metodo per convertire l'oggetto in un formato serializzabile
+    /**
+     * Serializza l'oggetto per il salvataggio su database.
+     * @returns Oggetto plain.
+     */
     serialize(): Record<string, any> {
         return {
             key: this.key,
@@ -87,7 +111,10 @@ export class AgendaEvent implements IAgendaEvent {
         };
     }
 
-    // Helper methods
+    /**
+     * Verifica se l'evento inizia e finisce nello stesso giorno.
+     * @returns True se è lo stesso giorno.
+     */
     isSameDay(): boolean {
         if (!this.dataInizio || !this.dataFine) return false;
         const start = new Date(this.dataInizio).setHours(0, 0, 0, 0);
@@ -95,7 +122,10 @@ export class AgendaEvent implements IAgendaEvent {
         return start === end;
     }
 
-    // Restituisce la durata in millisecondi
+    /**
+     * Calcola la durata dell'evento in millisecondi.
+     * @returns Durata in ms.
+     */
     getDuration(): number {
         if (!this.dataInizio || !this.dataFine) return 0;
         return new Date(this.dataFine).getTime() - new Date(this.dataInizio).getTime();

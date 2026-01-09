@@ -8,6 +8,10 @@ import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { settingsOutline, schoolOutline, recording } from 'ionicons/icons';
 
+/**
+ * Componente per la visualizzazione di una scheda "classe".
+ * Mostra il nome della classe e le icone per le materie associate.
+ */
 @Component({
   selector: 'app-class-viewer',
   templateUrl: './class-viewer.component.html',
@@ -15,12 +19,12 @@ import { settingsOutline, schoolOutline, recording } from 'ionicons/icons';
   standalone: true,
   imports: [
     CommonModule,
-    IonCardContent, 
-    IonCardHeader, 
-    IonCardTitle, 
-    IonCard, 
-    IonBadge, 
-    IonButton, 
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonCard,
+    IonBadge,
+    IonButton,
     IonIcon
   ],
 })
@@ -49,6 +53,10 @@ export class ClassViewerComponent implements OnInit, OnChanges {
     this.resolveSubjects();
   }
 
+  /**
+   * Risolve le chiavi delle materie nei dettagli completi delle materie.
+   * Gestisce sia oggetti `AssignedClass` che oggetti generici con `subjectsKey`.
+   */
   private resolveSubjects() {
     if (this.classe instanceof AssignedClass) {
       const subjects = (this.classe.subjectsKey || [])
@@ -73,6 +81,9 @@ export class ClassViewerComponent implements OnInit, OnChanges {
     return (this.classe as any).secretary === 'true' || (this.classe as any).secretary === true;
   }
 
+  /**
+   * Emette l'evento di modifica quando l'utente clicca sul pulsante edit.
+   */
   edit() {
     this.onEdit.emit();
   }

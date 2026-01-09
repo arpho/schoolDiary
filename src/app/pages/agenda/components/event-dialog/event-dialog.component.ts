@@ -14,6 +14,10 @@ type ExtendedAgendaEvent = Omit<IAgendaEvent, 'targetClasses'> & {
   targetClasses?: (string | IClasseModel)[];
 };
 
+/**
+ * Dialog per la creazione e modifica di eventi agenda.
+ * Permette di impostare titolo, descrizione, date, tipo e classe di destinazione.
+ */
 @Component({
   selector: 'app-event-dialog',
   templateUrl: './event-dialog.component.html',
@@ -33,7 +37,7 @@ export class EventDialogComponent implements OnInit {
     return (classInfo as IClasseModel).key || (classInfo as IClasseModel).id || '';
   }
   private modalCtrl = inject(ModalController);
-  
+
   // Input properties
   @ViewChild('eventForm') eventForm?: NgForm;
   @ViewChild('startDatetime') startDatetime?: IonDatetime;
@@ -73,31 +77,31 @@ export class EventDialogComponent implements OnInit {
   constructor(
     private $agenda: AgendaService,
     private toaster: ToasterService
-  ) {}
+  ) { }
 
   ionViewWillEnter() {
     console.log('EventDialogComponent - ionViewWillEnter');
-    
+
     if (this.event) {
-        console.log('Editing existing event:', this.event);
-        // Populate form with existing event data
-        this.eventData = { ...this.event };
-        // Handle classKey migration if needed
-        if (this.event.targetClasses && this.event.targetClasses.length > 0) {
-             const firstClass = this.event.targetClasses[0];
-             this.eventData.classKey = typeof firstClass === 'string' ? firstClass : (firstClass as any).key;
-        }
+      console.log('Editing existing event:', this.event);
+      // Populate form with existing event data
+      this.eventData = { ...this.event };
+      // Handle classKey migration if needed
+      if (this.event.targetClasses && this.event.targetClasses.length > 0) {
+        const firstClass = this.event.targetClasses[0];
+        this.eventData.classKey = typeof firstClass === 'string' ? firstClass : (firstClass as any).key;
+      }
     } else {
-        // New event defaults
-        if (this.classId) {
-            this.eventData.classKey = this.classId;
-        }
-        if (this.teacherKey) {
-            this.eventData.teacherKey = this.teacherKey;
-        }
+      // New event defaults
+      if (this.classId) {
+        this.eventData.classKey = this.classId;
+      }
+      if (this.teacherKey) {
+        this.eventData.teacherKey = this.teacherKey;
+      }
     }
   }
-  
+
   // Manteniamo ngOnInit per compatibilità
   ngOnInit() {
     this.ionViewWillEnter();
@@ -109,6 +113,10 @@ export class EventDialogComponent implements OnInit {
   }
 
   // Save the event and close the modal
+  /**
+   * Salva l'evento (creazione o aggiornamento) se il form è valido.
+   * Chiude il modale restituendo l'evento salvato.
+   */
   save() {
     if (this.isFormValid()) {
       // Create targetClasses array from the selected classKey
@@ -126,33 +134,33 @@ export class EventDialogComponent implements OnInit {
         targetClasses,
         creationDate: this.eventData.creationDate || Date.now()
       };
-      
+
       const eventToSave = new AgendaEvent(formEventData);
-      
+
       try {
         if (this.event && (this.event.key || this.event.id)) {
-             // UPDATE
-             // Ensure ID/Key is preserved
-             eventToSave.key = this.event.key;
-             eventToSave.id = this.event.id;
-             console.log("Updating event", eventToSave);
-             
-             this.$agenda.updateEvent(eventToSave); 
-             this.toaster.showToast({message: "Evento aggiornato con successo", duration: 2000, position: "top"}, "success");
+          // UPDATE
+          // Ensure ID/Key is preserved
+          eventToSave.key = this.event.key;
+          eventToSave.id = this.event.id;
+          console.log("Updating event", eventToSave);
+
+          this.$agenda.updateEvent(eventToSave);
+          this.toaster.showToast({ message: "Evento aggiornato con successo", duration: 2000, position: "top" }, "success");
         } else {
-             // CREATE
-             console.log("Creating new event", eventToSave);
-             this.$agenda.addEvent(eventToSave);
-             this.toaster.showToast({message: "Evento aggiunto con successo", duration: 2000, position: "top"}, "success");
+          // CREATE
+          console.log("Creating new event", eventToSave);
+          this.$agenda.addEvent(eventToSave);
+          this.toaster.showToast({ message: "Evento aggiunto con successo", duration: 2000, position: "top" }, "success");
         }
       } catch (error) {
         console.error("Error saving event:", error);
-        this.toaster.showToast({message: "Errore durante il salvataggio", duration: 2000, position: "top"}, "danger");
-      }  
-      
+        this.toaster.showToast({ message: "Errore durante il salvataggio", duration: 2000, position: "top" }, "danger");
+      }
+
       // Dismiss the modal with the saved event
-      this.modalCtrl.dismiss({ 
-        saved: true, 
+      this.modalCtrl.dismiss({
+        saved: true,
         event: eventToSave
       });
     } else {
@@ -185,7 +193,7 @@ export class EventDialogComponent implements OnInit {
       const start = new Date(this.eventData.dataInizio);
       start.setHours(0, 0, 0, 0);
       this.eventData.dataInizio = start.toISOString();
-      
+
       const end = new Date(this.eventData.dataInizio);
       end.setHours(23, 59, 59, 999);
       this.eventData.dataFine = end.toISOString();
@@ -194,7 +202,7 @@ export class EventDialogComponent implements OnInit {
       const start = new Date(this.eventData.dataInizio);
       start.setHours(12, 0, 0, 0);
       this.eventData.dataInizio = start.toISOString();
-      
+
       const end = new Date(start);
       end.setHours(13, 0, 0, 0);
       this.eventData.dataFine = end.toISOString();
@@ -204,10 +212,10 @@ export class EventDialogComponent implements OnInit {
   // Update end date when start date changes
   onStartDateChange() {
     if (!this.eventData.dataInizio) return;
-    
+
     const startDate = new Date(this.eventData.dataInizio);
     const endDate = this.eventData.dataFine ? new Date(this.eventData.dataFine) : new Date(startDate);
-    
+
     // Se la data di fine è precedente alla data di inizio, aggiorna la data di fine
     if (endDate < startDate) {
       if (this.eventData.allDay) {
@@ -230,7 +238,7 @@ export class EventDialogComponent implements OnInit {
     if (this.eventData.dataInizio && this.eventData.dataFine) {
       const startDate = new Date(this.eventData.dataInizio);
       const endDate = new Date(this.eventData.dataFine);
-      
+
       if (endDate < startDate) {
         // Se la data di fine è precedente a quella di inizio, ripristina il valore precedente
         this.eventData.dataFine = this.eventData.dataInizio;
@@ -242,10 +250,10 @@ export class EventDialogComponent implements OnInit {
   hasDateError(): boolean {
     if (!this.eventData.dataInizio || !this.eventData.dataFine) return false;
     let out = false;
-    
+
     const startDate = new Date(this.eventData.dataInizio).getTime();
     const endDate = new Date(this.eventData.dataFine).getTime();
-    
+
     if (endDate < startDate) {
       // Se la data di fine è precedente a quella di inizio, ripristina il valore precedente
       this.eventData.dataFine = this.eventData.dataInizio;
@@ -266,23 +274,27 @@ export class EventDialogComponent implements OnInit {
   }
 
   // Validate form
+  /**
+   * Valida programmaticamente i campi del form.
+   * @returns True se i dati sono validi.
+   */
   isFormValid(): boolean {
     // Check required fields
     if (!this.eventData.title?.trim()) return false;
     if (!this.eventData.dataInizio) return false;
     if (!this.eventData.dataFine) return false;
-    
+
     // Check if end date is after or equal to start date
     const start = new Date(this.eventData.dataInizio).getTime();
     const end = new Date(this.eventData.dataFine).getTime();
-    
+
     if (end < start) return false;
-    
+
     // Check if a class is selected
     if (!this.eventData.classKey) {
       return false;
     }
-    
+
     return true;
   }
 }

@@ -1,19 +1,19 @@
-import { 
-  Component, 
-  OnInit, 
-  OnDestroy, 
-  input, 
-  inject, 
-  computed, 
-  signal, 
-  effect 
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  input,
+  inject,
+  computed,
+  signal,
+  effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 // Importing icons from ionicons package
-import { 
+import {
   ellipsisVertical,
   create,
   eye,
@@ -30,24 +30,28 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { ReservedNotes4class } from '../../models/reservedNotes4class';
 
 // Import dei componenti Ionic standalone
-import { 
-  IonButton, 
-  IonList, 
-  IonLabel, 
-  IonCard, 
-  IonFab, 
-  IonFabButton, 
-  IonIcon, 
-  IonFabList 
+import {
+  IonButton,
+  IonList,
+  IonLabel,
+  IonCard,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonFabList
 } from '@ionic/angular/standalone';
 
+/**
+ * Componente per le note riservate del docente su una classe.
+ * Permette di aggiungere, modificare ed eliminare note visibili solo al docente creatore.
+ */
 @Component({
   selector: 'app-reserved-notes4classes',
   templateUrl: './reserved-notes4classes.component.html',
   styleUrls: ['./reserved-notes4classes.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
     IonList,
     IonLabel,
@@ -97,7 +101,7 @@ export class ReservedNotes4ClassesComponent implements OnInit {
     effect(async () => {
       const user = this.loggedUser();
       const classKey = this.classkey();
-      
+
       // Disattiva la sottoscrizione precedente se esiste
       if (this.unsubscribe) {
         this.unsubscribe();
@@ -129,10 +133,10 @@ export class ReservedNotes4ClassesComponent implements OnInit {
       await this.initializeUser();
     } catch (error) {
       console.error('Errore durante l\'inizializzazione del componente:', error);
-      this.toast.presentToast({ 
+      this.toast.presentToast({
         message: 'Errore durante il caricamento delle note',
         duration: 2000,
-        position: 'bottom' 
+        position: 'bottom'
       });
     }
   }
@@ -186,7 +190,7 @@ export class ReservedNotes4ClassesComponent implements OnInit {
                   .setNote(data.note)
                   .setClassKey(this.classkey())
                   .setDate(new Date().toISOString());
-                
+
                 await this.classReservedNotesService.addNote(note);
                 this.toast.presentToast({
                   message: 'Nota aggiunta con successo',
@@ -270,7 +274,7 @@ export class ReservedNotes4ClassesComponent implements OnInit {
                   .setOwner(note.ownerKey || '')
                   .setClassKey(note.classKey || '')
                   .setDate(note.date || new Date().toISOString());
-                
+
                 // Pass both key and note to the update method
                 await this.classReservedNotesService.updateNote(updatedNote.key || '', updatedNote);
                 this.toast.presentToast({

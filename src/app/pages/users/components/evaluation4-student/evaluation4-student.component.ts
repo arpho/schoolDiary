@@ -8,20 +8,20 @@ import {
   signal
 } from '@angular/core';
 import {
-   IonGrid,
-   IonRow,
-   IonCol,
-   IonCard,
-   IonCardHeader,
-   IonCardTitle,
-   IonCardContent,
-   IonLabel,
-   IonItem,
-   IonList,
-   IonIcon,
-   IonFab,
-   IonFabButton,
-   IonFabList,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonLabel,
+  IonItem,
+  IonList,
+  IonIcon,
+  IonFab,
+  IonFabButton,
+  IonFabList,
   ModalController
 } from '@ionic/angular/standalone';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -38,6 +38,10 @@ import { Evaluation2PdfComponent } from 'src/app/pages/evaluations/components/ev
 import { EvaluationPage } from 'src/app/pages/evaluations/evaluation/evaluation.page';
 import { Router } from '@angular/router';
 import { ActionSheetController, AlertController, ToastController } from '@ionic/angular/standalone';
+/**
+ * Componente che visualizza la lista delle valutazioni per uno studente specifico.
+ * Fornisce funzionalità per modificare, archiviare, eliminare ed esportare in PDF le valutazioni.
+ */
 @Component({
   selector: 'app-evaluation4-student',
   templateUrl: './evaluation4-student.component.html',
@@ -61,97 +65,97 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
     IonFabButton,
     IonFabList,
     DatePipe
-]
+  ]
 })
-export class Evaluation4StudentComponent  implements OnInit {
+export class Evaluation4StudentComponent implements OnInit {
   private actionSheetCtrl = inject(ActionSheetController);
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
-  async openActionSheet(evaluation: Evaluation, evente:Event) {
-  evente.stopPropagation();
-console.log("openActionSheet", evaluation);
-const actionSheet = await this.actionSheetCtrl.create({
-  header: 'Azioni valutazione',
-  buttons: [
-    {
-      text: 'Modifica',
-      icon: 'create',
-      handler: () => {
-        if (evaluation && evaluation.key) {
-          this.editEvaluation(evaluation);
+  async openActionSheet(evaluation: Evaluation, evente: Event) {
+    evente.stopPropagation();
+    console.log("openActionSheet", evaluation);
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Azioni valutazione',
+      buttons: [
+        {
+          text: 'Modifica',
+          icon: 'create',
+          handler: () => {
+            if (evaluation && evaluation.key) {
+              this.editEvaluation(evaluation);
+            }
+            actionSheet.dismiss();
+            return false;
+          }
+        },
+        {
+          text: 'Archivia',
+          icon: 'archive',
+          handler: () => {
+            this.archiveEvaluation(evaluation);
+            actionSheet.dismiss();
+            return false;
+          }
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            this.confirmDelete(evaluation);
+            actionSheet.dismiss();
+            return false;
+          }
+        },
+        {
+          text: 'Esporta in PDF',
+          icon: 'print',
+          handler: () => {
+            this.evaluationPdf(evaluation);
+            actionSheet.dismiss();
+            return false;
+          }
+        },
+        {
+          text: 'Annulla',
+          icon: 'close',
+          role: 'cancel',
+          handler: () => {
+            actionSheet.dismiss();
+            return false;
+          }
         }
-        actionSheet.dismiss();
-        return false;
-      }
-    },
-    {
-      text: 'Archivia',
-      icon: 'archive',
-      handler: () => {
-        this.archiveEvaluation(evaluation);
-        actionSheet.dismiss();
-        return false;
-      }
-    },
-    {
-      text: 'Elimina',
-      role: 'destructive',
-      icon: 'trash',
-      handler: () => {
-        this.confirmDelete(evaluation);
-        actionSheet.dismiss();
-        return false;
-      }
-    },
-    {
-      text: 'Esporta in PDF',
-      icon: 'print',
-      handler: () => {
-        this.evaluationPdf(evaluation);
-        actionSheet.dismiss();
-        return false;
-      }
-    },
-    {
-      text: 'Annulla',
-      icon: 'close',
-      role: 'cancel',
-      handler: () => {
-        actionSheet.dismiss();
-        return false;
-      }
-    }
-  ]
-});
+      ]
+    });
 
-await actionSheet.present();
-}
+    await actionSheet.present();
+  }
   classKey = signal<string>('');
-loggedUser = signal<UserModel | null>(null)
+  loggedUser = signal<UserModel | null>(null)
   $users = inject(UsersService);
-userCanEdit(evaluation: Evaluation) {
-  console.log("userCanEdit", evaluation);
+  userCanEdit(evaluation: Evaluation) {
+    console.log("userCanEdit", evaluation);
 
-const canEdit = this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
-console.log("can edit ",canEdit)
-return true;
-}
-viewEvaluation(_t12: Evaluation) {
-throw new Error('Method not implemented.');
-}
+    const canEdit = this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
+    console.log("can edit ", canEdit)
+    return true;
+  }
+  viewEvaluation(_t12: Evaluation) {
+    throw new Error('Method not implemented.');
+  }
   async evaluationPdf(valutazione: Evaluation) {
-console.log("evaluationPdf", valutazione);
-/* const modal = await this.modalCtrl.create({
-  component: Evaluation2PdfComponent,
-  componentProps: {
-    evaluation: valutazione,
-  },
-  cssClass: "fullscreen"
-});
-await modal.present();  */
+    console.log("evaluationPdf", valutazione);
+    /* const modal = await this.modalCtrl.create({
+      component: Evaluation2PdfComponent,
+      componentProps: {
+        evaluation: valutazione,
+      },
+      cssClass: "fullscreen"
+    });
+    await modal.present();  */
 
-this.router.navigate(['/pdf-evaluation',valutazione.key]);
-}
+    this.router.navigate(['/pdf-evaluation', valutazione.key]);
+  }
   async confirmDelete(evaluation: Evaluation) {
     const alert = await this.alertCtrl.create({
       header: 'Conferma eliminazione',
@@ -178,11 +182,11 @@ this.router.navigate(['/pdf-evaluation',valutazione.key]);
     try {
       // Chiama il servizio per eliminare la valutazione
       await this.$evaluation.deleteEvaluation(evaluationKey);
-      
+
       // Aggiorna la lista delle valutazioni
       const updatedList = this.evaluationsList().filter(e => e.key !== evaluationKey.key);
       this.evaluationsList.set(updatedList);
-      
+
       // Mostra un feedback all'utente
       this.showToast('Valutazione eliminata con successo');
     } catch (error) {
@@ -200,26 +204,26 @@ this.router.navigate(['/pdf-evaluation',valutazione.key]);
     });
     await toast.present();
   }
-archiveEvaluation(valutazione: Evaluation) {
-console.log("archiveEvaluation chiamato", valutazione);
-}
-async editEvaluation(valutazione: Evaluation) {
-console.log("editEvaluation chiamato", valutazione);
-this.classKey.set(valutazione.classKey);
-this.router.navigate(['/edit-evaluation',valutazione.key]);
+  archiveEvaluation(valutazione: Evaluation) {
+    console.log("archiveEvaluation chiamato", valutazione);
+  }
+  async editEvaluation(valutazione: Evaluation) {
+    console.log("editEvaluation chiamato", valutazione);
+    this.classKey.set(valutazione.classKey);
+    this.router.navigate(['/edit-evaluation', valutazione.key]);
 
-}
+  }
   private $evaluation = inject(EvaluationService);
   private $activities = inject(ActivitiesService);
-  
+
   studentkey = input.required<string>();
   teacherkey = input.required<string>();
   evaluationsList = signal<Evaluation[]>([]);
   activitiesMap = signal<Map<string, ActivityModel>>(new Map());
-  modalCtrl = inject(ModalController);  
+  modalCtrl = inject(ModalController);
   private router = inject(Router);
 
-  constructor() { 
+  constructor() {
     this.ngOnInit()
     addIcons({
       eyeOutline: eyeOutline,
@@ -235,33 +239,33 @@ this.router.navigate(['/edit-evaluation',valutazione.key]);
       effect(() => {
         const studentKey = this.studentkey();
         const teacherKey = this.teacherkey();
-        
+
         // Chiama il servizio solo quando gli input sono valorizzati
         if (studentKey && teacherKey) {
           this.$evaluation.getEvaluation4studentAndTeacher(studentKey, teacherKey, async (evaluations: Evaluation[]) => {
-console.log("getEvaluation4studentAndTeacher", evaluations);
+            console.log("getEvaluation4studentAndTeacher", evaluations);
             this.evaluationsList.set(evaluations);
-            
+
             // Pre-carica tutte le attività associate alle valutazioni
             await this.loadActivitiesForEvaluations(evaluations);
           });
-         } else {
-           // Situazione normale - chiavi non ancora valorizzate
-         }
-       });
-     } catch (error) {
-       console.error("Errore nella registrazione dell'effect:", error);
-     }
+        } else {
+          // Situazione normale - chiavi non ancora valorizzate
+        }
+      });
+    } catch (error) {
+      console.error("Errore nella registrazione dell'effect:", error);
+    }
   }
 
   async ngOnInit() {
     const user = await this.$users.getLoggedUser();
     this.loggedUser.set(user);
-    
+
     // Prova anche con setTimeout
 
   }
-  sanitizeDate(date:any){
+  sanitizeDate(date: any) {
     return date?.toDate ? date.toDate() : date
   }
 
@@ -270,10 +274,10 @@ console.log("getEvaluation4studentAndTeacher", evaluations);
     const activityKeys = evaluations
       .map(e => e.activityKey)
       .filter((key): key is string => !!key);
-    
+
     const uniqueKeys = [...new Set(activityKeys)];
     const activitiesMap = new Map<string, ActivityModel>();
-    
+
     // Carica tutte le attività in parallelo
     await Promise.all(
       uniqueKeys.map(async (key) => {
@@ -283,7 +287,7 @@ console.log("getEvaluation4studentAndTeacher", evaluations);
         }
       })
     );
-    
+
     this.activitiesMap.set(activitiesMap);
   }
 
@@ -292,9 +296,9 @@ console.log("getEvaluation4studentAndTeacher", evaluations);
     if (!activityKey) return undefined;
     return this.activitiesMap().get(activityKey);
   }
-  async fetchStudentName( studentKey: string) {
+  async fetchStudentName(studentKey: string) {
     const student = await this.$users.getUser(studentKey);
-    return  student?.lastName + ' ' + student?.firstName;
+    return student?.lastName + ' ' + student?.firstName;
   }
 }
 

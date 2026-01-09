@@ -12,8 +12,12 @@ import {
   IonFabButton,
   IonFabList,
   IonIcon
- } from "@ionic/angular/standalone";
+} from "@ionic/angular/standalone";
 
+/**
+ * Componente per visualizzare i dettagli di un indicatore.
+ * Mostra le informazioni principali in una card.
+ */
 @Component({
   selector: 'app-indicator-viewer',
   templateUrl: './indicator-viewer.component.html',
@@ -29,15 +33,17 @@ import {
     IonItem,
   ],
 })
-export class IndicatorViewerComponent  implements OnInit {
-removeIndicator(_t15: number) {
-throw new Error('Method not implemented.');
-}
-editIndicator(arg0: any,_t15: number) {
-throw new Error('Method not implemented.');
-}
-  indicatore=input<Indicatore>();
+export class IndicatorViewerComponent implements OnInit {
+  // TODO: Implementare la logica di rimozione e modifica
+  removeIndicator(_t15: number) {
+    throw new Error('Method not implemented.');
+  }
+  editIndicator(arg0: any, _t15: number) {
+    throw new Error('Method not implemented.');
+  }
+  /** Indicatore da visualizzare */
+  indicatore = input<Indicatore>();
   constructor() { }
-  ngOnInit() {}
+  ngOnInit() { }
 
 }

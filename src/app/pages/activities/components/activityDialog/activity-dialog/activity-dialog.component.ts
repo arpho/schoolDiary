@@ -9,7 +9,7 @@ import { ModalController } from '@ionic/angular/standalone';
 import { IonDatetimeCustomEvent, DatetimeChangeEventDetail } from '@ionic/core';
 
 // Ionic Components
-import { 
+import {
   IonDatetime,
   IonItem,
   IonLabel,
@@ -37,15 +37,15 @@ import {
 
 // Icons
 import { addIcons } from 'ionicons';
-import { 
-  arrowBack, 
-  calendarOutline, 
-  timeOutline, 
-  schoolOutline, 
-  personOutline, 
-  create, 
-  warning, 
-  checkmarkCircleOutline, 
+import {
+  arrowBack,
+  calendarOutline,
+  timeOutline,
+  schoolOutline,
+  personOutline,
+  create,
+  warning,
+  checkmarkCircleOutline,
   closeCircleOutline,
   close,
   calendar,
@@ -53,6 +53,10 @@ import {
 } from 'ionicons/icons';
 import { UsersService } from 'src/app/shared/services/users.service';
 
+/**
+ * Dialog modale per la creazione o modifica di un'attività.
+ * Contiene il form per inserire i dettagli dell'attività.
+ */
 @Component({
   selector: 'app-activity-dialog',
   templateUrl: './activity-dialog.component.html',
@@ -100,18 +104,18 @@ export class ActivityDialogComponent implements OnInit {
   @Input() listaMaterie: SubjectModel[] = [];
   @Input() selectedClass = '';
   @Input() activity: ActivityModel = new ActivityModel();
-  
+
   activityForm!: FormGroup;
   isSubmitted = false;
   minDate = new Date().toISOString();
   isLoading = false;
-  
+
   // Error message that updates in real-time
   errorMessage = '';
-  
+
   // Current datetime being edited
   currentDatetimeField: 'date' | 'dueDate' | null = null;
-  
+
   // Form controls for easier access
   get titleControl() { return this.activityForm.get('title'); }
   get descriptionControl() { return this.activityForm.get('description'); }
@@ -119,8 +123,11 @@ export class ActivityDialogComponent implements OnInit {
   get subjectControl() { return this.activityForm.get('subjectsKey'); }
   get dateControl() { return this.activityForm.get('date'); }
   get dueDateControl() { return this.activityForm.get('dueDate'); }
-  
+
   // Update error message based on form state
+  /**
+   * Aggiorna il messaggio di errore in base allo stato di validazione del form.
+   */
   private updateErrorMessage(): void {
     const errors: string[] = [];
 
@@ -167,21 +174,21 @@ export class ActivityDialogComponent implements OnInit {
     private modalController: ModalController,
     private datePipe: DatePipe
   ) {
-    addIcons({close,warning,create,calendar,checkmarkCircleOutline,checkmark,arrowBack,calendarOutline,timeOutline,schoolOutline,personOutline,closeCircleOutline});
+    addIcons({ close, warning, create, calendar, checkmarkCircleOutline, checkmark, arrowBack, calendarOutline, timeOutline, schoolOutline, personOutline, closeCircleOutline });
   }
 
   ngOnInit(): void {
     this.initializeForm();
-    
+
     // Subscribe to form value changes to update error message
     this.activityForm.valueChanges.subscribe(() => {
       this.updateErrorMessage();
     });
-    
+
     // Subscribe to date changes to update min/max dates
     this.dateControl?.valueChanges.subscribe(() => {
-      if (this.dateControl?.value && this.dueDateControl?.value && 
-          new Date(this.dateControl.value) > new Date(this.dueDateControl.value)) {
+      if (this.dateControl?.value && this.dueDateControl?.value &&
+        new Date(this.dateControl.value) > new Date(this.dueDateControl.value)) {
         this.dueDateControl?.setValue(null);
       }
     });
@@ -190,7 +197,7 @@ export class ActivityDialogComponent implements OnInit {
   private initializeForm(): void {
     this.activityForm = this.fb.group({
       title: [this.activity?.title || '', [
-        Validators.required, 
+        Validators.required,
         Validators.minLength(3),
         Validators.maxLength(100)
       ]],
@@ -212,16 +219,19 @@ export class ActivityDialogComponent implements OnInit {
     });
   }
 
+  /**
+   * Gestisce il submit del form e chiude il modale con i dati aggiornati.
+   */
   async onSubmit(): Promise<void> {
     this.isSubmitted = true;
     this.updateErrorMessage();
-    
+
     if (this.activityForm.invalid) {
       return;
     }
-    
+
     this.isLoading = true;
-    
+
     try {
       // Create activity object from form values
       const formValue = this.activityForm.value;
@@ -230,10 +240,10 @@ export class ActivityDialogComponent implements OnInit {
       const activity: ActivityModel = {
         ...this.activity, // Preserve existing properties if editing
         ...formValue,
-        teacherKey : teacher?teacher.key:""
+        teacherKey: teacher ? teacher.key : ""
       };
       console.log("activity", activity);
-      
+
       await this.modalController.dismiss(activity);
     } catch (error) {
       console.error('Error saving activity:', error);

@@ -1,13 +1,13 @@
 import { Component, inject, model, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent, 
+import {
+  IonContent,
   IonHeader,
-  IonToolbar, 
-  IonTitle, 
-  IonButton, 
-  IonButtons, 
+  IonToolbar,
+  IonTitle,
+  IonButton,
+  IonButtons,
   IonIcon,
   IonInput,
   IonItem,
@@ -32,11 +32,15 @@ export interface CreateSubjectModalProps {
 
 // Palette di colori predefinita
 const COLOR_PALETTE = [
-  '#3880ff', '#3dc2ff', '#5260ff', '#2dd36f', 
+  '#3880ff', '#3dc2ff', '#5260ff', '#2dd36f',
   '#ffc409', '#eb445a', '#92949c', '#222428',
   '#ff6b35', '#004e89', '#2ec4b6', '#e71d36'
 ];
 
+/**
+ * Pagina per la creazione o modifica di una materia.
+ * Permette di impostare nome, colore e classe di concorso.
+ */
 @Component({
   selector: 'app-create-subject',
   templateUrl: './create-subject.page.html',
@@ -44,17 +48,17 @@ const COLOR_PALETTE = [
   standalone: true,
   imports: [
     IonHeader,
-    IonContent, 
-    IonToolbar, 
-    IonTitle, 
-    IonButton, 
-    IonButtons, 
+    IonContent,
+    IonToolbar,
+    IonTitle,
+    IonButton,
+    IonButtons,
     IonIcon,
     IonInput,
     IonItem,
     IonLabel,
     IonList,
-    CommonModule, 
+    CommonModule,
     FormsModule
   ]
 })
@@ -67,7 +71,7 @@ export class CreateSubjectPage implements OnInit {
     description?: string;
     icon?: string;
   } | null>(null);
-  
+
   name: string = '';
   color: string = '#3880ff';
   classeDiConcorso: string = '';
@@ -76,7 +80,7 @@ export class CreateSubjectPage implements OnInit {
   colorPalette = COLOR_PALETTE;
 
   private modalCtrl = inject(ModalController);
-  
+
   constructor() {
     addIcons({ closeOutline });
   }
@@ -90,7 +94,7 @@ export class CreateSubjectPage implements OnInit {
       this.selectedColor = subjectValue.color || '#3880ff';
       this.classeDiConcorso = subjectValue.classeDiConcorso || '';
     }
-    else{
+    else {
       console.log("nessuna materia passata")
     }
   }
@@ -102,13 +106,13 @@ export class CreateSubjectPage implements OnInit {
   save() {
     if (this.name.trim()) {
       // Aggiorna il model con i nuovi valori
-      this.subject.set( new SubjectModel({
+      this.subject.set(new SubjectModel({
         ...this.subject(),
         name: this.name.trim(),
         color: this.selectedColor,
         classeDiConcorso: this.classeDiConcorso?.trim()
       }));
-      
+
       // Chiudi il modale con conferma
       this.modalCtrl.dismiss(this.subject(), 'confirm');
     }

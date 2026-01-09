@@ -1,15 +1,19 @@
+/**
+ * Modello che rappresenta una materia scolastica.
+ */
 export class SubjectModel {
-    key=""
-    name=""
-    description=""
-    color=""
-    classeDiConcorso=""
-    icon="" 
-    setKey(key: string){this.key=key
+    key = ""
+    name = ""
+    description = ""
+    color = ""
+    classeDiConcorso = ""
+    icon = ""
+    setKey(key: string) {
+        this.key = key
 
         return this
     }
-    constructor(args?:{}){
+    constructor(args?: {}) {
         this.build(args);
     }
     build(args: {} | undefined) {
@@ -17,8 +21,8 @@ export class SubjectModel {
         return this
     }
 
-    serialize(){
-        return{
+    serialize() {
+        return {
             key: this.key,
             name: this.name,
             description: this.description,

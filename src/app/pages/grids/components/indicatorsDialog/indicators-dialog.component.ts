@@ -12,102 +12,108 @@ import { IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonCard, 
 import { Criterio } from 'src/app/shared/models/criterio';
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import {
-     FormBuilder,
-     FormControl,
-     FormGroup,
-     FormsModule,
-     ReactiveFormsModule,
-     Validators
-    } from '@angular/forms';
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators
+} from '@angular/forms';
 import {
-     AlertController,
-     ActionSheetController,
-     ModalController
-    } from '@ionic/angular';
+    AlertController,
+    ActionSheetController,
+    ModalController
+} from '@ionic/angular';
 
+/**
+ * Componente per la gestione (creazione/modifica) di un indicatore.
+ * Permette di definire descrizione, valori e lista di criteri associati.
+ */
 @Component({
     selector: 'app-indicators-dialog',
     templateUrl: './indicators-dialog.component.html',
     styleUrls: ['./indicators-dialog.component.scss'],
     standalone: true,
     imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    IonTab,
-    IonTabs,
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonButton,
-    IonIcon,
-    IonLabel,
-    IonTabBar,
-    IonTabButton,
-    IonTextarea,
-    IonItem,
-    IonList,
-    IonFab,
-    IonFabButton,
-    IonFabList
-],
+        FormsModule,
+        ReactiveFormsModule,
+        IonTab,
+        IonTabs,
+        IonContent,
+        IonHeader,
+        IonTitle,
+        IonToolbar,
+        IonCard,
+        IonCardContent,
+        IonCardHeader,
+        IonCardTitle,
+        IonButton,
+        IonIcon,
+        IonLabel,
+        IonTabBar,
+        IonTabButton,
+        IonTextarea,
+        IonItem,
+        IonList,
+        IonFab,
+        IonFabButton,
+        IonFabList
+    ],
 })
 export class IndicatorsDialogComponent implements OnInit {
-onIndicatorValueChange($event: any) {
-this.indicatorValue.set($event.target.value);
-console.log("indicatorValue changed to ", this.indicatorValue());
-}
+    onIndicatorValueChange($event: any) {
+        this.indicatorValue.set($event.target.value);
+        console.log("indicatorValue changed to ", this.indicatorValue());
+    }
     @Input() indicatore!: Indicatore;
-    descrizione=signal<string>('');
-    indicatorValue=signal<string>('');
-    criterioDescrizione=signal<string>('');
-    criterioValori=signal<string>('');
-    criteri=signal<Criterio[]>([]);
-    criterio= computed(() => {
+    descrizione = signal<string>('');
+    indicatorValue = signal<string>('');
+    criterioDescrizione = signal<string>('');
+    criterioValori = signal<string>('');
+    criteri = signal<Criterio[]>([]);
+    criterio = computed(() => {
         return {
             descrizione: this.descrizione(),
             valore: this.indicatorValue(),
             criteri: this.criteri()
         }
     });
-    indicatorForm: FormGroup= new FormGroup({
+    indicatorForm: FormGroup = new FormGroup({
         descrizione: new FormControl(""),
         valore: new FormControl(""),
     });
     constructor(
         private fb: FormBuilder,
-    private alertController: AlertController,
-    private modalController: ModalController
+        private alertController: AlertController,
+        private modalController: ModalController
     ) {
         this.criterioForm = this.fb.group({
             descrizione: new FormControl("", Validators.required),
             valori: new FormControl("", Validators.required),
         });
     }
-    async selectCriterio(criterio: Criterio,index: number) {
-console.log("selectCriterio", criterio, index);
+    async selectCriterio(criterio: Criterio, index: number) {
+        console.log("selectCriterio", criterio, index);
 
-}
+    }
     removeCriterio(index: number) {
-        this.criteri.set([...this.criteri().slice(0,index), ...this.criteri().slice(index+1)]);
+        this.criteri.set([...this.criteri().slice(0, index), ...this.criteri().slice(index + 1)]);
     }
     async editCriterio(criterio: Criterio, index: number) {
         const alert = await this.alertController.create({
             header: 'modifica il criterio',
             subHeader: '',
-            buttons: [{text: 'Cancel', role: 'cancel'}, {text: 'OK', role: 'ok', handler: (data) => {
-                console.log(data);
-                const criterio = new Criterio({
-                    descrizione: data.descrizione,
-                    valori: data.valori,
-                });
-                console.log("criterio", criterio);
-                this.criteri.set([...this.criteri().slice(0,index), criterio, ...this.criteri().slice(index+1)]);
-            }}],
+            buttons: [{ text: 'Cancel', role: 'cancel' }, {
+                text: 'OK', role: 'ok', handler: (data) => {
+                    console.log(data);
+                    const criterio = new Criterio({
+                        descrizione: data.descrizione,
+                        valori: data.valori,
+                    });
+                    console.log("criterio", criterio);
+                    this.criteri.set([...this.criteri().slice(0, index), criterio, ...this.criteri().slice(index + 1)]);
+                }
+            }],
             inputs: [
                 {
                     name: 'descrizione',
@@ -122,86 +128,88 @@ console.log("selectCriterio", criterio, index);
                     placeholder: 'valori',
                 },
             ],
-          });
+        });
 
-          await alert.present();
+        await alert.present();
     }
     async addCriterio() {
-    const alert = await this.alertController.create({
-        header: 'inserisci il criterio',
-        subHeader: '',
-        message: 'A message should be a short, complete sentence.',
-        buttons: [{text: 'Cancel', role: 'cancel'}, {text: 'OK', role: 'ok', handler: (data) => {
-            console.log(data);
-            const criterio = new Criterio({
-                descrizione: data.descrizione,
-                valori: data.valori,
-            });
-            console.log("criterio", criterio);
-            //this.criteri.set([...this.criteri(), criterio]);
-            this.pushCriterio(criterio);
-        }}],
-        inputs: [
-            {
-                name: 'descrizione',
-                type: 'text',
-                placeholder: 'descrizione',
-            },
-            {
-                name: 'valori',
-                type: 'text',
-                placeholder: 'valori',
-            },
-        ],
-      });
+        const alert = await this.alertController.create({
+            header: 'inserisci il criterio',
+            subHeader: '',
+            message: 'A message should be a short, complete sentence.',
+            buttons: [{ text: 'Cancel', role: 'cancel' }, {
+                text: 'OK', role: 'ok', handler: (data) => {
+                    console.log(data);
+                    const criterio = new Criterio({
+                        descrizione: data.descrizione,
+                        valori: data.valori,
+                    });
+                    console.log("criterio", criterio);
+                    //this.criteri.set([...this.criteri(), criterio]);
+                    this.pushCriterio(criterio);
+                }
+            }],
+            inputs: [
+                {
+                    name: 'descrizione',
+                    type: 'text',
+                    placeholder: 'descrizione',
+                },
+                {
+                    name: 'valori',
+                    type: 'text',
+                    placeholder: 'valori',
+                },
+            ],
+        });
 
-      await alert.present();
-}
-    valueCriterio= computed(() => {
-        return  new Criterio({
+        await alert.present();
+    }
+    valueCriterio = computed(() => {
+        return new Criterio({
             descrizione: this.criterioDescrizione(),
             valori: this.criterioValori()
         })
     });
-pushCriterio(criterio: Criterio) {
-console.log("pushCriterio", this.valueCriterio());
-this.criteri.set([...this.criteri(), criterio]);
-}
-onValoriCriterioChange($event: any) {
-this.criterioValori.set($event.target.value);
-console.log("valori changed to ", this.criterioValori());
-}
-onDescrizioneCriterioChange($event: any) {
-this.criterioDescrizione.set($event.target.value);
-console.log("descrizione changed to ", this.criterioDescrizione());
-}
-    criterioForm: FormGroup=new FormGroup({
+    pushCriterio(criterio: Criterio) {
+        console.log("pushCriterio", this.valueCriterio());
+        this.criteri.set([...this.criteri(), criterio]);
+    }
+    onValoriCriterioChange($event: any) {
+        this.criterioValori.set($event.target.value);
+        console.log("valori changed to ", this.criterioValori());
+    }
+    onDescrizioneCriterioChange($event: any) {
+        this.criterioDescrizione.set($event.target.value);
+        console.log("descrizione changed to ", this.criterioDescrizione());
+    }
+    criterioForm: FormGroup = new FormGroup({
         descrizione: new FormControl("", Validators.required),
         valori: new FormControl("", Validators.required),
     });
-title4criterio = computed(() => {
-    return ` inserisci i criteri per
+    title4criterio = computed(() => {
+        return ` inserisci i criteri per
     ${this.descrizione()}`;
-});
-    @Output() indicatorpushed = new EventEmitter<Indicatore>();
-pushIndicator() {
-
-    console.log("pushIndicator");
-    const indicatore = new Indicatore({
-        descrizione: this.descrizione(),
-        valore: this.indicatorValue(),
-        criteri: this.criteri()
     });
-    console.log("nuovo indicatore", indicatore);
-    this.indicatorpushed.emit(indicatore);
-    this.modalController.dismiss(indicatore);
+    @Output() indicatorpushed = new EventEmitter<Indicatore>();
+    pushIndicator() {
+
+        console.log("pushIndicator");
+        const indicatore = new Indicatore({
+            descrizione: this.descrizione(),
+            valore: this.indicatorValue(),
+            criteri: this.criteri()
+        });
+        console.log("nuovo indicatore", indicatore);
+        this.indicatorpushed.emit(indicatore);
+        this.modalController.dismiss(indicatore);
 
 
-}
-onDescrizioneChange($event: any) {
-this.descrizione.set($event.target.value);
-console.log("descrizione changed to ", this.descrizione());
-}
+    }
+    onDescrizioneChange($event: any) {
+        this.descrizione.set($event.target.value);
+        console.log("descrizione changed to ", this.descrizione());
+    }
 
 
     ngOnInit(): void {

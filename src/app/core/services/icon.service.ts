@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { addIcons } from 'ionicons';
-import { 
+import {
   wifi,
   wifiOutline
 } from 'ionicons/icons';
 
+/**
+ * Servizio per la gestione centralizzata delle icone Ionic.
+ * Registra le icone all'avvio dell'applicazione per renderle disponibili ovunque.
+ */
 @Injectable({
   providedIn: 'root'
 })

@@ -15,6 +15,10 @@ import { DatePipe } from '@angular/common';
 import { user } from '@angular/fire/auth';
 
 
+/**
+ * Pagina principale per la visualizzazione delle attività.
+ * Permette ai docenti di visualizzare, filtrare e creare nuove attività.
+ */
 @Component({
   selector: 'app-activities-list',
   templateUrl: './activities-list.page.html',
@@ -78,6 +82,10 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
       }
     });
   }
+  /**
+   * Apre il modale per creare una nuova attività.
+   * Salva l'attività se il modale viene chiuso con successo.
+   */
   async newActivity() {
     const user = await this.usersService.getLoggedUser();
     console.log("user", user);
@@ -108,6 +116,11 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
   activitiesList = signal<ActivityModel[]>([]);
   loggedUser = signal<UserModel | null>(null);
 
+  /**
+   * Restituisce una stringa formattata con nome e anno della classe.
+   * @param classKey Chiave della classe.
+   * @returns Stringa formattata (es. "1 A").
+   */
   seeClass(classKey: string): string {
     const classe = this.classesList().find(classe => classe.key === classKey);
     return `${classe?.classe} ${classe?.year}`;
@@ -115,11 +128,14 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
 
 
 
-   async ngOnInit() {
+  /**
+   * Inizializza il componente, carica l'utente, le materie e le attività.
+   */
+  async ngOnInit() {
     const user = await this.usersService.getLoggedUser();
     if (user) {
       this.loggedUser.set(user);
-      
+
       // Load unique subjects from assigned classes
       if (user.assignedClasses) {
         const allSubjectKeys = user.assignedClasses.reduce((acc, c) => acc.concat(c.subjectsKey || []), [] as string[]);
@@ -132,6 +148,10 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Carica le attività applicando i filtri (classe e materia).
+   * Aggiorna la lista in tempo reale.
+   */
   loadActivities() {
     const user = this.loggedUser();
     if (!user) return;
@@ -142,9 +162,9 @@ export class ActivitiesListPage implements OnInit, OnDestroy {
 
     const classKey = this.selectedClassKey();
     const subjectKey = this.selectedSubjectKey();
-    
+
     let conditions: QueryCondition[] = [];
-    
+
     // Class filter
     if (classKey !== 'all') {
       conditions.push(new QueryCondition('classKey', '==', classKey));

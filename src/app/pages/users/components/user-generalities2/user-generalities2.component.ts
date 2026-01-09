@@ -39,6 +39,10 @@ import { IonTextareaCustomEvent } from '@ionic/core';
 import { ClassesFieldComponent } from 'src/app/pages/classes/components/classes-field/classes-field.component';
 import { IonicModule, TextareaChangeEventDetail } from "@ionic/angular";
 import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
+/**
+ * Componente per la gestione delle generalità di un utente.
+ * Gestisce dati anagrafici, ruolo, disabilità, PDP e assegnazione classi.
+ */
 @Component({
   selector: 'app-user-generalities2',
   templateUrl: './user-generalities2.component.html',
@@ -374,9 +378,9 @@ export class UserGeneralities2Component implements OnInit {
           classKey: user.classKey || '',
           classes: user.classesKey || []
         }, { emitEvent: false });  // Aggiungi emitEvent: false
-        
+
         this.usersClasses.set(user.assignedClasses || []);
-        
+
         this.cdr.detectChanges();  // Forza il rilevamento delle modifiche
         this.userForm.updateValueAndValidity();
         console.log("Form dopo la sincronizzazione:*", this.userForm.value)

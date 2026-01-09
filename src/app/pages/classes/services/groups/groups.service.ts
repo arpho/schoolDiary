@@ -16,6 +16,10 @@ import {
 import { GroupModel } from '../../models/groupModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 
+/**
+ * Servizio per la gestione dei Gruppi all'interno delle classi.
+ * Permette di creare, modificare, eliminare e spostare studenti tra gruppi.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -42,9 +46,11 @@ export class GroupsService {
   }
 
   /**
-   * Fetches all groups for a specific class
-   * @param classKey The key of the class
-   * @param callback Callback function that receives the array of groups
+   * Recupera tutti i gruppi di una specifica classe in tempo reale.
+   * Scarica anche i dettagli degli studenti per ogni gruppo.
+   * @param classKey Chiave della classe.
+   * @param callback Callback che riceve l'array di Gruppi aggiornato.
+   * @returns Unsubscribe function.
    */
   fetchGroups4class(classKey: string, callback: (groups: GroupModel[]) => void) {
     const q = query(
@@ -64,10 +70,10 @@ export class GroupsService {
   }
 
   /**
-   * Fetches the group that a specific student belongs to in a class
-   * @param studentKey The key of the student
-   * @param classKey The key of the class
-   * @returns Promise that resolves with the group or null if not found
+   * Trova il gruppo a cui appartiene uno specifico studente in una classe.
+   * @param studentKey Chiave dello studente.
+   * @param classKey Chiave della classe.
+   * @returns Promise che risolve con il gruppo trovato o null.
    */
   async fetchGroupMember(studentKey: string, classKey: string): Promise<GroupModel | null> {
     const q = query(
@@ -90,9 +96,9 @@ export class GroupsService {
   }
 
   /**
-   * Updates an existing group
-   * @param group The group to update
-   * @returns Promise that resolves when the update is complete
+   * Aggiorna i dati di un gruppo esistente.
+   * @param group Il gruppo con i dati aggiornati.
+   * @returns Promise vuota.
    */
   async updateGroup(group: GroupModel): Promise<void> {
     const groupRef = doc(this.firestore, `${this.collection}/${group.key}`);
@@ -101,9 +107,9 @@ export class GroupsService {
   }
 
   /**
-   * Creates a new group
-   * @param group The group to create
-   * @returns Promise that resolves with the created group's ID
+   * Crea un nuovo gruppo.
+   * @param group Il gruppo da creare.
+   * @returns Promise con l'ID del gruppo creato.
    */
   async createGroup(group: GroupModel): Promise<string> {
     console.log("creazione gruppo", group)
@@ -112,9 +118,9 @@ export class GroupsService {
   }
 
   /**
-   * Deletes a group
-   * @param groupKey The key of the group to delete
-   * @returns Promise that resolves when the deletion is complete
+   * Elimina un gruppo.
+   * @param groupKey Chiave del gruppo da eliminare.
+   * @returns Promise vuota.
    */
   async deleteGroup(groupKey: string): Promise<void> {
     await deleteDoc(doc(this.firestore, `${this.collection}/${groupKey}`));

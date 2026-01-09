@@ -39,6 +39,10 @@ import { ActivityDialogComponent } from '../../activities/components/activityDia
 import { ClasseModel } from '../../classes/models/classModel';
 import { ClassiService } from '../../classes/services/classi.service';
 import { addIcons } from 'ionicons';
+/**
+ * Pagina per la modifica di una valutazione esistente.
+ * Carica i dati della valutazione, permette di modificarli e salvare le modifiche.
+ */
 @Component({
   selector: 'app-edit-evaluation',
   templateUrl: './edit-evaluation.page.html',

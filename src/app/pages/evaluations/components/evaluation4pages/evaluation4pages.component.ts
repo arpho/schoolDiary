@@ -43,6 +43,10 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 import { UnsubscribeService } from 'src/app/shared/services/unsubscribe.service';
+/**
+ * Componente per la creazione di una nuova valutazione.
+ * Permette di selezionare materia, attività, griglia e compilare i voti.
+ */
 @Component({
   selector: 'app-evaluation4pages',
   templateUrl: './evaluation4pages.component.html',
@@ -211,7 +215,7 @@ export class Evaluation4pagesComponent implements OnInit {
   }
   async openActivityDialog() {
     const teacher = await this.$users.fetchUserOnCache(this.teacherKey());
-    
+
     let classi: ClasseModel[] = [];
     if (teacher?.classes) {
       const classKeys = teacher.classesKey;

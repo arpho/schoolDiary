@@ -1,18 +1,18 @@
 import { Component, inject, OnDestroy, OnInit, ɵflushModuleScopingQueueAsMuchAsPossible } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
-  IonToolbar, 
-  IonList, 
-  IonItem, 
-  IonLabel, 
-  IonButton, 
-  IonIcon, 
-  IonText, 
-  IonFabButton, 
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonButton,
+  IonIcon,
+  IonText,
+  IonFabButton,
   IonFab,
   ModalController,
   IonButtons,
@@ -32,6 +32,10 @@ import { CreateSubjectPage } from './pages/create-subject/create-subject.page';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { Subject } from 'rxjs';
 
+/**
+ * Pagina principale che lista tutte le materie configurate nel sistema.
+ * Permette di aggiungere, modificare ed eliminare le materie.
+ */
 @Component({
   selector: 'app-subjects-list',
   templateUrl: './subjects-list.page.html',
@@ -39,12 +43,12 @@ import { Subject } from 'rxjs';
   standalone: true,
   imports: [
     // Componenti Ionic
-    IonContent, 
-    IonHeader, 
-    IonTitle, 
-    IonToolbar, 
-    IonList, 
-    IonItem, 
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonList,
+    IonItem,
     IonLabel,
     IonIcon,
     IonText,
@@ -56,12 +60,15 @@ import { Subject } from 'rxjs';
     IonItemOptions,
     IonItemOption,
     // Moduli Angular
-    CommonModule, 
+    CommonModule,
     FormsModule
   ],
   providers: [UnsubscribeService]
 })
 export class SubjectsListPage implements OnInit, OnDestroy {
+  /**
+   * Apre il modale per creare una nuova materia.
+   */
   async addSubject() {
     const modal = await this.modalCtrl.create({
       component: CreateSubjectPage,
@@ -70,7 +77,7 @@ export class SubjectsListPage implements OnInit, OnDestroy {
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
-    
+
     if (data) {
       try {
         const newSubject = new SubjectModel({
@@ -81,9 +88,9 @@ export class SubjectsListPage implements OnInit, OnDestroy {
           icon: 'book-outline',
           classeDiConcorso: data.classeDiConcorso || ''
         });
-        
+
         await this.$subjects.createSubject(newSubject);
-        
+
         this.toaster.showToast({
           message: 'Materia creata con successo!',
           duration: 2000,
@@ -104,13 +111,18 @@ export class SubjectsListPage implements OnInit, OnDestroy {
   private unsubscribe = inject(UnsubscribeService);
   private $subjects = inject(SubjectService);
 
+  /**
+   * Apre il modale per modificare una materia esistente.
+   * @param subject La materia da modificare.
+   * @param slidingItem L'elemento della lista che contiene l'opzione di modifica (per chiuderlo dopo l'azione).
+   */
   async editSubject(subject: SubjectModel, slidingItem: IonItemSlidingType) {
     // Chiudi lo sliding item
     await slidingItem.close();
-    
+
     // Crea una copia dell'oggetto per evitare modifiche dirette
     const subjectCopy = signal(new SubjectModel(subject));
-    
+
     const modal = await this.modalCtrl.create({
       component: CreateSubjectPage,
       componentProps: {
@@ -142,11 +154,16 @@ export class SubjectsListPage implements OnInit, OnDestroy {
     await modal.present();
   }
 
+  /**
+   * Elimina una materia.
+   * @param subject La materia da eliminare.
+   * @param slidingItem L'elemento della lista (per chiuderlo).
+   */
   async deleteSubject(subject: SubjectModel, slidingItem: IonItemSlidingType) {
     try {
       // Chiudi lo sliding item
       await slidingItem.close();
-      
+
       if (subject.key) {
         await this.$subjects.deleteSubject(subject.key);
         this.toaster.showToast({
@@ -169,16 +186,16 @@ export class SubjectsListPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private toaster: ToasterService
   ) {
-    addIcons({bookOutline,add,createOutline,trashOutline});
+    addIcons({ bookOutline, add, createOutline, trashOutline });
   }
 
   ngOnInit() {
-   const subscription = this.$subjects.fetchSubjectListOnRealTime(
+    const subscription = this.$subjects.fetchSubjectListOnRealTime(
       (subjects: SubjectModel[]) => {
         console.log("Raw subjects from Firestore:", JSON.parse(JSON.stringify(subjects)));
         console.log("Subjects count:", subjects.length);
         console.log("Subjects keys:", subjects.map(s => s.key));
-        
+
         this.subjectsList.set([...subjects]);
       }
     );

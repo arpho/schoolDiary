@@ -30,6 +30,10 @@ import { addIcons } from 'ionicons';
 import { checkmark, settingsOutline } from 'ionicons/icons';
 import { AssignedClass } from '../../../subjects-list/models/assignedClass';
 import { SubjectSelectorComponent } from '../../../subjects-list/components/subject-selector/subject-selector.component';
+/**
+ * Pagina/Modale per la selezione delle classi.
+ * Utilizzato per assegnare classi ai docenti e gestire le materie assegnate.
+ */
 @Component({
   selector: 'app-classes-selector',
   templateUrl: './classes-selector.page.html',
@@ -84,6 +88,12 @@ export class ClassesSelectorPage implements OnInit {
   isClassSelected(classe: ClasseModel) {
     return !!this.getSelectedAssignedClass(classe);
   }
+  /**
+   * Gestisce la selezione/deselezione di una classe.
+   * Se selezionata, apre il selettore delle materie.
+   * @param classe Classe selezionata.
+   * @param event Evento checkbox.
+   */
   async selectedClass(classe: ClasseModel, event: any) {
     console.log("selectedClass", classe);
     console.log("event", event);
@@ -99,6 +109,10 @@ export class ClassesSelectorPage implements OnInit {
     }
   }
 
+  /**
+   * Apre il selettore delle materie e ruoli per una classe assegnata.
+   * @param assignedClass Classe assegnata.
+   */
   async openSubjectSelector(assignedClass: AssignedClass) {
     const currentRole = assignedClass.coordinator ? 'coordinator' : (assignedClass.secretary ? 'secretary' : '');
     const modal = await this.$modal.create({

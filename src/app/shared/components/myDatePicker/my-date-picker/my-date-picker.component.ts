@@ -9,6 +9,10 @@ import {
 import { addIcons } from 'ionicons';
 import { calendarNumber } from 'ionicons/icons';
 
+/**
+ * Componente personalizzato per la selezione della data.
+ * Implementa `ControlValueAccessor` per l'uso nei form Angular.
+ */
 @Component({
   selector: 'app-my-date-picker',
   templateUrl: './my-date-picker.component.html',
@@ -26,10 +30,11 @@ import { calendarNumber } from 'ionicons/icons';
     IonIcon
   ]
 })
-export class MyDatePickerComponent  implements ControlValueAccessor {
+export class MyDatePickerComponent implements ControlValueAccessor {
+  /** Valore della data in stringa */
   @Input() data: string = "";
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: any = () => { };
+  onTouched: any = () => { };
   disabled: boolean = false;
 
 

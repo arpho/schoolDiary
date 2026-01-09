@@ -41,6 +41,10 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ActivityModel } from "../../../activities/models/activityModel";
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { UsersRole } from 'src/app/shared/models/usersRole';
+/**
+ * Pagina che visualizza l'elenco delle valutazioni.
+ * Supporta filtraggio, modifica, visualizzazione PDF e altre azioni sulle valutazioni.
+ */
 @Component({
   selector: 'app-evaluations-list',
   templateUrl: './evaluations-list.page.html',

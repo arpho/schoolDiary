@@ -31,6 +31,10 @@ import { AgendaService } from '../../services/agenda.service';
 import { ClassiService } from '../../../pages/classes/services/classi.service';
 import { ClasseModel } from '../../../pages/classes/models/classModel';
 
+/**
+ * Componente (Modale) per l'inserimento e la modifica di eventi agenda.
+ * Include validazione del form e gestione delle date.
+ */
 @Component({
   selector: 'app-agenda-event-input',
   template: `
@@ -247,8 +251,11 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
   `]
 })
 export class AgendaEventInputComponent {
+  /** Evento esistente da modificare (opzionale) */
   @Input() event?: AgendaEvent;
+  /** Chiave della classe preselezionata */
   @Input() classKey: string = '';
+  /** Chiave del docente creatore */
   @Input() teacherKey: string = '';
 
   validationErrors: { [key: string]: string } = {};
@@ -257,7 +264,7 @@ export class AgendaEventInputComponent {
   private modalCtrl = inject(ModalController);
   private agendaService = inject(AgendaService);
   private classiService = inject(ClassiService);
-  
+
   // Lista delle classi disponibili
   classes: ClasseModel[] = [];
   selectedClassKey: string = '';
@@ -274,6 +281,10 @@ export class AgendaEventInputComponent {
   minDate = new Date().toISOString();
   maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
 
+  /**
+   * Inizializzazione del componente.
+   * Carica la lista delle classi in tempo reale e popola i campi se si sta modificando un evento.
+   */
   async ngOnInit() {
     addIcons({ calendarOutline, timeOutline });
 
@@ -282,7 +293,7 @@ export class AgendaEventInputComponent {
       // Usa getClassiOnRealtime() invece di getClasses()
       const subscription = this.classiService.getClassiOnRealtime().subscribe(classes => {
         this.classes = classes;
-        
+
         // Se c'è una classe selezionata, impostala
         if (this.classKey) {
           this.selectedClassKey = this.classKey;
@@ -293,7 +304,7 @@ export class AgendaEventInputComponent {
           this.selectedClassKey = this.classes[0].key;
         }
       });
-      
+
       // Ricordati di fare l'unsubscribe quando il componente viene distrutto
       // Puoi aggiungere un ngOnDestroy() se necessario
     } catch (error) {
@@ -329,6 +340,10 @@ export class AgendaEventInputComponent {
 
   // ...
 
+  /**
+   * Gestisce il cambio del toggle "Tutto il giorno".
+   * Aggiusta automaticamente le date di inizio e fine per coprire l'intera giornata o un'ora di default.
+   */
   onAllDayChange() {
     if (this.allDay) {
       // Se si passa a "Tutto il giorno", imposta l'ora a mezzanotte
@@ -354,6 +369,11 @@ export class AgendaEventInputComponent {
     this.modalCtrl.dismiss();
   }
 
+  /**
+   * Valida i campi del form.
+   * Controlla obbligatorietà e coerenza delle date.
+   * @returns Oggetto con flag isValid ed eventuali errori.
+   */
   validateForm(): { isValid: boolean; errors: { [key: string]: string } } {
     const errors: { [key: string]: string } = {};
 
@@ -463,6 +483,11 @@ export class AgendaEventInputComponent {
 
 
 
+  /**
+   * Salva l'evento su Firebase.
+   * Crea un nuovo evento o ne aggiorna uno esistente.
+   * Chiude il modale restituendo l'evento salvato.
+   */
   async save() {
     const { isValid, errors } = this.validateForm();
     this.showErrors = !isValid;

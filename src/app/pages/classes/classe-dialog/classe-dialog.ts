@@ -41,6 +41,10 @@ import { EventDialogComponent } from '../../agenda/components/event-dialog/event
 import { AgendaEvent } from '../../agenda/models/agendaEvent';
 import { addIcons } from 'ionicons';
 import { menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close, add, trash } from 'ionicons/icons';
+/**
+ * Pagina di dettaglio e modifica di una classe.
+ * Gestisce diverse schede (generalità, attività, PDP, studenti, note, ecc.).
+ */
 @Component({
   selector: 'app-classe-dialog',
   templateUrl: './classe-dialog.html',
@@ -78,7 +82,7 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
     IonRow,
     IonCol,
     IonItemDivider
-],
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ClasseDialogPage implements OnInit {
@@ -89,6 +93,11 @@ export class ClasseDialogPage implements OnInit {
   sidebarOpen = false;
 
   // Metodo per cambiare scheda e chiudere il menu
+  // Metodo per cambiare scheda e chiudere il menu
+  /**
+   * Seleziona un tab e chiude la sidebar laterale.
+   * @param tab Il tab da selezionare.
+   */
   selectTab(tab: TabType) {
     this.selectedTab = tab;
     this.sidebarOpen = false;  // Chiude il menu
@@ -135,7 +144,7 @@ export class ClasseDialogPage implements OnInit {
     private alertCtrl: AlertController
   ) {
     // Register icons
-    addIcons({menu,close,informationCircle,people,chatbox,list,add,peopleCircle,calendar,school,trash});
+    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash });
 
     // Initialize with empty model
     this.classe.set(new ClasseModel({
@@ -146,6 +155,9 @@ export class ClasseDialogPage implements OnInit {
       verbali: []
     }));
   }
+  /**
+   * Inizializza il componente recuperando i dettagli della classe se presente.
+   */
   async ngOnInit(): Promise<void> {
     const user = await this.$users.getLoggedUser();
     if (user && typeof user === 'object' && 'key' in user) {
@@ -187,6 +199,9 @@ export class ClasseDialogPage implements OnInit {
     this.verbaliList.update(list => list.filter((_, i) => i !== index));
   }
 
+  /**
+   * Salva le modifiche alla classe.
+   */
   async save() {
     // Get form values with fallback to empty strings for required fields
     const formValues = {

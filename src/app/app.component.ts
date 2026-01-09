@@ -6,6 +6,10 @@ import { ClassiService } from './pages/classes/services/classi.service';
 import { UsersService } from './shared/services/users.service';
 import { ActivitiesService } from './pages/activities/services/activities.service';
 
+/**
+ * Componente principale dell'applicazione.
+ * Gestisce l'inizializzazione e il monitoraggio dello stato di autenticazione dell'utente per il routing automatico.
+ */
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',

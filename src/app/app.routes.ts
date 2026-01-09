@@ -1,6 +1,10 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth.guard';
 
+/**
+ * Definizione delle rotte principali dell'applicazione.
+ * Collega i percorsi URL ai rispettivi componenti/pagine, gestendo lazy loading e guardie di navigazione.
+ */
 export const routes: Routes = [
   {
     path: 'home',
@@ -114,14 +118,14 @@ export const routes: Routes = [
   },
   {
     path: 'subjects-list',
-    loadComponent: () => import('./pages/subjects-list/subjects-list.page').then( m => m.SubjectsListPage)
+    loadComponent: () => import('./pages/subjects-list/subjects-list.page').then(m => m.SubjectsListPage)
   },
   {
     path: 'edit-subject/:subjectKey',
-    loadComponent: () => import('./pages/subjects-list/pages/edit-subject/edit-subject.page').then( m => m.EditSubjectPage)
+    loadComponent: () => import('./pages/subjects-list/pages/edit-subject/edit-subject.page').then(m => m.EditSubjectPage)
   },
   {
     path: 'create-subject',
-    loadComponent: () => import('./pages/subjects-list/pages/create-subject/create-subject.page').then( m => m.CreateSubjectPage)
+    loadComponent: () => import('./pages/subjects-list/pages/create-subject/create-subject.page').then(m => m.CreateSubjectPage)
   }
 ];

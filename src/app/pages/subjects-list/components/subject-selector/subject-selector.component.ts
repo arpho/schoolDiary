@@ -24,6 +24,10 @@ import { checkmark, close } from 'ionicons/icons';
 import { SubjectModel } from '../../models/subjectModel';
 import { SubjectService } from '../../services/subjects/subject.service';
 
+/**
+ * Componente per la selezione multipla di materie.
+ * Visualizza una lista filtrabile di materie e permette di selezionarle.
+ */
 @Component({
   selector: 'app-subject-selector',
   templateUrl: './subject-selector.component.html',
@@ -52,7 +56,7 @@ import { SubjectService } from '../../services/subjects/subject.service';
 export class SubjectSelectorComponent implements OnInit {
   @Input() selectedSubjectsKey: string[] = [];
   @Input() currentRole: 'coordinator' | 'secretary' | '' = '';
-  
+
   subjects = signal<SubjectModel[]>([]);
   localSelectedKeys = signal<string[]>([]);
   localSelectedRole = signal<'coordinator' | 'secretary' | ''>('');
@@ -61,8 +65,8 @@ export class SubjectSelectorComponent implements OnInit {
   filteredSubjects = computed(() => {
     const term = this.searchTerm().toLowerCase();
     if (!term) return this.subjects();
-    return this.subjects().filter(s => 
-      s.name.toLowerCase().includes(term) || 
+    return this.subjects().filter(s =>
+      s.name.toLowerCase().includes(term) ||
       s.classeDiConcorso.toLowerCase().includes(term)
     );
   });

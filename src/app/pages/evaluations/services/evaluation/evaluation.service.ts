@@ -21,6 +21,10 @@ export interface EvaluationCount {
   evaluationscount: number;
 }
 
+/**
+ * Servizio per la gestione delle valutazioni.
+ * Implementa una cache locale avanzata e sottoscrizioni realtime.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -47,6 +51,13 @@ export class EvaluationService {
     return subjectKey ? `${baseKey}_${subjectKey}` : baseKey;
   }
 
+  /**
+   * Recupera le valutazioni dal server.
+   * @param studentKey Chiave dello studente.
+   * @param teacherKey Chiave del docente.
+   * @param subjectKey Chiave della materia (opzionale).
+   * @returns Promise con la lista delle valutazioni.
+   */
   private async fetchEvaluationsFromServer(
     studentKey: string,
     teacherKey: string,
@@ -122,6 +133,15 @@ export class EvaluationService {
     });
   }
 
+  /**
+   * Ottiene le valutazioni di uno studente per un docente specifico.
+   * Gestisce cache, caricamento e aggiornamenti realtime.
+   * @param studentKey Chiave dello studente.
+   * @param teacherKey Chiave del docente.
+   * @param callback Callback chiamata con i dati aggiornati.
+   * @param subjectKey Chiave della materia (opzionale).
+   * @returns Unsubscribe function.
+   */
   async getEvaluation4studentAndTeacher(
     studentKey: string,
     teacherKey: string,
@@ -192,6 +212,11 @@ export class EvaluationService {
   }
 
   // Metodi per la gestione delle valutazioni
+  /**
+   * Recupera una singola valutazione.
+   * @param evaluationKey Chiave della valutazione.
+   * @returns Promise con il modello della valutazione.
+   */
   async fetchEvaluation(evaluationKey: string): Promise<Evaluation> {
     const docRef = this.docFn(this.firestore, this.collectionName, evaluationKey);
     const docSnap = await this.getDocFn(docRef);
@@ -201,6 +226,11 @@ export class EvaluationService {
     return new Evaluation(docSnap.data()).setKey(docSnap.id);
   }
 
+  /**
+   * Aggiunge una nuova valutazione.
+   * @param evaluation Modello della valutazione.
+   * @returns Promise con il riferimento al documento creato.
+   */
   async addEvaluation(evaluation: Evaluation) {
     const docRef = await this.addDocFn(
       this.collectionFn(this.firestore, this.collectionName),
@@ -216,6 +246,11 @@ export class EvaluationService {
     return docRef;
   }
 
+  /**
+   * Aggiorna una valutazione esistente.
+   * @param evaluation Modello con i dati aggiornati.
+   * @returns Promise vuota.
+   */
   async updateEvaluation(evaluation: Evaluation) {
     if (!evaluation.key) {
       throw new Error('Impossibile aggiornare una valutazione senza chiave');
@@ -232,6 +267,11 @@ export class EvaluationService {
     this.updateLocalCache(evaluation);
   }
 
+  /**
+   * Elimina una valutazione.
+   * @param evaluation Modello della valutazione da eliminare.
+   * @returns Promise vuota.
+   */
   async deleteEvaluation(evaluation: Evaluation) {
     if (!evaluation.key) {
       throw new Error('Impossibile eliminare una valutazione senza chiave');
@@ -242,6 +282,13 @@ export class EvaluationService {
   }
 
   // Metodi di utilità
+  /**
+   * Calcola il numero di valutazioni per uno studente.
+   * @param studentKey Chiave dello studente.
+   * @param teacherKey Chiave del docente.
+   * @param callback Callback con il conteggio.
+   * @param subjectKey Filtro materia opzionale.
+   */
   fetchEvaluationsCount4Student(
     studentKey: string,
     teacherKey: string,
@@ -253,6 +300,14 @@ export class EvaluationService {
     }, subjectKey);
   }
 
+  /**
+   * Calcola la media dei voti.
+   * @param studentKey Chiave dello studente.
+   * @param teacherKey Chiave del docente.
+   * @param callback Callback con la media.
+   * @param subjectKey Filtro materia.
+   * @param startDate Filtro data inizio.
+   */
   fetchAverageGrade4StudentAndTeacher(
     studentKey: string,
     teacherKey: string,
@@ -270,6 +325,12 @@ export class EvaluationService {
     }, subjectKey);
   }
 
+  /**
+   * Calcola media e numero valutazioni insieme.
+   * @param studentKey Chiave dello studente.
+   * @param teacherKey Chiave del docente.
+   * @param callback Callback con il risultato (media e contatore).
+   */
   fetchAverageGradeWhitCount4StudentAndTeacher(
     studentKey: string,
     teacherKey: string,
@@ -292,6 +353,9 @@ export class EvaluationService {
   }
 
   // Metodo per forzare il refresh dei dati
+  /**
+   * Forza il refresh delle valutazioni dal server.
+   */
   async refreshEvaluations(
     studentKey: string,
     teacherKey: string,

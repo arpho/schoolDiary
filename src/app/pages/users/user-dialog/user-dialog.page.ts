@@ -17,6 +17,10 @@ import { addIcons } from 'ionicons';
 import { documentTextOutline, personOutline, sparklesOutline, trash, add } from 'ionicons/icons';
 import { AlertController } from '@ionic/angular/standalone';
 
+/**
+ * Pagina di dialogo principale per la gestione di un utente.
+ * Integra i componenti per generalità, note riservate e valutazioni in tab separati.
+ */
 @Component({
   selector: 'app-user-dialog',
   templateUrl: './user-dialog.page.html',
@@ -109,11 +113,11 @@ export class UserDialogPage implements OnInit {
   usersClasses = signal<ClasseModel[]>([]);
   elencoClassi = signal<ClasseModel[]>([]);
   loggedUser = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
-  
+
   // PDP Links Management
   pdpList = signal<DocumentModel[]>([]);
   initialPdpList: string = '[]';
-  
+
   rolesValue: any[] = [];
   rolesName: string[] = [];
   userForm: FormGroup = new FormGroup({
@@ -261,7 +265,7 @@ export class UserDialogPage implements OnInit {
     const user = this.user();
     user.key = this.user()?.key;
     user.pdpUrl = this.pdpList(); // Save PDP links
-    
+
     const claims = {
       role: user.role,
       classes: user.classes,

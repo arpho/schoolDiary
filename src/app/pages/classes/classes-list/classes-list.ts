@@ -31,6 +31,10 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { addIcons } from 'ionicons';
 import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionicons/icons';
 
+/**
+ * Componente per visualizzare la lista delle classi.
+ * Permette di visualizzare, modificare, eliminare e archiviare le classi.
+ */
 @Component({
   selector: 'app-classes-list',
   templateUrl: './classes-list.html',
@@ -91,6 +95,10 @@ export class ClassesListComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
   }
 
+  /**
+   * Gestisce il click su una classe aprendo un action sheet con le opzioni disponibili.
+   * @param classe Modello della classe selezionata.
+   */
   async clickedClass(classe: ClasseModel) {
     const actionSheet = await this.actionSheetController.create({
       header: `Classe ${classe.classe} - ${classe.year}`,
