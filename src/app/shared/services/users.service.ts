@@ -23,6 +23,7 @@ import { OrCondition, QueryCondition } from '../models/queryCondition';
 import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
 import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
+import { UsersRole } from '../models/usersRole';
 
 interface ClaimsResponse {
   message?: string;
@@ -31,6 +32,17 @@ interface ClaimsResponse {
     userKey: string;
     claims: object;
   };
+}
+
+interface CreateUserPlusResponse {
+  data: {
+    success: boolean;
+    userId: string;
+    email: string;
+    isNewUser: boolean;
+    classKey?: string | null;
+    message?: string;
+  }
 }
 
 /**
@@ -403,15 +415,15 @@ export class UsersService implements OnInit {
   async createUser(user: UserModel): Promise<string> {
     const functions = getFunctions();
     const createUser = httpsCallable(functions, 'createUserPlus');
-    const result = await createUser(user) as ClaimsResponse;
+    const result = await createUser(user) as CreateUserPlusResponse;
     console.log('createUser response:', result);
-    if (result.data?.result !== 'ok') {
+    if (!result.data?.success) {
       console.error('createUser failed:', result);
       console.error('createUser failed:', user);
-      throw new Error('Failed to create user: ' + (result.message || 'Unknown error'));
+      throw new Error('Failed to create user: ' + (result.data?.message || 'Unknown error'));
     }
     console.log('createUser successfully set:', result.data);
-    return result.data.userKey;
+    return result.data.userId;
   }
 
   /**

@@ -207,6 +207,15 @@ export class UserGeneralities2Component implements OnInit {
       this.cdr.detectChanges();
     });
   }
+  generatePassword(): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+      password += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return password;
+  }
+
   save() {
     console.log("Saving user...");
     const formValue = this.userForm.value;
@@ -216,6 +225,7 @@ export class UserGeneralities2Component implements OnInit {
       ...formValue,
       assignedClasses: this.usersClasses()
     };
+
 
     const user = new UserModel(userData);
     console.log("User to save:", user.serialize());
@@ -231,6 +241,7 @@ export class UserGeneralities2Component implements OnInit {
     if (user.key) {
       this.updateUser(user, claims);
     } else {
+      user.password = this.generatePassword();
       this.createUser(user, claims);
     }
   }
