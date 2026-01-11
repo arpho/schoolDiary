@@ -415,7 +415,17 @@ export class UsersService implements OnInit {
   async createUser(user: UserModel): Promise<string> {
     const functions = getFunctions();
     const createUser = httpsCallable(functions, 'createUserPlus');
-    const result = await createUser(user) as CreateUserPlusResponse;
+    
+    // Prepare payload with additionalData for custom claims
+    const payload = {
+      ...user.serialize(),
+      password: user.password, // Ensure password is passed if set
+      additionalData: {
+        classes: user.classes || []
+      }
+    };
+
+    const result = await createUser(payload) as CreateUserPlusResponse;
     console.log('createUser response:', result);
     if (!result.data?.success) {
       console.error('createUser failed:', result);
