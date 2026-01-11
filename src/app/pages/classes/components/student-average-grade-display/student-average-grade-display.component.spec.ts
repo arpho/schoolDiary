@@ -14,13 +14,17 @@ describe('StudentAverageGradeDisplayComponent', () => {
     TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), StudentAverageGradeDisplayComponent],
       providers: [
-        { provide: EvaluationService, useValue: { getEvaluations: () => of([]) } }
+        { provide: EvaluationService, useValue: { 
+          getEvaluations: () => of([]),
+          fetchAverageGradeWhitCount4StudentAndTeacher: jasmine.createSpy('fetchAverageGradeWhitCount4StudentAndTeacher')
+        } }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(StudentAverageGradeDisplayComponent);
     component = fixture.componentInstance;
-    component.student = { key: '123', name: 'Test', surname: 'Student' } as any;
+    fixture.componentRef.setInput('student', { key: '123', name: 'Test', surname: 'Student' });
+    fixture.componentRef.setInput('teacherkey', 'teacher123');
     fixture.detectChanges();
   }));
 

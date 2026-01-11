@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { EvaluationsListPage } from './evaluations-list.page';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
-import { IonicModule } from '@ionic/angular';
-import { PopoverController, ModalController, AlertController } from '@ionic/angular/standalone';
+import { provideIonicAngular, PopoverController, ModalController, AlertController } from '@ionic/angular/standalone';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
@@ -49,8 +48,9 @@ describe('EvaluationsListPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), EvaluationsListPage],
+      imports: [EvaluationsListPage],
       providers: [
+        provideIonicAngular(),
         { provide: EvaluationService, useValue: evaluationServiceMock },
         { provide: PopoverController, useValue: popoverCtrlMock },
         { provide: UsersService, useValue: usersServiceMock },
@@ -63,7 +63,6 @@ describe('EvaluationsListPage', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .overrideComponent(EvaluationsListPage, {
-      add: { imports: [IonicModule] },
       remove: { imports: [FilterPopupComponent, EvaluationDialogPage, Evaluation2PdfComponent] }
     })
     .compileComponents();

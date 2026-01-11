@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/standalone';
 
 import { DisplayAgenda4ClassesComponent } from './display-agenda4-classes.component';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';

@@ -5,6 +5,7 @@ import { Auth } from '@angular/fire/auth';
 import { Firestore } from '@angular/fire/firestore';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('SignupPage', () => {
@@ -15,6 +16,17 @@ describe('SignupPage', () => {
     TestBed.configureTestingModule({
       imports: [SignupPage],
       providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                get: () => 'test-id',
+              },
+            },
+            queryParams: of({}),
+          },
+        },
         { provide: AuthService, useValue: { signup: jasmine.createSpy('signup').and.returnValue(Promise.resolve()) } },
         { provide: UsersService, useValue: { signupUser: jasmine.createSpy('signupUser').and.returnValue(Promise.resolve()) } },
         { provide: ToasterService, useValue: { presentToast: jasmine.createSpy('presentToast') } },

@@ -6,6 +6,8 @@ import { of } from 'rxjs';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation/evaluation.service';
 import { Firestore } from '@angular/fire/firestore';
+import { ActionSheetController, ModalController, AlertController, ToastController } from '@ionic/angular/standalone';
+import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 
 describe('Evaluations4StudentPage', () => {
   let component: Evaluations4StudentPage;
@@ -14,7 +16,8 @@ describe('Evaluations4StudentPage', () => {
 
   beforeEach(waitForAsync(() => {
     usersServiceMock = {
-      getUserByUid: jasmine.createSpy('getUserByUid').and.returnValue(Promise.resolve(new UserModel()))
+      getUserByUid: jasmine.createSpy('getUserByUid').and.returnValue(Promise.resolve(new UserModel())),
+      getLoggedUser: jasmine.createSpy('getLoggedUser').and.returnValue(Promise.resolve(new UserModel()))
     };
 
     TestBed.configureTestingModule({
@@ -23,7 +26,12 @@ describe('Evaluations4StudentPage', () => {
         provideRouter([]),
         { provide: UsersService, useValue: usersServiceMock },
         { provide: EvaluationService, useValue: { getEvaluation4studentAndTeacher: jasmine.createSpy('getEvaluation4studentAndTeacher'), fetchAverageGradeWhitCount4StudentAndTeacher: jasmine.createSpy('fetchAverageGradeWhitCount4StudentAndTeacher') } },
-        { provide: Firestore, useValue: {} }
+        { provide: Firestore, useValue: {} },
+        { provide: ActionSheetController, useValue: jasmine.createSpyObj('ActionSheetController', ['create']) },
+        { provide: ModalController, useValue: jasmine.createSpyObj('ModalController', ['create']) },
+        { provide: AlertController, useValue: jasmine.createSpyObj('AlertController', ['create']) },
+        { provide: ToastController, useValue: jasmine.createSpyObj('ToastController', ['create']) },
+        { provide: ActivitiesService, useValue: jasmine.createSpyObj('ActivitiesService', ['getActivities4teacherOnRealtime']) }
       ]
     }).compileComponents();
 

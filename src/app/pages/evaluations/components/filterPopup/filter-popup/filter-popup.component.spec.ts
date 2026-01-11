@@ -9,8 +9,7 @@ describe('FilterPopupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FilterPopupComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), FilterPopupComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FilterPopupComponent);

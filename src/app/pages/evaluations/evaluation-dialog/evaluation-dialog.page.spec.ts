@@ -8,6 +8,7 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { EvaluationService } from '../services/evaluation/evaluation.service';
 import { ClassiService } from '../../classes/services/classi.service';
 import { ModalController, IonicModule } from '@ionic/angular';
+import { AlertController } from '@ionic/angular/standalone';
 import { of } from 'rxjs';
 
 describe('EvaluationDialogPage', () => {
@@ -20,7 +21,9 @@ describe('EvaluationDialogPage', () => {
   const gridsSpy = jasmine.createSpyObj('GridsService', ['getGridsOnRealtime']);
   const evaluationSpy = jasmine.createSpyObj('EvaluationService', ['fetchEvaluation', 'updateEvaluation', 'addEvaluation']);
   const classesSpy = jasmine.createSpyObj('ClassiService', ['fetchClasseOnCache']);
+
   const modalSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
+  const alertSpy = jasmine.createSpyObj('AlertController', ['create']);
 
   beforeEach(waitForAsync(() => {
     // Setup default mock returns
@@ -37,7 +40,9 @@ describe('EvaluationDialogPage', () => {
         { provide: GridsService, useValue: gridsSpy },
         { provide: EvaluationService, useValue: evaluationSpy },
         { provide: ClassiService, useValue: classesSpy },
-        { provide: ModalController, useValue: modalSpy }
+        { provide: ClassiService, useValue: classesSpy },
+        { provide: ModalController, useValue: modalSpy },
+        { provide: AlertController, useValue: alertSpy }
       ]
     }).compileComponents();
 

@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SubjectsListPage } from './subjects-list.page';
-import { ModalController, IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
 import { SubjectService } from './services/subjects/subject.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UnsubscribeService } from 'src/app/shared/services/unsubscribe.service';
 import { of } from 'rxjs';
+import { ModalController } from '@ionic/angular/standalone';
 
 describe('SubjectsListPage', () => {
   let component: SubjectsListPage;

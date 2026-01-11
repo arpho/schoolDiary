@@ -53,8 +53,16 @@ export class ClassReservedNotesService {
     return Promise.resolve(notes);
   }
 
+  protected getCollectionRef() {
+    return collection(this.firestore, this.collection);
+  }
+
+  protected getDocRef(key: string) {
+    return doc(this.firestore, this.collection, key);
+  }
+
   deleteNote(key: string) {
-    const docRef = doc(this.firestore, this.collection, key);
+    const docRef = this.getDocRef(key);
     return deleteDoc(docRef);
   }
 
@@ -67,7 +75,7 @@ export class ClassReservedNotesService {
    * @returns Promise con il modello della nota.
    */
   async fetchNote(noteKey: string) {
-    const docRef = doc(this.firestore, this.collection, noteKey);
+    const docRef = this.getDocRef(noteKey);
     const rawNote = await getDoc(docRef);
     return new ReservedNotes4class(rawNote.data()).setKey(rawNote.id);
   }
@@ -79,7 +87,7 @@ export class ClassReservedNotesService {
    */
   addNote(note: ReservedNotes4class) {
     console.log("creaing note", note.serialize())
-    const collectionRef = collection(this.firestore, this.collection);
+    const collectionRef = this.getCollectionRef();
     return addDoc(collectionRef, note.serialize());
   }
 
@@ -90,7 +98,7 @@ export class ClassReservedNotesService {
    * @returns Promise dell'operazione.
    */
   updateNote(noteKey: string, note: ReservedNotes4class) {
-    const docRef = doc(this.firestore, this.collection, noteKey);
+    const docRef = this.getDocRef(noteKey);
     return setDoc(docRef, note.serialize());
   }
 
@@ -104,7 +112,7 @@ export class ClassReservedNotesService {
   getNotesOnRealtime(ownerKey: string, classKey: string, callback: (notes: ReservedNotes4class[]) => void) {
     console.log("ownerKey", ownerKey);
     console.log("getting notes for class", classKey, "for user", ownerKey);
-    const collectionRef = collection(this.firestore, this.collection);
+    const collectionRef = this.getCollectionRef();
     const q = query(collectionRef, where('ownerKey', '==', ownerKey), where('classKey', '==', classKey));
     return onSnapshot(q, (snapshot) => {
       const notes: ReservedNotes4class[] = [];

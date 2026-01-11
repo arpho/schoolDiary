@@ -9,8 +9,7 @@ describe('CriteriComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CriteriComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), CriteriComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CriteriComponent);

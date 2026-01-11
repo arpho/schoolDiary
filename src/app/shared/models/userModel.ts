@@ -134,7 +134,7 @@ export class UserModel {
       noteDisabilita: this.noteDisabilita,
       pdpUrl: this.pdpUrl,
       userName: this.userName,
-      classes: this.assignedClasses.map((classe) => classe.key)
+      classes: this.classesKey
     };
   }
 }

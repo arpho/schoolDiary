@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { provideIonicAngular } from '@ionic/angular/standalone';
+import { ModalController } from '@ionic/angular/standalone';
 import { EventDialogComponent } from './event-dialog.component';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
@@ -23,8 +24,9 @@ describe('EventDialogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), EventDialogComponent],
+      imports: [EventDialogComponent],
       providers: [
+        provideIonicAngular(),
         { provide: AgendaService, useValue: agendaServiceMock },
         { provide: ToasterService, useValue: toasterServiceMock },
         { provide: ModalController, useValue: modalCtrlMock }

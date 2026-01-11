@@ -1,16 +1,33 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app.component';
+import { Auth } from '@angular/fire/auth';
+import { ClassiService } from './pages/classes/services/classi.service';
+import { UsersService } from './shared/services/users.service';
+import { ActivitiesService } from './pages/activities/services/activities.service';
 
 describe('AppComponent', () => {
-  it('should create the app', async () => {
-    await TestBed.configureTestingModule({
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideRouter([])]
+      providers: [
+        provideRouter([]),
+        { provide: Auth, useValue: { onAuthStateChanged: jasmine.createSpy('onAuthStateChanged').and.returnValue(() => {}) } },
+        { provide: ClassiService, useValue: {} },
+        { provide: UsersService, useValue: {} },
+        { provide: ActivitiesService, useValue: {} }
+      ]
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
+
+  it('should create the app', () => {
+    expect(component).toBeTruthy();
   });
 });

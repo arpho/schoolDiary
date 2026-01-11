@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { GridsdialogPage } from './gridsdialog';
 
-import { ModalController } from '@ionic/angular';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { Auth } from '@angular/fire/auth';
-import { Firestore } from '@angular/fire/firestore';
+import { ModalController, ActionSheetController } from '@ionic/angular';
+import { UsersService } from 'src/app/shared/services/users.service';
+import { GridsService } from 'src/app/shared/services/grids/grids.service';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
 describe('GridsdialogPage', () => {
@@ -21,9 +22,11 @@ describe('GridsdialogPage', () => {
       imports: [GridsdialogPage],
       providers: [
         { provide: ModalController, useValue: modalControllerMock },
-        { provide: AuthService, useValue: { getUser: jasmine.createSpy('getUser').and.returnValue({ uid: 'test-uid' }) } },
-        { provide: Auth, useValue: {} },
-        { provide: Firestore, useValue: {} }
+        { provide: UsersService, useValue: { getLoggedUser: jasmine.createSpy('getLoggedUser') } },
+        { provide: GridsService, useValue: { updateGrid: jasmine.createSpy('updateGrid'), addGrid: jasmine.createSpy('addGrid'), fetchGrid: jasmine.createSpy('fetchGrid') } },
+        { provide: ActionSheetController, useValue: jasmine.createSpyObj('ActionSheetController', ['create']) },
+        { provide: ToasterService, useValue: jasmine.createSpyObj('ToasterService', ['showToast']) },
+        provideRouter([]),
       ]
     }).compileComponents();
 

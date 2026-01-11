@@ -103,6 +103,7 @@ describe('UnsubscribeService', () => {
         });
 
         it('should handle errors during unsubscribe gracefully', () => {
+            spyOn(console, 'error');
             const badSubscription = {
                 unsubscribe: () => {
                     throw new Error('Unsubscribe error');
@@ -113,6 +114,7 @@ describe('UnsubscribeService', () => {
 
             // Should not throw
             expect(() => service.ngOnDestroy()).not.toThrow();
+            expect(console.error).toHaveBeenCalled();
         });
     });
 
