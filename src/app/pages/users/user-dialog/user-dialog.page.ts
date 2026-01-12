@@ -288,7 +288,14 @@ export class UserDialogPage implements OnInit {
       });
     }
     else {
-
+      this.$users.createUser(user).then(() => {
+        console.log("user created");
+        this.toaster.presentToast({ message: "Utente creato con successo", duration: 2000, position: "bottom" });
+        this.modalCtrl.dismiss();
+      }).catch((error: any) => {
+        console.log("error creating user", error);
+        this.toaster.presentToast({ message: "Errore durante la creazione dell'utente", duration: 2000, position: "bottom" });
+      });
     }
 
   }

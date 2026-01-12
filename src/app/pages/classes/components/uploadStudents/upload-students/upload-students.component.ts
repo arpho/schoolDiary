@@ -1,3 +1,4 @@
+import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, input, signal, computed } from '@angular/core';
 import * as XLSX from 'xlsx';
@@ -20,10 +21,7 @@ import { UsersService } from '../../../../../shared/services/users.service';
 import { addIcons } from 'ionicons';
 import { pushOutline } from 'ionicons/icons';
 import { Alunno } from '../../../models/alunno.model';
-/**
- * Componente per il caricamento massivo di studenti tramite file Excel/CSV.
- * Parsa il file, genera le credenziali e prepara gli studenti per la creazione.
- */
+
 @Component({
   selector: 'app-upload-students',
   templateUrl: './upload-students.component.html',
@@ -47,7 +45,8 @@ import { Alunno } from '../../../models/alunno.model';
 export class UploadStudentsComponent implements OnInit {
   constructor(
     private alertCtrl: AlertController,
-    private $userService: UsersService
+    private $userService: UsersService,
+    private $toaster: ToasterService
   ) {
     addIcons({
       push: pushOutline,
@@ -58,21 +57,31 @@ export class UploadStudentsComponent implements OnInit {
     const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emailRegex.test(email);
   }
-  push() {
-    console.log("push to class", this.classkey)
-    this.alunni().filter((alunno: Alunno) => alunno.firstName && alunno.lastName).forEach((alunno: Alunno) => {
-      alunno.email = this.emailFactory(alunno)
-      console.log("alunno", alunno)
 
-      this.$userService.createUser(alunno).then((userKey) => {
+  async push() {
+    console.log("push to class", this.classkey);
+    const validAlunni = this.alunni().filter((alunno: Alunno) => alunno.firstName && alunno.lastName);
 
+    const promises = validAlunni.map((alunno: Alunno) => {
+      alunno.email = this.emailFactory(alunno);
+      console.log("alunno", alunno);
+      return this.$userService.createUser(alunno)
+        .then((userKey) => ({ success: true, alunno }))
+        .catch((error) => ({ success: false, alunno, error }));
+    });
 
-        console.log("alunno creato", alunno)
-      }).catch((error) => {
-        console.log("alunno non creato", alunno)
-        console.log("error", error)
-      })
-    })
+    const results = await Promise.all(promises);
+    const successCount = results.filter(r => r.success).length;
+    const failCount = results.filter(r => !r.success).length;
+
+    if (successCount > 0) {
+      this.$toaster.presentToast({ message: `${successCount} studenti creati con successo.`, position: 'top', duration: 3000 });
+    }
+
+    if (failCount > 0) {
+      this.$toaster.presentToast({ message: `${failCount} studenti non creati. Controlla la console.`, position: 'top', duration: 5000 });
+      console.error("Failed uploads:", results.filter(r => !r.success));
+    }
   }
   private _classkey = '';
   set classkey(value: string) { this._classkey = value; }
