@@ -19,13 +19,13 @@ describe('LoginPage', () => {
     signInWithEmailAndPassword: jasmine.createSpy('signInWithEmailAndPassword').and.returnValue(Promise.resolve({ user: { uid: '123' } }))
   };
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), LoginPage],
       providers: [
         { provide: AngularFireAuth, useValue: angularFireAuthMock },
         { provide: ToasterService, useValue: toasterServiceMock },
-        provideRouter([]), // Use real router provider
+        provideRouter([]),
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } },
         { provide: FIREBASE_OPTIONS, useValue: { apiKey: 'test' } },
         { provide: Firestore, useValue: {} }
@@ -35,7 +35,7 @@ describe('LoginPage', () => {
     fixture = TestBed.createComponent(LoginPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
