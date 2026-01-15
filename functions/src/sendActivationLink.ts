@@ -1,25 +1,27 @@
-import * as functions from "firebase-functions/v1";
-import {sendUserActivationLink} from "./bussines/userActivation";
+import * as logger from "firebase-functions/logger";
+import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https";
+import { sendUserActivationLink } from "./bussines/userActivation";
 
 interface SendActivationLinkData {
   email: string;
 }
 
-export const sendActivationLink = functions.https
-  .onCall(async (data: SendActivationLinkData, context) => {
+export const sendActivationLink = onCall(
+  { enforceAppCheck: false }, // Opzionale: configurazioni v2 simili a quanto visto in altri file
+  async (request: CallableRequest<SendActivationLinkData>) => {
     // Verifica che l'utente sia autenticato
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
+    if (!request.auth) {
+      throw new HttpsError(
         "unauthenticated",
         "L'utente deve essere autenticato"
       );
     }
 
-    const {email} = data || {};
+    const { email } = request.data || {};
 
     // Verifica che l'email sia stata fornita
     if (!email) {
-      throw new functions.https.HttpsError(
+      throw new HttpsError(
         "invalid-argument",
         "Il campo email è obbligatorio"
       );
@@ -28,7 +30,7 @@ export const sendActivationLink = functions.https
     // Verifica il formato dell'email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      throw new functions.https.HttpsError(
+      throw new HttpsError(
         "invalid-argument",
         "Il formato dell'email non è valido"
       );
@@ -38,11 +40,12 @@ export const sendActivationLink = functions.https
       // Invia il link di attivazione
       return await sendUserActivationLink(email);
     } catch (error) {
-      functions.logger.error("Errore in sendActivationLink:", error);
-      throw new functions.https.HttpsError(
+      logger.error("Errore in sendActivationLink:", error);
+      throw new HttpsError(
         "internal",
         "Si è verificato un errore durante l'invio del link di attivazione",
         error
       );
     }
-  });
+  }
+);
