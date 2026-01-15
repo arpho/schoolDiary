@@ -1,13 +1,18 @@
 import * as logger from "firebase-functions/logger";
-import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https";
-import { sendUserActivationLink } from "./bussines/userActivation";
+import {
+  onCall,
+  HttpsError,
+  CallableRequest,
+} from "firebase-functions/v2/https";
+import {sendUserActivationLink} from "./bussines/userActivation";
 
 interface SendActivationLinkData {
   email: string;
 }
 
 export const sendActivationLink = onCall(
-  { enforceAppCheck: false }, // Opzionale: configurazioni v2 simili a quanto visto in altri file
+  // Opzionale: configurazioni v2 simili a quanto visto in altri file
+  {enforceAppCheck: false},
   async (request: CallableRequest<SendActivationLinkData>) => {
     // Verifica che l'utente sia autenticato
     if (!request.auth) {
@@ -17,7 +22,7 @@ export const sendActivationLink = onCall(
       );
     }
 
-    const { email } = request.data || {};
+    const {email} = request.data || {};
 
     // Verifica che l'email sia stata fornita
     if (!email) {
