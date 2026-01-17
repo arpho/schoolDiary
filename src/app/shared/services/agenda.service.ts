@@ -48,7 +48,7 @@ export class AgendaService {
      * @param callBack Funzione di callback invocata ad ogni aggiornamento dei dati.
      * @param queries Lista di condizioni query per filtrare gli eventi (es. per classe, per data).
      */
-    getAgenda4targetedClassesOnrealtime(callBack: (events: AgendaEvent[]) => void, queries: QueryCondition[]) {
+    getAgenda4targetedClassesOnrealtime(callBack: (events: AgendaEvent[]) => void, queries: QueryCondition[]): () => void {
 
         try {
             const collectionRef = this.collectionFn(this.firestore, this.collectionName);
@@ -60,7 +60,7 @@ export class AgendaService {
             //  q = query(q, orderBy('dataInizio', 'desc'));
             // q = query(q, where('date', '>=', new Date()));
             try {
-                this.onSnapshotFn(q, (snapshot) => {
+                return this.onSnapshotFn(q, (snapshot) => {
                     const events: AgendaEvent[] = [];
                     snapshot.forEach((doc) => {
                         const event = new AgendaEvent(doc.data());
@@ -74,10 +74,12 @@ export class AgendaService {
             catch (e) {
                 console.log("error fetching")
                 console.log(e);
+                return () => {};
             }
         }
         catch (e) {
             console.log(e);
+            return () => {};
         }
     }
 

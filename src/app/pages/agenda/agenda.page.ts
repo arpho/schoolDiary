@@ -17,7 +17,6 @@ import {
 } from '@ionic/angular/standalone';
 import { UsersService } from '../../shared/services/users.service';
 import { AgendaListComponent } from './components/agenda-list/agenda-list.component';
-import { AgendaSchedulerComponent } from './components/agenda-scheduler/agenda-scheduler.component';
 import { AgendaSchedulerToastUiComponent } from './components/agenda-scheduler-toast-ui/agenda-scheduler-toast-ui.component';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
@@ -54,9 +53,7 @@ import { AgendaEventInputComponent } from '../../shared/components/agenda-event-
     IonIcon,
     IonLabel,
     AgendaListComponent,
-    AgendaSchedulerComponent,
-    AgendaSchedulerToastUiComponent,
-    AgendaEventInputComponent
+    AgendaSchedulerToastUiComponent
   ]
 })
 export class AgendaPage implements OnInit {
@@ -73,6 +70,7 @@ export class AgendaPage implements OnInit {
 
   viewMode = signal<'list' | 'scheduler'>('list'); // Modalità di visualizzazione corrente
   viewModeLabel = computed(() => this.viewMode() === 'list' ? 'Lista' : 'Calendario'); // Label per lo switch
+  showPastEvents = signal<boolean>(false); // Mostra anche gli eventi passati
   pageTitle = signal<string>('agenda'); // Titolo dinamico della pagina
 
   /**
@@ -83,6 +81,7 @@ export class AgendaPage implements OnInit {
     addIcons({ add, calendar, list });
     this.initialize();
 
+    // Effect for Classes and Title
     effect(async () => {
       const targetedClasses = this.targetedClasses();
       if (targetedClasses.length > 0) {
@@ -98,17 +97,30 @@ export class AgendaPage implements OnInit {
           ? `agenda per le classi: ${classes.map(c => c?.classe).join(', ')}`
           : `agenda per ${classes[0]?.classe}`;
         this.pageTitle.set(title);
+      }
+    });
 
-        // Fetch Agenda Events
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+    // Effect for Agenda Events
+    effect((onCleanup) => {
+      const targetedClasses = this.targetedClasses();
+      const showPast = this.showPastEvents();
+      
+      if (targetedClasses.length > 0) {
+        const queries = [new QueryCondition('classKey', 'in', targetedClasses)];
+        
+        if (!showPast) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          queries.push(new QueryCondition('dataFine', '>=', today.toISOString()));
+        }
 
-        this.agendaService.getAgenda4targetedClassesOnrealtime((events: AgendaEvent[]) => {
+        const unsubscribe = this.agendaService.getAgenda4targetedClassesOnrealtime((events: AgendaEvent[]) => {
           this.agenda.set(events);
-        }, [
-          new QueryCondition('classKey', 'in', targetedClasses),
-          new QueryCondition('dataFine', '>=', today.toISOString())
-        ]);
+        }, queries);
+
+        onCleanup(() => {
+            if(unsubscribe) unsubscribe();
+        });
       }
     });
   }
@@ -152,6 +164,10 @@ export class AgendaPage implements OnInit {
    */
   toggleView(event: any) {
     this.viewMode.set(event.detail.checked ? 'scheduler' : 'list');
+  }
+
+  togglePastEvents(event: any) {
+    this.showPastEvents.set(event.detail.checked);
   }
 
   /**

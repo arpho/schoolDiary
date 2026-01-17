@@ -5,6 +5,9 @@
     </ion-buttons>
     <ion-title align="center">{{ pageTitle() }}</ion-title>
     <ion-buttons slot="end">
+      <ion-label class="ion-margin-end">Passati</ion-label>
+      <ion-toggle (ionChange)="togglePastEvents($event)" color="tertiary" class="ion-margin-end"></ion-toggle>
+      
       <ion-label class="ion-margin-end">{{ viewModeLabel() }}</ion-label>
       <ion-toggle (ionChange)="toggleView($event)" color="secondary">
         <ion-icon name="calendar" slot="start"></ion-icon>
