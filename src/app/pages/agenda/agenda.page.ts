@@ -115,6 +115,13 @@ export class AgendaPage implements OnInit {
         }
 
         const unsubscribe = this.agendaService.getAgenda4targetedClassesOnrealtime((events: AgendaEvent[]) => {
+          // Sort events by distance from today: closest to farthest
+          const now = Date.now();
+          events.sort((a, b) => {
+            const distA = Math.abs(now - new Date(a.dataInizio).getTime());
+            const distB = Math.abs(now - new Date(b.dataInizio).getTime());
+            return distA - distB;
+          });
           this.agenda.set(events);
         }, queries);
 
