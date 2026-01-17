@@ -45,7 +45,7 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
   template: `
     <ion-list>
       @for (event of events(); track event) {
-        <ion-item-sliding [class.all-day]="event.allDay">
+        <ion-item-sliding [class.all-day]="event.allDay" [class.past-event]="isPast(event)">
           <ion-item>
             <ion-icon [name]="getIcon(event.type)" slot="start"></ion-icon>
             <ion-label>
@@ -146,6 +146,14 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
     ion-item-sliding.all-day ion-item {
       --background: var(--ion-color-light);
     }
+    /* Style for past events */
+    ion-item-sliding.past-event ion-item {
+      --background: #f4f4f4; /* Light gray background */
+      opacity: 0.8;
+    }
+    ion-item-sliding.past-event ion-label h2 {
+        color: var(--ion-color-medium);
+    }
   `]
 })
 export class AgendaDisplayComponent implements OnInit {
@@ -210,6 +218,13 @@ export class AgendaDisplayComponent implements OnInit {
     const start = new Date(event.dataInizio).setHours(0, 0, 0, 0);
     const end = new Date(event.dataFine).setHours(0, 0, 0, 0);
     return start === end;
+  }
+
+  // Check if the event is in the past
+  isPast(event: AgendaEvent): boolean {
+    if (!event.dataFine) return false;
+    // Consider event past if end date is before now
+    return new Date(event.dataFine).getTime() < Date.now();
   }
 
   // Formatta la data in formato leggibile
