@@ -49,9 +49,13 @@ export class ClasseModel implements IClasseModel {
    * @param args Dati parziali.
    * @returns Istanza corrente.
    */
-  build(args?: Partial<IClasseModel>): this {
+  build(args?: Partial<IClasseModel> & { description?: string }): this {
     if (args) {
       Object.assign(this, args);
+      // Handle legacy field mapping
+      if (args.description && !this.descrizione) {
+        this.descrizione = args.description;
+      }
     }
     return this
   }
@@ -64,7 +68,7 @@ export class ClasseModel implements IClasseModel {
     return {
       year: this.year,
       classe: this.classe,
-      description: this.descrizione,
+      descrizione: this.descrizione,
       note: this.note,
       verbali: this.verbali.map((verbale) => verbale.serialize()),
       archived: this.archived,
