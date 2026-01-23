@@ -52,7 +52,7 @@ describe('ClasseModel', () => {
 
     expect(serialized.year).toBe(args.year);
     expect(serialized.classe).toBe(args.classe);
-    expect(serialized.description).toBe(args.descrizione);
+    expect(serialized.descrizione).toBe(args.descrizione);
     expect(serialized.note).toBe(args.note);
     expect(serialized.archived).toBe(args.archived);
     expect(serialized.key).toBe(args.key);
