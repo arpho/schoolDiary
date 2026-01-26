@@ -279,3 +279,41 @@ ion-card:has(app-display-agenda4-classes) {
     --color: var(--ion-color-primary-contrast);
   }
 }
+
+// Error Display Styles
+.error-container {
+  background-color: var(--ion-color-danger-tint);
+  color: var(--ion-color-danger);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+  border: 1px solid var(--ion-color-danger);
+  animation: fadeIn 0.3s ease-in;
+
+  h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+
+    ion-icon {
+      margin-right: 8px;
+      font-size: 20px;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+
+    li {
+      font-size: 13px;
+      margin-bottom: 4px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

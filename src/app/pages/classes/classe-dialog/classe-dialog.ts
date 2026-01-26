@@ -6,21 +6,40 @@ import {
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectorRef,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  effect,
+  untracked
 } from '@angular/core';
 
 type TabType = 'generalita' | 'attivita' | 'pdp' | 'studenti' | 'note' | 'eventi' | 'gruppi' | 'agenda' | 'annotazioni';
-import { ModalController, AlertController, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonTextarea, IonButton, IonMenu, IonMenuButton, IonList, IonItem, IonLabel, IonBackButton, IonIcon, IonCardContent, IonGrid, IonRow, IonCol, IonItemDivider } from '@ionic/angular/standalone';
+import {
+  ModalController,
+  AlertController,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonInput,
+  IonTextarea,
+  IonButton,
+  IonMenu,
+  IonMenuButton,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonBackButton,
+  IonIcon,
+  IonCardContent,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonItemDivider
+} from '@ionic/angular/standalone';
 import {
   CommonModule
 } from '@angular/common';
 import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
   FormsModule,
-  ReactiveFormsModule,
-  Validators
 } from '@angular/forms';
 import {
   ClassiService,
@@ -40,7 +59,20 @@ import { DisplayAgenda4ClassesComponent } from 'src/app/pages/agenda/components/
 import { EventDialogComponent } from '../../agenda/components/event-dialog/event-dialog.component';
 import { AgendaEvent } from '../../agenda/models/agendaEvent';
 import { addIcons } from 'ionicons';
-import { menu, informationCircle, people, chatbox, list, peopleCircle, school, calendar, close, add, trash } from 'ionicons/icons';
+import {
+  menu,
+  informationCircle,
+  people,
+  chatbox,
+  list,
+  peopleCircle,
+  school,
+  calendar,
+  close,
+  add,
+  trash,
+  alertCircle
+} from 'ionicons/icons';
 /**
  * Pagina di dettaglio e modifica di una classe.
  * Gestisce diverse schede (generalità, attività, PDP, studenti, note, ecc.).
@@ -52,7 +84,6 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
     FormsModule,
     IonButton,
     IonInput,
@@ -69,8 +100,6 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
     IonLabel,
     IonIcon,
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     ListStudent4classComponent,
     ReservedNotes4ClassesComponent,
     ListActivities4classComponent,
@@ -87,52 +116,87 @@ import { menu, informationCircle, people, chatbox, list, peopleCircle, school, c
 })
 export class ClasseDialogPage implements OnInit {
   // Gestione tab attivo
-  selectedTab: TabType = 'generalita';
+  selectedTab = signal<TabType>('generalita');
 
   // Gestione sidebar
-  sidebarOpen = false;
+  sidebarOpen = signal<boolean>(false);
 
-  // Metodo per cambiare scheda e chiudere il menu
   // Metodo per cambiare scheda e chiudere il menu
   /**
    * Seleziona un tab e chiude la sidebar laterale.
    * @param tab Il tab da selezionare.
    */
   selectTab(tab: TabType) {
-    this.selectedTab = tab;
-    this.sidebarOpen = false;  // Chiude il menu
-    this.cdr.detectChanges();  // Forza l'aggiornamento della vista
-    if (tab === 'agenda') {
-      this.cdr.detectChanges();
-      console.log('Change detection forzato per il tab agenda');
-    }
+    this.selectedTab.set(tab);
+    this.sidebarOpen.set(false);  // Chiude il menu
   }
 
   // Metodo per aprire/chiudere la sidebar
   toggleSidebar() {
-    console.log('toggleSidebar called! Current state:', this.sidebarOpen);
-    this.sidebarOpen = !this.sidebarOpen;
-    console.log('Sidebar toggled, new sidebarOpen value:', this.sidebarOpen);
-    console.log('Sidebar element should now have class:', this.sidebarOpen ? 'sidebar-open' : 'closed');
-
-    // Forza il rilevamento delle modifiche
-    this.cdr.detectChanges();
+    console.log('toggleSidebar called! Current state:', this.sidebarOpen());
+    this.sidebarOpen.update(value => !value);
+    console.log('Sidebar toggled, new sidebarOpen value:', this.sidebarOpen());
   }
 
   classkey = signal<string>('');
   classe = signal<ClasseModel>(new ClasseModel({}));
   teacherkey = signal<string>('');
-  formClass = new FormGroup({
-    classe: new FormControl('', Validators.required),
-    year: new FormControl('', Validators.required),
-    coordinatore: new FormControl('', Validators.required),
-    segretario: new FormControl('', Validators.required),
-    descrizione: new FormControl('', Validators.required),
-    note: new FormControl('', Validators.required),
-  });
-  isEditMode: boolean = false;
+  verbaliList = signal<DocumentModel[]>([]);
 
+  // Pure Signals for Form Fields
+  classeName = signal('');
+  year = signal('');
+  coordinatore = signal('');
+  segretario = signal('');
+  descrizione = signal('');
+  note = signal('');
+
+  // Touched state signals for validation UX
+  classeNameTouched = signal(false);
+  yearTouched = signal(false);
+  coordinatoreTouched = signal(false);
+  segretarioTouched = signal(false);
+  descrizioneTouched = signal(false);
+  noteTouched = signal(false);
+
+  // Initial values for dirty checking
+  private initialValues = {
+    classeName: '',
+    year: '',
+    coordinatore: '',
+    segretario: '',
+    descrizione: '',
+    note: ''
+  };
+
+  isEditMode: boolean = false;
   initialVerbali: string = '[]';
+
+  // Computed Validation
+  classeNameError = computed(() => !this.classeName() ? 'Il campo "Classe & Sezione" è obbligatorio.' : null);
+  yearError = computed(() => !this.year() ? 'Il campo "Anno Scolastico" è obbligatorio.' : null);
+  coordinatoreError = computed(() => !this.coordinatore() ? 'Il campo "Coordinatore" è obbligatorio.' : null);
+  segretarioError = computed(() => !this.segretario() ? 'Il campo "Segretario" è obbligatorio.' : null);
+  descrizioneError = computed(() => !this.descrizione() ? 'Il campo "Descrizione" è obbligatorio.' : null);
+  noteError = computed(() => !this.note() ? 'Il campo "Note" è obbligatorio.' : null);
+
+  isValid = computed(() => {
+    return !this.classeNameError() &&
+      !this.yearError() &&
+      !this.coordinatoreError() &&
+      !this.segretarioError() &&
+      !this.descrizioneError() &&
+      !this.noteError();
+  });
+
+  isDirty = computed(() => {
+    return this.classeName() !== this.initialValues.classeName ||
+      this.year() !== this.initialValues.year ||
+      this.coordinatore() !== this.initialValues.coordinatore ||
+      this.segretario() !== this.initialValues.segretario ||
+      this.descrizione() !== this.initialValues.descrizione ||
+      this.note() !== this.initialValues.note;
+  });
 
   constructor(
     private modalCtrl: ModalController,
@@ -140,11 +204,10 @@ export class ClasseDialogPage implements OnInit {
     private route: ActivatedRoute,
     private toaster: ToasterService,
     private $users: UsersService,
-    private cdr: ChangeDetectorRef,
     private alertCtrl: AlertController
   ) {
     // Register icons
-    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash });
+    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash, alertCircle });
 
     // Initialize with empty model
     this.classe.set(new ClasseModel({
@@ -154,42 +217,63 @@ export class ClasseDialogPage implements OnInit {
       note: '',
       verbali: []
     }));
+
+    effect(() => {
+      const key = this.classkey();
+      if (key) {
+        // We can run this without untracked as we don't read signals inside the async block that we write to
+        (async () => {
+          this.isEditMode = true;
+          try {
+            const editingClasse = await this.service.fetchClasse(key);
+
+            // Set signal values individually
+            this.classeName.set(editingClasse.classe || '');
+            this.year.set(editingClasse.year || '');
+            this.coordinatore.set(editingClasse.coordinatore || '');
+            this.segretario.set(editingClasse.segretario || '');
+            this.descrizione.set(editingClasse.descrizione || '');
+            this.note.set(editingClasse.note || '');
+
+            // Store initial values for dirty check
+            this.initialValues = {
+              classeName: editingClasse.classe || '',
+              year: editingClasse.year || '',
+              coordinatore: editingClasse.coordinatore || '',
+              segretario: editingClasse.segretario || '',
+              descrizione: editingClasse.descrizione || '',
+              note: editingClasse.note || ''
+            };
+
+            this.verbaliList.set(editingClasse.verbali || []);
+            this.initialVerbali = JSON.stringify(this.verbaliList());
+
+            // Set signal LAST to trigger change detection
+            this.classe.set(editingClasse);
+
+          } catch (error) {
+            console.error('Error fetching class:', error);
+            this.toaster.presentToast({ message: "Errore durante il caricamento della classe", duration: 2000, position: "bottom" });
+          }
+        })();
+      }
+    });
+
   }
+
   /**
    * Inizializza il componente recuperando i dettagli della classe se presente.
    */
   async ngOnInit(): Promise<void> {
     const user = await this.$users.getLoggedUser();
     if (user && typeof user === 'object' && 'key' in user) {
-
       this.teacherkey.set(user.key);
     }
     const classkey = this.route.snapshot.paramMap.get('classkey');
     if (classkey) {
       this.classkey.set(classkey);
     }
-
-    if (classkey) {
-      if (this.classkey()) {
-        this.isEditMode = true;
-        const editingClasse = await this.service.fetchClasse(this.classkey()!);
-        this.classe.set(editingClasse);
-        this.verbaliList.set(editingClasse.verbali || []);
-        this.initialVerbali = JSON.stringify(this.verbaliList());
-        this.formClass.setValue({
-          classe: editingClasse.classe,
-          year: editingClasse.year,
-          coordinatore: editingClasse.coordinatore,
-          segretario: editingClasse.segretario,
-          descrizione: editingClasse.descrizione,
-          note: editingClasse.note
-        });
-
-      }
-    }
   }
-
-  verbaliList = signal<DocumentModel[]>([]);
 
   addVerbale() {
     this.verbaliList.update(list => [...list, new DocumentModel()]);
@@ -203,14 +287,19 @@ export class ClasseDialogPage implements OnInit {
    * Salva le modifiche alla classe.
    */
   async save() {
-    // Get form values with fallback to empty strings for required fields
+    if (!this.isValid()) {
+      this.toaster.presentToast({ message: "Compila tutti i campi obbligatori", duration: 2000, position: "bottom" });
+      this.markAllAsTouched();
+      return;
+    }
+
     const formValues = {
-      year: this.formClass.value.year || '',
-      classe: this.formClass.value.classe || '',
-      descrizione: this.formClass.value.descrizione || '',
-      note: this.formClass.value.note || '',
-      coordinatore: this.formClass.value.coordinatore || '',
-      segretario: this.formClass.value.segretario || '',
+      year: this.year(),
+      classe: this.classeName(),
+      descrizione: this.descrizione(),
+      note: this.note(),
+      coordinatore: this.coordinatore(),
+      segretario: this.segretario(),
       verbali: this.verbaliList()
     };
 
@@ -231,7 +320,16 @@ export class ClasseDialogPage implements OnInit {
         await this.service.addClasse(classeObj);
       }
 
-      this.formClass.markAsPristine();
+      // Update initial values to current values (reset dirty state)
+      this.initialValues = {
+        classeName: this.classeName(),
+        year: this.year(),
+        coordinatore: this.coordinatore(),
+        segretario: this.segretario(),
+        descrizione: this.descrizione(),
+        note: this.note()
+      };
+
       this.initialVerbali = JSON.stringify(this.verbaliList());
 
       const toastMessage = this.classkey()
@@ -249,9 +347,18 @@ export class ClasseDialogPage implements OnInit {
     }
   }
 
+  markAllAsTouched() {
+    this.classeNameTouched.set(true);
+    this.yearTouched.set(true);
+    this.coordinatoreTouched.set(true);
+    this.segretarioTouched.set(true);
+    this.descrizioneTouched.set(true);
+    this.noteTouched.set(true);
+  }
+
   hasUnsavedChanges(): boolean {
     const verbaliChanged = JSON.stringify(this.verbaliList()) !== this.initialVerbali;
-    return this.formClass.dirty || verbaliChanged;
+    return this.isDirty() || verbaliChanged;
   }
 
   async dismiss() {
