@@ -53,6 +53,9 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
       if (this.calendarInstance) {
         this.calendarInstance.changeView(view);
         this.updateDateDisplay();
+        // Re-render events when view changes because transformation logic depends on the view
+        this.calendarInstance.clear();
+        this.calendarInstance.createEvents(this.transformEvents(this.events()));
       }
     });
   }
@@ -92,7 +95,18 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
       template: {
         time(event) {
           return `<span style="color: white; padding-left: 2px;">${event.title}</span>`;
-        }
+        },
+        allday(event) {
+             return `<span style="color: white; padding-left: 2px;">${event.title}</span>`;
+        },
+        popupDetailBody(event) {
+             return `<span style="color: white; padding-left: 2px;">${event.body}</span>`;
+        },
+         monthGridHeader(model) {
+            var date = new Date(model.date);
+            var template = '<span class="tui-full-calendar-weekday-grid-date">' + date.getDate() + '</span>';
+            return template;
+          },
       },
       week: {
         taskView: true, // Enable task view for all-day events
@@ -103,6 +117,7 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
       month: {
         dayNames: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
         visibleWeeksCount: 0,
+        isAlways6Weeks: false,
       }
     });
 
@@ -138,18 +153,38 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
 
   private transformEvents(agendaEvents: AgendaEvent[]): any[] {
     console.log('Transforming events:', agendaEvents);
+    const currentView = this.currentView();
     const transformed = agendaEvents.map(e => {
-      const isAllDay = e.allDay;
+      let isAllDay = e.allDay;
+      let category = isAllDay ? 'allday' : 'time';
 
       // Ensure dates are Date objects or valid ISO strings
       let start = e.dataInizio;
       let end = e.dataFine;
 
+      // Construct rich title with description
+      let displayTitle = '';
+      
+      // In month view, force 'allday' category to show as block, and prepend time
+      if (currentView === 'month' && category === 'time') {
+        category = 'allday';
+        // Format time HH:mm
+        const dateObj = new Date(start);
+        const timeStr = dateObj.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+        displayTitle += `<span style="font-weight: bold; margin-right: 4px;">${timeStr}</span>`;
+      }
+
+      displayTitle += `<strong>${e.title}</strong>`;
+      
+      if (e.description) {
+        displayTitle += `<br><span style="font-size: 0.85em; opacity: 0.9;">${e.description}</span>`;
+      }
+
       return {
         id: e.id || e.key,
         calendarId: '1',
-        title: e.title,
-        category: isAllDay ? 'allday' : 'time',
+        title: displayTitle,
+        category: category,
         start: start,
         end: end,
         backgroundColor: this.getEventColor(e.type),
