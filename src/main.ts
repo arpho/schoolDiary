@@ -45,10 +45,11 @@ import {
   getFirestore,
   provideFirestore
 } from '@angular/fire/firestore';
+import { provideMessaging, getMessaging } from '@angular/fire/messaging';
 import { addIcons } from 'ionicons';
-import { 
-  wifi, 
-  wifiOutline 
+import {
+  wifi,
+  wifiOutline
 } from 'ionicons/icons';
 import { IconService } from './app/core/services/icon.service';
 import {
@@ -86,6 +87,7 @@ bootstrapApplication(AppComponent, {
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
+    provideMessaging(() => getMessaging()),
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }
   ],
 });

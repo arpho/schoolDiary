@@ -56,6 +56,8 @@ export class UserModel {
 
   /** Elenco delle chiavi delle classi associate */
   classesKey: string[] = [];
+  /** Token FCM per le notifiche push */
+  fcmTokens: string[] = [];
 
   /**
    * Setter per le chiavi delle classi.

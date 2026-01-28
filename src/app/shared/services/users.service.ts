@@ -415,7 +415,7 @@ export class UsersService implements OnInit {
   async createUser(user: UserModel): Promise<string> {
     const functions = getFunctions();
     const createUser = httpsCallable(functions, 'createUserPlus');
-    
+
     // Prepare payload with additionalData for custom claims
     const payload = {
       ...user.serialize(),
@@ -501,6 +501,18 @@ export class UsersService implements OnInit {
       if (snapshot.exists()) {
         const data = snapshot.data();
         const user = new UserModel(data).setKey(uid);
+
+        // Fetch devices/tokens like in signalbalance
+        const devicesRef = this.collectionFn(this.firestore, `userProfiles/${uid}/devices`);
+        const devicesSnap = await this.getDocsFn(devicesRef);
+        user.fcmTokens = [];
+        devicesSnap.forEach(devDoc => {
+          const dData = devDoc.data();
+          if (dData['fcmToken']) {
+            user.fcmTokens.push(dData['fcmToken']);
+          }
+        });
+
         return user;
       } else {
         console.log('No user found');
@@ -531,5 +543,25 @@ export class UsersService implements OnInit {
     }
 
     return this.$subjects.fetchSubjectsByKeys(assignedClass.subjectsKey);
+  }
+
+  async updateUserFcmToken(uid: string, token: string): Promise<void> {
+    const deviceId = this.getDeviceId();
+    const docRef = this.docFn(this.firestore, `userProfiles/${uid}/devices/${deviceId}`);
+    await this.setDocFn(docRef, {
+      fcmToken: token,
+      lastUpdate: new Date().toISOString(),
+      platform: 'web',
+      deviceId: deviceId
+    }, { merge: true });
+  }
+
+  private getDeviceId(): string {
+    let deviceId = localStorage.getItem('device_uuid');
+    if (!deviceId) {
+      deviceId = crypto.randomUUID();
+      localStorage.setItem('device_uuid', deviceId);
+    }
+    return deviceId;
   }
 }

@@ -5,6 +5,8 @@ import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { ClassiService } from './pages/classes/services/classi.service';
 import { UsersService } from './shared/services/users.service';
 import { ActivitiesService } from './pages/activities/services/activities.service';
+import { Messaging, getToken } from '@angular/fire/messaging';
+import { environment } from 'src/environments/environment';
 
 /**
  * Componente principale dell'applicazione.
@@ -17,6 +19,7 @@ import { ActivitiesService } from './pages/activities/services/activities.servic
 })
 export class AppComponent implements OnInit {
   private auth = inject(Auth);
+  private messaging = inject(Messaging);
 
   constructor(
     private router: Router,
@@ -30,7 +33,7 @@ export class AppComponent implements OnInit {
   }
 
   private setupAuthListener() {
-    onAuthStateChanged(this.auth, (user) => {
+    onAuthStateChanged(this.auth, async (user) => {
       const currentUrl = this.router.url;
 
       // Allow access to reset-password page regardless of auth state
@@ -48,6 +51,20 @@ export class AppComponent implements OnInit {
         // Se l'utente è autenticato, reindirizza alla dashboard
         if (!currentUrl.includes('dashboard')) {
           this.router.navigate(['/dashboard']);
+        }
+
+        try {
+          // Request permission and get token
+          const token = await getToken(this.messaging, {
+            vapidKey: (environment.firebaseConfig as any).vapidKey
+          });
+
+          if (token) {
+            console.log('FCM Token:', token);
+            await this.usersService.updateUserFcmToken(user.uid, token);
+          }
+        } catch (error) {
+          console.error('Error getting FCM token:', error);
         }
       }
     });
