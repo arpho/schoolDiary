@@ -1,6 +1,6 @@
-import { onSchedule } from "firebase-functions/v2/scheduler";
-import { getFirestore } from "firebase-admin/firestore";
-import { getMessaging } from "firebase-admin/messaging";
+import {onSchedule} from "firebase-functions/v2/scheduler";
+import {getFirestore} from "firebase-admin/firestore";
+import {getMessaging} from "firebase-admin/messaging";
 import * as logger from "firebase-functions/logger";
 
 interface AgendaEvent {
@@ -12,85 +12,151 @@ interface AgendaEvent {
     targetClasses?: string[];
 }
 
-export const dailyAgendaNotifications = onSchedule("every day 00:00", async (event) => {
-    const db = getFirestore();
-    const messaging = getMessaging();
+export const dailyAgendaNotifications = onSchedule({
+  schedule: "every day 00:00",
+  timeZone: "Europe/Rome",
+}, async () => {
+  const db = getFirestore();
+  const messaging = getMessaging();
 
-    const now = new Date();
-    const tomorrowStart = new Date(now);
-    tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-    tomorrowStart.setHours(0, 0, 0, 0);
+  const now = new Date();
+  const tomorrowStart = new Date(now);
+  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+  tomorrowStart.setHours(0, 0, 0, 0);
 
-    const tomorrowEnd = new Date(now);
-    tomorrowEnd.setDate(tomorrowEnd.getDate() + 2);
-    tomorrowEnd.setHours(0, 0, 0, 0);
+  const tomorrowEnd = new Date(now);
+  tomorrowEnd.setDate(tomorrowEnd.getDate() + 2);
+  tomorrowEnd.setHours(0, 0, 0, 0);
 
-    logger.info(`Checking agenda events between ${tomorrowStart.toISOString()} and ${tomorrowEnd.toISOString()}`);
+  logger.info(
+    `Checking agenda events between ${tomorrowStart.toISOString()} ` +
+    `and ${tomorrowEnd.toISOString()}`
+  );
 
-    try {
-        const snapshot = await db.collection("agenda-events")
-            .where("dataInizio", ">=", tomorrowStart.toISOString())
-            .where("dataInizio", "<", tomorrowEnd.toISOString())
-            .get();
+  try {
+    const snapshot = await db.collection("agenda-events")
+      .where("dataInizio", ">=", tomorrowStart.toISOString())
+      .where("dataInizio", "<", tomorrowEnd.toISOString())
+      .get();
 
-        if (snapshot.empty) {
-            logger.info("Nessun evento in agenda per domani.");
-            return;
-        }
-
-        const promises: Promise<any>[] = [];
-        const projectId = process.env.GCLOUD_PROJECT || "schooldiary-b8434";
-        const faviconUrl = `https://${projectId}.web.app/assets/icon/favicon.png`;
-
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            const eventData = data as Partial<AgendaEvent>;
-
-            if (!eventData.title || !eventData.description) return;
-
-            const title = eventData.title;
-            const body = eventData.description;
-            const topics: string[] = [];
-
-            if (eventData.targetClasses && Array.isArray(eventData.targetClasses) && eventData.targetClasses.length > 0) {
-                eventData.targetClasses.forEach((classId) => {
-                    topics.push(`agenda_${classId}`);
-                });
-            } else if (eventData.classKey) {
-                topics.push(`agenda_${eventData.classKey}`);
-            }
-
-            topics.forEach((topic) => {
-                const message = {
-                    notification: {
-                        title: `Domani: ${title}`,
-                        body: body,
-                        imageUrl: faviconUrl,
-                    },
-                    webpush: {
-                        notification: {
-                            icon: faviconUrl
-                        }
-                    },
-                    topic: topic
-                };
-
-                promises.push(
-                    messaging.send(message)
-                        .then((response) => {
-                            logger.info(`Successfully sent message to topic ${topic}:`, response);
-                        })
-                        .catch((error) => {
-                            logger.error(`Error sending message to topic ${topic}:`, error);
-                        })
-                );
-            });
-        });
-
-        await Promise.all(promises);
-        logger.info(`Processed ${snapshot.size} events and sent notifications.`);
-
-    } catch (error) {
-        logger.error("Errore durante l'esecuzione di dailyAgendaNotifications:", error);
+    if (snapshot.empty) {
+      logger.info("Nessun evento in agenda per domani.");
+      return;
     }
+
+    const promises: Promise<unknown>[] = [];
+    const projectId = process.env.GCLOUD_PROJECT || "schooldiary-b8434";
+    const faviconUrl = `https://${projectId}.web.app/assets/icon/favicon.png`;
+
+    // Raggruppa gli eventi per classe per evitare query duplicate
+    const classEventsMap = new Map<string, AgendaEvent[]>();
+
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const eventData = data as AgendaEvent;
+
+      if (!eventData.title || !eventData.description) return;
+
+      const targetClasses: string[] = [];
+      if (
+        eventData.targetClasses &&
+        Array.isArray(eventData.targetClasses) &&
+        eventData.targetClasses.length > 0
+      ) {
+        targetClasses.push(...eventData.targetClasses);
+      } else if (eventData.classKey) {
+        targetClasses.push(eventData.classKey);
+      }
+
+      targetClasses.forEach((classId) => {
+        if (!classEventsMap.has(classId)) {
+          classEventsMap.set(classId, []);
+        }
+        classEventsMap.get(classId)?.push(eventData);
+      });
+    });
+
+    for (const [classId, events] of classEventsMap) {
+      // 1. Trova tutti gli utenti della classe
+      const usersSnapshot = await db.collection("userProfiles")
+        .where("classKey", "==", classId)
+        .get();
+
+      if (usersSnapshot.empty) continue;
+
+      // 2. Trova tutti i token dei dispositivi per questi utenti
+      const tokenPromises: Promise<string[]>[] = [];
+
+      usersSnapshot.forEach((userDoc) => {
+        const userDevicesPromise = userDoc.ref.collection("devices").get()
+          .then((devicesSnap) => {
+            return devicesSnap.docs
+              .map((doc) => doc.data().fcmToken)
+              .filter((token) => !!token); // Filtra token null/undefined
+          });
+        tokenPromises.push(userDevicesPromise);
+      });
+
+      const tokensArrays = await Promise.all(tokenPromises);
+      // Appiattisci e rimuovi duplicati
+      const tokens = [...new Set(tokensArrays.flat())];
+
+      if (tokens.length === 0) {
+        logger.info(`Nessun token trovato per la classe ${classId}`);
+        continue;
+      }
+
+      // 3. Invia notifiche per ogni evento della classe
+      events.forEach((eventData) => {
+        const message = {
+          notification: {
+            title: `Domani: ${eventData.title}`,
+            body: eventData.description,
+            imageUrl: faviconUrl,
+          },
+          webpush: {
+            notification: {
+              icon: faviconUrl,
+            },
+          },
+          tokens: tokens, // Usa tokens array per multicast
+        };
+
+        promises.push(
+          messaging.sendEachForMulticast(message)
+            .then((response) => {
+              logger.info(
+                `Inviato messaggio per evento "${eventData.title}" ` +
+                `a ${response.successCount} dispositivi della classe ` +
+                `${classId}. Falliti: ${response.failureCount}`
+              );
+              if (response.failureCount > 0) {
+                response.responses.forEach((resp, idx) => {
+                  if (!resp.success) {
+                    logger.error(
+                      `Errore invio a token ${tokens[idx]}:`,
+                      resp.error
+                    );
+                  }
+                });
+              }
+            })
+            .catch((error) => {
+              logger.error(
+                `Errore generale invio multicast classe ${classId}:`,
+                error
+              );
+            })
+        );
+      });
+    }
+
+    await Promise.all(promises);
+    logger.info(`Processed ${snapshot.size} events and sent notifications.`);
+  } catch (error) {
+    logger.error(
+      "Errore durante l'esecuzione di dailyAgendaNotifications:",
+      error
+    );
+  }
 });
