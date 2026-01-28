@@ -66,12 +66,28 @@ export class AgendaPage implements OnInit {
   teacherKey = signal<string>(''); // Chiave del docente loggato
   targetedClasses = signal<string[]>([]); // Chiavi delle classi associate al docente
   listaClassi = signal<ClasseModel[]>([]); // Dettagli completi delle classi
-  agenda = signal<AgendaEvent[]>([]); // Lista degli eventi in agenda
+  private fetchedEvents = signal<AgendaEvent[]>([]);
 
   viewMode = signal<'list' | 'scheduler'>('list'); // Modalità di visualizzazione corrente
   viewModeLabel = computed(() => this.viewMode() === 'list' ? 'Lista' : 'Calendario'); // Label per lo switch
   showPastEvents = signal<boolean>(false); // Mostra anche gli eventi passati
   pageTitle = signal<string>('agenda'); // Titolo dinamico della pagina
+
+  agenda = computed(() => {
+    const events = [...this.fetchedEvents()];
+    const mode = this.viewMode();
+    const now = Date.now();
+
+    return events.sort((a, b) => {
+      if (mode === 'list') {
+        const distA = Math.abs(now - new Date(a.dataInizio).getTime());
+        const distB = Math.abs(now - new Date(b.dataInizio).getTime());
+        return distA - distB;
+      } else {
+        return new Date(a.dataInizio).getTime() - new Date(b.dataInizio).getTime();
+      }
+    });
+  });
 
   /**
    * Costruttore: Inizializza icone e configura l'effect per il caricamento reattivo dei dati.
@@ -104,10 +120,10 @@ export class AgendaPage implements OnInit {
     effect((onCleanup) => {
       const targetedClasses = this.targetedClasses();
       const showPast = this.showPastEvents();
-      
+
       if (targetedClasses.length > 0) {
         const queries = [new QueryCondition('classKey', 'in', targetedClasses)];
-        
+
         if (!showPast) {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
@@ -115,18 +131,11 @@ export class AgendaPage implements OnInit {
         }
 
         const unsubscribe = this.agendaService.getAgenda4targetedClassesOnrealtime((events: AgendaEvent[]) => {
-          // Sort events by distance from today: closest to farthest
-          const now = Date.now();
-          events.sort((a, b) => {
-            const distA = Math.abs(now - new Date(a.dataInizio).getTime());
-            const distB = Math.abs(now - new Date(b.dataInizio).getTime());
-            return distA - distB;
-          });
-          this.agenda.set(events);
+          this.fetchedEvents.set(events);
         }, queries);
 
         onCleanup(() => {
-            if(unsubscribe) unsubscribe();
+          if (unsubscribe) unsubscribe();
         });
       }
     });
