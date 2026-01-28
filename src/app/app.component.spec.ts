@@ -5,6 +5,7 @@ import { Auth } from '@angular/fire/auth';
 import { ClassiService } from './pages/classes/services/classi.service';
 import { UsersService } from './shared/services/users.service';
 import { ActivitiesService } from './pages/activities/services/activities.service';
+import { Messaging } from '@angular/fire/messaging';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -15,10 +16,11 @@ describe('AppComponent', () => {
       imports: [AppComponent],
       providers: [
         provideRouter([]),
-        { provide: Auth, useValue: { onAuthStateChanged: jasmine.createSpy('onAuthStateChanged').and.returnValue(() => {}) } },
+        { provide: Auth, useValue: { onAuthStateChanged: jasmine.createSpy('onAuthStateChanged').and.returnValue(() => { }) } },
         { provide: ClassiService, useValue: {} },
         { provide: UsersService, useValue: {} },
-        { provide: ActivitiesService, useValue: {} }
+        { provide: ActivitiesService, useValue: {} },
+        { provide: Messaging, useValue: {} }
       ]
     }).compileComponents();
 
