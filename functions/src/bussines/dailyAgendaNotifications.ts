@@ -1,15 +1,15 @@
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {getFirestore} from "firebase-admin/firestore";
+import {getFirestore, Filter} from "firebase-admin/firestore";
 import {getMessaging} from "firebase-admin/messaging";
 import * as logger from "firebase-functions/logger";
 
 interface AgendaEvent {
-    key?: string;
-    title: string;
-    description: string;
-    dataInizio: string;
-    classKey: string;
-    targetClasses?: string[];
+  key?: string;
+  title: string;
+  description: string;
+  dataInizio: string;
+  classKey: string;
+  targetClasses?: string[];
 }
 
 export const dailyAgendaNotifications = onSchedule({
@@ -79,7 +79,12 @@ export const dailyAgendaNotifications = onSchedule({
     for (const [classId, events] of classEventsMap) {
       // 1. Trova tutti gli utenti della classe
       const usersSnapshot = await db.collection("userProfiles")
-        .where("classKey", "==", classId)
+        .where(
+          Filter.or(
+            Filter.where("classKey", "==", classId),
+            Filter.where("classes", "array-contains", classId)
+          )
+        )
         .get();
 
       if (usersSnapshot.empty) continue;
