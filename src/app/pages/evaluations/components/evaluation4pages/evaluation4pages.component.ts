@@ -93,6 +93,7 @@ export class Evaluation4pagesComponent implements OnInit {
   subjects = signal<SubjectModel[]>([]);
   isGridValid = signal<boolean>(false);
   currentGrade = signal<number>(0);
+  currentMaxGrade = signal<number>(0);
   $users = inject(UsersService);
   // Inizializzo il form nel costruttore invece che nella dichiarazione
   evaluationform!: FormGroup;
@@ -302,6 +303,10 @@ export class Evaluation4pagesComponent implements OnInit {
 
   onGradeChange(grade: number) {
     this.currentGrade.set(grade);
+  }
+
+  onMaxGradeChange(max: number) {
+    this.currentMaxGrade.set(max);
   }
 
 }
