@@ -4,7 +4,7 @@
       <ion-back-button [defaultHref]="'/evaluations'" text="Indietro"></ion-back-button>
       <ion-button size="small" shape="round" (click)="openFilterPopup()"><ion-icon name="filter"></ion-icon></ion-button>
     </ion-buttons>
-    <ion-title align="center">{{title()}}</ion-title>
+    <ion-title align="center">{{title()}} - Voto: {{currentGrade() | number:'1.0-2'}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -69,7 +69,8 @@
       @if (evaluationform.get('grid')?.value) {
         <app-evaluate-grid 
           [grid]="grid()!"
-          (gridValid)="onGridValidityChange($event)">
+          (gridValid)="onGridValidityChange($event)"
+          (votoChange)="onGradeChange($event)">
         </app-evaluate-grid>
         @if (evaluationform.get('grid')?.value && !isGridValid() && evaluationform.get('grid')?.touched) {
           <ion-note color="danger" class="ion-padding-start">

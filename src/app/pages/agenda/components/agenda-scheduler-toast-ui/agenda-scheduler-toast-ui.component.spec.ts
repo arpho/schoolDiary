@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideIonicAngular } from '@ionic/angular/standalone';
 import { AgendaSchedulerToastUiComponent } from './agenda-scheduler-toast-ui.component';
 import { AgendaEvent } from '../../models/agendaEvent';
 
@@ -8,7 +9,8 @@ describe('AgendaSchedulerToastUiComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AgendaSchedulerToastUiComponent]
+      imports: [AgendaSchedulerToastUiComponent],
+      providers: [provideIonicAngular()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AgendaSchedulerToastUiComponent);

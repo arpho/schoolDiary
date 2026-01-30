@@ -34,6 +34,9 @@ export class EvaluateGridComponent implements OnInit, OnChanges {
 
   // Aggiungo un output signal per la validità della griglia
   gridValid = output<boolean>();
+  
+  // Output signal per il voto calcolato
+  votoChange = output<number>();
 
   // Metodo per verificare se tutti gli indicatori hanno un voto valido
   private checkGridValidity(indicators: Indicatore[]): boolean {
@@ -75,6 +78,7 @@ export class EvaluateGridComponent implements OnInit, OnChanges {
 
     console.log("voto", voto);
     this.voto.set(voto);
+    this.votoChange.emit(voto);
 
     // Verifica la validità della griglia e emetti il risultato
     const isValid = this.checkGridValidity(this.grid()?.indicatori || []);
@@ -88,6 +92,7 @@ export class EvaluateGridComponent implements OnInit, OnChanges {
         const votoNum = Number(indicatore.voto) || 0;
         return acc + (isNaN(votoNum) ? 0 : votoNum);
       }, 0));
+      this.votoChange.emit(this.voto());
       this.votoMax = this.grid().indicatori.reduce((acc, indicatore) =>
         acc + (isNaN(Number(indicatore.valore)) ? 0 : Number(indicatore.valore)), 0);
     });

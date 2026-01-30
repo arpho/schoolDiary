@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { provideIonicAngular } from '@ionic/angular/standalone';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app.component';
 import { Auth } from '@angular/fire/auth';
@@ -16,6 +17,7 @@ describe('AppComponent', () => {
       imports: [AppComponent],
       providers: [
         provideRouter([]),
+        provideIonicAngular(),
         { provide: Auth, useValue: { onAuthStateChanged: jasmine.createSpy('onAuthStateChanged').and.returnValue(() => { }) } },
         { provide: ClassiService, useValue: {} },
         { provide: UsersService, useValue: {} },

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
 import { Evaluation } from '../../models/evaluation';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -54,7 +55,7 @@ import { UnsubscribeService } from 'src/app/shared/services/unsubscribe.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-
+    DecimalPipe,
     FormsModule,
     ReactiveFormsModule,
     IonButtons,
@@ -91,6 +92,7 @@ export class Evaluation4pagesComponent implements OnInit {
   student = signal<UserModel>(new UserModel());
   subjects = signal<SubjectModel[]>([]);
   isGridValid = signal<boolean>(false);
+  currentGrade = signal<number>(0);
   $users = inject(UsersService);
   // Inizializzo il form nel costruttore invece che nella dichiarazione
   evaluationform!: FormGroup;
@@ -296,6 +298,10 @@ export class Evaluation4pagesComponent implements OnInit {
     this.isGridValid.set(isValid);
     // Forza il ricalcolo della validità del form
     this.evaluationform.updateValueAndValidity();
+  }
+
+  onGradeChange(grade: number) {
+    this.currentGrade.set(grade);
   }
 
 }
