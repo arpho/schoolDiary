@@ -1,0 +1,13 @@
+.card {
+    background: var(--ion-card-background, #fff);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+ion-select {
+    --placeholder-color: var(--ion-color-medium);
+    --placeholder-opacity: 1;
+    min-width: 150px;
+}

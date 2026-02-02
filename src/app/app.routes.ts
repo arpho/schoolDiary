@@ -127,5 +127,9 @@ export const routes: Routes = [
   {
     path: 'create-subject',
     loadComponent: () => import('./pages/subjects-list/pages/create-subject/create-subject.page').then(m => m.CreateSubjectPage)
+  },
+  {
+    path: 'progress/:studentKey/:subjectsKey',
+    loadComponent: () => import('./pages/evaluations/pages/progress/progress.page').then(m => m.ProgressPage)
   }
 ];

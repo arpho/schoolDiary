@@ -33,7 +33,8 @@ import {
   trash,
   eye,
   add,
-  calendarOutline
+  calendarOutline,
+  trendingUp
 } from 'ionicons/icons';
 import { cloudUploadOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -97,6 +98,13 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
           }
         },
         {
+          text: 'Progressi',
+          icon: 'trending-up',
+          handler: () => {
+            this.goToProgress(student.key);
+          }
+        },
+        {
           text: 'nuova valutazione',
 
           icon: 'sparkles',
@@ -120,6 +128,11 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     });
 
     await actionSheet.present();
+  }
+
+  goToProgress(studentKey: string) {
+    const subject = this.selectedSubjectKey() !== 'all' ? this.selectedSubjectKey() : 'all';
+    this.router.navigate(['/progress', studentKey, subject]);
   }
   teacherkey = signal<string>('');
   /**
@@ -198,7 +211,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     addIcons({
       cloudupload: cloudUploadOutline,
       add,
-      calendar: calendarOutline
+      calendar: calendarOutline,
+      'trending-up': trendingUp
     });
 
     // Re-load averages whenever subjectKey, classKey or dataInizioPeriodo changes

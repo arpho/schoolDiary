@@ -1,0 +1,43 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title class="ion-text-center">
+      @if (selectedSubjectName() && student()) {
+      Andamento voti di {{ selectedSubjectName() }} dello studente {{ student()?.lastName }} {{ student()?.firstName }}
+      } @else {
+      Andamento Voti
+      }
+    </ion-title>
+    <ion-buttons slot="end">
+      <!-- Select Subject -->
+      <ion-select aria-label="Materia" placeholder="Seleziona materia" [ngModel]="selectedSubject()"
+        (ionChange)="onSubjectChange($event)">
+        @for (subject of subjects(); track subject.key) {
+        <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large" class="ion-text-center">
+        @if (selectedSubjectName() && student()) {
+        Andamento voti di {{ selectedSubjectName() }} dello studente {{ student()?.lastName }} {{ student()?.firstName
+        }}
+        } @else {
+        Andamento Voti
+        }
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="card">
+    @if(data()) {
+    <p-chart type="line" [data]="data()" [options]="options()"></p-chart>
+    } @else {
+    <p class="ion-text-center">Nessun dato disponibile o materia non selezionata.</p>
+    }
+  </div>
+</ion-content>
