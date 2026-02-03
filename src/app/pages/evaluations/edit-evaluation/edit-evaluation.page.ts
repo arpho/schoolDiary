@@ -38,7 +38,10 @@ import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { ActivityDialogComponent } from '../../activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { ClasseModel } from '../../classes/models/classModel';
 import { ClassiService } from '../../classes/services/classi.service';
+import { SubjectService } from '../../subjects-list/services/subjects/subject.service';
+import { SubjectModel } from '../../subjects-list/models/subjectModel';
 import { addIcons } from 'ionicons';
+import { saveOutline } from 'ionicons/icons';
 /**
  * Pagina per la modifica di una valutazione esistente.
  * Carica i dati della valutazione, permette di modificarli e salvare le modifiche.
@@ -158,6 +161,7 @@ export class EditEvaluationPage implements OnInit {
   private $toaster = inject(ToasterService);
   route = inject(ActivatedRoute);
   evaluation = signal<Evaluation | null>(null);
+  subjects = signal<SubjectModel[]>([]);
   $evaluation = inject(EvaluationService);
 
   // Form group declaration
@@ -167,8 +171,7 @@ export class EditEvaluationPage implements OnInit {
     private router: Router) {
     console.log("EditEvaluationPage constructor chiamato");
     addIcons({
-      'save': 'save-outline',
-      'pdf': 'pdf-outline'
+      'save': saveOutline
     });
     // Initialize form in constructor
     this.evaluationform = this.fb.group({
@@ -176,6 +179,7 @@ export class EditEvaluationPage implements OnInit {
       note: [''],
       data: [new Date()],
       gridKey: [null],
+      subjectKey: [''],
       activityKey: [''],
       classKey: [''],
       studentKey: ['']
@@ -229,6 +233,10 @@ export class EditEvaluationPage implements OnInit {
           },
           [new QueryCondition('classKey', '==', evaluation.classKey)]
         );
+
+        // Load subjects
+        const subjects = await this.$users.getSubjectsByTeacherAndClass(evaluation.teacherKey, evaluation.classKey);
+        this.subjects.set(subjects);
       } catch (error) {
         console.error('Error loading evaluation:', error);
         this.$toaster.presentToast({
@@ -273,6 +281,7 @@ export class EditEvaluationPage implements OnInit {
         note: evaluation?.note || '',
         data: evaluationDate,
         gridKey: evaluation?.grid?.key || null,
+        subjectKey: evaluation?.subjectKey || '',
         activityKey: evaluation?.activityKey || '',
         classKey: evaluation?.classKey || '',
         studentKey: evaluation?.studentKey || ''

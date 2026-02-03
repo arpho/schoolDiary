@@ -34,6 +34,8 @@ import { eyeOutline, print, ellipsisVertical, create, archive, trash, close } fr
 import { UsersRole } from 'functions/src/shared/models/UsersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
+import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 import { Evaluation2PdfComponent } from 'src/app/pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component';
 import { EvaluationPage } from 'src/app/pages/evaluations/evaluation/evaluation.page';
 import { Router } from '@angular/router';
@@ -215,11 +217,14 @@ export class Evaluation4StudentComponent implements OnInit {
   }
   private $evaluation = inject(EvaluationService);
   private $activities = inject(ActivitiesService);
+  private $subjects = inject(SubjectService);
 
   studentkey = input.required<string>();
   teacherkey = input.required<string>();
   evaluationsList = signal<Evaluation[]>([]);
+
   activitiesMap = signal<Map<string, ActivityModel>>(new Map());
+  subjectsMap = signal<Map<string, SubjectModel>>(new Map());
   modalCtrl = inject(ModalController);
   private router = inject(Router);
 
@@ -248,6 +253,7 @@ export class Evaluation4StudentComponent implements OnInit {
 
             // Pre-carica tutte le attività associate alle valutazioni
             await this.loadActivitiesForEvaluations(evaluations);
+            await this.loadSubjectsForEvaluations(evaluations);
           });
         } else {
           // Situazione normale - chiavi non ancora valorizzate
@@ -299,6 +305,34 @@ export class Evaluation4StudentComponent implements OnInit {
   async fetchStudentName(studentKey: string) {
     const student = await this.$users.getUser(studentKey);
     return student?.lastName + ' ' + student?.firstName;
+  }
+
+  // Pre-carica tutte le materie per le valutazioni
+  private async loadSubjectsForEvaluations(evaluations: Evaluation[]): Promise<void> {
+    const subjectKeys = evaluations
+      .map(e => e.subjectKey)
+      .filter((key): key is string => !!key);
+
+    const uniqueKeys = [...new Set(subjectKeys)];
+    const subjectsMap = new Map<string, SubjectModel>();
+
+    // Carica tutte le materie in parallelo
+    await Promise.all(
+      uniqueKeys.map(async (key) => {
+        const subject = await this.$subjects.fetchSubject(key);
+        if (subject) {
+          subjectsMap.set(key, subject);
+        }
+      })
+    );
+
+    this.subjectsMap.set(subjectsMap);
+  }
+
+  // Metodo sincrono per ottenere la materia dalla cache locale
+  getSubject(subjectKey: string): SubjectModel | undefined {
+    if (!subjectKey) return undefined;
+    return this.subjectsMap().get(subjectKey);
   }
 }
 

@@ -22,13 +22,26 @@
         <ion-datetime formControlName="data" presentation="date"></ion-datetime>
       </ion-item>
 
+      @if(subjects().length > 0) {
+      <ion-item>
+        <ion-label position="floating">Materia</ion-label>
+        <ion-select formControlName="subjectKey" placeholder="Seleziona materia">
+          @for(subject of subjects(); track subject.key) {
+          <ion-select-option [value]="subject.key">
+            {{subject.name}}
+          </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      }
+
       <ion-item>
         <ion-label position="floating">Attività</ion-label>
         <ion-select formControlName="activityKey" placeholder="Seleziona attività">
           @for(activity of activities(); track activity.key) {
-            <ion-select-option [value]="activity.key">
-              {{activity.title}}
-            </ion-select-option>
+          <ion-select-option [value]="activity.key">
+            {{activity.title}}
+          </ion-select-option>
           }
         </ion-select>
         <ion-button (click)="openActivityDialog()">Aggiungi attività</ion-button>
@@ -36,42 +49,38 @@
 
       <ion-item>
         <ion-label position="floating">Griglia</ion-label>
-        <ion-select 
-          formControlName="gridKey" 
-          placeholder="Seleziona griglia"
+        <ion-select formControlName="gridKey" placeholder="Seleziona griglia"
           [class.ion-invalid]="evaluationform.get('gridKey')?.invalid && evaluationform.get('gridKey')?.touched">
           @for(grid of griglie(); track grid.key) {
-            <ion-select-option [value]="grid.key">
-              {{grid.nome}}
-            </ion-select-option>
+          <ion-select-option [value]="grid.key">
+            {{grid.nome}}
+          </ion-select-option>
           }
         </ion-select>
         @if (evaluationform.get('gridKey')?.invalid && evaluationform.get('gridKey')?.touched) {
-          <ion-note slot="error">Seleziona una griglia valida</ion-note>
+        <ion-note slot="error">Seleziona una griglia valida</ion-note>
         }
       </ion-item>
-      
+
       @if (evaluationform.get('gridKey')?.value) {
-        @let selectedGrid = getSelectedGrid();
-        @if (selectedGrid) {
-          <app-evaluate-grid 
-            [grid]="selectedGrid"
-            (gridValid)="onGridValidityChange($event)">
-          </app-evaluate-grid>
-        }
-        @if (evaluationform.get('gridKey')?.value && !isGridValid() && evaluationform.get('gridKey')?.touched) {
-          <ion-note color="danger" class="ion-padding-start">
-            La griglia di valutazione non è valida. Assicurati di aver compilato tutti i campi richiesti.
-          </ion-note>
-        }
+      @let selectedGrid = getSelectedGrid();
+      @if (selectedGrid) {
+      <app-evaluate-grid [grid]="selectedGrid" (gridValid)="onGridValidityChange($event)">
+      </app-evaluate-grid>
+      }
+      @if (evaluationform.get('gridKey')?.value && !isGridValid() && evaluationform.get('gridKey')?.touched) {
+      <ion-note color="danger" class="ion-padding-start">
+        La griglia di valutazione non è valida. Assicurati di aver compilato tutti i campi richiesti.
+      </ion-note>
+      }
       }
 
     </form>
-<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button type="submit" form="evaluationForm" [disabled]="!isGridValid()" (click)="updateEvaluation()">
         <ion-icon name="save"></ion-icon>
       </ion-fab-button>
-</ion-fab>
+    </ion-fab>
   </ion-list>
 
 </ion-content>

@@ -2,141 +2,140 @@
   <ion-row>
     <ion-col size="12">
       @if (evaluationsList().length === 0) {
-        <ion-card>
-          <ion-card-content>
-            <p>Nessuna valutazione trovata per questo studente.</p>
-          </ion-card-content>
-        </ion-card>
+      <ion-card>
+        <ion-card-content>
+          <p>Nessuna valutazione trovata per questo studente.</p>
+        </ion-card-content>
+      </ion-card>
       } @else {
-        @for (evaluation of evaluationsList(); track evaluation.key) {
-          <ion-card  (click)="openActionSheet(evaluation, $event)">
-            <ion-card-header>
-              <ion-card-title>{{ evaluation.description }}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <ion-list>
-                <ion-item>
-                  <ion-label>
-                    <h3>attività</h3>
-                  </ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-label>
-                    <h3>Data creazione</h3>
-                    <p>{{ sanitizeDate(evaluation.data) |date:"dd/MM/yyyy"}}</p>
-                  </ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-label>
-                    <h3>Data ultima modifica</h3>
-                    <p>{{ evaluation.lastUpdateDate |date:"dd/MM/yyyy"}}</p>
-                  </ion-label>
-                </ion-item>
+      @for (evaluation of evaluationsList(); track evaluation.key) {
+      <ion-card (click)="openActionSheet(evaluation, $event)">
+        <ion-card-header>
+          <ion-card-title>{{ evaluation.description }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-label>
+                <h3>attività</h3>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h3>Data creazione</h3>
+                <p>{{ sanitizeDate(evaluation.data) |date:"dd/MM/yyyy"}}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h3>Data ultima modifica</h3>
+                <p>{{ evaluation.lastUpdateDate |date:"dd/MM/yyyy"}}</p>
+              </ion-label>
+            </ion-item>
 
-                @if (evaluation.note) {
-                  <ion-item>
-                    <ion-label>
-                      <h3>Note</h3>
-                      <p>{{ evaluation.note }}</p>
-                    </ion-label>
-                  </ion-item>
+            @if (evaluation.note) {
+            <ion-item>
+              <ion-label>
+                <h3>Note</h3>
+                <p>{{ evaluation.note }}</p>
+              </ion-label>
+            </ion-item>
+            }
+
+            @if (evaluation.subjectKey) {
+            @if (getSubject(evaluation.subjectKey); as subject) {
+            <ion-item>
+              <ion-label>
+                <h3>Materia</h3>
+                <p>{{ subject.name }}</p>
+              </ion-label>
+            </ion-item>
+            }
+            }
+
+            @if (evaluation.grid && evaluation.grid.nome) {
+            <ion-item>
+              <ion-label>
+                <h3>Griglia di valutazione</h3>
+                <p>{{ evaluation.grid.nome }}</p>
+              </ion-label>
+            </ion-item>
+            }
+
+            @if (evaluation.activityKey) {
+            @if (getActivity(evaluation.activityKey); as activity) {
+            <ion-item>
+
+              <ion-label>
+                <h3>Attività</h3>
+                <p><strong>{{ activity.title }}</strong></p>
+                @if (activity.description) {
+                <p>{{ activity.description }}</p>
                 }
+              </ion-label>
+            </ion-item>
 
-                @if (evaluation.grid && evaluation.grid.nome) {
-                  <ion-item>
-                    <ion-label>
-                      <h3>Griglia di valutazione</h3>
-                      <p>{{ evaluation.grid.nome }}</p>
-                    </ion-label>
-                  </ion-item>
-                }
+            <!-- Sezione voto separata -->
+            <ion-item>
+              <ion-label>
+                <h3>Voto</h3>
+                <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0
+                    ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined
+                    &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' :
+                    evaluation.votoMax) : 'N/A' }}</strong></p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h3>Voto decimale</h3>
+                <p><strong>{{ evaluation.gradeInDecimal | number:'1.2-2'}}</strong></p>
+              </ion-label>
+            </ion-item>
+            } @else {
+            <ion-item>
+              <ion-label>
+                <h3>Attività</h3>
+                <p>Attività non trovata ({{ evaluation.activityKey }})</p>
+              </ion-label>
+            </ion-item>
 
-                @if (evaluation.activityKey) {
-                  @if (getActivity(evaluation.activityKey); as activity) {
-                    <ion-item>
-                      <ion-fab vertical="bottom" horizontal="end">
-                        <ion-fab-button size="small" color="medium">
-                          <ion-icon name="ellipsis-vertical"></ion-icon>
-                        </ion-fab-button>
-                        <ion-fab-list side="start">
-                          <ion-fab-button color="light" (click)="editEvaluation(evaluation)">
-                            <ion-icon name="create"></ion-icon>
-                          </ion-fab-button>
-                          <ion-fab-button color="light" (click)="archiveEvaluation(evaluation)">
-                            <ion-icon name="archive"></ion-icon>
-                          </ion-fab-button>
-                          <ion-fab-button color="danger" (click)="confirmDelete(evaluation)">
-                            <ion-icon name="trash"></ion-icon>
-                          </ion-fab-button>
-                          <ion-fab-button color="light">
-                            <ion-icon name="close"></ion-icon>
-                          </ion-fab-button>
-                          <ion-fab-button color="light" (click)="evaluationPdf(evaluation)">
-                            <ion-icon name="print"></ion-icon>
-                          </ion-fab-button>
-                        </ion-fab-list>
-                      </ion-fab>
-                      <ion-label>
-                        <h3>Attività</h3>
-                        <p><strong>{{ activity.title }}</strong></p>
-                        @if (activity.description) {
-                          <p>{{ activity.description }}</p>
-                        }
-                      </ion-label>
-                    </ion-item>
+            <!-- Sezione voto anche se attività non trovata -->
+            <ion-item>
+              <ion-label>
+                <h3>Voto</h3>
+                <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0
+                    ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined
+                    &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' :
+                    evaluation.votoMax) : 'N/A' }}</strong></p>
+              </ion-label>
+            </ion-item>
+            }
+            } @else {
+            <!-- Valutazione senza attività -->
+            <ion-item>
+              <ion-label>
+                <h3>Valutazione</h3>
+                <p>{{ evaluation.description }}</p>
+              </ion-label>
+            </ion-item>
 
-                    <!-- Sezione voto separata -->
-                    <ion-item>
-                      <ion-label>
-                        <h3>Voto</h3>
-                        <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0 ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' : evaluation.votoMax) : 'N/A' }}</strong></p>
-                      </ion-label>
-                    </ion-item>
-                    <ion-item>
-                      <ion-label>
-                        <h3>Voto decimale</h3>
-                        <p><strong>{{ evaluation.gradeInDecimal | number:'1.2-2'}}</strong></p>
-                      </ion-label>
-                    </ion-item>
-                  } @else {
-                    <ion-item>
-                      <ion-label>
-                        <h3>Attività</h3>
-                        <p>Attività non trovata ({{ evaluation.activityKey }})</p>
-                      </ion-label>
-                    </ion-item>
+            <!-- Sezione voto anche senza activityKey -->
+            <ion-item>
+              <ion-label>
+                <h3>Voto</h3>
+                <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0
+                    ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined
+                    &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' :
+                    evaluation.votoMax) : 'N/A' }}</strong></p>
 
-                    <!-- Sezione voto anche se attività non trovata -->
-                    <ion-item>
-                      <ion-label>
-                        <h3>Voto</h3>
-                        <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0 ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' : evaluation.votoMax) : 'N/A' }}</strong></p>
-                      </ion-label>
-                    </ion-item>
-                  }
-                } @else {
-                  <!-- Valutazione senza attività -->
-                  <ion-item>
-                    <ion-label>
-                      <h3>Valutazione</h3>
-                      <p>{{ evaluation.description }}</p>
-                    </ion-label>
-                  </ion-item>
+              </ion-label>
+            </ion-item>
 
-                  <!-- Sezione voto anche senza activityKey -->
-                  <ion-item>
-                    <ion-label>
-                      <h3>Voto</h3>
-                      <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0 ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' : evaluation.votoMax) : 'N/A' }}</strong></p>
-
-                    </ion-label>
-                  </ion-item>
-
-                }
-              </ion-list>
-            </ion-card-content>
-          </ion-card>
-        }
+            }
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+      }
       }
     </ion-col>
   </ion-row>
