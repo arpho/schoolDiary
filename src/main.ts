@@ -33,7 +33,7 @@ import {
   AppComponent
 } from './app/app.component';
 import {
-  importProvidersFrom
+  importProvidersFrom, isDevMode
 } from '@angular/core';
 import {
   environment
@@ -68,6 +68,7 @@ import {
   recordingOutline,
   ribbonOutline
 } from 'ionicons/icons';
+import { provideServiceWorker } from '@angular/service-worker';
 
 
 // Registra le icone globalmente
@@ -88,6 +89,9 @@ bootstrapApplication(AppComponent, {
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideMessaging(() => getMessaging()),
-    { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }
+    { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }, provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
 });
