@@ -9,6 +9,7 @@ import { ModalController, AlertController } from '@ionic/angular/standalone';
 import { ReservedNotes4studentsService } from '../services/reservedNotes4Students/reserved-notes4students.service';
 import { EvaluationService } from '../../evaluations/services/evaluation/evaluation.service';
 import { ActivitiesService } from '../../activities/services/activities.service';
+import { SubjectService } from '../../subjects-list/services/subjects/subject.service';
 import { of } from 'rxjs';
 import { UserModel } from 'src/app/shared/models/userModel';
 
@@ -43,9 +44,10 @@ describe('UserDialogPage', () => {
         provideRouter([]),
         { provide: ModalController, useValue: modalSpy },
         { provide: AlertController, useValue: alertSpy },
-        { provide: ReservedNotes4studentsService, useValue: { getNotesByStudentAndOwner: jasmine.createSpy('getNotesByStudentAndOwner').and.returnValue(Promise.resolve([])), getNotesOnRealtime: jasmine.createSpy('getNotesOnRealtime').and.callFake(() => {}) } },
+        { provide: ReservedNotes4studentsService, useValue: { getNotesByStudentAndOwner: jasmine.createSpy('getNotesByStudentAndOwner').and.returnValue(Promise.resolve([])), getNotesOnRealtime: jasmine.createSpy('getNotesOnRealtime').and.callFake(() => { }) } },
         { provide: EvaluationService, useValue: { addEvaluation: jasmine.createSpy('addEvaluation') } },
-        { provide: ActivitiesService, useValue: { getActivitiesByClassAndTeacher: jasmine.createSpy('getActivitiesByClassAndTeacher').and.returnValue(Promise.resolve([])) } }
+        { provide: ActivitiesService, useValue: { getActivitiesByClassAndTeacher: jasmine.createSpy('getActivitiesByClassAndTeacher').and.returnValue(Promise.resolve([])) } },
+        { provide: SubjectService, useValue: { fetchSubject: jasmine.createSpy('fetchSubject') } }
       ]
     }).compileComponents();
 
