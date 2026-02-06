@@ -181,7 +181,7 @@ export const createUser = onCall({enforceAppCheck: false}, async (request) => {
       photoURL: userRecord.photoURL || "",
       customClaims,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Errore nella creazione utente:", error);
 
     // Se l'utente è stato creato ma si è verificato un errore dopo,

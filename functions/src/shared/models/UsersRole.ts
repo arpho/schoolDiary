@@ -19,6 +19,6 @@ export enum UsersRole {
  * @param value Valore da verificare
  * @return true se il valore è un ruolo valido
  */
-export function isValidRole(value: any): value is UsersRole {
+export function isValidRole(value: unknown): value is UsersRole {
   return Object.values(UsersRole).includes(Number(value));
 }

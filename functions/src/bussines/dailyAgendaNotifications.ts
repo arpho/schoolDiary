@@ -1,6 +1,6 @@
-import { onSchedule } from "firebase-functions/v2/scheduler";
-import { getFirestore, Filter } from "firebase-admin/firestore";
-import { getMessaging } from "firebase-admin/messaging";
+import {onSchedule} from "firebase-functions/v2/scheduler";
+import {getFirestore, Filter} from "firebase-admin/firestore";
+import {getMessaging} from "firebase-admin/messaging";
 import * as logger from "firebase-functions/logger";
 
 interface AgendaEvent {
@@ -116,14 +116,15 @@ export const dailyAgendaNotifications = onSchedule({
         const message = {
           notification: {
             title: `Domani: ${eventData.title}`,
-            body: `${eventData.description}\n${new Date(eventData.dataInizio).toLocaleString('it-IT', {
-              timeZone: 'Europe/Rome',
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}`,
+            body: `${eventData.description}\n` +
+              `${new Date(eventData.dataInizio).toLocaleString("it-IT", {
+                timeZone: "Europe/Rome",
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`,
             imageUrl: faviconUrl,
           },
           webpush: {
