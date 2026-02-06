@@ -1,30 +1,38 @@
 
 <ion-header>
   <ion-toolbar>
-  
-    <ion-title align="center">stampa valutazione</ion-title>
-    @if(showSpinner()){
-      <span class="loader"></span>
+    <ion-buttons slot="start">
+      @if(!showSpinner()){
+      <ion-button shape="round" (click)="gotoClassDialog()">
+        <ion-icon slot="icon-only" name="home"></ion-icon>
+      </ion-button>
       }
-    <ion-fab vertical="top" horizontal="end" side="end" size="small">
+    </ion-buttons>
 
-        <ion-fab-button color="light" (click)="generatePdf()">
-          <ion-icon name="print"></ion-icon>
-        </ion-fab-button>
+    <ion-title align="center">stampa valutazione</ion-title>
 
-    </ion-fab>
-    <ion-fab vertical="top" horizontal="start"  size="small">
-@if(!showSpinner()){
-        <ion-fab-button color="light" (click)="gotoClassDialog()">
-          <ion-icon name="home"></ion-icon>
-        </ion-fab-button>
-}
-    </ion-fab>
+    <ion-buttons slot="end">
+      @if(showSpinner()){
+      <span class="loader"></span>
+      } @else {
+      <ion-button shape="round" fill="solid" color="danger" (click)="decreaseFontSize()">
+        <ion-icon slot="icon-only" name="remove-circle"></ion-icon>
+      </ion-button>
+      <span style="font-size: 1.2em; font-weight: bold; margin: 0 10px;">{{fontSize()}}px</span>
+      <ion-button shape="round" fill="solid" color="primary" (click)="increaseFontSize()">
+        <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+      </ion-button>
+
+      <ion-button shape="round" fill="solid" color="secondary" (click)="generatePdf()">
+        <ion-icon slot="icon-only" name="print"></ion-icon>
+      </ion-button>
+      }
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 
-<div id="contentToConvert">
+<div id="contentToConvert" [style.fontSize.px]="fontSize()">
 
 <ion-grid>
   <ion-row>

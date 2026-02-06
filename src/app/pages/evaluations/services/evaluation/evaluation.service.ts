@@ -316,9 +316,21 @@ export class EvaluationService {
     startDate?: string
   ) {
     this.getEvaluation4studentAndTeacher(studentKey, teacherKey, (evaluations) => {
+      console.log(`[EvaluationService] Total evaluations for ${studentKey}: ${evaluations.length}`);
       let filteredEvaluations = evaluations;
       if (startDate) {
-        filteredEvaluations = evaluations.filter(e => e.data >= startDate);
+        const start = new Date(startDate).getTime();
+        filteredEvaluations = evaluations.filter(e => {
+          let evalDateVal: number;
+          // Check if it's a Firestore Timestamp (has toDate method)
+          if (e.data && typeof (e.data as any).toDate === 'function') {
+            evalDateVal = (e.data as any).toDate().getTime();
+          } else {
+            // Assume string or Date object
+            evalDateVal = new Date(e.data).getTime();
+          }
+          return evalDateVal >= start;
+        });
       }
       const total = filteredEvaluations.reduce((sum, Myeval) => sum + (Myeval.gradeInDecimal || 0), 0);
       callback(filteredEvaluations.length > 0 ? total / filteredEvaluations.length : 0);
@@ -341,7 +353,16 @@ export class EvaluationService {
     this.getEvaluation4studentAndTeacher(studentKey, teacherKey, (evaluations) => {
       let filteredEvaluations = evaluations;
       if (startDate) {
-        filteredEvaluations = evaluations.filter(e => e.data >= startDate);
+        const start = new Date(startDate).getTime();
+        filteredEvaluations = evaluations.filter(e => {
+          let evalDateVal: number;
+          if (e.data && typeof (e.data as any).toDate === 'function') {
+            evalDateVal = (e.data as any).toDate().getTime();
+          } else {
+            evalDateVal = new Date(e.data).getTime();
+          }
+          return evalDateVal >= start;
+        });
       }
       const total = filteredEvaluations.reduce((sum, myEval) => sum + (myEval.gradeInDecimal || 0), 0);
       const count = filteredEvaluations.length;

@@ -290,7 +290,9 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
    * Carica la lista degli studenti della classe.
    */
   private loadStudents() {
+    console.log(`[ListStudent4class] Loading students for class: ${this.classkey}`);
     this.$users.getUsersByClass(this.classkey, (users: UserModel[]) => {
+      console.log(`[ListStudent4class] Loaded ${users.length} students:`, users.map(u => `${u.lastName} ${u.firstName} (${u.key})`));
       this.setStudents(users);
       this.loadAveragesForStudents();
     });
