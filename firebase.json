@@ -1,19 +1,4 @@
 {
-  "emulators": {
-    "auth": {
-      "port": 9099
-    },
-    "firestore": {
-      "port": 8080
-    },
-    "functions": {
-      "port": 5001
-    },
-    "ui": {
-      "enabled": true
-    },
-    "singleProjectMode": true
-  },
   "firestore": {
     "database": "(default)",
     "location": "eur3",
@@ -48,6 +33,17 @@
       {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/ngsw.json",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       }
     ]
   },

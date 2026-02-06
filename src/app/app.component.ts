@@ -1,5 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet, ToastController } from '@ionic/angular/standalone';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { filter } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { ClassiService } from './pages/classes/services/classi.service';
@@ -20,6 +22,8 @@ import { environment } from 'src/environments/environment';
 export class AppComponent implements OnInit {
   private auth = inject(Auth);
   private messaging = inject(Messaging);
+  private swUpdate = inject(SwUpdate);
+  private toastController = inject(ToastController);
 
   constructor(
     private router: Router,
@@ -30,6 +34,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.setupAuthListener();
+    this.checkUpdate();
   }
 
   private setupAuthListener() {
@@ -68,5 +73,27 @@ export class AppComponent implements OnInit {
         }
       }
     });
+  }
+
+  private checkUpdate() {
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates.pipe(
+        filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY')
+      ).subscribe(async () => {
+        const toast = await this.toastController.create({
+          message: 'È disponibile una nuova versione dell\'app!',
+          buttons: [
+            {
+              text: 'Aggiorna',
+              role: 'info',
+              handler: () => {
+                document.location.reload();
+              }
+            }
+          ]
+        });
+        await toast.present();
+      });
+    }
   }
 }
