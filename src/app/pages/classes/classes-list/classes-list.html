@@ -22,27 +22,47 @@
   </ion-header>
 
   @if (classiList().length > 0) {
-  <ion-list>
-    @for (classe of sortedClassiList(); track classe.key) {
-    <ion-item (click)="clickedClass(classe)" button detail="true" class="class-item">
-      <ion-card class="class-card">
-        <ion-card-header>
-          <ion-card-title class="centered-title">{{classe.classe}} {{classe.year}}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <p>{{classe.descrizione || 'Nessuna descrizione'}}</p>
-        </ion-card-content>
-      </ion-card>
-    </ion-item>
-    }
-  </ion-list>
+  <ion-grid>
+    <ion-row>
+      @for (classe of sortedClassiList(); track classe.key) {
+      <ion-col size="12" size-md="6" size-lg="4">
+        <ion-card class="class-card" (click)="clickedClass(classe)">
+          <div class="class-header" [style.background-color]="getClassColor(classe)">
+            <div class="year-badge">{{classe.year}}</div>
+            <div class="class-name">{{classe.classe}}</div>
+          </div>
+          <ion-card-content>
+            <div class="description">
+              {{classe.descrizione || 'Nessuna descrizione'}}
+            </div>
+          </ion-card-content>
+          <div class="card-footer">
+            <ion-button fill="clear" size="small" (click)="clickedClass(classe); $event.stopPropagation()">
+              <ion-icon name="ellipsis-vertical"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card>
+      </ion-col>
+      }
+    </ion-row>
+  </ion-grid>
   } @else {
-  <div class="ion-text-center ion-padding">
-    <p>Non ci sono classi</p>
-    <ion-button (click)="go2ClasseDialog('')">
+  <div class="empty-state">
+    <div class="empty-icon">
+      <ion-icon name="school-outline"></ion-icon>
+    </div>
+    <h2>Nessuna classe presente</h2>
+    <p>Inizia creando la tua prima classe per gestire le attività.</p>
+    <ion-button (click)="go2ClasseDialog('')" shape="round">
       <ion-icon slot="start" name="add"></ion-icon>
-      Crea la tua prima classe
+      Crea Classe
     </ion-button>
   </div>
   }
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="go2ClasseDialog('')">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

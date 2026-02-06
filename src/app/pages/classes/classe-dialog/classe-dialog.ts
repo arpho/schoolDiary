@@ -173,22 +173,16 @@ export class ClasseDialogPage implements OnInit {
   initialVerbali: string = '[]';
 
   // Computed Validation
-  classeNameError = computed(() => !this.classeName() ? 'Il campo "Classe & Sezione" è obbligatorio.' : null);
-  yearError = computed(() => !this.year() ? 'Il campo "Anno Scolastico" è obbligatorio.' : null);
-  coordinatoreError = computed(() => !this.coordinatore() ? 'Il campo "Coordinatore" è obbligatorio.' : null);
-  segretarioError = computed(() => !this.segretario() ? 'Il campo "Segretario" è obbligatorio.' : null);
+  // Computed Validation
+  classeNameError = computed(() => null);
+  yearError = computed(() => null);
+  coordinatoreError = computed(() => null);
+  segretarioError = computed(() => null);
   // descrizioneError = computed(() => !this.descrizione() ? 'Il campo "Descrizione" è obbligatorio.' : null); // Removed as per request
   descrizioneError = computed(() => null);
-  noteError = computed(() => !this.note() ? 'Il campo "Note" è obbligatorio.' : null);
+  noteError = computed(() => null);
 
-  isValid = computed(() => {
-    return !this.classeNameError() &&
-      !this.yearError() &&
-      !this.coordinatoreError() &&
-      !this.segretarioError() &&
-      // !this.descrizioneError() && // Already returns null but for clarity
-      !this.noteError();
-  });
+  isValid = computed(() => true);
 
   isDirty = computed(() => {
     return this.classeName() !== this.initialValues.classeName ||

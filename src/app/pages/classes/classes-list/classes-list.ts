@@ -11,18 +11,18 @@ import {
   IonToolbar,
   IonCard,
   IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonItem,
-  IonList,
   IonBackButton,
   IonButtons,
   IonButton,
   IonIcon,
   ActionSheetController,
   AlertController,
-  ModalController,
-  ModalOptions
+  IonModal,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonFab,
+  IonFabButton
 } from '@ionic/angular/standalone';
 
 import { ClassiService } from '../services/classi.service';
@@ -49,14 +49,15 @@ import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionic
     IonToolbar,
     IonCard,
     IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonItem,
-    IonList,
     IonBackButton,
     IonButtons,
     IonButton,
-    IonIcon
+    IonIcon,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonFab,
+    IonFabButton
   ]
 })
 export class ClassesListComponent implements OnInit, OnDestroy {
@@ -73,7 +74,6 @@ export class ClassesListComponent implements OnInit, OnDestroy {
 
   constructor(
     private service: ClassiService,
-    private modalController: ModalController,
     private alertController: AlertController,
     private actionSheetController: ActionSheetController,
     private router: Router,
@@ -188,6 +188,21 @@ export class ClassesListComponent implements OnInit, OnDestroy {
 
   go2ClasseDialog(classeId: string = ''): void {
     this.router.navigate(['/class-dialog', classeId]);
+  }
+
+  /**
+   * Genera un colore univoco basato sul nome della classe.
+   * @param classe Modello della classe.
+   * @returns Stringa colore in formato HSL.
+   */
+  getClassColor(classe: ClasseModel): string {
+    let hash = 0;
+    const str = classe.classe + classe.year;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const h = hash % 360;
+    return `hsl(${h}, 70%, 50%)`;
   }
 }
 

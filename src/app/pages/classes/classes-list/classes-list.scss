@@ -1,85 +1,155 @@
-/* Stili base per la lista classi */
-ion-list {
-  --ion-padding: 0;
-  padding: 0 16px;
-  max-width: 800px;
-  margin: 0 auto;
-}
+/* Stili per la pagina Classes List */
 
-ion-card {
-  margin: 12px 0;
-  width: 100%;
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  
-  ion-card-header {
-    padding-bottom: 8px;
-  }
-  
-  ion-card-content {
-    padding-top: 8px;
-  }
-}
-
-.centered-title {
-  text-align: center;
-  width: 100%;
-  display: block;
-}
-
-/* Centratura delle card nella pagina */
 ion-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  --background: var(--ion-background-color, #f4f5f8);
+}
+
+ion-grid {
   padding: 16px;
-  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-ion-list {
-  width: 100%;
-  max-width: 1200px;
+/* Card Styling */
+.class-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  background: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .class-header {
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    padding: 16px;
+
+    .year-badge {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .class-name {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-top: 4px;
+      opacity: 0.95;
+    }
+  }
+
+  ion-card-content {
+    flex-grow: 1;
+    padding: 16px;
+
+    .description {
+      color: var(--ion-color-medium);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  .card-footer {
+    padding: 8px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--ion-color-light);
+
+    ion-button {
+      --color: var(--ion-color-medium);
+      margin: 0;
+    }
+  }
+}
+
+/* Empty State */
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
-  padding: 0;
-}
-
-ion-item {
-  width: 100%;
-  max-width: 500px;
-  margin-bottom: 16px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Stili per il messaggio quando non ci sono classi */
-ion-content p {
+  justify-content: center;
+  height: 80vh;
+  padding: 32px;
   text-align: center;
-  margin-top: 50px;
-  font-size: 18px;
-  color: #666;
+
+  .empty-icon {
+    font-size: 80px;
+    color: var(--ion-color-medium-tint);
+    margin-bottom: 24px;
+    background: var(--ion-color-light);
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ion-text-color);
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 16px;
+    color: var(--ion-color-medium);
+    max-width: 400px;
+    margin: 0 0 32px;
+  }
+
+  ion-button {
+    --padding-start: 32px;
+    --padding-end: 32px;
+  }
 }
 
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
-/* Stili per il back button */
-ion-back-button {
-  --background: var(--ion-background-color, #ffffff);
-  --color: var(--ion-color-primary, #3880ff);
-  --border-radius: 20px;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
-  --min-height: 58px;
-  margin: 0px;
-  z-index: 10;
-  position: relative;
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+ion-col {
+  animation: fadeIn 0.4s ease-out forwards;
 
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}
+
+/* FAB positioning adjustment if needed */
+ion-fab {
+  margin-bottom: 16px;
+  margin-right: 16px;
+}

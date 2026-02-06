@@ -71,13 +71,13 @@
         @if (selectedTab() === 'generalita' && classe()) {
         <ion-card>
           <ion-card-content>
-            <ion-input class="custom-input" label="Nome Classe" required [value]="classeName()"
+            <ion-input class="custom-input" label="Nome Classe" [value]="classeName()"
               (ionInput)="classeName.set($any($event).detail.value); classeNameTouched.set(true)" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Classe &amp; Sezione</ion-label>
             </ion-input>
 
-            <ion-input class="custom-input" label="Anno" required [value]="year()"
+            <ion-input class="custom-input" label="Anno" [value]="year()"
               (ionInput)="year.set($any($event).detail.value); yearTouched.set(true)" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Anno Scolastico</ion-label>
@@ -90,13 +90,13 @@
             </ion-textarea>
 
             <ion-label>Coordinatore</ion-label>
-            <ion-input class="custom-input" label="Coordinatore" required [value]="coordinatore()"
+            <ion-input class="custom-input" label="Coordinatore" [value]="coordinatore()"
               (ionInput)="coordinatore.set($any($event).detail.value); coordinatoreTouched.set(true)" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Coordinatore</ion-label>
             </ion-input>
 
-            <ion-input class="custom-input" label="Segretario" required [value]="segretario()"
+            <ion-input class="custom-input" label="Segretario" [value]="segretario()"
               (ionInput)="segretario.set($any($event).detail.value); segretarioTouched.set(true)" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Segretario</ion-label>
@@ -234,13 +234,13 @@
         <ion-card>
           <ion-card-content>
             <!-- Aggiungi questo per debug -->
-            @if (!classe()?.key) {
+            @if (!classe().key) {
             <div style="color: red; padding: 10px;">
               Attenzione: classe().key è vuoto o non definito!
             </div>
             }
 
-            @if (classe()?.key) {
+            @if (classe().key) {
             <app-display-agenda4-classes [targetedClasses]="[classe().key]">
             </app-display-agenda4-classes>
             }
