@@ -179,8 +179,8 @@ export class EditEvaluationPage implements OnInit {
       note: [''],
       data: [new Date()],
       gridKey: [null],
-      subjectKey: [''],
-      activityKey: [''],
+      subjectKey: ['', Validators.required],
+      activityKey: ['', Validators.required],
       classKey: [''],
       studentKey: ['']
     }, { validators: [this.gridValidator()] });
