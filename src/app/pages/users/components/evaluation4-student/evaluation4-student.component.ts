@@ -5,7 +5,8 @@ import {
   input,
   OnInit,
   inject,
-  signal
+  signal,
+  computed
 } from '@angular/core';
 import {
   IonGrid,
@@ -22,15 +23,19 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
-  ModalController
+  ModalController,
+  IonDatetime,
+  IonModal,
+  IonButton
 } from '@ionic/angular/standalone';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { EvaluationService } from '../../../../pages/evaluations/services/evaluation/evaluation.service';
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
 import { addIcons } from 'ionicons';
-import { eyeOutline, print, ellipsisVertical, create, archive, trash, close } from 'ionicons/icons';
+import { eyeOutline, print, ellipsisVertical, create, archive, trash, close, calendar } from 'ionicons/icons';
 import { UsersRole } from 'functions/src/shared/models/UsersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -47,9 +52,7 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
 @Component({
   selector: 'app-evaluation4-student',
   templateUrl: './evaluation4-student.component.html',
-  styleUrls: ['./evaluation4-student.component.scss'],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   imports: [
     CommonModule,
     IonGrid,
@@ -66,7 +69,11 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
     IonFab,
     IonFabButton,
     IonFabList,
-    DatePipe
+    DatePipe,
+    IonDatetime,
+    IonModal,
+    IonButton,
+    FormsModule
   ]
 })
 export class Evaluation4StudentComponent implements OnInit {
@@ -237,7 +244,9 @@ export class Evaluation4StudentComponent implements OnInit {
       create: create,
       archive: archive,
       trash: trash,
+
       close: close,
+      calendar: calendar
     });
     // Usa effect per reagire ai signal inputs
     try {
@@ -263,6 +272,38 @@ export class Evaluation4StudentComponent implements OnInit {
       console.error("Errore nella registrazione dell'effect:", error);
     }
   }
+
+  dataInizioPeriodo = signal<string>(
+    localStorage.getItem('dataInizioPeriodo') ||
+    new Date(new Date().getFullYear(), 0, 2).toISOString()
+  );
+
+  onDateChange(event: any) {
+    const newDate = event.detail.value;
+    this.dataInizioPeriodo.set(newDate);
+    localStorage.setItem('dataInizioPeriodo', newDate);
+  }
+
+  filteredEvaluations = computed(() => {
+    const evaluations = this.evaluationsList();
+    const startDateStr = this.dataInizioPeriodo();
+    
+    if (!startDateStr) return evaluations;
+    
+    const startDate = new Date(startDateStr);
+    // Reset hours to compare only dates
+    startDate.setHours(0, 0, 0, 0);
+
+    return evaluations.filter(e => {
+      const evalDate = this.sanitizeDate(e.data);
+      if (!evalDate) return false;
+      
+      const dateObj = new Date(evalDate);
+      dateObj.setHours(0, 0, 0, 0);
+      
+      return dateObj >= startDate;
+    });
+  });
 
   async ngOnInit() {
     const user = await this.$users.getLoggedUser();
