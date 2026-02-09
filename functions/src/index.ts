@@ -7,6 +7,8 @@ import {createUser} from "./bussines/createUser";
 import {createUserPlus} from "./bussines/createUserPlus";
 import {sendActivationLink} from "./sendActivationLink";
 import {dailyAgendaNotifications} from "./bussines/dailyAgendaNotifications";
+import {generateEvaluationPdf} from "./bussines/generateEvaluationPdf";
+
 
 interface SetCustomClaimsData {
   userKey: string;
@@ -74,4 +76,5 @@ export {
   createUserPlus,
   sendActivationLink,
   dailyAgendaNotifications,
+  generateEvaluationPdf,
 };

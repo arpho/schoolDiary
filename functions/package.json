@@ -17,12 +17,14 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "dotenv": "^16.6.1",
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.4.0",
-    "dotenv": "^16.6.1",
-    "mailersend": "^2.6.0"
+    "mailersend": "^2.6.0",
+    "pdfmake": "^0.3.3"
   },
   "devDependencies": {
+    "@types/pdfmake": "^0.3.1",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "eslint": "^8.57.1",

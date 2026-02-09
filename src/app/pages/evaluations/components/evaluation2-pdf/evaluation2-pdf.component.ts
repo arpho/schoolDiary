@@ -5,14 +5,11 @@ import { UserWieverComponent } from "src/app/shared/components/user-wiever/user-
 import { ClassViewerComponent } from "src/app/shared/components/class-wiever/class-wiever.component";
 import { DatePipe } from '@angular/common';
 import { Indicatore } from 'src/app/shared/models/indicatore';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
-import { IonicModule } from "@ionic/angular";
-import { ModalController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { archive, create, ellipsisVertical, eyeOutline, trash, homeOutline, text, addCircle, removeCircle } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { print } from 'ionicons/icons';
@@ -74,7 +71,8 @@ export class Evaluation2PdfComponent implements OnInit {
     private router: Router,
     private $class: ClassiService,
     private route: ActivatedRoute,
-    private $evaluation: EvaluationService
+    private $evaluation: EvaluationService,
+    private functions: Functions
 
   ) {
     effect(async () => {
@@ -117,23 +115,24 @@ export class Evaluation2PdfComponent implements OnInit {
     this.showSpinner.set(true);
     console.log("generatePdf");
 
-    // Give UI a moment to update
-    await new Promise(resolve => setTimeout(resolve, 100));
+    const evaluationKey = this.evaluationData().key;
 
-    const data = document.getElementById('contentToConvert');
-    if (data) {
+    if (evaluationKey) {
       try {
-        const canvas = await html2canvas(data);
-        const imgWidth = 208;
-        const pageHeight = 295;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
+        const generatePdfFn = httpsCallable<{ evaluationKey: string }, { pdfBase64: string }>(this.functions, 'generateEvaluationPdf');
+        const result = await generatePdfFn({ evaluationKey });
+        const pdfBase64 = result.data.pdfBase64;
 
-        const contentDataURL = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
+        // Convert Base64 to Blob
+        const byteCharacters = atob(pdfBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
 
-        const position = 0;
-        pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
-
+        // Generate filename
         const user = await this.$users.fetchUserOnCache(this.evaluationData().studentKey);
         let userName = "";
         if (user) {
@@ -145,9 +144,14 @@ export class Evaluation2PdfComponent implements OnInit {
         if (classe) {
           className = classe.classe;
         }
-
+        
         const fileName = `evaluation_${userName}_${className}_${this.formatDate(this.evaluationData().data)}.pdf`;
-        pdf.save(fileName);
+
+        // Download PDF
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
 
       } catch (error) {
         console.error("Error generating PDF:", error);
