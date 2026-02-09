@@ -1,6 +1,6 @@
 import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import {getFirestore} from "firebase-admin/firestore";
+import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import * as PdfPrinter from "pdfmake";
 import {TDocumentDefinitions} from "pdfmake/interfaces";
 
@@ -22,7 +22,7 @@ interface Evaluation {
   classKey?: string;
   teacherKey?: string;
   description?: string;
-  data?: any; // Firestore Timestamp
+  data?: Timestamp; // Firestore Timestamp
   grid?: {
     indicatori: Indicatore[];
   };
@@ -160,7 +160,8 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
                   {text: "Voto / Valore", bold: true},
                 ],
                 // Data Rows
-                ...(evaluation?.grid?.indicatori || []).map((ind: Indicatore) => [
+                ...(evaluation?.grid?.indicatori || []).map((ind: Indicatore) =>
+                  [
                   ind.descrizione,
                   `${ind.voto} / ${ind.valore}`,
                 ]),
@@ -198,13 +199,13 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
       const pdfDoc = printer.createPdfKitDocument(docDefinition);
 
       return new Promise((resolve, reject) => {
-        const chunks: any[] = [];
-        pdfDoc.on("data", (chunk: any) => chunks.push(chunk));
+        const chunks: Buffer[] = [];
+        pdfDoc.on("data", (chunk: Buffer) => chunks.push(chunk));
         pdfDoc.on("end", () => {
           const result = Buffer.concat(chunks);
           resolve({pdfBase64: result.toString("base64")});
         });
-        pdfDoc.on("error", (err: any) => reject(err));
+        pdfDoc.on("error", (err: Error) => reject(err));
         pdfDoc.end();
       });
     } catch (error) {
