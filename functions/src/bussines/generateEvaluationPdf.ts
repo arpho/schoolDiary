@@ -1,7 +1,8 @@
 import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
-import * as PdfPrinter from "pdfmake";
+import {getFirestore} from "firebase-admin/firestore";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const PdfPrinter = require("pdfmake");
 import {TDocumentDefinitions} from "pdfmake/interfaces";
 
 // Define fonts - we need to fetch them from somewhere or encode them
@@ -22,7 +23,8 @@ interface Evaluation {
   classKey?: string;
   teacherKey?: string;
   description?: string;
-  data?: Timestamp; // Firestore Timestamp
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any; // Firestore Timestamp
   grid?: {
     indicatori: Indicatore[];
   };
@@ -160,11 +162,11 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
                   {text: "Voto / Valore", bold: true},
                 ],
                 // Data Rows
-                ...(evaluation?.grid?.indicatori || []).map((ind: Indicatore) =>
-                  [
-                  ind.descrizione,
-                  `${ind.voto} / ${ind.valore}`,
-                ]),
+                ...(evaluation?.grid?.indicatori || [])
+                  .map((ind: Indicatore) => [
+                    ind.descrizione,
+                    `${ind.voto} / ${ind.valore}`,
+                  ]),
                 // Footer Row for total
                 [
                   {text: "Voto Finale", bold: true, alignment: "right"},
