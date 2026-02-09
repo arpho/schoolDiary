@@ -6,112 +6,117 @@
 
 /* Stili specifici per il componente */
 .generalita {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
 }
 
 .indicatore {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .indicatore .value {
-    text-align: center;
-    width: 100%;
+  text-align: center;
+  width: 100%;
 }
 
 .generalita .label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .generalita .value {
-    font-weight: normal;
-    width: 100%;
-    min-height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+  font-weight: normal;
+  width: 100%;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 /* Stili per la grid */
 ion-grid {
-    --ion-grid-padding: 0;
-    width: 100%;
+  --ion-grid-padding: 0;
+  width: 100%;
 }
 
 ion-row {
-    --ion-grid-padding: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: nowrap; /* Impedisce il wrapping delle colonne */
+  --ion-grid-padding: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: nowrap;
+  /* Impedisce il wrapping delle colonne */
 }
 
 ion-col {
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
-    font-weight: normal;
-    min-width: 150px;
-    flex-shrink: 0; /* Impedisce il ridimensionamento delle colonne */
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  font-weight: normal;
+  min-width: 150px;
+  flex-shrink: 0;
+  /* Impedisce il ridimensionamento delle colonne */
 }
 
 h2 {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
-    font-weight: normal;
-    margin: 0;
-    padding: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  font-weight: normal;
+  margin: 0;
+  padding: 10px;
 }
 
 .section {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bolder;
-    text-align: center;
-    padding: 10px;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bolder;
+  text-align: center;
+  padding: 10px;
+  width: 100%;
 }
 
 .loader {
   transform: rotateZ(45deg);
   perspective: 1000px;
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  color: #fff;
+  width: 100px;
+  height: 100px;
+  color: #333;
 }
-  .loader:before,
-  .loader:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: inherit;
-    height: inherit;
-    border-radius: 50%;
-    transform: rotateX(70deg);
-    animation: 1s spin linear infinite;
-  }
-  .loader:after {
-    color: #FF3D00;
-    transform: rotateY(70deg);
-    animation-delay: .4s;
-  }
+
+.loader:before,
+.loader:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: 1s spin linear infinite;
+}
+
+.loader:after {
+  color: #FF3D00;
+  transform: rotateY(70deg);
+  animation-delay: .4s;
+}
 
 @keyframes rotate {
   0% {
     transform: translate(-50%, -50%) rotateZ(0deg);
   }
+
   100% {
     transform: translate(-50%, -50%) rotateZ(360deg);
   }
@@ -121,46 +126,68 @@ h2 {
   0% {
     transform: translate(-50%, -50%) rotate(0deg);
   }
+
   100% {
     transform: translate(-50%, -50%) rotate(-360deg);
   }
 }
 
 @keyframes spin {
+
   0%,
   100% {
     box-shadow: .2em 0px 0 0px currentcolor;
   }
+
   12% {
     box-shadow: .2em .2em 0 0 currentcolor;
   }
+
   25% {
     box-shadow: 0 .2em 0 0px currentcolor;
   }
+
   37% {
     box-shadow: -.2em .2em 0 0 currentcolor;
   }
+
   50% {
     box-shadow: -.2em 0 0 0 currentcolor;
   }
+
   62% {
     box-shadow: -.2em -.2em 0 0 currentcolor;
   }
+
   75% {
     box-shadow: 0px -.2em 0 0 currentcolor;
   }
+
   87% {
     box-shadow: .2em -.2em 0 0 currentcolor;
   }
 }
 
 
-  
 
-  ion-toolbar {
-    --min-height: 70px;  // Imposta l'altezza desiderata (es. 80px invece del valore predefinito)
-    --padding-top: 10px;  // Aggiungi un po' di padding in alto
-    --padding-bottom: 10px;  // Aggiungi un po' di padding in basso
-  }
 
-  
+ion-toolbar {
+  --min-height: 70px; // Imposta l'altezza desiderata (es. 80px invece del valore predefinito)
+  --padding-top: 10px; // Aggiungi un po' di padding in alto
+  --padding-bottom: 10px; // Aggiungi un po' di padding in basso
+}
+
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  /* Semi-transparent white backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  /* Ensure it's on top of everything */
+}

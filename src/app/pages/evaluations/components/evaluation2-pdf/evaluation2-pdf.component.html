@@ -12,9 +12,6 @@
     <ion-title align="center">stampa valutazione</ion-title>
 
     <ion-buttons slot="end">
-      @if(showSpinner()){
-      <span class="loader"></span>
-      } @else {
       <ion-button shape="round" fill="solid" color="danger" (click)="decreaseFontSize()">
         <ion-icon slot="icon-only" name="remove-circle"></ion-icon>
       </ion-button>
@@ -26,7 +23,7 @@
       <ion-button shape="round" fill="solid" color="secondary" (click)="generatePdf()">
         <ion-icon slot="icon-only" name="print"></ion-icon>
       </ion-button>
-      }
+
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -104,4 +101,11 @@
 
   </ion-grid>
 </div>
+
+@if(showSpinner()){
+<div class="spinner-overlay">
+  <span class="loader"></span>
+</div>
+}
+
 

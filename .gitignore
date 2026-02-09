@@ -83,3 +83,5 @@ functions/lib/.env
 functions/test-sendActivationLink.js
 
 functions/test-sendActivationLink-http.js
+
+test_output.txt
