@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { SwUpdate } from '@angular/service-worker';
+import { of } from 'rxjs';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app.component';
@@ -22,7 +24,14 @@ describe('AppComponent', () => {
         { provide: ClassiService, useValue: {} },
         { provide: UsersService, useValue: {} },
         { provide: ActivitiesService, useValue: {} },
-        { provide: Messaging, useValue: {} }
+        { provide: Messaging, useValue: {} },
+        {
+          provide: SwUpdate,
+          useValue: {
+            isEnabled: false,
+            versionUpdates: of()
+          }
+        }
       ]
     }).compileComponents();
 
