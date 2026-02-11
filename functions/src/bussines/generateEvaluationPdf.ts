@@ -2,7 +2,8 @@ import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import {getFirestore} from "firebase-admin/firestore";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const PdfPrinter = require("pdfmake");
+const PdfPrinterLib = require("pdfmake/js/Printer");
+const PdfPrinter = PdfPrinterLib.default || PdfPrinterLib;
 import {TDocumentDefinitions} from "pdfmake/interfaces";
 
 // Define fonts - we need to fetch them from somewhere or encode them
@@ -54,7 +55,7 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
 
     try {
       // 1. Fetch Evaluation Data
-      const evalDoc = await db.collection("evaluations")
+      const evalDoc = await db.collection("valutazioni")
         .doc(evaluationKey).get();
       if (!evalDoc.exists) {
         throw new Error("Evaluation not found");
@@ -67,7 +68,7 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
       let teacherName = "Unknown Teacher";
 
       if (evaluation?.studentKey) {
-        const studentDoc = await db.collection("users")
+        const studentDoc = await db.collection("userProfiles")
           .doc(evaluation.studentKey).get();
         if (studentDoc.exists) {
           const s = studentDoc.data();
@@ -84,7 +85,7 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
         }
       }
       if (evaluation?.teacherKey) {
-        const teacherDoc = await db.collection("users")
+        const teacherDoc = await db.collection("userProfiles")
           .doc(evaluation.teacherKey).get();
         if (teacherDoc.exists) {
           const t = teacherDoc.data();
@@ -95,12 +96,17 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
 
       // 3. Prepare PDF Content
       const printer = new PdfPrinter(fonts);
-      const evalDate = evaluation?.data ?
-        new Date(evaluation.data.toDate()).toLocaleDateString("it-IT") : "";
+      let evalDate = "";
+      if (evaluation?.data) {
+        if (typeof evaluation.data.toDate === "function") {
+          evalDate = evaluation.data.toDate().toLocaleDateString("it-IT");
+        } else {
+          evalDate = new Date(evaluation.data).toLocaleDateString("it-IT");
+        }
+      }
 
       const docDefinition: TDocumentDefinitions = {
         content: [
-          {text: "Stampa Valutazione", style: "header", alignment: "center"},
           {
             text: evaluation?.description || "",
             style: "subheader",
@@ -126,7 +132,7 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
               {
                 width: "*",
                 text: [
-                  {text: "Data:\n", bold: true},
+                  {text: "Data di svolgimento della prova:\n", bold: true},
                   evalDate,
                 ],
               },
@@ -158,7 +164,7 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
               body: [
                 // Header
                 [
-                  {text: "Descrizione", bold: true},
+                  {text: "Descrizione", bold: true, alignment: "center"},
                   {text: "Voto / Valore", bold: true},
                 ],
                 // Data Rows
@@ -198,7 +204,7 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
       };
 
       // 4. Generate PDF
-      const pdfDoc = printer.createPdfKitDocument(docDefinition);
+      const pdfDoc = await printer.createPdfKitDocument(docDefinition);
 
       return new Promise((resolve, reject) => {
         const chunks: Buffer[] = [];

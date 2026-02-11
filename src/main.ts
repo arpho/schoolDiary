@@ -45,6 +45,7 @@ import {
   getFirestore,
   provideFirestore
 } from '@angular/fire/firestore';
+import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { provideMessaging, getMessaging } from '@angular/fire/messaging';
 import { addIcons } from 'ionicons';
 import {
@@ -88,6 +89,7 @@ bootstrapApplication(AppComponent, {
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
+    provideFunctions(() => getFunctions()),
     provideMessaging(() => getMessaging()),
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }, provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

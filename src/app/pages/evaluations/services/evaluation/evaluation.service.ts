@@ -15,6 +15,7 @@ import {
 } from '@angular/fire/firestore';
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
+import { ToastController } from '@ionic/angular/standalone';
 
 export interface EvaluationCount {
   averageGrade: number;
@@ -32,6 +33,7 @@ export class EvaluationService {
   private evaluationCache = new Map<string, Evaluation[]>();
   private loadingPromises = new Map<string, Promise<Evaluation[]>>();
   private firestore = inject(Firestore);
+  private toastController = inject(ToastController);
   private collectionName = 'valutazioni';
 
   // Store Firebase API functions to avoid injection context warnings
@@ -438,5 +440,140 @@ export class EvaluationService {
       });
       callback(evaluations);
     });
+  }
+
+  /**
+   * Genera il PDF per una valutazione utilizzando un Web Worker.
+   * @param evaluationKey Chiave della valutazione.
+   * @returns Promise con la stringa Base64 del PDF.
+   */
+  async generatePdf(evaluationKey: string): Promise<string> {
+    try {
+      // 1. Fetch Evaluation Data
+      const evaluation = await this.fetchEvaluation(evaluationKey);
+      
+      // 2. Fetch Related Data (Student, Teacher, Class)
+      let studentName = "Unknown Student";
+      let className = "Unknown Class";
+      let teacherName = "Unknown Teacher";
+
+      if (evaluation.studentKey) {
+        const studentDoc = await this.getDocFn(this.docFn(this.firestore, "userProfiles", evaluation.studentKey));
+        if (studentDoc.exists()) {
+          const s = studentDoc.data();
+          studentName = `${s['lastName']} ${s['firstName']}`;
+        }
+      }
+
+      if (evaluation.classKey) {
+        const classDoc = await this.getDocFn(this.docFn(this.firestore, "classi", evaluation.classKey));
+        if (classDoc.exists()) {
+          const c = classDoc.data();
+          className = c['classe'] || "";
+        }
+      }
+
+      if (evaluation.teacherKey) {
+        const teacherDoc = await this.getDocFn(this.docFn(this.firestore, "userProfiles", evaluation.teacherKey));
+        if (teacherDoc.exists()) {
+          const t = teacherDoc.data();
+          teacherName = `${t['lastName']} ${t['firstName']}`;
+        }
+      }
+
+      // 3. Generate PDF via Web Worker
+      return new Promise((resolve, reject) => {
+        if (typeof Worker !== 'undefined') {
+          // Calculate relative path to worker. 
+          // Service is in src/app/pages/evaluations/services/evaluation/
+          // Worker is in src/app/
+          const worker = new Worker(new URL('../../../../pdf-generator.worker', import.meta.url));
+          
+          let evalDate: string | Date = "";
+          if (evaluation.data) {
+             // Handle Firestore Timestamp or Date or string
+             if (typeof (evaluation.data as any).toDate === "function") {
+               evalDate = (evaluation.data as any).toDate();
+             } else {
+               evalDate = evaluation.data;
+             }
+          }
+
+          const workerData = {
+            description: evaluation.description,
+            date: evalDate,
+            grid: evaluation.grid,
+            studentName,
+            className,
+            teacherName
+          };
+
+          // Timeout after 60 seconds
+          const timeoutPromise = new Promise<string>((_, reject) => {
+             setTimeout(() => reject(new Error('PDF generation timed out')), 60000); 
+          });
+
+          console.log("PDF Generator: Starting race between worker and timeout...");
+          
+          Promise.race([
+            new Promise<string>((resolve, reject) => {
+               worker.onmessage = ({ data }) => {
+                if (data.error) {
+                  reject(data.error);
+                } else if (data.base64) {
+                  resolve(data.base64);
+                } else if (data.blob) {
+                  const reader = new FileReader();
+                  reader.readAsDataURL(data.blob);
+                  reader.onloadend = () => {
+                    const base64data = reader.result as string;
+                    // Ensure we strip the prefix if it exists
+                    const base64Content = base64data.includes(',') ? base64data.split(',')[1] : base64data;
+                    resolve(base64Content);
+                  };
+                  reader.onerror = (e) => reject(e);
+                }
+                worker.terminate();
+              };
+              
+              worker.onerror = (err) => {
+                  console.error('Worker Error:', err);
+                  reject(new Error(`Worker error: ${err.message}`));
+                  worker.terminate();
+              };
+
+              worker.onmessageerror = (err) => {
+                  console.error('Worker Message Error:', err);
+                  reject(new Error('Worker message error'));
+                  worker.terminate();
+              };
+
+              console.log("Posting message to worker...");
+              worker.postMessage(workerData);
+            }),
+            timeoutPromise
+          ]).then((result) => resolve(result)).catch((err) => {
+             console.error("PDF Generation failed:", err);
+             worker.terminate();
+             reject(err as string);
+          });
+
+        } else {
+          // Fallback if workers are not supported
+          reject(new Error("Web Workers not supported"));
+        }
+      });
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      const toast = await this.toastController.create({
+        message: 'Errore durante la generazione del PDF',
+        duration: 3000,
+        color: 'danger',
+        position: 'bottom'
+      });
+      await toast.present();
+      throw error;
+    }
   }
 }

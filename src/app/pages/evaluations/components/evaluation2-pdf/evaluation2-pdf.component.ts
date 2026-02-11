@@ -9,7 +9,6 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
-import { Functions, httpsCallable } from '@angular/fire/functions';
 import { archive, create, ellipsisVertical, eyeOutline, trash, homeOutline, text, addCircle, removeCircle } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { print } from 'ionicons/icons';
@@ -71,8 +70,7 @@ export class Evaluation2PdfComponent implements OnInit {
     private router: Router,
     private $class: ClassiService,
     private route: ActivatedRoute,
-    private $evaluation: EvaluationService,
-    private functions: Functions
+    private $evaluation: EvaluationService
 
   ) {
     effect(async () => {
@@ -119,9 +117,7 @@ export class Evaluation2PdfComponent implements OnInit {
 
     if (evaluationKey) {
       try {
-        const generatePdfFn = httpsCallable<{ evaluationKey: string }, { pdfBase64: string }>(this.functions, 'generateEvaluationPdf');
-        const result = await generatePdfFn({ evaluationKey });
-        const pdfBase64 = result.data.pdfBase64;
+        const pdfBase64 = await this.$evaluation.generatePdf(evaluationKey);
 
         // Convert Base64 to Blob
         const byteCharacters = atob(pdfBase64);
