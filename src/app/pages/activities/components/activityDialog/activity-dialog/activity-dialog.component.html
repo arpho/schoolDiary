@@ -12,7 +12,8 @@
 <ion-content class="ion-padding">
   <div class="modal-content">
     <!-- Error Message -->
-    <div class="error-message ion-margin-bottom" role="alert" [class.hidden]="!errorMessage">
+    @if (errorMessage) {
+    <div class="error-message ion-margin-bottom" role="alert">
       <ion-item color="danger" lines="none" class="ion-no-padding">
         <ion-icon name="warning" slot="start"></ion-icon>
         <ion-label class="ion-text-wrap">
@@ -20,6 +21,7 @@
         </ion-label>
       </ion-item>
     </div>
+    }
 
   <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
     <ion-card class="form-card">
@@ -190,7 +192,6 @@
                     class="datetime-picker"
                     presentation="date"
                     [value]="activityForm.get('date')?.value"
-                    [min]="minDate"
                     [max]="dueDateControl?.value || ''"
                     (ionChange)="onDatetimeChange($event, 'date')"
                     (ionCancel)="currentDatetimeField = null"
