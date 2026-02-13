@@ -13,7 +13,7 @@ interface AgendaEvent {
 }
 
 export const dailyAgendaNotifications = onSchedule({
-  schedule: "every day 00:00",
+  schedule: "every day 08:00",
   timeZone: "Europe/Rome",
 }, async () => {
   const db = getFirestore();

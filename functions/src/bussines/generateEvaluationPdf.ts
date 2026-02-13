@@ -132,7 +132,7 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
               {
                 width: "*",
                 text: [
-                  {text: "Data di svolgimento della prova:\n", bold: true},
+                  {text: "Data di valutazione:\n", bold: true},
                   evalDate,
                 ],
               },
