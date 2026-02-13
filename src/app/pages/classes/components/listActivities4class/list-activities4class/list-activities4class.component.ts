@@ -1,4 +1,4 @@
-import { Component, effect, input, OnDestroy, signal, WritableSignal } from '@angular/core';
+import { Component, effect, input, OnDestroy, signal, WritableSignal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
@@ -18,19 +18,27 @@ import {
   ActionSheetController,
   ModalController,
   AlertController,
-  ToastController
+  ToastController,
+  IonFab,
+  IonFabButton
 } from '@ionic/angular/standalone';
 import {
   ellipsisVertical,
   create,
   trash,
   eye,
-  close, calendarOutline
+  close, calendarOutline,
+  add
 } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
 import { ActivityDialogComponent } from 'src/app/pages/activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { UsersService } from 'src/app/shared/services/users.service';
+import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
+import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
 
 /**
  * Componente per visualizzare e gestire le attività (compiti, verifiche) di una classe.
@@ -47,7 +55,9 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
     IonList,
     IonItem,
     IonLabel,
-    IonIcon
+    IonIcon,
+    IonFab,
+    IonFabButton
   ]
 })
 export class ListActivities4classComponent implements OnDestroy {
@@ -55,6 +65,8 @@ export class ListActivities4classComponent implements OnDestroy {
   teacherkey = input<string>('');
   activitieslist = signal<ActivityModel[]>([]);
   activitiesSubscription: Subscription = new Subscription();
+  private $users = inject(UsersService);
+  private $subjects = inject(SubjectService);
 
   constructor(
     private activitiesService: ActivitiesService,
@@ -64,6 +76,7 @@ export class ListActivities4classComponent implements OnDestroy {
     private toastCtrl: ToastController,
     private router: Router
   ) {
+    addIcons({ add, create, trash, close, calendarOutline });
     // Le icone sono registrate globalmente in app.module.ts
     console.log("activityies list")
     // Effetto che si attiva quando i valori cambiano
@@ -128,17 +141,42 @@ export class ListActivities4classComponent implements OnDestroy {
   }
 
   /**
-   * Modifica un'attività esistente
+   * Crea una nuova attività
    */
-  private async editActivity(activity: ActivityModel) {
-    // Carica i dettagli completi dell'attività
-    const activityDetails = await this.activitiesService.getActivity(activity.key);
+  async createActivity() {
+    const user = await this.$users.getLoggedUser();
+    let assignedClasses: AssignedClass[] = [];
+    let subjects: SubjectModel[] = [];
+
+    if (user && user.assignedClasses) {
+      // Cast AssignedClass[] to ClasseModel[] since AssignedClass extends/is compatible in this context
+      // or we map it if necessary. Based on UsersService, assignedClasses are populated with details.
+      assignedClasses = user.assignedClasses as unknown as AssignedClass[];
+      
+      // Extract all unique subject keys from assigned classes
+      // Adding safe navigation and logging. using reduce instead of flatMap for compatibility
+      const allSubjectKeys = [...new Set(assignedClasses.reduce((acc: string[], c) => {
+         return acc.concat(c.subjectsKey || []);
+      }, []))];
+      
+      if (allSubjectKeys.length > 0) {
+        subjects = await this.$subjects.fetchSubjectsByKeys(allSubjectKeys);
+      }
+    }
+
+
+    // Fallback if no assigned classes found, use current one
+    if (assignedClasses.length === 0 && this.classkey()) {
+      // Create a minimal AssignedClass/ClasseModel
+      const currentClass = new AssignedClass({ key: this.classkey() });
+      assignedClasses = [currentClass];
+    }
 
     const modal = await this.modalCtrl.create({
       component: ActivityDialogComponent,
       componentProps: {
-        activity: activityDetails,
-        listaClassi: [{ key: this.classkey() } as ClasseModel], // Crea un oggetto ClasseModel con la chiave della classe
+        listaClassi: assignedClasses,
+        listaMaterie: subjects,
         selectedClass: this.classkey()
       }
     });
@@ -146,7 +184,55 @@ export class ListActivities4classComponent implements OnDestroy {
     await modal.present();
 
     const { data } = await modal.onWillDismiss();
-    if (data?.saved) {
+    if (data) { // Se data esiste (anche se non ha property saved esplicita, assumiamo sia l'oggetto salvato o flag)
+       this.updateActivities();
+    }
+  }
+
+  /**
+   * Modifica un'attività esistente
+   */
+  private async editActivity(activity: ActivityModel) {
+    // Carica i dettagli completi dell'attività
+    const activityDetails = await this.activitiesService.getActivity(activity.key);
+    
+    const user = await this.$users.getLoggedUser();
+    let assignedClasses: AssignedClass[] = [];
+    let subjects: SubjectModel[] = [];
+
+    if (user && user.assignedClasses) {
+      assignedClasses = user.assignedClasses as unknown as AssignedClass[];
+      
+      // Extract all unique subject keys from assigned classes
+      const allSubjectKeys = [...new Set(assignedClasses.reduce((acc: string[], c) => {
+        return acc.concat(c.subjectsKey || []);
+      }, []))];
+      
+      if (allSubjectKeys.length > 0) {
+        subjects = await this.$subjects.fetchSubjectsByKeys(allSubjectKeys);
+      }
+    }
+    
+     if (assignedClasses.length === 0 && this.classkey()) {
+      const currentClass = new AssignedClass({ key: this.classkey() });
+      assignedClasses = [currentClass];
+    }
+
+
+    const modal = await this.modalCtrl.create({
+      component: ActivityDialogComponent,
+      componentProps: {
+        activity: activityDetails,
+        listaClassi: assignedClasses,
+        listaMaterie: subjects, 
+        selectedClass: this.classkey()
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.saved || data) {
       // Ricarica le attività se è stato salvato qualcosa
       this.updateActivities();
     }
