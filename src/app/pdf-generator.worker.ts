@@ -9,15 +9,15 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 console.log('Worker: pdfFonts import:', pdfFonts);
 
 if ((pdfFonts as any).pdfMake && (pdfFonts as any).pdfMake.vfs) {
-    (pdfMake as any).vfs = (pdfFonts as any).pdfMake.vfs;
+  (pdfMake as any).vfs = (pdfFonts as any).pdfMake.vfs;
 } else if ((pdfFonts as any).vfs) {
-    (pdfMake as any).vfs = (pdfFonts as any).vfs;
+  (pdfMake as any).vfs = (pdfFonts as any).vfs;
 } else if ((pdfFonts as any).default && (pdfFonts as any).default.pdfMake && (pdfFonts as any).default.pdfMake.vfs) {
-    (pdfMake as any).vfs = (pdfFonts as any).default.pdfMake.vfs;
+  (pdfMake as any).vfs = (pdfFonts as any).default.pdfMake.vfs;
 } else {
-    // Fallback: Assume pdfFonts IS the vfs object (based on logs)
-    console.log('Worker: Assigning pdfFonts directly to vfs');
-    (pdfMake as any).vfs = pdfFonts;
+  // Fallback: Assume pdfFonts IS the vfs object (based on logs)
+  console.log('Worker: Assigning pdfFonts directly to vfs');
+  (pdfMake as any).vfs = pdfFonts;
 }
 
 if (!(pdfMake as any).vfs) {
@@ -42,7 +42,7 @@ export interface EvaluationData {
 }
 
 // Global error handler
-self.onerror = function(message, source, lineno, colno, error) {
+self.onerror = function (message, source, lineno, colno, error) {
   console.error('Worker: Global Error:', { message, source, lineno, colno, error });
 };
 
@@ -55,9 +55,9 @@ addEventListener('message', ({ data }: { data: EvaluationData }) => {
     const pdfDocGenerator = pdfMake.createPdf(docDefinition);
 
     (pdfDocGenerator as any).getBase64((data: string) => {
-            postMessage({ base64: data });
+      postMessage({ base64: data });
     });
-        
+
   } catch (error) {
     console.error('Worker: Error generating PDF', error);
     postMessage({ error: error });
@@ -98,7 +98,7 @@ function generateDocDefinition(evaluation: EvaluationData): any {
           {
             width: "*",
             text: [
-              { text: "Data di svolgimento della prova:\n", bold: true },
+              { text: "Data di valutazione:\n", bold: true },
               evalDate,
             ],
           },
