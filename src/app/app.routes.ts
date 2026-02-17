@@ -131,5 +131,9 @@ export const routes: Routes = [
   {
     path: 'progress/:studentKey/:subjectsKey',
     loadComponent: () => import('./pages/evaluations/pages/progress/progress.page').then(m => m.ProgressPage)
+  },
+  {
+    path: 'timetable',
+    loadComponent: () => import('./pages/timetable/timetable.page').then( m => m.TimetablePage)
   }
 ];

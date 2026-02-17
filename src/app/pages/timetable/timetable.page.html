@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Orario Settimanale</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">timetable</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  @if (loading()) {
+  <div class="ion-text-center ion-padding">
+    <ion-spinner></ion-spinner>
+  </div>
+  } @else {
+  @if (timetable().length === 0) {
+  <div class="ion-text-center ion-padding">
+    <ion-text color="medium">
+      <p>Nessuno slot orario trovato.</p>
+    </ion-text>
+  </div>
+  } @else {
+  <div class="ion-padding" style="height: 100%;">
+    <app-timetable-toast-ui [timetable]="timetable()"></app-timetable-toast-ui>
+  </div>
+  }
+  }
+
+</ion-content>

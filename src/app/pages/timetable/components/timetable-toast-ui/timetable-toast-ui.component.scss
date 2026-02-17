@@ -1,0 +1,48 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.calendar-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--ion-background-color);
+}
+
+.controls-toolbar {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+
+    ion-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+        h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+    }
+}
+
+.calendar-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    /* Toast UI Calendar CSS overrides if needed */
+}
