@@ -29,8 +29,13 @@ import {
   add,
   calendarOutline,
   trendingUp,
-  archive
+  archive,
+  calendar
 } from 'ionicons/icons';
+import { StudentAverageGradeDisplayComponent } from '../student-average-grade-display/student-average-grade-display.component';
+import { CommonModule } from '@angular/common';
+import { IonSelect, IonSelectOption, IonDatetime, IonModal } from '@ionic/angular/standalone';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 /**
  * Componente per visualizzare gli studenti con PDP/BES/DSA/ADHD.
  * Filtra automaticamente gli studenti della classe che hanno queste segnalazioni.
@@ -51,8 +56,15 @@ import {
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
+    IonIcon,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    StudentAverageGradeDisplayComponent,
+    CommonModule,
+    IonSelect,
+    IonSelectOption,
+    IonDatetime,
+    IonModal
   ]
 })
 export class StudentsWithPdPComponent implements OnInit {
@@ -63,6 +75,12 @@ export class StudentsWithPdPComponent implements OnInit {
   classe = input<ClasseModel>(new ClasseModel());
   students = signal<UserModel[]>([]);
   teacherKey = signal<string>('');
+  subjects = signal<SubjectModel[]>([]);
+  selectedSubjectKey = signal<string>('all');
+  dataInizioPeriodo = signal<string>(
+    localStorage.getItem('dataInizioPeriodo') ||
+    new Date(new Date().getFullYear(), 0, 2).toISOString()
+  );
 
   constructor() {
     addIcons({
@@ -96,8 +114,23 @@ export class StudentsWithPdPComponent implements OnInit {
     });
 
     this.$users.getLoggedUser().then(user => {
-      if (user) this.teacherKey.set(user.key);
+      if (user) {
+        this.teacherKey.set(user.key);
+        // Load subjects when teacher is available
+        const classKey = this.classe().key;
+        if (classKey) {
+          this.$users.getSubjectsByTeacherAndClass(user.key, classKey).then(subjects => {
+            this.subjects.set(subjects);
+          });
+        }
+      }
     });
+  }
+
+  onDateChange(event: any) {
+    const newDate = event.detail.value;
+    this.dataInizioPeriodo.set(newDate);
+    localStorage.setItem('dataInizioPeriodo', newDate);
   }
 
   formName(user: UserModel) {
