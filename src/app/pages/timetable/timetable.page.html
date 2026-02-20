@@ -27,7 +27,11 @@
   </div>
   } @else {
   <div class="ion-padding" style="height: 100%;">
-    <app-timetable-toast-ui [timetable]="timetable()" (eventClick)="openTimeslotDialog($event)"></app-timetable-toast-ui>
+    <app-timetable-toast-ui 
+      [timetable]="timetable()" 
+      [agendaEvents]="agendaEvents()"
+      (eventClick)="onEventClick($event)">
+    </app-timetable-toast-ui>
   </div>
   }
   }

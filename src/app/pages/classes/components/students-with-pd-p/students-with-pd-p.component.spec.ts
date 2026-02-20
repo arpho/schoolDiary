@@ -8,7 +8,9 @@ describe('StudentsWithPdPComponent', () => {
   let fixture: ComponentFixture<StudentsWithPdPComponent>;
 
   beforeEach(waitForAsync(() => {
-    const usersSpy = jasmine.createSpyObj('UsersService', ['getUsersOnRealTime']);
+    const usersSpy = jasmine.createSpyObj('UsersService', ['getUsersOnRealTime', 'getLoggedUser', 'getSubjectsByTeacherAndClass']);
+    usersSpy.getLoggedUser.and.returnValue(Promise.resolve({ key: 'test-teacher' }));
+    usersSpy.getSubjectsByTeacherAndClass.and.returnValue(Promise.resolve([]));
 
     TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), StudentsWithPdPComponent],

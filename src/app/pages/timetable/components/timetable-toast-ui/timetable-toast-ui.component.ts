@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, input, ElementRef, ViewChild, After
 import { CommonModule } from '@angular/common';
 import Calendar from '@toast-ui/calendar';
 import { TimetableModel } from '../../models/timetable.model';
+import { AgendaEvent } from '../../../agenda/models/agendaEvent';
 import { IonButtons, IonButton, IonIcon, IonText, IonSegment, IonSegmentButton, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { chevronBack, chevronForward } from 'ionicons/icons';
@@ -23,7 +24,8 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
     @ViewChild('calendar') calendarContainer!: ElementRef;
 
     timetable = input.required<TimetableModel[]>();
-    eventClick = output<TimetableModel>();
+    agendaEvents = input<AgendaEvent[]>([]);
+    eventClick = output<TimetableModel | AgendaEvent>();
 
     private calendarInstance: Calendar | null = null;
     currentDateDisplay = signal<string>('');
@@ -39,11 +41,14 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
 
         effect(() => {
             const timetable = this.timetable();
+            const agendaEvents = this.agendaEvents();
             // We need to fetch subjects to display names/colors
-            this.preloadData(timetable).then(() => {
+            this.preloadData(timetable, agendaEvents).then(() => {
                 if (this.calendarInstance) {
                     this.calendarInstance.clear();
-                    this.calendarInstance.createEvents(this.transformEvents(timetable));
+                    const ttEvents = this.transformEvents(timetable);
+                    const agEvents = this.transformAgendaEvents(agendaEvents);
+                    this.calendarInstance.createEvents([...ttEvents, ...agEvents]);
                     this.updateDateDisplay();
                 }
             });
@@ -58,9 +63,12 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         });
     }
 
-    async preloadData(timetable: TimetableModel[]) {
+    async preloadData(timetable: TimetableModel[], agendaEvents: AgendaEvent[] = []) {
         const subjectKeys = new Set(timetable.map(t => t.subjectKey).filter(k => !!k));
-        const classKeys = new Set(timetable.map(t => t.classKey).filter(k => !!k));
+        const classKeys = new Set([
+            ...timetable.map(t => t.classKey).filter(k => !!k),
+            ...agendaEvents.map(a => a.classKey).filter(k => !!k)
+        ]);
         
         // Filter out keys we already have
         const subjectsToFetch = Array.from(subjectKeys).filter(key => !this.subjectsCache.has(key));
@@ -113,13 +121,62 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 dayNames: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
             },
             template: {
-                time(event) {
-                    return `<div style="color: ${event.color || 'white'}; font-size: 12px; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center;">${event.title}</div>`;
+                time: (event: any) => {
+                    let html = `<div style="color: ${event.color || 'white'}; font-size: 12px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; position: relative;">`;
+                    html += `<div>${event.title}</div>`;
+
+                    if (event.calendarId === '1' && event.raw) {
+                        try {
+                            const slotStart = new Date(event.start).getTime();
+                            const slotEnd = new Date(event.end).getTime();
+
+                            const matchingAgenda = (this.agendaEvents() || []).filter(ag => {
+                                if (ag.allDay) return false;
+                                if (ag.classKey && event.raw.classKey && ag.classKey !== event.raw.classKey) return false;
+                                const agStart = new Date(ag.dataInizio).getTime();
+                                return agStart >= slotStart && agStart < slotEnd;
+                            });
+
+                            if (matchingAgenda.length > 0) {
+                                html += `<div style="margin-top: auto; border-top: 1px solid rgba(0,0,0,0.2); width: 100%; padding-top: 2px; text-align: left;">`;
+                                matchingAgenda.forEach(ag => {
+                                    const agColor = this.getAgendaEventColor(ag.type);
+                                    html += `<div data-agenda-id="${ag.id || ag.key}" style="background: ${agColor}; border-radius: 4px; padding: 2px 4px; font-size: 10px; margin-top: 2px; cursor: pointer; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: auto;">${ag.title}</div>`;
+                                });
+                                html += `</div>`;
+                            }
+                        } catch (e) {
+                            console.error('Error rendering embedded agenda', e);
+                        }
+                    }
+
+                    html += `</div>`;
+                    return html;
                 }
             }
         });
 
         this.calendarInstance.on('clickEvent', (eventObj: any) => {
+            const nativeEvent = eventObj.nativeEvent as MouseEvent;
+            if (nativeEvent && nativeEvent.target) {
+                const target = nativeEvent.target as HTMLElement;
+                const agendaEl = target.closest('[data-agenda-id]');
+                if (agendaEl) {
+                    const agendaId = agendaEl.getAttribute('data-agenda-id');
+                    const agEvent = this.agendaEvents().find(a => (a.id || a.key) === agendaId);
+                    if (agEvent) {
+                        this.eventClick.emit(agEvent);
+                        return;
+                    }
+                }
+            }
+            
+            const agEvent = this.agendaEvents().find(a => (a.id || a.key) === eventObj.event.id);
+            if (agEvent) {
+                this.eventClick.emit(agEvent);
+                return;
+            }
+            
             const originalEvent = this.timetable().find(t => t.key === eventObj.event.id);
             if (originalEvent) {
                 this.eventClick.emit(originalEvent);
@@ -226,12 +283,95 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 borderColor: color,
                 color: textColor,
                 isReadOnly: true,
-                recurrenceRule: `FREQ=WEEKLY;BYDAY=${recurrenceDay}`
+                recurrenceRule: `FREQ=WEEKLY;BYDAY=${recurrenceDay}`,
+                raw: item
             });
         });
 
         console.log("Generated Calendar Events:", events);
         return events;
+    }
+
+    private transformAgendaEvents(agendaEvents: AgendaEvent[]): any[] {
+        const dayIndexMap: { [key: string]: number } = {
+            'Sunday': 0, 'Domenica': 0,
+            'Monday': 1, 'Lunedì': 1, 'Lunedi': 1,
+            'Tuesday': 2, 'Martedì': 2, 'Martedi': 2,
+            'Wednesday': 3, 'Mercoledì': 3, 'Mercoledi': 3,
+            'Thursday': 4, 'Giovedì': 4, 'Giovedi': 4,
+            'Friday': 5, 'Venerdì': 5, 'Venerdi': 5,
+            'Saturday': 6, 'Sabato': 6
+        };
+        const timetable = this.timetable();
+        const standaloneEvents: any[] = [];
+
+        agendaEvents.forEach(item => {
+            let isEmbedded = false;
+            if (!item.allDay && item.dataInizio) {
+                const agStart = new Date(item.dataInizio);
+                const agTime = agStart.getHours() * 60 + agStart.getMinutes();
+                
+                const matchingSlot = timetable.find(tt => {
+                    const ttDayIndex = dayIndexMap[tt.day];
+                    if (ttDayIndex === undefined || ttDayIndex !== agStart.getDay()) return false;
+                    if (item.classKey && tt.classKey && item.classKey !== tt.classKey) return false;
+                    
+                    const [ttStartH, ttStartM] = tt.startTime.split(':').map(Number);
+                    const [ttEndH, ttEndM] = tt.endTime.split(':').map(Number);
+                    const ttStartMinutes = ttStartH * 60 + ttStartM;
+                    const ttEndMinutes = ttEndH * 60 + ttEndM;
+                    
+                    return agTime >= ttStartMinutes && agTime < ttEndMinutes;
+                });
+                if (matchingSlot) isEmbedded = true;
+            }
+            if (isEmbedded) return;
+
+            const classe = this.classesCache.get(item.classKey);
+            let classColor = this.getClassColor(item.classKey);
+            
+            // Generate a color fallback if needed
+            let color = classColor || this.getAgendaEventColor(item.type);
+
+            let title = '';
+            
+            if (classe) {
+                title += `${classe.year} ${classe.classe}<br>`;
+            }
+            title += item.title || 'Evento';
+
+            let displayTitle = `<strong>${title}</strong>`;
+            if (item.description) {
+                displayTitle += `<br><span style="font-size: 0.85em; opacity: 0.9;">${item.description}</span>`;
+            }
+
+            standaloneEvents.push({
+                id: item.id || item.key,
+                calendarId: '2',
+                title: displayTitle,
+                category: item.allDay ? 'allday' : 'time',
+                start: item.dataInizio,
+                end: item.dataFine,
+                backgroundColor: color,
+                borderColor: color,
+                color: '#FFFFFF',
+                isReadOnly: true
+            });
+        });
+        
+        return standaloneEvents;
+    }
+
+    private getAgendaEventColor(type: string): string {
+        switch (type) {
+            case 'homework': return 'var(--ion-color-primary)';
+            case 'test': return 'var(--ion-color-danger)';
+            case 'meeting': return 'var(--ion-color-warning)';
+            case 'interrogation': return 'var(--ion-color-tertiary)';
+            case 'note': return 'var(--ion-color-success)';
+            case 'other':
+            default: return 'var(--ion-color-medium)';
+        }
     }
 
     private getClassColor(classeKey?: string): string | undefined {

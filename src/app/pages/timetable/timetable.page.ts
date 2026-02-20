@@ -8,6 +8,8 @@ import { TimetableModel } from './models/timetable.model';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { TimetableToastUiComponent } from './components/timetable-toast-ui/timetable-toast-ui.component';
 import { TimeslotDialogComponent } from './components/timeslot-dialog/timeslot-dialog.component';
+import { AgendaService } from 'src/app/shared/services/agenda.service';
+import { AgendaEvent } from '../agenda/models/agendaEvent';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
 
@@ -21,11 +23,14 @@ import { add } from 'ionicons/icons';
 export class TimetablePage implements OnInit, OnDestroy {
   private timetableService = inject(TimetableService);
   private usersService = inject(UsersService);
+  private agendaService = inject(AgendaService);
 
   timetable = signal<TimetableModel[]>([]);
+  agendaEvents = signal<AgendaEvent[]>([]);
   loading = signal<boolean>(true);
 
   private unsubscribeTimetable: (() => void) | null = null;
+  private unsubscribeAgenda: (() => void) | null = null;
   private modalController = inject(ModalController);
 
   constructor() {
@@ -42,6 +47,21 @@ export class TimetablePage implements OnInit, OnDestroy {
         },
         [new QueryCondition('teacherKey', '==', user.key)]
       );
+
+      if (user.classesKey && user.classesKey.length > 0) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        this.unsubscribeAgenda = this.agendaService.getAgenda4targetedClassesOnrealtime(
+           (events) => {
+             this.agendaEvents.set(events);
+           },
+           [
+             new QueryCondition('classKey', 'in', user.classesKey),
+             new QueryCondition('dataFine', '>=', today.toISOString())
+           ]
+        );
+      }
     } else {
       this.loading.set(false);
     }
@@ -51,6 +71,29 @@ export class TimetablePage implements OnInit, OnDestroy {
     if (this.unsubscribeTimetable) {
       this.unsubscribeTimetable();
     }
+    if (this.unsubscribeAgenda) {
+      this.unsubscribeAgenda();
+    }
+  }
+
+  async onEventClick(item: TimetableModel | AgendaEvent) {
+    if (item instanceof AgendaEvent || 'type' in item && !('day' in item)) {
+        await this.openAgendaEventDialog(item as AgendaEvent);
+    } else {
+        await this.openTimeslotDialog(item as TimetableModel);
+    }
+  }
+
+  async openAgendaEventDialog(event: AgendaEvent) {
+    const modal = await this.modalController.create({
+      component: (await import('../../shared/components/agenda-event-input/agenda-event-input.component')).AgendaEventInputComponent,
+      componentProps: {
+        event: event,
+        classKey: event.classKey,
+        teacherKey: event.teacherKey
+      }
+    });
+    await modal.present();
   }
 
   async openTimeslotDialog(item?: TimetableModel) {
