@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{ item ? 'Modifica Slot Orario' : 'Nuovo Slot Orario' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <!-- Tipo di Slot -->
+    <ion-item>
+      <ion-select label="Tipo di Slot" label-placement="floating" [ngModel]="slotType()" (ngModelChange)="slotType.set($event)">
+        <ion-select-option value="lezione">Lezione</ion-select-option>
+        <ion-select-option value="ora_buca">Ora Buca</ion-select-option>
+        <ion-select-option value="intervallo">Intervallo</ion-select-option>
+        <ion-select-option value="ricevimento">Ricevimento</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Giorno della settimana -->
+    <ion-item>
+      <ion-select label="Giorno" label-placement="floating" [ngModel]="day()" (ngModelChange)="day.set($event)">
+        <ion-select-option value="Monday">Lunedì</ion-select-option>
+        <ion-select-option value="Tuesday">Martedì</ion-select-option>
+        <ion-select-option value="Wednesday">Mercoledì</ion-select-option>
+        <ion-select-option value="Thursday">Giovedì</ion-select-option>
+        <ion-select-option value="Friday">Venerdì</ion-select-option>
+        <ion-select-option value="Saturday">Sabato</ion-select-option>
+        <ion-select-option value="Sunday">Domenica</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Orari -->
+    <ion-item>
+      <ion-input type="time" label="Ora di Inizio" labelPlacement="floating" [ngModel]="startTime()" (ngModelChange)="startTime.set($event)"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="time" label="Ora di Fine" labelPlacement="floating" [ngModel]="endTime()" (ngModelChange)="endTime.set($event)"></ion-input>
+    </ion-item>
+
+    <!-- Selezione Classe (solo se Lezione) -->
+    @if(slotType() === 'lezione') {
+      <ion-item>
+        <ion-select label="Classe" label-placement="floating" [ngModel]="classKey()" (ngModelChange)="classKey.set($event); subjectKey.set('')">
+          @for(classe of assignedClasses(); track classe.key) {
+            <ion-select-option [value]="classe.key">{{ classe.year }} {{ classe.classe }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      
+      <!-- Selezione Materia -->
+      <ion-item>
+        <ion-select label="Materia" label-placement="floating" [disabled]="!classKey()" [ngModel]="subjectKey()" (ngModelChange)="subjectKey.set($event)">
+          @for(subject of availableSubjects(); track subject?.key) {
+            <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      
+      <!-- Aula -->
+      <ion-item>
+        <ion-input type="text" label="Aula/Laboratorio" labelPlacement="floating" [ngModel]="location()" (ngModelChange)="location.set($event)"></ion-input>
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>
+
+<!-- Footer -->
+<ion-footer>
+  <ion-toolbar>
+    @if (item) {
+      <ion-button expand="block" shape="round" color="danger" (click)="deleteSlot()" class="ion-margin">
+        Elimina
+      </ion-button>
+    }
+    <ion-button expand="block" shape="round" color="primary" [disabled]="!isFormValid()" (click)="save()" class="ion-margin">
+      {{ item ? 'Aggiorna' : 'Salva' }} Slot
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

@@ -8,6 +8,8 @@ import { chevronBack, chevronForward } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
+import { ClassiService } from 'src/app/pages/classes/services/classi.service';
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 
 @Component({
     selector: 'app-timetable-toast-ui',
@@ -21,13 +23,16 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
     @ViewChild('calendar') calendarContainer!: ElementRef;
 
     timetable = input.required<TimetableModel[]>();
+    eventClick = output<TimetableModel>();
 
     private calendarInstance: Calendar | null = null;
     currentDateDisplay = signal<string>('');
     currentView = signal<'day' | 'week'>('week'); // Default to week view for timetable
 
     private subjectService = inject(SubjectService);
+    private classiService = inject(ClassiService);
     private subjectsCache = new Map<string, SubjectModel>();
+    private classesCache = new Map<string, ClasseModel>();
 
     constructor() {
         addIcons({ chevronBack, chevronForward });
@@ -35,7 +40,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         effect(() => {
             const timetable = this.timetable();
             // We need to fetch subjects to display names/colors
-            this.preloadSubjects(timetable).then(() => {
+            this.preloadData(timetable).then(() => {
                 if (this.calendarInstance) {
                     this.calendarInstance.clear();
                     this.calendarInstance.createEvents(this.transformEvents(timetable));
@@ -53,14 +58,22 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         });
     }
 
-    async preloadSubjects(timetable: TimetableModel[]) {
+    async preloadData(timetable: TimetableModel[]) {
         const subjectKeys = new Set(timetable.map(t => t.subjectKey).filter(k => !!k));
+        const classKeys = new Set(timetable.map(t => t.classKey).filter(k => !!k));
+        
         // Filter out keys we already have
-        const keysToFetch = Array.from(subjectKeys).filter(key => !this.subjectsCache.has(key));
+        const subjectsToFetch = Array.from(subjectKeys).filter(key => !this.subjectsCache.has(key));
+        const classesToFetch = Array.from(classKeys).filter(key => !this.classesCache.has(key));
 
-        if (keysToFetch.length > 0) {
-            const subjects = await this.subjectService.fetchSubjectsByKeys(keysToFetch);
+        if (subjectsToFetch.length > 0) {
+            const subjects = await this.subjectService.fetchSubjectsByKeys(subjectsToFetch);
             subjects.forEach(s => this.subjectsCache.set(s.key, s));
+        }
+        
+        if (classesToFetch.length > 0) {
+            const classes = await this.classiService.fetchClasses(classesToFetch);
+            classes.forEach(c => this.classesCache.set(c.key, c));
         }
     }
 
@@ -101,19 +114,19 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
             },
             template: {
                 time(event) {
-                    return `<span style="color: white; font-size: 12px;">${event.title}</span>`;
+                    return `<div style="color: ${event.color || 'white'}; font-size: 12px; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center;">${event.title}</div>`;
                 }
             }
         });
 
-        this.updateDateDisplay();
-
-        // Initial render
-        this.preloadSubjects(this.timetable()).then(() => {
-            if (this.calendarInstance) {
-                this.calendarInstance.createEvents(this.transformEvents(this.timetable()));
+        this.calendarInstance.on('clickEvent', (eventObj: any) => {
+            const originalEvent = this.timetable().find(t => t.key === eventObj.event.id);
+            if (originalEvent) {
+                this.eventClick.emit(originalEvent);
             }
         });
+
+        this.updateDateDisplay();
     }
 
     private transformEvents(timetable: TimetableModel[]): any[] {
@@ -141,11 +154,12 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
 
         const events: any[] = [];
 
-        // Use a reference start date for recurrence: First week of current year or arbitrary past date
-        // Let's use the Monday of the current week as a base, then adjust.
-        // Actually, for recurrence to work cleanly, we can set the start date to a known past date.
-        // Let's use Jan 1st 2024 (which was a Monday) + offset to the correct day of that week.
-        const baseDate = new Date('2024-01-01T00:00:00'); // Monday
+        const now = new Date();
+        const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay(); // 1 = Monday, 7 = Sunday
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - currentDayOfWeek + 1);
+        monday.setHours(0, 0, 0, 0);
+        const baseDate = monday;
 
         timetable.forEach(item => {
             const recurrenceDay = dayMap[item.day];
@@ -169,8 +183,28 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
             const end = this.combineDateAndTime(eventStartDate, item.endTime);
 
             const subject = this.subjectsCache.get(item.subjectKey);
-            const color = subject?.color || '#3788d8';
-            const title = subject?.name || item.description || 'Lezione';
+            const classe = this.classesCache.get(item.classKey);
+            
+            const classColor = this.getClassColor(item.classKey);
+            let color = classColor || subject?.color || '#3788d8';
+            let textColor = '#FFFFFF';
+            
+            // Override colors for specific types
+            if (item.description === 'Intervallo') {
+                color = '#ff9f43'; // Orange
+            } else if (item.description === 'Ricevimento') {
+                color = '#28c76f'; // Green
+            } else if (item.description === 'Ora Buca') {
+                color = '#ffffff'; // White
+                textColor = '#000000'; // Black text
+            }
+
+            let title = '';
+            
+            if (classe) {
+                title += `${classe.year} ${classe.classe}<br>`;
+            }
+            title += subject?.name || item.description || 'Lezione';
 
             // Build the HTML title
             let displayTitle = `<strong>${title}</strong>`;
@@ -186,22 +220,52 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 calendarId: '1',
                 title: displayTitle,
                 category: 'time',
-                start: start,
-                end: end,
+                start: start.toISOString(),
+                end: end.toISOString(),
                 backgroundColor: color,
                 borderColor: color,
-                color: '#FFFFFF',
+                color: textColor,
                 isReadOnly: true,
                 recurrenceRule: `FREQ=WEEKLY;BYDAY=${recurrenceDay}`
             });
         });
 
+        console.log("Generated Calendar Events:", events);
         return events;
     }
 
+    private getClassColor(classeKey?: string): string | undefined {
+        if (!classeKey) return undefined;
+        const classe = this.classesCache.get(classeKey);
+        if (!classe) return undefined;
+        
+        let hash = 0;
+        const str = classe.classe + classe.year;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const h = hash % 360;
+        return `hsl(${h}, 70%, 50%)`;
+    }
+
     private combineDateAndTime(date: Date, timeStr: string): Date {
-        // timeStr e.g. "08:00"
-        const [hours, minutes] = timeStr.split(':').map(Number);
+        if (!timeStr) {
+            return new Date(date);
+        }
+        // Handle ISO string format from ion-datetime/ion-input "2024-01-01T08:00:00"
+        if (timeStr.includes('T')) {
+            const parsed = new Date(timeStr);
+            if (!isNaN(parsed.getTime())) {
+                const newDate = new Date(date);
+                newDate.setHours(parsed.getHours(), parsed.getMinutes(), 0, 0);
+                return newDate;
+            }
+        }
+        // Handle "08:00" or "08:00:00"
+        const parts = timeStr.split(':');
+        const hours = parts[0] ? parseInt(parts[0], 10) : 0;
+        const minutes = parts[1] ? parseInt(parts[1], 10) : 0;
+        
         const newDate = new Date(date);
         newDate.setHours(hours, minutes, 0, 0);
         return newDate;

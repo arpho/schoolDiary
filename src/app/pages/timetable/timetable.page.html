@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
     <ion-title class="ion-text-center">Orario Settimanale</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -24,9 +27,15 @@
   </div>
   } @else {
   <div class="ion-padding" style="height: 100%;">
-    <app-timetable-toast-ui [timetable]="timetable()"></app-timetable-toast-ui>
+    <app-timetable-toast-ui [timetable]="timetable()" (eventClick)="openTimeslotDialog($event)"></app-timetable-toast-ui>
   </div>
   }
   }
 
 </ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" class="ion-margin">
+  <ion-fab-button (click)="openTimeslotDialog()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
