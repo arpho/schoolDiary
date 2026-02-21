@@ -47,24 +47,33 @@ export class TimetablePage implements OnInit, OnDestroy {
         },
         [new QueryCondition('teacherKey', '==', user.key)]
       );
-
-      if (user.classesKey && user.classesKey.length > 0) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        this.unsubscribeAgenda = this.agendaService.getAgenda4targetedClassesOnrealtime(
-           (events) => {
-             this.agendaEvents.set(events);
-           },
-           [
-             new QueryCondition('classKey', 'in', user.classesKey),
-             new QueryCondition('dataFine', '>=', today.toISOString())
-           ]
-        );
-      }
     } else {
       this.loading.set(false);
     }
+  }
+
+  async onDateRangeChanged(event: {start: Date, end: Date}) {
+    const user = await this.usersService.getLoggedUser();
+    if (!user || !user.classesKey || user.classesKey.length === 0) return;
+
+    if (this.unsubscribeAgenda) {
+      this.unsubscribeAgenda();
+      this.unsubscribeAgenda = null;
+    }
+
+    const startStr = event.start.toISOString();
+    const endStr = event.end.toISOString();
+
+    this.unsubscribeAgenda = this.agendaService.getAgenda4targetedClassesOnrealtime(
+       (events) => {
+         this.agendaEvents.set(events);
+       },
+       [
+         new QueryCondition('classKey', 'in', user.classesKey),
+         new QueryCondition('dataFine', '>=', startStr),
+         new QueryCondition('dataFine', '<=', endStr)
+       ]
+    );
   }
 
   ngOnDestroy() {

@@ -30,7 +30,8 @@
     <app-timetable-toast-ui 
       [timetable]="timetable()" 
       [agendaEvents]="agendaEvents()"
-      (eventClick)="onEventClick($event)">
+      (eventClick)="onEventClick($event)"
+      (dateRangeChanged)="onDateRangeChanged($event)">
     </app-timetable-toast-ui>
   </div>
   }

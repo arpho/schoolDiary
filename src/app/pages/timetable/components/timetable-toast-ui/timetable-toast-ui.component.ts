@@ -26,10 +26,11 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
     timetable = input.required<TimetableModel[]>();
     agendaEvents = input<AgendaEvent[]>([]);
     eventClick = output<TimetableModel | AgendaEvent>();
+    dateRangeChanged = output<{start: Date, end: Date}>();
 
     private calendarInstance: Calendar | null = null;
     currentDateDisplay = signal<string>('');
-    currentView = signal<'day' | 'week'>('week'); // Default to week view for timetable
+    currentView = signal<'day' | 'week' | 'month'>('week'); // Default to week view for timetable
 
     private subjectService = inject(SubjectService);
     private classiService = inject(ClassiService);
@@ -42,24 +43,18 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         effect(() => {
             const timetable = this.timetable();
             const agendaEvents = this.agendaEvents();
+            const view = this.currentView();
             // We need to fetch subjects to display names/colors
             this.preloadData(timetable, agendaEvents).then(() => {
                 if (this.calendarInstance) {
+                    this.calendarInstance.changeView(view);
                     this.calendarInstance.clear();
-                    const ttEvents = this.transformEvents(timetable);
-                    const agEvents = this.transformAgendaEvents(agendaEvents);
+                    const ttEvents = this.transformEvents(timetable, view);
+                    const agEvents = this.transformAgendaEvents(agendaEvents, view);
                     this.calendarInstance.createEvents([...ttEvents, ...agEvents]);
                     this.updateDateDisplay();
                 }
             });
-        });
-
-        effect(() => {
-            const view = this.currentView();
-            if (this.calendarInstance) {
-                this.calendarInstance.changeView(view);
-                this.updateDateDisplay();
-            }
         });
     }
 
@@ -120,6 +115,9 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 hourEnd: 22,
                 dayNames: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
             },
+            month: {
+                dayNames: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
+            },
             template: {
                 time: (event: any) => {
                     let html = `<div style="color: ${event.color || 'white'}; font-size: 12px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; position: relative;">`;
@@ -150,6 +148,12 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                         }
                     }
 
+                    html += `</div>`;
+                    return html;
+                },
+                allday: (event: any) => {
+                    let html = `<div style="color: ${event.color || '#fff'}; font-size: 11px; padding: 2px 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">`;
+                    html += `${event.title}`;
                     html += `</div>`;
                     return html;
                 }
@@ -186,7 +190,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         this.updateDateDisplay();
     }
 
-    private transformEvents(timetable: TimetableModel[]): any[] {
+    private transformEvents(timetable: TimetableModel[], view: string): any[] {
         // Mapping day names to recurrence Day names (Monday -> MO)
         const dayMap: { [key: string]: string } = {
             'Sunday': 'SU', 'Domenica': 'SU',
@@ -276,7 +280,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 id: item.key,
                 calendarId: '1',
                 title: displayTitle,
-                category: 'time',
+                category: view === 'month' ? 'allday' : 'time',
                 start: start.toISOString(),
                 end: end.toISOString(),
                 backgroundColor: color,
@@ -292,7 +296,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         return events;
     }
 
-    private transformAgendaEvents(agendaEvents: AgendaEvent[]): any[] {
+    private transformAgendaEvents(agendaEvents: AgendaEvent[], view: string): any[] {
         const dayIndexMap: { [key: string]: number } = {
             'Sunday': 0, 'Domenica': 0,
             'Monday': 1, 'Lunedì': 1, 'Lunedi': 1,
@@ -349,7 +353,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 id: item.id || item.key,
                 calendarId: '2',
                 title: displayTitle,
-                category: item.allDay ? 'allday' : 'time',
+                category: view === 'month' ? 'allday' : (item.allDay ? 'allday' : 'time'),
                 start: item.dataInizio,
                 end: item.dataFine,
                 backgroundColor: color,
@@ -440,11 +444,20 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 this.currentDateDisplay.set(new Date(date.getTime()).toLocaleDateString('it-IT', {
                     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
                 }));
+            } else if (this.currentView() === 'month') {
+                this.currentDateDisplay.set(new Date(date.getTime()).toLocaleDateString('it-IT', {
+                    month: 'long', year: 'numeric'
+                }));
             } else {
                 const startStr = new Date(start.getTime()).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
                 const endStr = new Date(end.getTime()).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
                 this.currentDateDisplay.set(`${startStr} - ${endStr}`);
             }
+
+            this.dateRangeChanged.emit({
+                start: new Date(start.getTime()),
+                end: new Date(end.getTime())
+            });
         }
     }
 }
