@@ -25,7 +25,7 @@ import { AgendaEvent } from './models/agendaEvent';
 import { ClasseModel } from '../classes/models/classModel';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { addIcons } from 'ionicons';
-import { add, calendar, list } from 'ionicons/icons';
+import { add, calendar, list, timeOutline } from 'ionicons/icons';
 import { EventDialogComponent } from './components/event-dialog/event-dialog.component';
 import { AgendaEventInputComponent } from '../../shared/components/agenda-event-input/agenda-event-input.component';
 
@@ -98,7 +98,7 @@ export class AgendaPage implements OnInit {
    * Al variare delle targetedClasses, recupera i dettagli delle classi e sottoscrive agli eventi agenda in real-time.
    */
   constructor() {
-    addIcons({ add, calendar, list });
+    addIcons({ add, calendar, list, timeOutline });
     this.initialize();
 
     // Effect for Classes and Title
