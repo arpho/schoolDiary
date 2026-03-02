@@ -8,7 +8,8 @@ import {
   IonToolbar,
   IonButtons,
   IonBackButton,
-  IonToggle,
+  IonSegment,
+  IonSegmentButton,
   IonFab,
   IonFabButton,
   IonIcon,
@@ -47,7 +48,8 @@ import { AgendaEventInputComponent } from '../../shared/components/agenda-event-
     FormsModule,
     IonButtons,
     IonBackButton,
-    IonToggle,
+    IonSegment,
+    IonSegmentButton,
     IonFab,
     IonFabButton,
     IonIcon,
@@ -69,8 +71,10 @@ export class AgendaPage implements OnInit {
   private fetchedEvents = signal<AgendaEvent[]>([]);
 
   viewMode = signal<'list' | 'scheduler'>('list'); // Modalità di visualizzazione corrente
-  viewModeLabel = computed(() => this.viewMode() === 'list' ? 'Lista' : 'Calendario'); // Label per lo switch
   showPastEvents = signal<boolean>(false); // Mostra anche gli eventi passati
+  segmentValue = computed<'list' | 'scheduler' | 'past'>(() =>
+    this.showPastEvents() ? 'past' : this.viewMode()
+  );
   pageTitle = signal<string>('agenda'); // Titolo dinamico della pagina
 
   agenda = computed(() => {
@@ -178,12 +182,18 @@ export class AgendaPage implements OnInit {
    * Cambia la modalità di visualizzazione tra Lista e Calendario.
    * @param event Evento del toggle di Ionic
    */
-  toggleView(event: any) {
-    this.viewMode.set(event.detail.checked ? 'scheduler' : 'list');
-  }
-
-  togglePastEvents(event: any) {
-    this.showPastEvents.set(event.detail.checked);
+  /**
+   * Gestisce il cambio di segmento: aggiorna viewMode e showPastEvents.
+   */
+  onSegmentChange(event: any) {
+    const value: 'list' | 'scheduler' | 'past' = event.detail.value;
+    if (value === 'past') {
+      this.viewMode.set('list');
+      this.showPastEvents.set(true);
+    } else {
+      this.viewMode.set(value);
+      this.showPastEvents.set(false);
+    }
   }
 
   /**

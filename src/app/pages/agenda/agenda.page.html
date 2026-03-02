@@ -4,16 +4,20 @@
       <ion-back-button defaultHref="/dashboard"></ion-back-button>
     </ion-buttons>
     <ion-title align="center">{{ pageTitle() }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-label class="ion-margin-end">Passati</ion-label>
-      <ion-toggle (ionChange)="togglePastEvents($event)" color="tertiary" class="ion-margin-end"></ion-toggle>
-      
-      <ion-label class="ion-margin-end">{{ viewModeLabel() }}</ion-label>
-      <ion-toggle (ionChange)="toggleView($event)" color="secondary">
-        <ion-icon name="calendar" slot="start"></ion-icon>
-        <ion-icon name="list" slot="end"></ion-icon>
-      </ion-toggle>
-    </ion-buttons>
+    <ion-segment [value]="segmentValue()" (ionChange)="onSegmentChange($event)" color="secondary">
+      <ion-segment-button value="list">
+        <ion-icon name="list"></ion-icon>
+        <ion-label>Lista</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="scheduler">
+        <ion-icon name="calendar"></ion-icon>
+        <ion-label>Calendario</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="past">
+        <ion-icon name="time-outline"></ion-icon>
+        <ion-label>Passati</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
