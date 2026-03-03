@@ -127,7 +127,19 @@ export const dailyAgendaNotifications = onSchedule({
               })}`,
             imageUrl: faviconUrl,
           },
+          android: {
+            ttl: 8 * 60 * 60 * 1000,
+          },
+          apns: {
+            headers: {
+              "apns-expiration":
+                Math.floor(Date.now() / 1000) + 8 * 60 * 60 + "",
+            },
+          },
           webpush: {
+            headers: {
+              TTL: (8 * 60 * 60).toString(),
+            },
             notification: {
               icon: faviconUrl,
             },
