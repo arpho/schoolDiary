@@ -121,7 +121,10 @@
                 <ion-input [(ngModel)]="verbale.descrizione" [ngModelOptions]="{standalone: true}"
                   placeholder="Descrizione" class="ion-margin-end"></ion-input>
                 <ion-input [(ngModel)]="verbale.path" [ngModelOptions]="{standalone: true}"
-                  placeholder="URL Link"></ion-input>
+                  placeholder="URL Link" class="ion-margin-end"></ion-input>
+                <a [href]="verbale.path" target="_blank" *ngIf="verbale.path" class="ion-margin-end">
+                  <ion-icon name="link"></ion-icon>
+                </a>
                 <ion-button slot="end" fill="clear" color="danger" (click)="removeVerbale($index)">
                   <ion-icon name="trash" slot="icon-only"></ion-icon>
                 </ion-button>

@@ -71,7 +71,8 @@ import {
   close,
   add,
   trash,
-  alertCircle
+  alertCircle,
+  link
 } from 'ionicons/icons';
 /**
  * Pagina di dettaglio e modifica di una classe.
@@ -202,7 +203,7 @@ export class ClasseDialogPage implements OnInit {
     private alertCtrl: AlertController
   ) {
     // Register icons
-    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash, alertCircle });
+    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash, alertCircle, link });
 
     // Initialize with empty model
     this.classe.set(new ClasseModel({
@@ -338,6 +339,7 @@ export class ClasseDialogPage implements OnInit {
       });
 
     } catch (error) {
+      console.error('Error saving class:', error);
       this.toaster.presentToast({ message: "Errore durante l'aggiornamento della classe", duration: 2000, position: "bottom" });
     }
   }

@@ -142,7 +142,7 @@ export class ClassiService {
    */
   async addClasse(classe: ClasseModel): Promise<void> {
     const docRef = this.docFn(this.collectionFn(this.firestore, this.collectionName));
-    return this.setDocFn(docRef, { ...classe });
+    return this.setDocFn(docRef, classe.serialize());
   }
 
   /**
@@ -153,7 +153,7 @@ export class ClassiService {
    */
   updateClasse(classeKey: string, classe: ClasseModel): Promise<void> {
     const docRef = this.docFn(this.firestore, this.collectionName, classeKey);
-    return this.setDocFn(docRef, { ...classe });
+    return this.setDocFn(docRef, classe.serialize());
   }
 
   /**
