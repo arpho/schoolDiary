@@ -36,7 +36,7 @@ import {
   calendarOutline,
   trendingUp
 } from 'ionicons/icons';
-import { cloudUploadOutline } from 'ionicons/icons';
+import { cloudUploadOutline, helpBuoyOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { UploadStudentsComponent } from '../uploadStudents/upload-students/upload-students.component';
@@ -212,7 +212,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
       cloudupload: cloudUploadOutline,
       add,
       calendar: calendarOutline,
-      'trending-up': trendingUp
+      'trending-up': trendingUp,
+      'help-buoy-outline': helpBuoyOutline
     });
 
     // Re-load averages whenever subjectKey, classKey or dataInizioPeriodo changes

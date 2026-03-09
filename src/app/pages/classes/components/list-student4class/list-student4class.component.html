@@ -50,7 +50,11 @@
       <ion-item class="student-item" (click)="showActionSheet(student)">
         <ion-card class="student-card">
           <ion-card-header>
-            <ion-card-title>{{student.lastName}} {{student.firstName}}</ion-card-title>
+            <ion-card-title>
+              {{student.lastName}} {{student.firstName}}
+              <ion-icon *ngIf="student.BES || student.DSA || student.ADHD" name="help-buoy-outline" color="warning"
+                style="margin-left: 8px; vertical-align: middle;"></ion-icon>
+            </ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()"
