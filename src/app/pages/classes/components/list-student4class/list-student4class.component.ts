@@ -34,7 +34,8 @@ import {
   eye,
   add,
   calendarOutline,
-  trendingUp
+  trendingUp,
+  archive
 } from 'ionicons/icons';
 import { cloudUploadOutline, helpBuoyOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -209,11 +210,16 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
   ) {
     console.log("constructor ListStudent4classComponent#");
     addIcons({
-      cloudupload: cloudUploadOutline,
       add,
-      calendar: calendarOutline,
-      'trending-up': trendingUp,
-      'help-buoy-outline': helpBuoyOutline
+      sparkles,
+      eye,
+      close,
+      archive,
+      'calendar': calendarOutline,
+      'calendar-outline': calendarOutline,
+      'help-buoy-outline': helpBuoyOutline,
+      'cloud-upload': cloudUploadOutline,
+      'trending-up': trendingUp
     });
 
     // Re-load averages whenever subjectKey, classKey or dataInizioPeriodo changes
