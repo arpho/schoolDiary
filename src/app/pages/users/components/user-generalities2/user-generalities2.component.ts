@@ -136,6 +136,7 @@ export class UserGeneralities2Component implements OnInit {
   }
 
   onClassesChange(classes: AssignedClass[]) {
+    console.log("onClassesChange - classes:", classes);
     this.usersClasses.set(classes);
     this.userForm.get('classes')?.setValue(classes.map(c => c.key));
   }
@@ -228,6 +229,7 @@ export class UserGeneralities2Component implements OnInit {
 
 
     const user = new UserModel(userData);
+    console.log("User to save:", user);
     console.log("User to save:", user.serialize());
 
     const claims = {

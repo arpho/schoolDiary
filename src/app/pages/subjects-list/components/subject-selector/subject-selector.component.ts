@@ -107,6 +107,8 @@ export class SubjectSelectorComponent implements OnInit {
   }
 
   confirm() {
+    console.log("confirm - subjectsKey:", this.localSelectedKeys());
+    console.log("confirm - role:", this.localSelectedRole());
     this.$modal.dismiss({
       subjectsKey: this.localSelectedKeys(),
       role: this.localSelectedRole()

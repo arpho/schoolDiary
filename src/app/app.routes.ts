@@ -135,5 +135,9 @@ export const routes: Routes = [
   {
     path: 'timetable',
     loadComponent: () => import('./pages/timetable/timetable.page').then( m => m.TimetablePage)
+  },
+  {
+    path: 'tutoring',
+    loadComponent: () => import('./pages/tutoring/tutoring.page').then( m => m.TutoringPage)
   }
 ];

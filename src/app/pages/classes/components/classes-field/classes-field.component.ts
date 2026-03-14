@@ -90,7 +90,7 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
    * Aggiorna il valore del field con le classi selezionate.
    */
   async selectClasses() {
-    console.log("cuiao ciao")
+
     const modal = await this.modalController.create({
       component: ClassesSelectorPage,
       componentProps: {
@@ -130,6 +130,7 @@ export class ClassesFieldComponent implements OnInit, OnDestroy, ControlValueAcc
   writeValue(value: AssignedClass[]): void {
     console.log("writeValue", value);
     if (value && JSON.stringify(this.classes()) !== JSON.stringify(value)) {
+      console.log("writeValue - classi aggiornate:", value);
       this.classes.set([...value]);
     }
   }
