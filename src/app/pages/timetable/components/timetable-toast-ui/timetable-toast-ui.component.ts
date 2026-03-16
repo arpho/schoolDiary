@@ -373,6 +373,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
             case 'meeting': return 'var(--ion-color-warning)';
             case 'interrogation': return 'var(--ion-color-tertiary)';
             case 'note': return 'var(--ion-color-success)';
+            case 'colloquio': return 'var(--ion-color-tertiary)';
             case 'other':
             default: return 'var(--ion-color-medium)';
         }

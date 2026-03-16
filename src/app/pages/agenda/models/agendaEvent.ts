@@ -1,4 +1,4 @@
-export type EventType = 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'other';
+export type EventType = 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'colloquio' | 'other';
 
 /**
  * Interfaccia base per un evento dell'agenda.

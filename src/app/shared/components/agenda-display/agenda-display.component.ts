@@ -20,6 +20,7 @@ import {
   helpCircleOutline,
   trashOutline,
   peopleOutline,
+  peopleCircleOutline,
   timeOutline,
   calendarOutline,
   arrowForwardOutline,
@@ -47,7 +48,7 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
       @for (event of events(); track event) {
         <ion-item-sliding [class.all-day]="event.allDay" [class.past-event]="isPast(event)">
           <ion-item>
-            <ion-icon [name]="getIcon(event.type)" slot="start"></ion-icon>
+            <ion-icon [name]="getIcon(event.type)" [color]="getColor(event.type)" slot="start"></ion-icon>
             <ion-label>
               <h2 [class.completed]="event.done">
                 {{ event.title }}
@@ -184,6 +185,7 @@ export class AgendaDisplayComponent implements OnInit {
       createOutline,
       trashOutline,
       peopleOutline,
+      peopleCircleOutline,
       timeOutline,
       eyeOutline,
       calendarOutline,
@@ -246,7 +248,16 @@ export class AgendaDisplayComponent implements OnInit {
       case 'test': return 'help-circle-outline';
       case 'interrogation': return 'mic-outline';
       case 'note': return 'document-text-outline';
+      case 'meeting': return 'people-outline';
+      case 'colloquio': return 'people-circle-outline';
       default: return 'help-circle-outline';
+    }
+  }
+
+  getColor(type: string): string | undefined {
+    switch (type) {
+      case 'colloquio': return 'tertiary';
+      default: return undefined;
     }
   }
 
