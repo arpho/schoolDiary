@@ -132,7 +132,7 @@ export class UserModel {
       DSA: this.DSA,
       BES: this.BES,
       ADHD: this.ADHD,
-      assignedClasses: this.assignedClasses.map((classe) => classe.serialize()),
+      assignedClasses: this.assignedClasses.map((classe) => classe),
       noteDisabilita: this.noteDisabilita,
       pdpUrl: this.pdpUrl,
       userName: this.userName,
