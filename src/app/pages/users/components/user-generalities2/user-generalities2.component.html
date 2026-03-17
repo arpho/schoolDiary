@@ -87,6 +87,44 @@
       <ion-label position="floating">Classi</ion-label>
       <app-classes-field [classes]="usersClasses()" (classeschange)="onClassesChange($event)"></app-classes-field>
     </ion-item>
+
+    <ion-item-divider class="pdp-divider">
+      <ion-label>Link ai Documenti PDP</ion-label>
+      <ion-button slot="end" fill="clear" (click)="addPdp()">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-item-divider>
+
+    <ion-list class="pdp-list">
+      @for (pdp of pdpList(); track $index) {
+      <ion-item>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="5">
+              <ion-input [(ngModel)]="pdp.descrizione" [ngModelOptions]="{standalone: true}"
+                placeholder="Descrizione (es. PDP 2024)" label="Descrizione" labelPlacement="stacked"></ion-input>
+            </ion-col>
+            <ion-col size="5">
+              <ion-input [(ngModel)]="pdp.path" [ngModelOptions]="{standalone: true}"
+                placeholder="URL Documento" label="URL" labelPlacement="stacked"></ion-input>
+            </ion-col>
+            <ion-col size="2" class="ion-text-center action-col">
+              <ion-button fill="clear" color="danger" (click)="removePdp($index)">
+                <ion-icon name="trash" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+      } @empty {
+        <ion-item lines="none">
+          <ion-label color="medium" class="ion-text-center">
+            <p>Nessun documento PDP aggiunto</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+
   </form>
 
 

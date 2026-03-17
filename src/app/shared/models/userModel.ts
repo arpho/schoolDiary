@@ -132,9 +132,9 @@ export class UserModel {
       DSA: this.DSA,
       BES: this.BES,
       ADHD: this.ADHD,
-      assignedClasses: this.assignedClasses.map((classe) => classe),
+      assignedClasses: this.assignedClasses.map((classe) => classe.serialize()),
       noteDisabilita: this.noteDisabilita,
-      pdpUrl: this.pdpUrl,
+      pdpUrl: Array.isArray(this.pdpUrl) ? this.pdpUrl.map((doc) => doc.serialize ? doc.serialize() : doc) : [],
       userName: this.userName,
       classes: this.classesKey
     };
