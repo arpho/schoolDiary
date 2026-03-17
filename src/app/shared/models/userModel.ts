@@ -119,7 +119,8 @@ export class UserModel {
    * @returns Oggetto JSON serializzato.
    */
   serialize() {
-    return {
+    console.log("user*", this)
+    const out = {
       key: this.key,
       birthDate: this.birthDate,
       classKey: this.classKey,
@@ -138,5 +139,7 @@ export class UserModel {
       userName: this.userName,
       classes: this.classesKey
     };
+    console.log("out*", out)
+    return out;
   }
 }

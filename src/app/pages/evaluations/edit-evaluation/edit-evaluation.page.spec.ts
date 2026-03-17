@@ -18,7 +18,7 @@ describe('EditEvaluationPage', () => {
 
   const classiSpy = jasmine.createSpyObj('ClassiService', ['fetchClasseOnCache']);
   const modalSpy = jasmine.createSpyObj('ModalController', ['create', 'dismiss']);
-  const usersSpy = jasmine.createSpyObj('UsersService', ['fetchUserOnCache', 'getLoggedUser']);
+  const usersSpy = jasmine.createSpyObj('UsersService', ['fetchUserOnCache', 'getLoggedUser', 'getSubjectsByTeacherAndClass']);
   const activitiesSpy = jasmine.createSpyObj('ActivitiesService', ['addActivity', 'getActivities4teacherOnRealtime']);
   const gridsSpy = jasmine.createSpyObj('GridsService', ['getGridsOnRealtime']);
   const evaluationSpy = jasmine.createSpyObj('EvaluationService', ['fetchEvaluation', 'updateEvaluation']);

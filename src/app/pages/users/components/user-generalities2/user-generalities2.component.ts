@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
 import { list, saveOutline, listCircleOutline, documentTextOutline, trash, add } from 'ionicons/icons';
-import { ModalController } from '@ionic/angular/standalone';
+
 import { DocumentModel } from 'src/app/pages/classes/models/documentModel';
 import {
   IonContent,
@@ -33,6 +33,7 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  IonList,
   IonItemDivider
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -57,6 +58,7 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     IonBackButton,
     IonContent,
@@ -88,7 +90,8 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
     IonGrid,
     IonRow,
     IonCol,
-    IonItemDivider
+    IonItemDivider,
+    IonList
   ]
 })
 export class UserGeneralities2Component implements OnInit {
@@ -110,8 +113,7 @@ export class UserGeneralities2Component implements OnInit {
     private $classes: ClassiService,
     private toaster: ToasterService,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef,
-    private modalCtrl: ModalController
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({
       'save': saveOutline,
