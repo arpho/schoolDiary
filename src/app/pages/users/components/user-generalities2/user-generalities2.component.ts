@@ -3,7 +3,9 @@ import { ChangeDetectorRef, Component, DestroyRef, effect, inject, input, OnInit
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
-import { list, saveOutline, listCircleOutline, documentTextOutline } from 'ionicons/icons';
+import { list, saveOutline, listCircleOutline, documentTextOutline, trash, add } from 'ionicons/icons';
+
+import { DocumentModel } from 'src/app/pages/classes/models/documentModel';
 import {
   IonContent,
   IonItem,
@@ -27,6 +29,12 @@ import {
   IonFab,
   IonToggle,
   IonTextarea,
+  IonButton,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonList,
+  IonItemDivider
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
@@ -50,6 +58,7 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     IonBackButton,
     IonContent,
@@ -77,6 +86,12 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
     IonTextarea,
     IonInput,
     IonSelect,
+    IonButton,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonItemDivider,
+    IonList
   ]
 })
 export class UserGeneralities2Component implements OnInit {
@@ -90,6 +105,9 @@ export class UserGeneralities2Component implements OnInit {
   usersClasses = signal<AssignedClass[]>([]);
   $UsersRole = UsersRole;
   private destroyRef = inject(DestroyRef);
+
+  /** Lista locale dei documenti PDP per lo studente */
+  pdpList = signal<DocumentModel[]>([]);
   constructor(
     private $users: UsersService,
     private $classes: ClassiService,
@@ -100,7 +118,9 @@ export class UserGeneralities2Component implements OnInit {
     addIcons({
       'save': saveOutline,
       'pdf': documentTextOutline,
-      'listCircleOutline': listCircleOutline
+      'listCircleOutline': listCircleOutline,
+      'trash': trash,
+      'add': add
     });
 
 
@@ -221,9 +241,15 @@ export class UserGeneralities2Component implements OnInit {
     console.log("Saving user...");
     const formValue = this.userForm.value;
     console.log("Form value:", formValue);
+
+    // Escludiamo pdpUrl dal formValue: il campo del form è una stringa ausiliaria,
+    // mentre il vero pdpUrl è un DocumentModel[] gestito separatamente tramite pdpList signal.
+    const { pdpUrl: _ignoredPdpUrl, ...formValueWithoutPdp } = formValue;
+
     const userData = {
       ...this.user(),
-      ...formValue,
+      ...formValueWithoutPdp,
+      pdpUrl: this.pdpList(),
       assignedClasses: this.usersClasses()
     };
 
@@ -246,6 +272,16 @@ export class UserGeneralities2Component implements OnInit {
       user.password = this.generatePassword();
       this.createUser(user, claims);
     }
+  }
+
+  /** Aggiunge un documento PDP vuoto alla lista */
+  addPdp(): void {
+    this.pdpList.update(list => [...list, new DocumentModel()]);
+  }
+
+  /** Rimuove il documento PDP all'indice specificato */
+  removePdp(index: number): void {
+    this.pdpList.update(list => list.filter((_, i) => i !== index));
   }
 
 
@@ -385,12 +421,19 @@ export class UserGeneralities2Component implements OnInit {
           BES: user.BES || false,
           ADHD: user.ADHD || false,
           noteDisabilita: user.noteDisabilita || '',
-          pdpUrl: user.pdpUrl || '',
+          pdpUrl: '',
           phoneNumber: user.phoneNumber || '',
           birthDate: user.birthDate || '',
           classKey: user.classKey || '',
           classes: user.classesKey || []
         }, { emitEvent: false });  // Aggiungi emitEvent: false
+
+        // Inizializza la lista PDP dal modello utente
+        if (user.pdpUrl && Array.isArray(user.pdpUrl)) {
+          this.pdpList.set(user.pdpUrl.map(doc => new DocumentModel({ ...doc })));
+        } else {
+          this.pdpList.set([]);
+        }
 
         this.usersClasses.set(user.assignedClasses || []);
 

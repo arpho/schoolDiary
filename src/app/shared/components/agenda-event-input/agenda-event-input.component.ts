@@ -128,6 +128,7 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
           <ion-select-option value="interrogation">Interrogazione</ion-select-option>
           <ion-select-option value="note">Nota</ion-select-option>
           <ion-select-option value="meeting">Riunione</ion-select-option>
+          <ion-select-option value="colloquio">Colloquio</ion-select-option>
           <ion-select-option value="other">Altro</ion-select-option>
         </ion-select>
         @if (showErrors && validationErrors['type']) {

@@ -114,10 +114,6 @@ export class UserDialogPage implements OnInit {
   elencoClassi = signal<ClasseModel[]>([]);
   loggedUser = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
 
-  // PDP Links Management
-  pdpList = signal<DocumentModel[]>([]);
-  initialPdpList: string = '[]';
-
   rolesValue: any[] = [];
   rolesName: string[] = [];
   userForm: FormGroup = new FormGroup({
@@ -195,13 +191,6 @@ export class UserDialogPage implements OnInit {
           console.log("user showed", user);
           if (user instanceof UserModel) {
             this.user.set(user);
-            // Initialize PDP list
-            if (user.pdpUrl && Array.isArray(user.pdpUrl)) {
-              this.pdpList.set(JSON.parse(JSON.stringify(user.pdpUrl)));
-            } else {
-              this.pdpList.set([]);
-            }
-            this.initialPdpList = JSON.stringify(this.pdpList());
           }
         }
 
@@ -223,17 +212,9 @@ export class UserDialogPage implements OnInit {
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
   }
 
-  addPdp() {
-    this.pdpList.update(list => [...list, new DocumentModel()]);
-  }
-
-  removePdp(index: number) {
-    this.pdpList.update(list => list.filter((_, i) => i !== index));
-  }
 
   hasUnsavedChanges(): boolean {
-    const pdpChanged = JSON.stringify(this.pdpList()) !== this.initialPdpList;
-    return this.userForm.dirty || pdpChanged;
+    return this.userForm.dirty;
   }
 
   async dismiss() {
@@ -264,8 +245,7 @@ export class UserDialogPage implements OnInit {
   save() {
     const user = this.user();
     user.key = this.user()?.key;
-    user.pdpUrl = this.pdpList(); // Save PDP links
-
+    console.log("User to save:", user);
     const claims = {
       role: user.role,
       classes: user.classes,

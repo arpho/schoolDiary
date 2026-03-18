@@ -119,8 +119,8 @@ export class UserModel {
    * @returns Oggetto JSON serializzato.
    */
   serialize() {
-    console.log("serializing user:", this);
-    return {
+    console.log("user*", this)
+    const out = {
       key: this.key,
       birthDate: this.birthDate,
       classKey: this.classKey,
@@ -135,9 +135,11 @@ export class UserModel {
       ADHD: this.ADHD,
       assignedClasses: this.assignedClasses.map((classe) => { console.log("serializing classe:", classe, typeof classe); return classe }),
       noteDisabilita: this.noteDisabilita,
-      pdpUrl: this.pdpUrl,
+      pdpUrl: Array.isArray(this.pdpUrl) ? this.pdpUrl.map((doc) => doc.serialize ? doc.serialize() : doc) : [],
       userName: this.userName,
       classes: this.classesKey
     };
+    console.log("out*", out)
+    return out;
   }
 }
