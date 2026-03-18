@@ -25,7 +25,8 @@ import {
   IonIcon,
   IonBackButton,
   IonNote,
-  ModalController
+  ModalController,
+  IonItemDivider
 } from '@ionic/angular/standalone';
 import { Grids } from 'src/app/shared/models/grids';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -41,7 +42,8 @@ import { ClassiService } from '../../classes/services/classi.service';
 import { SubjectService } from '../../subjects-list/services/subjects/subject.service';
 import { SubjectModel } from '../../subjects-list/models/subjectModel';
 import { addIcons } from 'ionicons';
-import { saveOutline } from 'ionicons/icons';
+import { saveOutline, add, trash, link } from 'ionicons/icons';
+import { DocumentModel } from '../../classes/models/documentModel';
 /**
  * Pagina per la modifica di una valutazione esistente.
  * Carica i dati della valutazione, permette di modificarli e salvare le modifiche.
@@ -54,9 +56,9 @@ import { saveOutline } from 'ionicons/icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
 
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonButtons,
     IonContent,
     IonHeader,
     IonTitle,
@@ -73,9 +75,9 @@ import { saveOutline } from 'ionicons/icons';
     IonFab,
     IonFabButton,
     IonIcon,
-    IonBackButton,
     IonNote,
-    EvaluateGridComponent
+    EvaluateGridComponent,
+    IonItemDivider
   ]
 })
 export class EditEvaluationPage implements OnInit {
@@ -130,6 +132,7 @@ export class EditEvaluationPage implements OnInit {
       evaluation.grid = this.grid();
       console.log("evaluation grid ", evaluation.grid);
       try {
+        evaluation.enclosedDocuments = this.enclosedDocuments();
         this.$evaluations.updateEvaluation(evaluation);
         this.router.navigate(['/pdf-evaluation', evaluation.key]);
         this.$toaster.presentToast({
@@ -148,6 +151,7 @@ export class EditEvaluationPage implements OnInit {
   studentKey = signal<string>("");
   classKey = signal<string>("");
   teacherKey = signal<string>("");
+  enclosedDocuments = signal<DocumentModel[]>([]);
   activities = signal<ActivityModel[]>([]);
   title = signal('');
   grid = signal<Grids>(new Grids());
@@ -164,6 +168,14 @@ export class EditEvaluationPage implements OnInit {
   subjects = signal<SubjectModel[]>([]);
   $evaluation = inject(EvaluationService);
 
+  addDocument() {
+    this.enclosedDocuments.update(docs => [...docs, new DocumentModel()]);
+  }
+
+  removeDocument(index: number) {
+    this.enclosedDocuments.update(docs => docs.filter((_, i) => i !== index));
+  }
+
   // Form group declaration
   evaluationform: FormGroup;
 
@@ -171,7 +183,7 @@ export class EditEvaluationPage implements OnInit {
     private router: Router) {
     console.log("EditEvaluationPage constructor chiamato");
     addIcons({
-      'save': saveOutline
+      'save': saveOutline, add, trash, link
     });
     // Initialize form in constructor
     this.evaluationform = this.fb.group({
@@ -291,6 +303,7 @@ export class EditEvaluationPage implements OnInit {
       console.log('Griglia corrente:', evaluation?.grid);
       this.grid.set(evaluation?.grid);
       console.log('gridKey impostato a:', formValues.gridKey);
+      this.enclosedDocuments.set(evaluation?.enclosedDocuments || []);
 
       console.log('Valori del form da inizializzare:', formValues);
 

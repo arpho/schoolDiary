@@ -23,7 +23,11 @@ import {
   IonList,
   IonTextarea,
   IonIcon,
+  IonItemDivider
 } from '@ionic/angular/standalone';
+import { add, trash, link, close, print } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
+import { DocumentModel } from '../../classes/models/documentModel';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
@@ -69,6 +73,7 @@ import { ClassiService } from '../../classes/services/classi.service';
     IonTextarea,
     EvaluateGridComponent,
     IonIcon,
+    IonItemDivider
   ]
 })
 export class EvaluationDialogPage implements OnInit {
@@ -147,6 +152,7 @@ export class EvaluationDialogPage implements OnInit {
             evaluation.grid.indicatori = this.evaluateGridComponent.grid().indicatori;
           }
         }
+        evaluation.enclosedDocuments = this.enclosedDocuments();
 
         console.log("evaluation", evaluation);
         console.log("evaluation serialzed", evaluation.serialize());
@@ -181,6 +187,7 @@ export class EvaluationDialogPage implements OnInit {
   @ViewChild(EvaluateGridComponent) evaluateGridComponent!: EvaluateGridComponent;
   evaluation = input<Evaluation>(new Evaluation());
   evaluationSignal = signal<Evaluation>(new Evaluation());
+  enclosedDocuments = signal<DocumentModel[]>([]);
   activities = signal<ActivityModel[]>([]);
   evaluationform: FormGroup = new FormGroup({
     description: new FormControl(''),
@@ -201,6 +208,14 @@ export class EvaluationDialogPage implements OnInit {
   griglie = signal<Grids[]>([]);
   modalCtrl = inject(ModalController);
 
+  addDocument() {
+    this.enclosedDocuments.update(docs => [...docs, new DocumentModel()]);
+  }
+
+  removeDocument(index: number) {
+    this.enclosedDocuments.update(docs => docs.filter((_, i) => i !== index));
+  }
+
   constructor(
     private route: ActivatedRoute,
     private toaster: ToasterService,
@@ -213,7 +228,7 @@ export class EvaluationDialogPage implements OnInit {
 
   ) {
     console.log("EvaluationDialogPage constructor");
-    const modalCtrl = inject(ModalController);
+    addIcons({ add, trash, link, close, print });
   }
 
   async ngOnInit() {
@@ -261,6 +276,7 @@ export class EvaluationDialogPage implements OnInit {
         classKey: this.evaluationSignal().classKey,
         studentKey: this.evaluationSignal().studentKey
       });
+      this.enclosedDocuments.set(this.evaluationSignal().enclosedDocuments || []);
       this.grid.set(this.evaluationSignal().grid);
     } else {
       this.title.set("Nuova valutazione");
@@ -297,6 +313,7 @@ export class EvaluationDialogPage implements OnInit {
           classeKey: evaluation.classKey,
           studentKey: evaluation.studentKey
         });
+        this.enclosedDocuments.set(evaluation.enclosedDocuments || []);
       });
     } else {
       this.title.set("Nuova valutazione");

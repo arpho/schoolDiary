@@ -28,7 +28,8 @@ import {
   IonIcon,
   IonBackButton,
   IonNote,
-  ModalController
+  ModalController,
+  IonItemDivider
 } from '@ionic/angular/standalone';
 import { signal } from '@angular/core';
 import { inject } from '@angular/core';
@@ -48,8 +49,9 @@ import { ClasseModel } from '../../classes/models/classModel';
 import { ClassiService } from '../../classes/services/classi.service';
 import { ActivityDialogComponent } from '../../activities/components/activityDialog/activity-dialog/activity-dialog.component';
 import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/evaluate-grid.component';
-import { filter } from 'ionicons/icons';
+import { filter, add, trash, link, save } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { DocumentModel } from '../../classes/models/documentModel';
 
 /**
  * Componente per la visualizzazione/modifica di una valutazione (utilizzato anche in modale?).
@@ -84,7 +86,8 @@ import { addIcons } from 'ionicons';
     IonNote,
     IonFab,
     EvaluateGridComponent,
-    ActivityDialogComponent
+    ActivityDialogComponent,
+    IonItemDivider
   ]
 })
 export class EvaluationPage implements OnInit {
@@ -113,7 +116,7 @@ export class EvaluationPage implements OnInit {
       this.loadActivitiesForClass(this.classKey, teacherKey);
     });
     addIcons({
-      filter
+      filter, add, trash, link, save
     });
 
 
@@ -141,6 +144,7 @@ export class EvaluationPage implements OnInit {
           // ... altri campi
         });
 
+        this.enclosedDocuments.set(evaluationData.enclosedDocuments || []);
         // Imposta il titolo corretto
         if (evaluationData.key) {
           this.title.set("Modifica valutazione");
@@ -166,6 +170,7 @@ export class EvaluationPage implements OnInit {
   }
 
   activities = signal<ActivityModel[]>([]);
+  enclosedDocuments = signal<DocumentModel[]>([]);
   // Aggiungo un segnale per tenere traccia della validità della griglia
   isGridValid = signal<boolean>(false);
 
@@ -212,6 +217,14 @@ export class EvaluationPage implements OnInit {
   grid = signal<Grids>(new Grids());
   griglie = signal<Grids[]>([]);
   classesList = signal<ClasseModel[]>([]);
+
+  addDocument() {
+    this.enclosedDocuments.update(docs => [...docs, new DocumentModel()]);
+  }
+
+  removeDocument(index: number) {
+    this.enclosedDocuments.update(docs => docs.filter((_, i) => i !== index));
+  }
 
   async ngOnInit() {
     // Initialize form controls with URL parameters first
@@ -295,6 +308,7 @@ export class EvaluationPage implements OnInit {
         studentKey: evaluationData.studentKey
       });
 
+      this.enclosedDocuments.set(evaluationData.enclosedDocuments || []);
       // Set title based on whether we're editing an existing evaluation
       if (evaluationData.key) {
         this.title.set("Modifica valutazione");
@@ -327,6 +341,7 @@ export class EvaluationPage implements OnInit {
         if (this.grid()) {
           newEvaluation.grid = this.grid();
         }
+        newEvaluation.enclosedDocuments = this.enclosedDocuments();
         if (this.evaluationKey()) {
           console.log("edited evaluation");
           newEvaluation.key = this.evaluationKey();

@@ -1,4 +1,5 @@
 import { Grids } from '../../../shared/models/grids';
+import { DocumentModel } from '../../classes/models/documentModel';
 
 /**
  * Modello che rappresenta una valutazione (voto, griglia, note) assegnata ad uno studente.
@@ -16,6 +17,7 @@ export class Evaluation {
   studentKey: string = '';
   teacherKey: string = '';
   activityKey: string = '';
+  enclosedDocuments: DocumentModel[] = [];
 
   constructor(args?: any) {
     this.build(args);
@@ -69,6 +71,7 @@ export class Evaluation {
       studentKey: this.studentKey,
       teacherKey: this.teacherKey,
       activityKey: this.activityKey,
+      enclosedDocuments: this.enclosedDocuments.map((doc) => doc.serialize()),
       fullText: `${this.description} ${this.note}`  // per la ricerca fulltext
     };
   }
