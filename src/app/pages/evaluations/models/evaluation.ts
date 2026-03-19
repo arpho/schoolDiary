@@ -40,6 +40,10 @@ export class Evaluation {
         grid: this.grid
       });
       this.gridsKey = this.grid.key;
+      
+      if (args.enclosedDocuments && Array.isArray(args.enclosedDocuments)) {
+        this.enclosedDocuments = args.enclosedDocuments.map((doc: any) => new DocumentModel(doc));
+      }
     }
     return this;
   }

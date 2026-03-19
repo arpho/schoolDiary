@@ -182,9 +182,8 @@ export class EditEvaluationPage implements OnInit {
   constructor(private fb: FormBuilder,
     private router: Router) {
     console.log("EditEvaluationPage constructor chiamato");
-    addIcons({
-      'save': saveOutline, add, trash, link
-    });
+    addIcons({ add, link, trash, save: saveOutline });
+
     // Initialize form in constructor
     this.evaluationform = this.fb.group({
       description: [''],
