@@ -32,7 +32,8 @@ describe('Evaluation', () => {
       classKey: 'class-1',
       studentKey: 'student-1',
       teacherKey: 'teacher-1',
-      activityKey: 'activity-1'
+      activityKey: 'activity-1',
+      enclosedDocuments: [{ name: 'doc1', path: 'path1', descrizione: 'desc1' }]
     };
 
     evaluation.build(args);
@@ -45,6 +46,8 @@ describe('Evaluation', () => {
     expect(evaluation.studentKey).toBe(args.studentKey);
     expect(evaluation.teacherKey).toBe(args.teacherKey);
     expect(evaluation.activityKey).toBe(args.activityKey);
+    expect(evaluation.enclosedDocuments.length).toBe(1);
+    expect(evaluation.enclosedDocuments[0].name).toBe('doc1');
   });
 
   it('should serialize correctly', () => {
@@ -59,6 +62,7 @@ describe('Evaluation', () => {
       teacherKey: 'teacher-1',
       activityKey: 'activity-1',
       subjectKey: 'subject-1',
+      enclosedDocuments: [{ name: 'doc1', path: 'path1', descrizione: 'desc1' }],
       lastUpdateDate: '2025-07-22'
     };
 
@@ -76,6 +80,7 @@ describe('Evaluation', () => {
       studentKey: args.studentKey,
       teacherKey: args.teacherKey,
       activityKey: args.activityKey,
+      enclosedDocuments: [{ name: 'doc1', path: 'path1', descrizione: 'desc1' }],
       fullText: `${args.description} ${args.note}`
     });
   });
