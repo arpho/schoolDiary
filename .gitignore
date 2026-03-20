@@ -85,3 +85,5 @@ functions/test-sendActivationLink.js
 functions/test-sendActivationLink-http.js
 
 test_output.txt
+
+test_output_2.txt
