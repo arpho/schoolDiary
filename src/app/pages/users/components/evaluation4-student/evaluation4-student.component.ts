@@ -26,7 +26,8 @@ import {
   ModalController,
   IonDatetime,
   IonModal,
-  IonButton
+  IonButton,
+  IonItemDivider
 } from '@ionic/angular/standalone';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -35,7 +36,7 @@ import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
 import { addIcons } from 'ionicons';
-import { eyeOutline, print, ellipsisVertical, create, archive, trash, close, calendar } from 'ionicons/icons';
+import { eyeOutline, print, ellipsisVertical, create, archive, trash, close, calendar, link } from 'ionicons/icons';
 import { UsersRole } from 'functions/src/shared/models/UsersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -73,7 +74,8 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
     IonDatetime,
     IonModal,
     IonButton,
-    FormsModule
+    FormsModule,
+    IonItemDivider
   ]
 })
 export class Evaluation4StudentComponent implements OnInit {
@@ -238,7 +240,7 @@ export class Evaluation4StudentComponent implements OnInit {
   constructor() {
     this.ngOnInit()
     addIcons({
-      eyeOutline: eyeOutline,
+      eye: eyeOutline,
       print: print,
       ellipsisVertical: ellipsisVertical,
       create: create,
@@ -246,7 +248,8 @@ export class Evaluation4StudentComponent implements OnInit {
       trash: trash,
 
       close: close,
-      calendar: calendar
+      calendar: calendar,
+      link: link
     });
     // Usa effect per reagire ai signal inputs
     try {

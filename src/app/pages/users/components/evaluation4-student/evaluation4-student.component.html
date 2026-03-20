@@ -154,6 +154,25 @@
             </ion-item>
 
             }
+            @if (evaluation.enclosedDocuments && evaluation.enclosedDocuments.length > 0) {
+            <ion-item-divider>
+              <ion-label>Documenti allegati</ion-label>
+            </ion-item-divider>
+            @for (doc of evaluation.enclosedDocuments; track $index) {
+            <ion-item>
+              <ion-label>
+                <h3>{{ doc.descrizione || doc.name }}</h3>
+                <p>{{ doc.path }}</p>
+              </ion-label>
+              @if (doc.path) {
+              <ion-button slot="end" fill="clear" [href]="doc.path" target="_blank">
+                <ion-icon name="link" slot="icon-only"></ion-icon>
+              </ion-button>
+              }
+            </ion-item>
+            }
+            }
+
           </ion-list>
         </ion-card-content>
       </ion-card>

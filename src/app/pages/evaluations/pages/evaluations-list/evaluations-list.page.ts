@@ -95,7 +95,8 @@ export class EvaluationsListPage implements OnInit {
       trash,
       close,
       print,
-      filter
+      filter,
+      eye
     });
 
     effect(() => {

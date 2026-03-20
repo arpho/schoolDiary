@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title align="center">editEvaluation</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="'/evaluations'" text="Indietro"></ion-back-button>
+    </ion-buttons>
+    <ion-title align="center">{{title()}}</ion-title>
   </ion-toolbar>
 </ion-header>
 

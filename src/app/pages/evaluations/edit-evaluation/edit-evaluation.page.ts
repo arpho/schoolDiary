@@ -75,9 +75,11 @@ import { DocumentModel } from '../../classes/models/documentModel';
     IonFab,
     IonFabButton,
     IonIcon,
+    IonBackButton,
     IonNote,
     EvaluateGridComponent,
-    IonItemDivider
+    IonItemDivider,
+    IonButtons
   ]
 })
 export class EditEvaluationPage implements OnInit {
@@ -122,7 +124,7 @@ export class EditEvaluationPage implements OnInit {
       this.evaluationform.updateValueAndValidity();
     }
   }
-  updateEvaluation() {
+  async updateEvaluation() {
     const evaluation = this.evaluation();
     if (evaluation) {
       console.log("evaluation before ", evaluation);
@@ -133,7 +135,7 @@ export class EditEvaluationPage implements OnInit {
       console.log("evaluation grid ", evaluation.grid);
       try {
         evaluation.enclosedDocuments = this.enclosedDocuments();
-        this.$evaluations.updateEvaluation(evaluation);
+        await this.$evaluations.updateEvaluation(evaluation);
         this.router.navigate(['/pdf-evaluation', evaluation.key]);
         this.$toaster.presentToast({
           message: 'Valutazione aggiornata con successo',
@@ -208,6 +210,7 @@ export class EditEvaluationPage implements OnInit {
         const evaluation = await this.$evaluation.fetchEvaluation(evaluationKey);
         console.log('Evaluation loaded:', JSON.parse(JSON.stringify(evaluation)));
         this.evaluation.set(evaluation);
+        this.title.set("Modifica valutazione");
 
         if (!evaluation) {
           throw new Error('Valutazione non trovata');
