@@ -32,6 +32,7 @@ export interface Indicatore {
 
 export interface EvaluationData {
   description?: string;
+  note?: string;
   date?: string | Date; // Pre-formatted or Date object
   grid?: {
     indicatori: Indicatore[];
@@ -150,6 +151,20 @@ function generateDocDefinition(evaluation: EvaluationData): any {
           ],
         },
       },
+      ...(evaluation.note
+        ? [
+            { text: " ", margin: [0, 20] }, // Spacer
+            {
+              text: "Note della valutazione",
+              style: "sectionHeader",
+              margin: [0, 0, 0, 10],
+            },
+            {
+              text: evaluation.note,
+              fontSize: 12,
+            },
+          ]
+        : []),
     ],
     styles: {
       header: {

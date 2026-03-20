@@ -501,6 +501,7 @@ export class EvaluationService {
 
           const workerData = {
             description: evaluation.description,
+            note: evaluation.note,
             date: evalDate,
             grid: evaluation.grid,
             studentName,
