@@ -1,0 +1,41 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title size="large" class="ion-text-center">Valutazioni per {{activity()?.title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large" class="ion-text-center">Valutazioni per {{activity()?.title}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list *ngIf="evaluations().length > 0">
+    <ion-item *ngFor="let eval of evaluations()">
+      <ion-label>
+        <h2>{{eval.studentName}}</h2>
+        <p>Data: {{eval.data | date:'dd/MM/yyyy'}}</p>
+        <p *ngIf="eval.note" class="ion-text-wrap">Note: {{eval.note}}</p>
+        
+        <div *ngIf="eval.enclosedDocuments && eval.enclosedDocuments.length > 0" class="ion-margin-top">
+          <p><strong>Allegati:</strong></p>
+          <div class="ion-flex ion-flex-wrap">
+            <ion-button *ngFor="let doc of eval.enclosedDocuments" fill="outline" size="small" [href]="doc.path" target="_blank" class="ion-margin-end">
+              <ion-icon slot="start" name="link"></ion-icon>
+              {{doc.name}}
+            </ion-button>
+          </div>
+        </div>
+      </ion-label>
+      <ion-note slot="end" color="primary" class="ion-text-center">
+        <h3 style="margin-bottom: 0;">{{eval.voto}} / {{eval.votoMax}}</h3>
+        <p style="margin-top: 0;">({{eval.gradeInDecimal | number:'1.1-2'}}/10)</p>
+      </ion-note>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="evaluations().length === 0" class="ion-padding ion-text-center">
+    <p>Nessuna valutazione trovata per questa attività.</p>
+  </div>
+</ion-content>

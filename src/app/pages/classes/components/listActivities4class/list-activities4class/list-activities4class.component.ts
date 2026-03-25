@@ -76,7 +76,7 @@ export class ListActivities4classComponent implements OnDestroy {
     private toastCtrl: ToastController,
     private router: Router
   ) {
-    addIcons({ add, create, trash, close, calendarOutline });
+    addIcons({ add, create, trash, close, calendarOutline, eye });
     // Le icone sono registrate globalmente in app.module.ts
     console.log("activityies list")
     // Effetto che si attiva quando i valori cambiano
@@ -106,6 +106,13 @@ export class ListActivities4classComponent implements OnDestroy {
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Azioni',
       buttons: [
+        {
+          text: 'Visualizza Valutazioni',
+          icon: 'eye',
+          handler: () => {
+            this.router.navigate(['/evaluations4-activity', activity.key]);
+          }
+        },
         {
           text: 'Modifica',
           icon: 'create',

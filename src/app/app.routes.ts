@@ -139,5 +139,9 @@ export const routes: Routes = [
   {
     path: 'tutoring',
     loadComponent: () => import('./pages/tutoring/tutoring.page').then( m => m.TutoringPage)
+  },
+  {
+    path: 'evaluations4-activity/:activityKey',
+    loadComponent: () => import('./pages/evaluations4-activity/evaluations4-activity.page').then( m => m.Evaluations4ActivityPage)
   }
 ];
