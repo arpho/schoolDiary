@@ -2,14 +2,15 @@ import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonNote, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonNote, IonIcon, IonButton, ActionSheetController, AlertController, ToastController, IonButtons, IonBackButton } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 import { ActivityModel } from '../activities/models/activityModel';
 import { ActivitiesService } from '../activities/services/activities.service';
 import { EvaluationService } from '../evaluations/services/evaluation/evaluation.service';
 import { UsersService } from '../../shared/services/users.service';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { addIcons } from 'ionicons';
-import { eye, link } from 'ionicons/icons';
+import { eye, link, create, archive, trash, print, close } from 'ionicons/icons';
 
 @Component({
   selector: 'app-evaluations4-activity',
@@ -27,6 +28,8 @@ import { eye, link } from 'ionicons/icons';
     IonNote, 
     IonIcon, 
     IonButton,
+    IonButtons,
+    IonBackButton,
     CommonModule, 
     FormsModule
   ]
@@ -36,6 +39,10 @@ export class Evaluations4ActivityPage implements OnInit, OnDestroy {
   private activityService = inject(ActivitiesService);
   private evaluationService = inject(EvaluationService);
   private usersService = inject(UsersService);
+  private actionSheetCtrl = inject(ActionSheetController);
+  private alertCtrl = inject(AlertController);
+  private toastCtrl = inject(ToastController);
+  private router = inject(Router);
 
   activityKey: string | null = null;
   activity = signal<ActivityModel | null>(null);
@@ -43,7 +50,7 @@ export class Evaluations4ActivityPage implements OnInit, OnDestroy {
   private unsubscribe: any;
 
   constructor() {
-    addIcons({ eye, link });
+    addIcons({ eye, link, create, archive, trash, print, close });
   }
 
   ngOnInit() {
@@ -79,6 +86,121 @@ export class Evaluations4ActivityPage implements OnInit, OnDestroy {
       evaluationsWithNames.sort((a, b) => a.studentName.localeCompare(b.studentName));
       this.evaluations.set(evaluationsWithNames);
     }, query);
+  }
+
+  async openActionSheet(evaluation: any, event: Event) {
+    event.stopPropagation();
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Azioni valutazione',
+      buttons: [
+        {
+          text: 'Modifica',
+          icon: 'create',
+          handler: () => {
+            this.editEvaluation(evaluation);
+            actionSheet.dismiss();
+            return false;
+          }
+        },
+        {
+          text: 'Archivia',
+          icon: 'archive',
+          handler: () => {
+            this.archiveEvaluation(evaluation);
+            actionSheet.dismiss();
+            return false;
+          }
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            this.confirmDelete(evaluation);
+            actionSheet.dismiss();
+            return false;
+          }
+        },
+        {
+          text: 'Esporta in PDF',
+          icon: 'print',
+          handler: () => {
+            this.evaluationPdf(evaluation);
+            actionSheet.dismiss();
+            return false;
+          }
+        },
+        {
+          text: 'Annulla',
+          icon: 'close',
+          role: 'cancel',
+          handler: () => {
+            actionSheet.dismiss();
+            return false;
+          }
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+
+  editEvaluation(evaluation: any) {
+    this.router.navigate(['/edit-evaluation', evaluation.key]);
+  }
+
+  archiveEvaluation(evaluation: any) {
+    console.log("archiveEvaluation chiamato", evaluation);
+    // Logica di archiviazione se necessaria
+  }
+
+  async confirmDelete(evaluation: any) {
+    const alert = await this.alertCtrl.create({
+      header: 'Conferma eliminazione',
+      message: `Sei sicuro di voler eliminare la valutazione per lo studente ${evaluation.studentName}?`,
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel'
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          handler: () => {
+            this.deleteEvaluation(evaluation);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async deleteEvaluation(evaluation: any) {
+    try {
+      await this.evaluationService.deleteEvaluation(evaluation);
+      // Il signal si aggiornerà automaticamente se c'è un listener realtime, 
+      // altrimenti dovremmo aggiornarlo manualmente.
+      // Dato che fetchEvaluations usa getEvaluationsOnRealtime, si dovrebbe aggiornare.
+      this.showToast('Valutazione eliminata con successo');
+    } catch (error) {
+      console.error('Errore durante l\'eliminazione della valutazione:', error);
+      this.showToast('Si è verificato un errore durante l\'eliminazione', 'danger');
+    }
+  }
+
+  evaluationPdf(evaluation: any) {
+    this.router.navigate(['/pdf-evaluation', evaluation.key]);
+  }
+
+  private async showToast(message: string, color: string = 'success') {
+    const toast = await this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      color: color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 
   ngOnDestroy() {

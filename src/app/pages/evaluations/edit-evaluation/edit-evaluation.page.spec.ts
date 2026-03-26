@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { EditEvaluationPage } from './edit-evaluation.page';
 import { IonicModule } from '@ionic/angular';
-import { ModalController, AlertController } from '@ionic/angular/standalone';
+import { ModalController, AlertController, NavController } from '@ionic/angular/standalone';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClassiService } from '../../classes/services/classi.service';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -9,6 +9,7 @@ import { ActivitiesService } from '../../activities/services/activities.service'
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { EvaluationService } from '../services/evaluation/evaluation.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { SubjectService } from '../../subjects-list/services/subjects/subject.service';
 import { EvaluateGridComponent } from '../components/evaluateGrid/evaluate-grid/evaluate-grid.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
@@ -25,6 +26,8 @@ describe('EditEvaluationPage', () => {
   const toasterSpy = jasmine.createSpyObj('ToasterService', ['presentToast']);
   const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
   const alertSpy = jasmine.createSpyObj('AlertController', ['create']);
+  const navSpy = jasmine.createSpyObj('NavController', ['navigateBack']);
+  const subjectsSpy = jasmine.createSpyObj('SubjectService', ['fetchSubjectsByKeys']);
 
   beforeEach(waitForAsync(() => {
     // Setup default returns
@@ -43,6 +46,8 @@ describe('EditEvaluationPage', () => {
         { provide: ToasterService, useValue: toasterSpy },
         { provide: Router, useValue: routerSpy },
         { provide: AlertController, useValue: alertSpy },
+        { provide: NavController, useValue: navSpy },
+        { provide: SubjectService, useValue: subjectsSpy },
         {
           provide: ActivatedRoute,
           useValue: {
