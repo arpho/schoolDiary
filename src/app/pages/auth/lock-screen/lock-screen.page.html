@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>App Bloccata</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="lock-container">
+    <ion-card class="lock-card">
+      <ion-card-content>
+        <div class="logo-container">
+          <ion-icon name="lock-closed-outline" class="logo-icon"></ion-icon>
+          <h2>App Bloccata</h2>
+          <p>Inserisci la tua password per continuare</p>
+        </div>
+
+        <form [formGroup]="lockForm" (ngSubmit)="unlock()">
+          <ion-item lines="none" class="custom-input">
+            <ion-input
+              label="Password"
+              labelPlacement="floating"
+              fill="outline"
+              type="password"
+              formControlName="password"
+              placeholder="Inserisci password">
+              <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
+
+          <ion-button expand="block" type="submit" [disabled]="!lockForm.valid" class="unlock-button">
+            <ion-icon name="lock-open-outline" slot="start"></ion-icon>
+            Sblocca
+          </ion-button>
+
+          <div class="logout-link">
+            <ion-button fill="clear" color="danger" (click)="logout()">
+              <ion-icon name="log-out-outline" slot="start"></ion-icon>
+              Esci (Logout)
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

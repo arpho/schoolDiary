@@ -9,6 +9,7 @@ import { UsersService } from './shared/services/users.service';
 import { ActivitiesService } from './pages/activities/services/activities.service';
 import { Messaging, getToken } from '@angular/fire/messaging';
 import { environment } from 'src/environments/environment';
+import { LocalLockService } from './shared/services/local-lock.service';
 
 /**
  * Componente principale dell'applicazione.
@@ -29,7 +30,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private classiService: ClassiService,
     private usersService: UsersService,
-    private activitiesService: ActivitiesService
+    private activitiesService: ActivitiesService,
+    private localLockService: LocalLockService
   ) { }
 
   ngOnInit() {
@@ -53,8 +55,16 @@ export class AppComponent implements OnInit {
         }
       }
       else {
-        // Se l'utente è autenticato, reindirizza alla dashboard
-        if (!currentUrl.includes('dashboard')) {
+        // Se l'utente è autenticato, controlla se l'app è bloccata localmente
+        if (this.localLockService.isLocked()) {
+          if (!currentUrl.includes('lock-screen')) {
+            this.router.navigate(['/lock-screen']);
+          }
+          return; // Stop further processing if locked
+        }
+
+        // Se l'utente è autenticato e non bloccato, reindirizza alla dashboard se necessario
+        if (!currentUrl.includes('dashboard') && currentUrl === '/login') {
           this.router.navigate(['/dashboard']);
         }
 

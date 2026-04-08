@@ -8,7 +8,7 @@ import { DashboardAdminComponent } from 'src/app/shared/components/dashboard-adm
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { DashboardTeacherComponent } from 'src/app/shared/components/dashboard-teacher/dashboard-teacher';
 import { DashboardStudentComponent } from 'src/app/shared/components/dashboard-student/dashboard-student';
-import { LogoutComponent } from 'src/app/shared/components/logout/logout.component';
+import { UserMenuComponent } from 'src/app/shared/components/user-menu/user-menu.component';
 import { ConnectionStatusComponent } from "src/app/shared/components/connectionStatus/connection-status/connection-status.component";
 
 /**
@@ -27,7 +27,7 @@ import { ConnectionStatusComponent } from "src/app/shared/components/connectionS
     IonToolbar,
     CommonModule,
     FormsModule,
-    LogoutComponent,
+    UserMenuComponent,
     ConnectionStatusComponent
   ]
 })

@@ -9,6 +9,7 @@ import { Auth, authState, signInAnonymously, signOut, User, GoogleAuthProvider, 
 import { Router, RouterModule } from '@angular/router';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { LocalLockService } from 'src/app/shared/services/local-lock.service';
 /**
  * Pagina di login.
  * Gestisce l'autenticazione tramite email e password utilizzando Firebase Auth.
@@ -42,6 +43,7 @@ export class LoginPage implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private $toaster = inject(ToasterService);
+  private localLockService = inject(LocalLockService);
 
   loginForm: FormGroup;
   error: boolean = false;
@@ -82,6 +84,9 @@ export class LoginPage implements OnInit {
             this.errorMessage = '';
 
             console.log("login successfull");
+            // Set up local lock with the used password
+            this.localLockService.setupPassword(password);
+            
             // Reindirizza alla dashboard
             this.router.navigate(['/dashboard']);
 

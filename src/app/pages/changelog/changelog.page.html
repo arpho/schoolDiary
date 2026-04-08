@@ -1,0 +1,79 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Changelog</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="changelog-container">
+    
+    <!-- Version 2.1.0 - Current Task -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v2.1.0</ion-badge>
+          <span class="version-date">8 Aprile 2026</span>
+        </div>
+        <ion-card-title>Sicurezza & Menu Utente</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>In questa versione abbiamo introdotto importanti miglioramenti alla sicurezza dell'applicazione e una nuova interfaccia per la gestione del profilo.</p>
+        
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="lock-closed-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Blocco App Locale</h3>
+              <p>È stato implementato un meccanismo di blocco locale che protegge i tuoi dati quando l'app viene ricaricata o lasciata inattiva.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="person-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Nuovo User Menu</h3>
+              <p>Il vecchio componente di logout è stato sostituito da un menu utente completo con supporto per Gravatar e accesso rapido al profilo.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="refresh-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Integrazione Login</h3>
+              <p>Sincronizzazione automatica della chiave di blocco durante il processo di login per una protezione immediata.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Version 2.0.0 - Recent Context (Inferred) -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="secondary">v2.0.0</ion-badge>
+          <span class="version-date">Marzo 2026</span>
+        </div>
+        <ion-card-title>Ottimizzazioni & Debugging</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-label>
+              <h3>Firestore Sync</h3>
+              <p>Risolti errori di sincronizzazione e inizializzazione di Firestore dopo l'aggiornamento delle security rules.</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>Pianificazione Agenda</h3>
+              <p>Migliorata la visualizzazione dei colori nel Toast UI Calendar per compiti, verifiche e riunioni.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>
+

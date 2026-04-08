@@ -25,6 +25,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/auth/signup/signup.page').then(m => m.SignupPage)
   },
   {
+    path: 'lock-screen',
+    loadComponent: () => import('./pages/auth/lock-screen/lock-screen.page').then(m => m.LockScreenPage)
+  },
+  {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.DashboardPage),
     canActivate: [authGuard]
@@ -143,5 +147,9 @@ export const routes: Routes = [
   {
     path: 'evaluations4-activity/:activityKey',
     loadComponent: () => import('./pages/evaluations4-activity/evaluations4-activity.page').then( m => m.Evaluations4ActivityPage)
+  },
+  {
+    path: 'changelog',
+    loadComponent: () => import('./pages/changelog/changelog.page').then( m => m.ChangelogPage)
   }
 ];

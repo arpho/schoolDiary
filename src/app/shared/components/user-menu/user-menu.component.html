@@ -1,7 +1,7 @@
 <ion-button id="user-menu-trigger" fill="clear">
   <div class="user-info">
     @if (loggedUser().email) {
-      <ion-text class="user-email ion-hide-sm-down">{{ loggedUser().email }}</ion-text>
+      <ion-text class="user-email ion-hide-md-down">{{ loggedUser().email }}</ion-text>
     }
     @if (gravatarUrl()) {
       <ion-avatar slot="start" class="user-avatar">
@@ -23,9 +23,9 @@
           <ion-label>Profilo</ion-label>
         </ion-item>
 
-        <ion-item button (click)="changePassword()" detail="false">
-          <ion-icon name="key-outline" slot="start"></ion-icon>
-          <ion-label>Cambia Password</ion-label>
+        <ion-item button (click)="lockApp()" detail="false">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-label>Blocca App</ion-label>
         </ion-item>
 
         <ion-item button (click)="logout()" detail="false" lines="none" color="danger">
