@@ -44,6 +44,7 @@ import { SubjectModel } from '../../subjects-list/models/subjectModel';
 import { addIcons } from 'ionicons';
 import { saveOutline, add, trash, link } from 'ionicons/icons';
 import { DocumentModel } from '../../classes/models/documentModel';
+import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
 /**
  * Pagina per la modifica di una valutazione esistente.
  * Carica i dati della valutazione, permette di modificarli e salvare le modifiche.
@@ -82,7 +83,7 @@ import { DocumentModel } from '../../classes/models/documentModel';
     IonButtons
   ]
 })
-export class EditEvaluationPage implements OnInit {
+export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
   $classes = inject(ClassiService);
   modalCtrl = inject(ModalController);
   async openActivityDialog() {
@@ -352,5 +353,11 @@ export class EditEvaluationPage implements OnInit {
       if (!gridKey) return null;
       return this.griglie().find(g => g.key === gridKey) || null;
     }
+  }
+  /**
+   * Verifica se ci sono modifiche non salvate nella valutazione.
+   */
+  hasUnsavedChanges(): boolean {
+    return this.evaluationform.dirty || this.enclosedDocuments().length > 0;
   }
 }
