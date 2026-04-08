@@ -13,6 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReservedNotes4studentComponent } from "../components/reserved-notes4student/reserved-notes4student.component";
 import { Evaluation4StudentComponent } from "../components/evaluation4-student/evaluation4-student.component";
 import { UserGeneralities2Component } from '../components/user-generalities2/user-generalities2.component';
+import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
 import { addIcons } from 'ionicons';
 import { documentTextOutline, personOutline, sparklesOutline, trash, add } from 'ionicons/icons';
 import { AlertController } from '@ionic/angular/standalone';
@@ -54,8 +55,9 @@ import { AlertController } from '@ionic/angular/standalone';
     Evaluation4StudentComponent
   ]
 })
-export class UserDialogPage implements OnInit {
+export class UserDialogPage implements OnInit, HasUnsavedChanges {
   @ViewChild('tabs') tabs!: IonTabs;
+  @ViewChild(UserGeneralities2Component) generalitiesComp!: UserGeneralities2Component;
 
   // Gestione tab attivo
   selectedTab: string = 'generalita';
@@ -214,32 +216,11 @@ export class UserDialogPage implements OnInit {
 
 
   hasUnsavedChanges(): boolean {
-    return this.userForm.dirty;
+    return this.userForm.dirty || (this.generalitiesComp && this.generalitiesComp.hasUnsavedChanges());
   }
 
   async dismiss() {
-    if (this.hasUnsavedChanges()) {
-      const alert = await this.alertCtrl.create({
-        header: 'Modifiche non salvate',
-        message: 'Hai delle modifiche non salvate. Sei sicuro di voler uscire? Le modifiche andranno perse.',
-        buttons: [
-          {
-            text: 'Annulla',
-            role: 'cancel'
-          },
-          {
-            text: 'Esci senza salvare',
-            role: 'destructive',
-            handler: () => {
-              this.modalCtrl.dismiss();
-            }
-          }
-        ]
-      });
-      await alert.present();
-    } else {
-      this.modalCtrl.dismiss();
-    }
+    this.modalCtrl.dismiss();
   }
 
   save() {
