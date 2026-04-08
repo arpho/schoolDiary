@@ -17,7 +17,7 @@ import {
   IonIcon
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { bookOutline, lockClosedOutline, personOutline, refreshOutline } from 'ionicons/icons';
+import { bookOutline, lockClosedOutline, personOutline, refreshOutline, alertCircleOutline, checkmarkDoneOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-changelog',
@@ -45,7 +45,7 @@ import { bookOutline, lockClosedOutline, personOutline, refreshOutline } from 'i
 export class ChangelogPage implements OnInit {
 
   constructor() {
-    addIcons({ bookOutline, lockClosedOutline, personOutline, refreshOutline });
+    addIcons({ bookOutline, lockClosedOutline, personOutline, refreshOutline, alertCircleOutline, checkmarkDoneOutline });
   }
 
   ngOnInit() {
