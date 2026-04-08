@@ -74,6 +74,7 @@ import {
   alertCircle,
   link
 } from 'ionicons/icons';
+import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
 /**
  * Pagina di dettaglio e modifica di una classe.
  * Gestisce diverse schede (generalità, attività, PDP, studenti, note, ecc.).
@@ -115,7 +116,7 @@ import {
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ClasseDialogPage implements OnInit {
+export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
   // Gestione tab attivo
   selectedTab = signal<TabType>('generalita');
 
@@ -359,28 +360,7 @@ export class ClasseDialogPage implements OnInit {
   }
 
   async dismiss() {
-    if (this.hasUnsavedChanges()) {
-      const alert = await this.alertCtrl.create({
-        header: 'Modifiche non salvate',
-        message: 'Hai delle modifiche non salvate. Sei sicuro di voler uscire? Le modifiche andranno perse.',
-        buttons: [
-          {
-            text: 'Annulla',
-            role: 'cancel'
-          },
-          {
-            text: 'Esci senza salvare',
-            role: 'destructive',
-            handler: () => {
-              this.modalCtrl.dismiss();
-            }
-          }
-        ]
-      });
-      await alert.present();
-    } else {
-      this.modalCtrl.dismiss();
-    }
+    this.modalCtrl.dismiss();
   }
 
   async openAddActivityDialog() {
