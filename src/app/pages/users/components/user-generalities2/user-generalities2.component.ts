@@ -449,4 +449,10 @@ export class UserGeneralities2Component implements OnInit {
     }
   }
 
+  /**
+   * Verifica se ci sono modifiche non salvate nel form.
+   */
+  hasUnsavedChanges(): boolean {
+    return this.userForm.dirty;
+  }
 }
