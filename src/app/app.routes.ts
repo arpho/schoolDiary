@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth.guard';
+import { pendingChangesGuard } from './shared/guards/pending-changes.guard';
 
 /**
  * Definizione delle rotte principali dell'applicazione.
@@ -48,7 +49,8 @@ export const routes: Routes = [
   },
   {
     path: 'class-dialog/:classkey',
-    loadComponent: () => import('./pages/classes/classe-dialog/classe-dialog').then(m => m.ClasseDialogPage)
+    loadComponent: () => import('./pages/classes/classe-dialog/classe-dialog').then(m => m.ClasseDialogPage),
+    canDeactivate: [pendingChangesGuard]
   },
   {
     path: 'users-list',
@@ -56,7 +58,8 @@ export const routes: Routes = [
   },
   {
     path: 'user-dialog/:userKey',
-    loadComponent: () => import('./pages/users/user-dialog/user-dialog.page').then(m => m.UserDialogPage)
+    loadComponent: () => import('./pages/users/user-dialog/user-dialog.page').then(m => m.UserDialogPage),
+    canDeactivate: [pendingChangesGuard]
   },
   {
     path: 'classes-selector',
@@ -73,11 +76,13 @@ export const routes: Routes = [
   },
   {
     path: 'evaluation-dialog',
-    loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then(m => m.EvaluationDialogPage)
+    loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then(m => m.EvaluationDialogPage),
+    canDeactivate: [pendingChangesGuard]
   },
   {
     path: 'evaluation-dialog/:evaluationKey',
-    loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then(m => m.EvaluationDialogPage)
+    loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then(m => m.EvaluationDialogPage),
+    canDeactivate: [pendingChangesGuard]
   },
   {
     path: 'evaluation/:studentKey/:classKey/:teacherKey',
@@ -101,7 +106,8 @@ export const routes: Routes = [
   },
   {
     path: 'edit-evaluation/:evaluationKey',
-    loadComponent: () => import('./pages/evaluations/edit-evaluation/edit-evaluation.page').then(m => m.EditEvaluationPage)
+    loadComponent: () => import('./pages/evaluations/edit-evaluation/edit-evaluation.page').then(m => m.EditEvaluationPage),
+    canDeactivate: [pendingChangesGuard]
   },
   {
     path: "pdf-evaluation/:evaluationKey",
@@ -126,11 +132,13 @@ export const routes: Routes = [
   },
   {
     path: 'edit-subject/:subjectKey',
-    loadComponent: () => import('./pages/subjects-list/pages/edit-subject/edit-subject.page').then(m => m.EditSubjectPage)
+    loadComponent: () => import('./pages/subjects-list/pages/edit-subject/edit-subject.page').then(m => m.EditSubjectPage),
+    canDeactivate: [pendingChangesGuard]
   },
   {
     path: 'create-subject',
-    loadComponent: () => import('./pages/subjects-list/pages/create-subject/create-subject.page').then(m => m.CreateSubjectPage)
+    loadComponent: () => import('./pages/subjects-list/pages/create-subject/create-subject.page').then(m => m.CreateSubjectPage),
+    canDeactivate: [pendingChangesGuard]
   },
   {
     path: 'progress/:studentKey/:subjectsKey',
