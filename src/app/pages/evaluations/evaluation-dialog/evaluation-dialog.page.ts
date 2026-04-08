@@ -28,6 +28,7 @@ import {
 import { add, trash, link, close, print } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { DocumentModel } from '../../classes/models/documentModel';
+import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
@@ -76,7 +77,13 @@ import { ClassiService } from '../../classes/services/classi.service';
     IonItemDivider
   ]
 })
-export class EvaluationDialogPage implements OnInit {
+export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
+  /**
+   * Verifica se ci sono modifiche non salvate nella valutazione.
+   */
+  hasUnsavedChanges(): boolean {
+    return this.evaluationform.dirty || this.enclosedDocuments().length > 0;
+  }
   sortedActivities = computed(() =>
     [...this.activities()].sort((a, b) => {
       const dateA = new Date(a.date);
