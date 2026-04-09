@@ -272,15 +272,20 @@ export class AgendaEventInputComponent {
 
   title = '';
   description = '';
-  dataInizio = new Date().toISOString();
-  dataFine = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 ora dopo
+  dataInizio = this.toLocalISOString(new Date());
+  dataFine = this.toLocalISOString(new Date(Date.now() + 60 * 60 * 1000)); // 1 ora dopo
   allDay = false;
   type: EventType = 'homework';
   done = false;
   targetClasses: string[] = [];
   id?: string;
-  minDate = new Date().toISOString();
-  maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
+  minDate = this.toLocalISOString(new Date());
+  maxDate = this.toLocalISOString(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+
+  private toLocalISOString(date: Date): string {
+    const tzoffset = date.getTimezoneOffset() * 60000;
+    return new Date(date.getTime() - tzoffset).toISOString().slice(0, -1);
+  }
 
   /**
    * Inizializzazione del componente.
@@ -317,8 +322,8 @@ export class AgendaEventInputComponent {
       console.log('Editing event:', this.event);
       this.title = this.event.title || '';
       this.description = this.event.description || '';
-      this.dataInizio = this.event.dataInizio || new Date().toISOString();
-      this.dataFine = this.event.dataFine || new Date(Date.now() + 60 * 60 * 1000).toISOString();
+      this.dataInizio = this.event.dataInizio || this.toLocalISOString(new Date());
+      this.dataFine = this.event.dataFine || this.toLocalISOString(new Date(Date.now() + 60 * 60 * 1000));
       this.allDay = this.event.allDay || false;
       this.type = this.event.type || 'homework';
       // New fields
@@ -350,19 +355,19 @@ export class AgendaEventInputComponent {
       // Se si passa a "Tutto il giorno", imposta l'ora a mezzanotte
       const startDate = new Date(this.dataInizio);
       startDate.setHours(0, 0, 0, 0);
-      this.dataInizio = startDate.toISOString();
+      this.dataInizio = this.toLocalISOString(startDate);
 
       const endDate = new Date(this.dataFine);
       endDate.setHours(23, 59, 59, 999);
-      this.dataFine = endDate.toISOString();
+      this.dataFine = this.toLocalISOString(endDate);
     } else {
       // Se non è tutto il giorno, impostiamo un orario di default (es. 1 ora dopo)
       const startDate = new Date(this.dataInizio);
       startDate.setHours(12, 0, 0, 0); // Mezzogiorno
-      this.dataInizio = startDate.toISOString();
+      this.dataInizio = this.toLocalISOString(startDate);
 
       const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 ora dopo
-      this.dataFine = endDate.toISOString();
+      this.dataFine = this.toLocalISOString(endDate);
     }
   }
 
@@ -437,7 +442,7 @@ export class AgendaEventInputComponent {
     if (this.dataInizio && this.dataFine && new Date(this.dataInizio) > new Date(this.dataFine)) {
       const newEndDate = new Date(this.dataInizio);
       newEndDate.setHours(newEndDate.getHours() + 1); // Aggiungi 1 ora
-      this.dataFine = newEndDate.toISOString();
+      this.dataFine = this.toLocalISOString(newEndDate);
     }
 
     // Update validation on change
