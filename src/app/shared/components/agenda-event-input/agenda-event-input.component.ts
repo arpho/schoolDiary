@@ -74,47 +74,47 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
 
       <ion-item [class.ion-invalid]="showErrors && validationErrors['dataInizio']" data-field="dataInizio">
         <ion-label>Data inizio <ion-text color="danger">*</ion-text></ion-label>
-        <ion-datetime-button datetime="start"></ion-datetime-button>
-        <ion-modal [keepContentsMounted]="true">
-          <ng-template>
-            <ion-datetime 
-              id="start" 
-              [(ngModel)]="dataInizio" 
-              presentation="date-time" 
-              showDefaultButtons="true"
-              (ionChange)="onStartDateChange($event)">
-              <span slot="title">Seleziona data e ora di inizio</span>
-            </ion-datetime>
-          </ng-template>
-        </ion-modal>
+        <ion-datetime-button slot="end" datetime="start"></ion-datetime-button>
         @if (showErrors && validationErrors['dataInizio']) {
           <ion-note slot="error" color="danger">
             {{ validationErrors['dataInizio'] }}
           </ion-note>
         }
       </ion-item>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime 
+            id="start" 
+            [(ngModel)]="dataInizio" 
+            presentation="date-time" 
+            showDefaultButtons="true"
+            (ionChange)="onStartDateChange($event)">
+            <span slot="title">Seleziona data e ora di inizio</span>
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
 
       <ion-item [class.ion-invalid]="showErrors && validationErrors['dataFine']" data-field="dataFine">
         <ion-label>Data fine <ion-text color="danger">*</ion-text></ion-label>
-        <ion-datetime-button datetime="end"></ion-datetime-button>
-        <ion-modal [keepContentsMounted]="true">
-          <ng-template>
-            <ion-datetime 
-              id="end" 
-              [(ngModel)]="dataFine" 
-              presentation="date-time" 
-              showDefaultButtons="true"
-              (ionChange)="onEndDateChange($event)">
-              <span slot="title">Seleziona data e ora di fine</span>
-            </ion-datetime>
-          </ng-template>
-        </ion-modal>
+        <ion-datetime-button slot="end" datetime="end"></ion-datetime-button>
         @if (showErrors && validationErrors['dataFine']) {
           <ion-note slot="error" color="danger">
             {{ validationErrors['dataFine'] }}
           </ion-note>
         }
       </ion-item>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime 
+            id="end" 
+            [(ngModel)]="dataFine" 
+            presentation="date-time" 
+            showDefaultButtons="true"
+            (ionChange)="onEndDateChange($event)">
+            <span slot="title">Seleziona data e ora di fine</span>
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
 
       <ion-item [class.ion-invalid]="showErrors && validationErrors['type']" data-field="type">
         <ion-label>Tipo evento <ion-text color="danger">*</ion-text></ion-label>
