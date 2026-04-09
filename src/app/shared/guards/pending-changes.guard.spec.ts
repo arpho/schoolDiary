@@ -89,7 +89,7 @@ describe('pendingChangesGuard', () => {
       pendingChangesGuard(component, mockRoute, mockState, mockNextState)
     );
 
-    const callArgs = alertControllerMock.create.calls.mostRecent().args[0];
+    const callArgs = alertControllerMock.create.calls.mostRecent().args[0]!;
     expect(callArgs.header).toBe('Modifiche non salvate');
     expect(callArgs.buttons?.length).toBe(2);
     // @ts-ignore
