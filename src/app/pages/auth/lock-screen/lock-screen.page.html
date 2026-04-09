@@ -14,7 +14,7 @@
           <p>Inserisci la tua password per continuare</p>
         </div>
 
-        <form [formGroup]="lockForm" (ngSubmit)="unlock()">
+        <form [formGroup]="lockForm" (ngSubmit)="unlock()" autocomplete="off">
           <ion-item lines="none" class="custom-input">
             <ion-input
               label="Password"
@@ -22,7 +22,8 @@
               fill="outline"
               type="password"
               formControlName="password"
-              placeholder="Inserisci password">
+              placeholder="Inserisci password"
+              autocomplete="new-password">
               <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
               <ion-input-password-toggle slot="end"></ion-input-password-toggle>
             </ion-input>
