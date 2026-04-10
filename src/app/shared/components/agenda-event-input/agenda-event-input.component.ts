@@ -73,8 +73,10 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
       </ion-item>
 
       <ion-item [class.ion-invalid]="showErrors && validationErrors['dataInizio']" data-field="dataInizio">
-        <ion-label>Data inizio <ion-text color="danger">*</ion-text></ion-label>
-        <ion-datetime-button slot="end" datetime="start"></ion-datetime-button>
+        <ion-label position="stacked">Data inizio <ion-text color="danger">*</ion-text></ion-label>
+        <div class="datetime-button-container ion-padding-vertical">
+          <ion-datetime-button datetime="start"></ion-datetime-button>
+        </div>
         @if (showErrors && validationErrors['dataInizio']) {
           <ion-note slot="error" color="danger">
             {{ validationErrors['dataInizio'] }}
@@ -95,8 +97,10 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
       </ion-modal>
 
       <ion-item [class.ion-invalid]="showErrors && validationErrors['dataFine']" data-field="dataFine">
-        <ion-label>Data fine <ion-text color="danger">*</ion-text></ion-label>
-        <ion-datetime-button slot="end" datetime="end"></ion-datetime-button>
+        <ion-label position="stacked">Data fine <ion-text color="danger">*</ion-text></ion-label>
+        <div class="datetime-button-container ion-padding-vertical">
+          <ion-datetime-button datetime="end"></ion-datetime-button>
+        </div>
         @if (showErrors && validationErrors['dataFine']) {
           <ion-note slot="error" color="danger">
             {{ validationErrors['dataFine'] }}
