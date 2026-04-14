@@ -22,7 +22,9 @@ import {
   IonToggle,
   IonIcon,
   IonNote,
-  IonText
+  IonText,
+  IonAccordion,
+  IonAccordionGroup
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, timeOutline } from 'ionicons/icons';
@@ -72,53 +74,49 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
         <ion-toggle [(ngModel)]="allDay" (ionChange)="onAllDayChange()"></ion-toggle>
       </ion-item>
 
-      <ion-item [class.ion-invalid]="showErrors && validationErrors['dataInizio']" data-field="dataInizio">
-        <ion-label position="stacked">Data inizio <ion-text color="danger">*</ion-text></ion-label>
-        <div class="datetime-button-container ion-padding-vertical">
-          <ion-datetime-button datetime="start" slot="start"></ion-datetime-button>
-        </div>
-        @if (showErrors && validationErrors['dataInizio']) {
-          <ion-note slot="error" color="danger">
-            {{ validationErrors['dataInizio'] }}
-          </ion-note>
-        }
-      </ion-item>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime 
-            id="start" 
-            [(ngModel)]="dataInizio" 
-            presentation="date-time" 
-            showDefaultButtons="true"
-            (ionChange)="onStartDateChange($event)">
-            <span slot="title">Seleziona data e ora di inizio</span>
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
+      <ion-accordion-group class="ion-margin-bottom">
+        <ion-accordion value="start" [class.accordion-invalid]="showErrors && validationErrors['dataInizio']">
+          <ion-item slot="header">
+            <ion-label>
+              <h2>Data inizio <ion-text color="danger">*</ion-text></h2>
+              <p>{{ dataInizio | date: (allDay ? 'dd MMM yyyy' : 'dd MMM yyyy HH:mm') }}</p>
+            </ion-label>
+          </ion-item>
+          <div slot="content" class="ion-no-padding">
+            <ion-datetime 
+              [(ngModel)]="dataInizio" 
+              [presentation]="allDay ? 'date' : 'date-time'" 
+              (ionChange)="onStartDateChange($event)"
+              size="cover"
+              [preferWheel]="true">
+            </ion-datetime>
+          </div>
+        </ion-accordion>
 
-      <ion-item [class.ion-invalid]="showErrors && validationErrors['dataFine']" data-field="dataFine">
-        <ion-label position="stacked">Data fine <ion-text color="danger">*</ion-text></ion-label>
-        <div class="datetime-button-container ion-padding-vertical">
-          <ion-datetime-button datetime="end" slot="start"></ion-datetime-button>
-        </div>
-        @if (showErrors && validationErrors['dataFine']) {
-          <ion-note slot="error" color="danger">
-            {{ validationErrors['dataFine'] }}
-          </ion-note>
-        }
-      </ion-item>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime 
-            id="end" 
-            [(ngModel)]="dataFine" 
-            presentation="date-time" 
-            showDefaultButtons="true"
-            (ionChange)="onEndDateChange($event)">
-            <span slot="title">Seleziona data e ora di fine</span>
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
+        <ion-accordion value="end" [class.accordion-invalid]="showErrors && validationErrors['dataFine']">
+          <ion-item slot="header">
+            <ion-label>
+              <h2>Data fine <ion-text color="danger">*</ion-text></h2>
+              <p>{{ dataFine | date: (allDay ? 'dd MMM yyyy' : 'dd MMM yyyy HH:mm') }}</p>
+            </ion-label>
+          </ion-item>
+          <div slot="content" class="ion-no-padding">
+            <ion-datetime 
+              [(ngModel)]="dataFine" 
+              [presentation]="allDay ? 'date' : 'date-time'" 
+              (ionChange)="onEndDateChange($event)"
+              size="cover"
+              [preferWheel]="true">
+            </ion-datetime>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+
+      @if (showErrors && (validationErrors['dataInizio'] || validationErrors['dataFine'])) {
+        <ion-note color="danger" class="ion-margin-horizontal ion-margin-bottom display-block">
+          {{ validationErrors['dataInizio'] || validationErrors['dataFine'] }}
+        </ion-note>
+      }
 
       <ion-item [class.ion-invalid]="showErrors && validationErrors['type']" data-field="type">
         <ion-label>Tipo evento <ion-text color="danger">*</ion-text></ion-label>
@@ -207,7 +205,9 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
     IonToggle,
     IonIcon,
     IonNote,
-    IonText
+    IonText,
+    IonAccordion,
+    IonAccordionGroup
   ] as any[],
   styles: [`
     .time-icon {
@@ -252,6 +252,35 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
     
     .error-list ion-icon {
       margin-right: 8px;
+    }
+
+    ion-accordion {
+      border: 1px solid var(--ion-color-light-shade);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+
+    ion-accordion.accordion-invalid {
+      border-color: var(--ion-color-danger);
+    }
+
+    ion-accordion h2 {
+      font-size: 1rem;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      color: var(--ion-color-step-700);
+    }
+
+    ion-accordion p {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--ion-color-primary);
+      margin: 0;
+    }
+
+    .display-block {
+      display: block;
     }
   `]
 })
