@@ -1,17 +1,38 @@
 <div class="agenda-container">
+  <ion-toolbar>
+    <ion-segment [value]="segmentValue()" (ionChange)="onSegmentChange($event)" color="secondary">
+      <ion-segment-button value="list">
+        <ion-icon name="list"></ion-icon>
+        <ion-label>Lista</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="scheduler">
+        <ion-icon name="calendar"></ion-icon>
+        <ion-label>Calendario</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="past">
+        <ion-icon name="time-outline"></ion-icon>
+        <ion-label>Passati</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
   <ion-list>
     <ion-list-header>
       <ion-label class="ion-text-center">{{ title() }}</ion-label>
     </ion-list-header>
 
-    @if (agenda().length > 0) {
-    <app-agenda-display [eventsInput]="agenda()"></app-agenda-display>
+    @if (viewMode() === 'list') {
+      @if (agenda().length > 0) {
+      <app-agenda-display [eventsInput]="agenda()"></app-agenda-display>
+      } @else {
+      <ion-item>
+        <ion-label class="ion-text-center">
+          <p>{{ emptyMessage() }}</p>
+        </ion-label>
+      </ion-item>
+      }
     } @else {
-    <ion-item>
-      <ion-label class="ion-text-center">
-        <p>{{ emptyMessage() }}</p>
-      </ion-label>
-    </ion-item>
+      <app-agenda-scheduler-toast-ui [events]="agenda()" (eventClick)="onEventClick($event)"></app-agenda-scheduler-toast-ui>
     }
   </ion-list>
 
