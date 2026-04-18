@@ -140,12 +140,24 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
         }
       </ion-item>
 
+      <ion-item lines="none" class="ion-no-margin ion-no-padding">
+        <ion-label slot="start" class="ion-margin-horizontal">Classi <ion-text color="danger">*</ion-text></ion-label>
+        <ion-buttons slot="end" class="ion-margin-horizontal">
+          <ion-button (click)="selectAllClasses()" color="primary" fill="clear" size="small">
+            Tutte
+          </ion-button>
+          <ion-button (click)="deselectAllClasses()" color="medium" fill="clear" size="small">
+            Nessuna
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+
       <ion-item [class.ion-invalid]="showErrors && validationErrors['classKey']" data-field="classKey">
-        <ion-label>Classe <ion-text color="danger">*</ion-text></ion-label>
         <ion-select 
           [(ngModel)]="selectedClassKey" 
-          placeholder="Seleziona classe"
+          placeholder="Seleziona classi"
           [class.ion-invalid]="showErrors && validationErrors['classKey']"
+          [multiple]="true"
           (ionChange)="onClassChange()">
           @for (classe of classes; track classe.key) {
             <ion-select-option [value]="classe.key">
@@ -288,7 +300,7 @@ export class AgendaEventInputComponent {
   /** Evento esistente da modificare (opzionale) */
   @Input() event?: AgendaEvent;
   /** Chiave della classe preselezionata */
-  @Input() classKey: string = '';
+  @Input() classKey: string[] | string = [];
   /** Chiave del docente creatore */
   @Input() teacherKey: string = '';
 
@@ -301,7 +313,7 @@ export class AgendaEventInputComponent {
 
   // Lista delle classi disponibili
   classes: ClasseModel[] = [];
-  selectedClassKey: string = '';
+  selectedClassKey: string[] = [];
 
   title = '';
   description = '';
@@ -335,12 +347,13 @@ export class AgendaEventInputComponent {
 
         // Se c'è una classe selezionata, impostala
         if (this.classKey) {
-          this.selectedClassKey = this.classKey;
+          this.selectedClassKey = Array.isArray(this.classKey) ? this.classKey : [this.classKey];
         } else if (this.event?.classKey) {
-          this.selectedClassKey = this.event.classKey;
+          this.selectedClassKey = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
         } else if (this.classes.length > 0) {
-          // Se non c'è una classe selezionata, seleziona la prima disponibile
-          this.selectedClassKey = this.classes[0].key;
+          // Se non c'è una classe selezionata, non selezionare nulla di default se vogliamo permettere selezione multipla
+          // o seleziona la prima se necessario. Per ora lasciamo vuoto se non c'è classKey.
+          this.selectedClassKey = [];
         }
       });
 
@@ -365,8 +378,8 @@ export class AgendaEventInputComponent {
       this.id = this.event.id || undefined; // Assuming 'id' might be optional or generated
 
       // Assicurati che classKey e teacherKey siano impostati dall'evento se non già forniti
-      if (this.event.classKey && !this.classKey) {
-        this.classKey = this.event.classKey;
+      if (this.event.classKey && (!this.classKey || (Array.isArray(this.classKey) && this.classKey.length === 0))) {
+        this.classKey = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
       }
       if (this.event.teacherKey && !this.teacherKey) {
         this.teacherKey = this.event.teacherKey;
@@ -416,8 +429,8 @@ export class AgendaEventInputComponent {
   validateForm(): { isValid: boolean; errors: { [key: string]: string } } {
     const errors: { [key: string]: string } = {};
 
-    if (!this.selectedClassKey) {
-      errors['classKey'] = 'Seleziona una classe';
+    if (!this.selectedClassKey || this.selectedClassKey.length === 0) {
+      errors['classKey'] = 'Seleziona almeno una classe';
     }
 
     if (!this.title?.trim()) {
@@ -443,8 +456,8 @@ export class AgendaEventInputComponent {
       console.log('Tipo evento obbligatorio');
     }
 
-    if (!this.classKey) {
-      errors['classKey'] = 'Seleziona una classe';
+    if (!this.classKey || (Array.isArray(this.classKey) && this.classKey.length === 0)) {
+      errors['classKey'] = 'Seleziona almeno una classe';
       console.log('Classe obbligatoria');
     }
 
@@ -498,6 +511,24 @@ export class AgendaEventInputComponent {
     }
   }
 
+  /**
+   * Seleziona tutte le classi disponibili nella lista classes.
+   */
+  selectAllClasses() {
+    if (this.classes && this.classes.length > 0) {
+      this.selectedClassKey = this.classes.map(c => c.key);
+      this.onClassChange();
+    }
+  }
+
+  /**
+   * Deseleziona tutte le classi.
+   */
+  deselectAllClasses() {
+    this.selectedClassKey = [];
+    this.onClassChange();
+  }
+
   // Updates validation state for the form
   private updateValidation() {
     const { errors } = this.validateForm();
@@ -544,10 +575,10 @@ export class AgendaEventInputComponent {
       dataFine: this.dataFine,
       allDay: this.allDay,
       type: this.type,
-      classKey: this.classKey,
+      classKey: Array.isArray(this.classKey) ? this.classKey : [this.classKey],
       teacherKey: this.teacherKey,
       done: this.done,
-      targetClasses: this.targetClasses.length > 0 ? this.targetClasses : (this.classKey ? [this.classKey] : []),
+      targetClasses: this.targetClasses.length > 0 ? this.targetClasses : (Array.isArray(this.classKey) ? this.classKey : (this.classKey ? [this.classKey] : [])),
       creationDate: this.event?.creationDate || Date.now()
     });
 

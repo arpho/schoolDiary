@@ -60,10 +60,14 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
 
     async preloadData(timetable: TimetableModel[], agendaEvents: AgendaEvent[] = []) {
         const subjectKeys = new Set(timetable.map(t => t.subjectKey).filter(k => !!k));
-        const classKeys = new Set([
-            ...timetable.map(t => t.classKey).filter(k => !!k),
-            ...agendaEvents.map(a => a.classKey).filter(k => !!k)
-        ]);
+        const classKeys = new Set<string>();
+        timetable.forEach(t => { if (t.classKey) classKeys.add(t.classKey); });
+        agendaEvents.forEach(a => {
+            if (a.classKey) {
+                const keys = Array.isArray(a.classKey) ? a.classKey : [a.classKey];
+                keys.forEach(k => { if (k) classKeys.add(k); });
+            }
+        });
         
         // Filter out keys we already have
         const subjectsToFetch = Array.from(subjectKeys).filter(key => !this.subjectsCache.has(key));
@@ -130,7 +134,8 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
 
                             const matchingAgenda = (this.agendaEvents() || []).filter(ag => {
                                 if (ag.allDay) return false;
-                                if (ag.classKey && event.raw.classKey && ag.classKey !== event.raw.classKey) return false;
+                                if (ag.classKey && event.raw.classKey && Array.isArray(ag.classKey) && !ag.classKey.includes(event.raw.classKey)) return false;
+                                if (ag.classKey && event.raw.classKey && !Array.isArray(ag.classKey) && ag.classKey !== event.raw.classKey) return false;
                                 const agStart = new Date(ag.dataInizio).getTime();
                                 return agStart >= slotStart && agStart < slotEnd;
                             });
@@ -318,7 +323,10 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 const matchingSlot = timetable.find(tt => {
                     const ttDayIndex = dayIndexMap[tt.day];
                     if (ttDayIndex === undefined || ttDayIndex !== agStart.getDay()) return false;
-                    if (item.classKey && tt.classKey && item.classKey !== tt.classKey) return false;
+                    if (item.classKey && tt.classKey) {
+                        const agKeys = Array.isArray(item.classKey) ? item.classKey : [item.classKey];
+                        if (!agKeys.includes(tt.classKey)) return false;
+                    }
                     
                     const [ttStartH, ttStartM] = tt.startTime.split(':').map(Number);
                     const [ttEndH, ttEndM] = tt.endTime.split(':').map(Number);
@@ -331,8 +339,9 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
             }
             if (isEmbedded) return;
 
-            const classe = this.classesCache.get(item.classKey);
-            let classColor = this.getClassColor(item.classKey);
+            const firstClassKey = Array.isArray(item.classKey) ? item.classKey[0] : item.classKey;
+            const classe = firstClassKey ? this.classesCache.get(firstClassKey) : undefined;
+            let classColor = firstClassKey ? this.getClassColor(firstClassKey) : undefined;
             
             // Generate a color fallback if needed
             let color = classColor || this.getAgendaEventColor(item.type);
@@ -379,9 +388,11 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-    private getClassColor(classeKey?: string): string | undefined {
+    private getClassColor(classeKey?: string | string[]): string | undefined {
         if (!classeKey) return undefined;
-        const classe = this.classesCache.get(classeKey);
+        const key = Array.isArray(classeKey) ? classeKey[0] : classeKey;
+        if (!key) return undefined;
+        const classe = this.classesCache.get(key);
         if (!classe) return undefined;
         
         let hash = 0;

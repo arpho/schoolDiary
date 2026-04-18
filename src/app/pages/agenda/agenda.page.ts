@@ -59,6 +59,7 @@ import { AgendaEventInputComponent } from '../../shared/components/agenda-event-
   ]
 })
 export class AgendaPage implements OnInit {
+  protected readonly Array = Array;
   private usersService = inject(UsersService);
   private agendaService = inject(AgendaService);
   private classiService = inject(ClassiService);
@@ -126,7 +127,7 @@ export class AgendaPage implements OnInit {
       const showPast = this.showPastEvents();
 
       if (targetedClasses.length > 0) {
-        const queries = [new QueryCondition('classKey', 'in', targetedClasses)];
+        const queries = [new QueryCondition('classKey', 'array-contains-any', targetedClasses)];
 
         if (!showPast) {
           const today = new Date();

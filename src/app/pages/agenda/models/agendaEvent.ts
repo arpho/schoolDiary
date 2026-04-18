@@ -10,7 +10,7 @@ export interface IAgendaEvent {
     description: string;
     dataInizio: string; // ISO string
     dataFine: string;   // ISO string
-    classKey: string;
+    classKey: string[];
     teacherKey: string;
     type: EventType;
     targetClasses?: string[]; // Array di chiavi o ID delle classi target
@@ -31,7 +31,7 @@ export class AgendaEvent implements IAgendaEvent {
     description: string = '';
     dataInizio: string = ''; // ISO string
     dataFine: string = '';   // ISO string
-    classKey: string = '';
+    classKey: string[] = [];
     done: boolean = false;
     teacherKey: string = '';
     type: EventType = 'other';
@@ -102,7 +102,7 @@ export class AgendaEvent implements IAgendaEvent {
             description: this.description,
             dataInizio: this.dataInizio,
             dataFine: this.dataFine,
-            classKey: this.classKey,
+            classKey: this.classKey || [],
             teacherKey: this.teacherKey,
             type: this.type,
             targetClasses: this.targetClasses,

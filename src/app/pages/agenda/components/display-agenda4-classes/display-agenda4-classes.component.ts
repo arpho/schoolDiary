@@ -158,7 +158,7 @@ export class DisplayAgenda4ClassesComponent {
       };
       updateTitle();
 
-      const queries = [new QueryCondition('classKey', 'in', targetedClasses)];
+      const queries = [new QueryCondition('classKey', 'array-contains-any', targetedClasses)];
 
       if (!showPast) {
         const today = new Date();
