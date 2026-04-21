@@ -69,7 +69,7 @@ export class TimetablePage implements OnInit, OnDestroy {
          this.agendaEvents.set(events);
        },
        [
-         new QueryCondition('classKey', 'in', user.classesKey),
+         new QueryCondition('classKey', 'array-contains-any', user.classesKey),
          new QueryCondition('dataFine', '>=', startStr),
          new QueryCondition('dataFine', '<=', endStr)
        ]

@@ -63,23 +63,34 @@ export class AgendaService {
                 let qArray = this.queryFn(collectionRef, this.whereFn(classCond.field, 'array-contains-any', classCond.value));
                 let qString = this.queryFn(collectionRef, this.whereFn(classCond.field, 'in', classCond.value));
 
-                // Applichiamo gli altri filtri ad entrambe
-                otherQueries.forEach(condition => {
-                    const whereClause = this.whereFn(condition.field, condition.operator, condition.value);
-                    qArray = this.queryFn(qArray, whereClause);
-                    qString = this.queryFn(qString, whereClause);
-                });
+                // Non applichiamo gli altri filtri a livello di database per evitare la necessità di indici compositi.
+                // Li applicheremo localmente nella funzione mergeAndEmit.
 
                 let eventsArray: AgendaEvent[] = [];
                 let eventsString: AgendaEvent[] = [];
 
                 const mergeAndEmit = () => {
                     const combined = [...eventsArray, ...eventsString];
-                    // Rimuovi duplicati basati sulla chiave/id
+                    // Rimuovi duplicati basati sulla chiave/id e applica i filtri rimanenti
                     const uniqueMap = new Map<string, AgendaEvent>();
                     combined.forEach(e => {
                         const id = e.key || e.id;
-                        if (id) uniqueMap.set(id, e);
+                        if (id) {
+                            let match = true;
+                            for (const q of otherQueries) {
+                                const val = (e as any)[q.field];
+                                if (q.operator === '>=') { match = match && val >= q.value; }
+                                else if (q.operator === '<=') { match = match && val <= q.value; }
+                                else if (q.operator === '>') { match = match && val > q.value; }
+                                else if (q.operator === '<') { match = match && val < q.value; }
+                                else if (q.operator === '==') { match = match && val === q.value; }
+                                else if (q.operator === '!=') { match = match && val !== q.value; }
+                                else if (q.operator === 'in') { match = match && Array.isArray(q.value) && q.value.includes(val); }
+                            }
+                            if (match) {
+                                uniqueMap.set(id, e);
+                            }
+                        }
                     });
                     callBack(Array.from(uniqueMap.values()));
                 };
