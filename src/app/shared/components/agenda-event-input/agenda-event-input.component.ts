@@ -322,7 +322,6 @@ export class AgendaEventInputComponent {
   allDay = false;
   type: EventType = 'homework';
   done = false;
-  targetClasses: string[] = [];
   id?: string;
   minDate = this.toLocalISOString(new Date());
   maxDate = this.toLocalISOString(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
@@ -339,30 +338,6 @@ export class AgendaEventInputComponent {
   async ngOnInit() {
     addIcons({ calendarOutline, timeOutline });
 
-    // Carica la lista delle classi
-    try {
-      // Usa getClassiOnRealtime() invece di getClasses()
-      const subscription = this.classiService.getClassiOnRealtime().subscribe(classes => {
-        this.classes = classes;
-
-        // Se c'è una classe selezionata, impostala
-        if (this.classKey) {
-          this.selectedClassKey = Array.isArray(this.classKey) ? this.classKey : [this.classKey];
-        } else if (this.event?.classKey) {
-          this.selectedClassKey = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
-        } else if (this.classes.length > 0) {
-          // Se non c'è una classe selezionata, non selezionare nulla di default se vogliamo permettere selezione multipla
-          // o seleziona la prima se necessario. Per ora lasciamo vuoto se non c'è classKey.
-          this.selectedClassKey = [];
-        }
-      });
-
-      // Ricordati di fare l'unsubscribe quando il componente viene distrutto
-      // Puoi aggiungere un ngOnDestroy() se necessario
-    } catch (error) {
-      console.error('Errore nel caricamento delle classi:', error);
-    }
-
     // Se stiamo modificando un evento esistente, popola TUTTI i campi
     if (this.event) {
       console.log('Editing event:', this.event);
@@ -375,28 +350,28 @@ export class AgendaEventInputComponent {
       this.done = this.event.done || false;
       this.id = this.event.id || undefined;
 
-      // Assicurati che classKey e teacherKey siano impostati dall'evento se non già forniti
-      if (this.event.classKey && (!this.classKey || (Array.isArray(this.classKey) && this.classKey.length === 0))) {
-        this.classKey = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
+      // Inizializza le classi target
+      if (this.event.targetClasses && this.event.targetClasses.length > 0) {
+        this.selectedClassKey = [...this.event.targetClasses];
+      } else if (this.event.classKey) {
+        this.selectedClassKey = Array.isArray(this.event.classKey) ? [...this.event.classKey] : [this.event.classKey];
       }
+
       if (this.event.teacherKey && !this.teacherKey) {
         this.teacherKey = this.event.teacherKey;
       }
+    } else {
+      if (this.classKey && (!Array.isArray(this.classKey) || this.classKey.length > 0)) {
+        this.selectedClassKey = Array.isArray(this.classKey) ? [...this.classKey] : [this.classKey];
+      }
     }
+
+    this.classKey = [...this.selectedClassKey];
 
     // Carica la lista delle classi
     try {
       const subscription = this.classiService.getClassiOnRealtime().subscribe(classes => {
         this.classes = classes;
-
-        // Se targetClasses è vuoto, inizializzalo
-        if (this.targetClasses.length === 0) {
-          if (this.classKey) {
-            this.targetClasses = [this.classKey];
-          } else if (this.classes.length > 0) {
-            this.targetClasses = [this.classes[0].key];
-          }
-        }
       });
     } catch (error) {
       console.error('Errore nel caricamento delle classi:', error);
@@ -467,9 +442,8 @@ export class AgendaEventInputComponent {
       errors['type'] = 'Il tipo di evento è obbligatorio';
     }
 
-    if (!this.classKey || (Array.isArray(this.classKey) && this.classKey.length === 0)) {
+    if (!this.selectedClassKey || this.selectedClassKey.length === 0) {
       errors['classKey'] = 'Seleziona almeno una classe';
-      console.log('Classe obbligatoria');
     }
 
     return {
@@ -515,12 +489,12 @@ export class AgendaEventInputComponent {
 
   // Gestisce il cambio della classe selezionata
   onClassChange() {
-    if (this.targetClasses && this.targetClasses.length > 0) {
-      this.classKey = this.targetClasses[0];
+    if (this.selectedClassKey && this.selectedClassKey.length > 0) {
+      this.classKey = [...this.selectedClassKey];
       this.clearError('classKey');
       this.updateValidation();
     } else {
-      this.classKey = '';
+      this.classKey = [];
       this.updateValidation();
     }
   }
@@ -589,10 +563,10 @@ export class AgendaEventInputComponent {
       dataFine: this.dataFine,
       allDay: this.allDay,
       type: this.type,
-      classKey: Array.isArray(this.classKey) ? this.classKey : [this.classKey],
+      classKey: [...this.selectedClassKey],
       teacherKey: this.teacherKey,
       done: this.done,
-      targetClasses: this.targetClasses.length > 0 ? this.targetClasses : (Array.isArray(this.classKey) ? this.classKey : (this.classKey ? [this.classKey] : [])),
+      targetClasses: [...this.selectedClassKey],
       creationDate: this.event?.creationDate || Date.now()
     });
 
