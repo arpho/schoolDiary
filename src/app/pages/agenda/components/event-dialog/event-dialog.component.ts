@@ -55,7 +55,7 @@ export class EventDialogComponent implements OnInit {
     dataInizio: new Date(Date.now()).toISOString(),
     dataFine: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 ora dopo
     type: 'other',
-    classKey: this.classId,
+    classKey: this.classId ? [this.classId] : [],
     teacherKey: this.teacherKey,
     allDay: false
   };
@@ -88,19 +88,38 @@ export class EventDialogComponent implements OnInit {
       // Populate form with existing event data
       this.eventData = { ...this.event };
       // Handle classKey migration if needed
-      if (this.event.targetClasses && this.event.targetClasses.length > 0) {
-        const firstClass = this.event.targetClasses[0];
-        this.eventData.classKey = typeof firstClass === 'string' ? firstClass : (firstClass as any).key;
+      if (this.event.classKey) {
+        this.eventData.classKey = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
+      } else if (this.event.targetClasses && this.event.targetClasses.length > 0) {
+        this.eventData.classKey = this.event.targetClasses.map(c => typeof c === 'string' ? c : (c as any).key);
       }
     } else {
       // New event defaults
       if (this.classId) {
-        this.eventData.classKey = this.classId;
+        this.eventData.classKey = [this.classId];
       }
       if (this.teacherKey) {
         this.eventData.teacherKey = this.teacherKey;
       }
     }
+  }
+
+  /**
+   * Seleziona tutte le classi disponibili nella lista targetedClasses.
+   */
+  selectAllClasses() {
+    if (this.targetedClasses && this.targetedClasses.length > 0) {
+      this.eventData.classKey = this.targetedClasses.map(c => this.getClassKey(c));
+      this.onFieldChange('classKey');
+    }
+  }
+
+  /**
+   * Deseleziona tutte le classi.
+   */
+  deselectAllClasses() {
+    this.eventData.classKey = [];
+    this.onFieldChange('classKey');
   }
 
   // Manteniamo ngOnInit per compatibilità
@@ -121,7 +140,7 @@ export class EventDialogComponent implements OnInit {
   save() {
     if (this.isFormValid()) {
       // Create targetClasses array from the selected classKey
-      const targetClasses = this.eventData.classKey ? [this.eventData.classKey] : [];
+      const targetClasses = Array.isArray(this.eventData.classKey) ? this.eventData.classKey : (this.eventData.classKey ? [this.eventData.classKey] : []);
 
       // Create the event data with proper types
       const formEventData: Partial<IAgendaEvent> = {
@@ -291,8 +310,8 @@ export class EventDialogComponent implements OnInit {
 
     if (end < start) return false;
 
-    // Check if a class is selected
-    if (!this.eventData.classKey) {
+    // Check if at least one class is selected
+    if (!this.eventData.classKey || (Array.isArray(this.eventData.classKey) && this.eventData.classKey.length === 0)) {
       return false;
     }
 

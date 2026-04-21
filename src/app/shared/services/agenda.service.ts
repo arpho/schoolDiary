@@ -49,17 +49,72 @@ export class AgendaService {
      * @param queries Lista di condizioni query per filtrare gli eventi (es. per classe, per data).
      */
     getAgenda4targetedClassesOnrealtime(callBack: (events: AgendaEvent[]) => void, queries: QueryCondition[]): () => void {
-
         try {
             const collectionRef = this.collectionFn(this.firestore, this.collectionName);
-            let q = this.queryFn(collectionRef);
 
-            queries.forEach(condition => {
-                q = this.queryFn(q, this.whereFn(condition.field, condition.operator, condition.value));
-            });
-            //  q = query(q, orderBy('dataInizio', 'desc'));
-            // q = query(q, where('date', '>=', new Date()));
-            try {
+            // Cerca se c'è una condizione su classKey con array-contains-any
+            const classKeyIndex = queries.findIndex(q => q.field === 'classKey' && q.operator === 'array-contains-any');
+
+            if (classKeyIndex !== -1) {
+                const classCond = queries[classKeyIndex];
+                const otherQueries = queries.filter((_, i) => i !== classKeyIndex);
+
+                // Prepariamo le due query
+                let qArray = this.queryFn(collectionRef, this.whereFn(classCond.field, 'array-contains-any', classCond.value));
+                let qString = this.queryFn(collectionRef, this.whereFn(classCond.field, 'in', classCond.value));
+
+                // Applichiamo gli altri filtri ad entrambe
+                otherQueries.forEach(condition => {
+                    const whereClause = this.whereFn(condition.field, condition.operator, condition.value);
+                    qArray = this.queryFn(qArray, whereClause);
+                    qString = this.queryFn(qString, whereClause);
+                });
+
+                let eventsArray: AgendaEvent[] = [];
+                let eventsString: AgendaEvent[] = [];
+
+                const mergeAndEmit = () => {
+                    const combined = [...eventsArray, ...eventsString];
+                    // Rimuovi duplicati basati sulla chiave/id
+                    const uniqueMap = new Map<string, AgendaEvent>();
+                    combined.forEach(e => {
+                        const id = e.key || e.id;
+                        if (id) uniqueMap.set(id, e);
+                    });
+                    callBack(Array.from(uniqueMap.values()));
+                };
+
+                const unsubArray = this.onSnapshotFn(qArray, (snapshot) => {
+                    eventsArray = [];
+                    snapshot.forEach((doc) => {
+                        const event = new AgendaEvent(doc.data());
+                        event.setKey(doc.id);
+                        eventsArray.push(event);
+                    });
+                    mergeAndEmit();
+                }, (err) => console.error("Error in qArray:", err));
+
+                const unsubString = this.onSnapshotFn(qString, (snapshot) => {
+                    eventsString = [];
+                    snapshot.forEach((doc) => {
+                        const event = new AgendaEvent(doc.data());
+                        event.setKey(doc.id);
+                        eventsString.push(event);
+                    });
+                    mergeAndEmit();
+                }, (err) => console.error("Error in qString:", err));
+
+                return () => {
+                    unsubArray();
+                    unsubString();
+                };
+            } else {
+                // Comportamento standard per altre query
+                let q = this.queryFn(collectionRef);
+                queries.forEach(condition => {
+                    q = this.queryFn(q, this.whereFn(condition.field, condition.operator, condition.value));
+                });
+
                 return this.onSnapshotFn(q, (snapshot) => {
                     const events: AgendaEvent[] = [];
                     snapshot.forEach((doc) => {
@@ -67,19 +122,14 @@ export class AgendaService {
                         event.setKey(doc.id);
                         events.push(event);
                     });
-                    console.log("events *", events);
                     callBack(events);
+                }, (err) => {
+                    console.error("error fetching", err);
                 });
             }
-            catch (e) {
-                console.log("error fetching")
-                console.log(e);
-                return () => {};
-            }
-        }
-        catch (e) {
-            console.log(e);
-            return () => {};
+        } catch (e) {
+            console.error("error setting up query", e);
+            return () => { };
         }
     }
 

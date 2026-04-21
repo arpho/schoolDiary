@@ -59,7 +59,10 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
               <p>{{ event.description }}</p>
               @if (!classKey() && event.classKey) {
                 <p>
-                  <ion-note color="medium">Classe: {{ fetchClassName(event.classKey) }}</ion-note>
+                  <ion-note color="medium">
+                    {{ Array.isArray(event.classKey) ? 'Classi: ' : 'Classe: ' }}
+                    {{ fetchClassNames(event.classKey) }}
+                  </ion-note>
                 </p>
               }
             </ion-label>
@@ -158,10 +161,17 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
   `]
 })
 export class AgendaDisplayComponent implements OnInit {
+  protected readonly Array = Array;
   classCache = new Map<string, ClasseModel>();
   fetchClassName(classKey: string) {
     const classe = this.classCache.get(classKey);
-    return `${classe?.year} ${classe?.classe}`
+    return classe ? `${classe.year} ${classe.classe}` : classKey;
+  }
+
+  fetchClassNames(classKeys: string | string[]) {
+    if (!classKeys) return '';
+    const keys = Array.isArray(classKeys) ? classKeys : [classKeys];
+    return keys.map(key => this.fetchClassName(key)).join(', ');
   }
   /** Chiave della classe per filtrare (opzionale) */
   classKey = input<string>();

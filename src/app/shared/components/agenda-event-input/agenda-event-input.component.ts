@@ -140,13 +140,24 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
         }
       </ion-item>
 
+      <ion-item lines="none" class="ion-no-margin ion-no-padding">
+        <ion-label slot="start" class="ion-margin-horizontal">Classi <ion-text color="danger">*</ion-text></ion-label>
+        <ion-buttons slot="end" class="ion-margin-horizontal">
+          <ion-button (click)="selectAllClasses()" color="primary" fill="clear" size="small">
+            Tutte
+          </ion-button>
+          <ion-button (click)="deselectAllClasses()" color="medium" fill="clear" size="small">
+            Nessuna
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+
       <ion-item [class.ion-invalid]="showErrors && validationErrors['classKey']" data-field="classKey">
-        <ion-label>Classe/i <ion-text color="danger">*</ion-text></ion-label>
         <ion-select 
-          [(ngModel)]="targetClasses" 
-          multiple="true"
-          placeholder="Seleziona classe/i"
+          [(ngModel)]="selectedClassKey" 
+          placeholder="Seleziona classi"
           [class.ion-invalid]="showErrors && validationErrors['classKey']"
+          [multiple]="true"
           (ionChange)="onClassChange()">
           @for (classe of classes; track classe.key) {
             <ion-select-option [value]="classe.key">
@@ -289,7 +300,7 @@ export class AgendaEventInputComponent {
   /** Evento esistente da modificare (opzionale) */
   @Input() event?: AgendaEvent;
   /** Chiave della classe preselezionata */
-  @Input() classKey: string = '';
+  @Input() classKey: string[] | string = [];
   /** Chiave del docente creatore */
   @Input() teacherKey: string = '';
 
@@ -302,6 +313,7 @@ export class AgendaEventInputComponent {
 
   // Lista delle classi disponibili
   classes: ClasseModel[] = [];
+  selectedClassKey: string[] = [];
 
   title = '';
   description = '';
@@ -327,6 +339,30 @@ export class AgendaEventInputComponent {
   async ngOnInit() {
     addIcons({ calendarOutline, timeOutline });
 
+    // Carica la lista delle classi
+    try {
+      // Usa getClassiOnRealtime() invece di getClasses()
+      const subscription = this.classiService.getClassiOnRealtime().subscribe(classes => {
+        this.classes = classes;
+
+        // Se c'è una classe selezionata, impostala
+        if (this.classKey) {
+          this.selectedClassKey = Array.isArray(this.classKey) ? this.classKey : [this.classKey];
+        } else if (this.event?.classKey) {
+          this.selectedClassKey = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
+        } else if (this.classes.length > 0) {
+          // Se non c'è una classe selezionata, non selezionare nulla di default se vogliamo permettere selezione multipla
+          // o seleziona la prima se necessario. Per ora lasciamo vuoto se non c'è classKey.
+          this.selectedClassKey = [];
+        }
+      });
+
+      // Ricordati di fare l'unsubscribe quando il componente viene distrutto
+      // Puoi aggiungere un ngOnDestroy() se necessario
+    } catch (error) {
+      console.error('Errore nel caricamento delle classi:', error);
+    }
+
     // Se stiamo modificando un evento esistente, popola TUTTI i campi
     if (this.event) {
       console.log('Editing event:', this.event);
@@ -339,15 +375,9 @@ export class AgendaEventInputComponent {
       this.done = this.event.done || false;
       this.id = this.event.id || undefined;
 
-      // Inizializza le classi target
-      if (this.event.targetClasses && this.event.targetClasses.length > 0) {
-        this.targetClasses = [...this.event.targetClasses];
-      } else if (this.event.classKey) {
-        this.targetClasses = [this.event.classKey];
-      }
-
-      if (this.event.classKey && !this.classKey) {
-        this.classKey = this.event.classKey;
+      // Assicurati che classKey e teacherKey siano impostati dall'evento se non già forniti
+      if (this.event.classKey && (!this.classKey || (Array.isArray(this.classKey) && this.classKey.length === 0))) {
+        this.classKey = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
       }
       if (this.event.teacherKey && !this.teacherKey) {
         this.teacherKey = this.event.teacherKey;
@@ -415,7 +445,7 @@ export class AgendaEventInputComponent {
   validateForm(): { isValid: boolean; errors: { [key: string]: string } } {
     const errors: { [key: string]: string } = {};
 
-    if (!this.targetClasses || this.targetClasses.length === 0) {
+    if (!this.selectedClassKey || this.selectedClassKey.length === 0) {
       errors['classKey'] = 'Seleziona almeno una classe';
     }
 
@@ -435,6 +465,11 @@ export class AgendaEventInputComponent {
 
     if (!this.type) {
       errors['type'] = 'Il tipo di evento è obbligatorio';
+    }
+
+    if (!this.classKey || (Array.isArray(this.classKey) && this.classKey.length === 0)) {
+      errors['classKey'] = 'Seleziona almeno una classe';
+      console.log('Classe obbligatoria');
     }
 
     return {
@@ -490,6 +525,24 @@ export class AgendaEventInputComponent {
     }
   }
 
+  /**
+   * Seleziona tutte le classi disponibili nella lista classes.
+   */
+  selectAllClasses() {
+    if (this.classes && this.classes.length > 0) {
+      this.selectedClassKey = this.classes.map(c => c.key);
+      this.onClassChange();
+    }
+  }
+
+  /**
+   * Deseleziona tutte le classi.
+   */
+  deselectAllClasses() {
+    this.selectedClassKey = [];
+    this.onClassChange();
+  }
+
   // Updates validation state for the form
   private updateValidation() {
     const { errors } = this.validateForm();
@@ -536,10 +589,10 @@ export class AgendaEventInputComponent {
       dataFine: this.dataFine,
       allDay: this.allDay,
       type: this.type,
-      classKey: this.targetClasses.length > 0 ? this.targetClasses[0] : '',
+      classKey: Array.isArray(this.classKey) ? this.classKey : [this.classKey],
       teacherKey: this.teacherKey,
       done: this.done,
-      targetClasses: this.targetClasses,
+      targetClasses: this.targetClasses.length > 0 ? this.targetClasses : (Array.isArray(this.classKey) ? this.classKey : (this.classKey ? [this.classKey] : [])),
       creationDate: this.event?.creationDate || Date.now()
     });
 

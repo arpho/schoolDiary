@@ -128,16 +128,28 @@
       <ion-note slot="helper">{{ eventData.description?.length || 0 }}/500 caratteri</ion-note>
     </ion-item>
 
-    <!-- Selezione Classe -->
+    <!-- Selezione Classi -->
     @if (targetedClasses && targetedClasses.length > 0) {
+      <ion-item lines="none" class="ion-no-margin ion-no-padding">
+        <ion-label slot="start" class="ion-margin-horizontal">Classi <span class="required">*</span></ion-label>
+        <ion-buttons slot="end" class="ion-margin-horizontal">
+          <ion-button (click)="selectAllClasses()" color="primary" fill="clear" size="small">
+            Tutte
+          </ion-button>
+          <ion-button (click)="deselectAllClasses()" color="medium" fill="clear" size="small">
+            Nessuna
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+      
       <ion-item>
-        <ion-label>Classe <span class="required">*</span></ion-label>
         <ion-select
           name="classKey"
           [(ngModel)]="eventData.classKey"
           (ionChange)="onFieldChange('classKey')"
-          interface="popover"
-          placeholder="Seleziona una classe"
+          interface="alert"
+          placeholder="Seleziona classi"
+          [multiple]="true"
           required>
           @for (classInfo of targetedClasses; track classInfo.key || classInfo.id || $index) {
             <ion-select-option [value]="getClassKey(classInfo)">
