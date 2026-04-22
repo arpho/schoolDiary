@@ -23,6 +23,7 @@
     }
   ],
   "hosting": {
+    "site": "schooldiary-b8434",
     "public": "www",
     "ignore": [
       "firebase.json",

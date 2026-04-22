@@ -85,13 +85,15 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private checkUpdate() {
+  private async checkUpdate() {
     if (this.swUpdate.isEnabled) {
       this.swUpdate.versionUpdates.pipe(
         filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY')
       ).subscribe(async () => {
         const toast = await this.toastController.create({
           message: 'È disponibile una nuova versione dell\'app!',
+          duration: 10000,
+          position: 'top',
           buttons: [
             {
               text: 'Aggiorna',
@@ -104,6 +106,12 @@ export class AppComponent implements OnInit {
         });
         await toast.present();
       });
+
+      try {
+        await this.swUpdate.checkForUpdate();
+      } catch (err) {
+        console.error('Errore durante il controllo degli aggiornamenti:', err);
+      }
     }
   }
 }
