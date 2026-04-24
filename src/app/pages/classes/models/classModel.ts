@@ -56,6 +56,9 @@ export class ClasseModel implements IClasseModel {
       if (args.description && !this.descrizione) {
         this.descrizione = args.description;
       }
+      if (args.verbali && Array.isArray(args.verbali)) {
+        this.verbali = args.verbali.map(v => v instanceof DocumentModel ? v : new DocumentModel(v));
+      }
     }
     return this
   }
