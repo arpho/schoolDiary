@@ -355,6 +355,13 @@ export class EventDialogComponent implements OnInit {
       return false;
     }
 
+    // Check if targetStudents is selected when type is interrogation
+    if (this.eventData.type === 'interrogation') {
+      if (!this.eventData.targetStudents || this.eventData.targetStudents.length === 0) {
+        return false;
+      }
+    }
+
     return true;
   }
 }

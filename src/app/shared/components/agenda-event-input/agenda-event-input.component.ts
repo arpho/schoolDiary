@@ -176,18 +176,25 @@ import { QueryCondition } from '../../models/queryCondition';
       </ion-item>
 
       @if (type === 'interrogation') {
-        <ion-item>
-          <ion-label>Studenti da interrogare</ion-label>
+        <ion-item [class.ion-invalid]="showErrors && validationErrors['selectedStudentKeys']" data-field="selectedStudentKeys">
+          <ion-label>Studenti da interrogare <ion-text color="danger">*</ion-text></ion-label>
           <ion-select 
             [(ngModel)]="selectedStudentKeys" 
-            placeholder="Seleziona studenti (opzionale)"
-            [multiple]="true">
+            placeholder="Seleziona studenti"
+            [multiple]="true"
+            [class.ion-invalid]="showErrors && validationErrors['selectedStudentKeys']"
+            (ionChange)="clearError('selectedStudentKeys')">
             @for (student of students; track student.key) {
               <ion-select-option [value]="student.key">
                 {{ student.lastName }} {{ student.firstName }}
               </ion-select-option>
             }
           </ion-select>
+          @if (showErrors && validationErrors['selectedStudentKeys']) {
+            <ion-note slot="error" color="danger">
+              {{ validationErrors['selectedStudentKeys'] }}
+            </ion-note>
+          }
         </ion-item>
       }
 
@@ -471,6 +478,10 @@ export class AgendaEventInputComponent {
 
     if (!this.type) {
       errors['type'] = 'Il tipo di evento è obbligatorio';
+    } else if (this.type === 'interrogation') {
+      if (!this.selectedStudentKeys || this.selectedStudentKeys.length === 0) {
+        errors['selectedStudentKeys'] = 'Seleziona almeno uno studente per l\'interrogazione';
+      }
     }
 
     if (!this.selectedClassKey || this.selectedClassKey.length === 0) {
