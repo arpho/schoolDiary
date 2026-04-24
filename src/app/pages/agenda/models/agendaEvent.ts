@@ -14,6 +14,7 @@ export interface IAgendaEvent {
     teacherKey: string;
     type: EventType;
     targetClasses?: string[]; // Array di chiavi o ID delle classi target
+    targetStudents?: string[]; // Array di chiavi degli studenti target per le interrogazioni
     creationDate: number;
     allDay: boolean;
     // Campi legacy per retrocompatibilità
@@ -36,6 +37,7 @@ export class AgendaEvent implements IAgendaEvent {
     teacherKey: string = '';
     type: EventType = 'other';
     targetClasses: string[] = []; // Array di chiavi o ID delle classi target
+    targetStudents: string[] = []; // Array di chiavi degli studenti target per le interrogazioni
     creationDate: number = Date.now();
     allDay: boolean = false; // Per eventi che durano tutto il giorno
 
@@ -106,6 +108,7 @@ export class AgendaEvent implements IAgendaEvent {
             teacherKey: this.teacherKey,
             type: this.type,
             targetClasses: this.targetClasses,
+            targetStudents: this.targetStudents,
             creationDate: this.creationDate,
             allDay: this.allDay
         };
