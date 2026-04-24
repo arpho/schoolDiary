@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, ChangeDetectorRef } from '@angular/core';
 import { EventType } from '../../../pages/agenda/models/agendaEvent';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -330,6 +330,7 @@ export class AgendaEventInputComponent {
   private agendaService = inject(AgendaService);
   private classiService = inject(ClassiService);
   private usersService = inject(UsersService);
+  private cdr = inject(ChangeDetectorRef);
 
   // Lista delle classi disponibili
   classes: ClasseModel[] = [];
@@ -544,6 +545,7 @@ export class AgendaEventInputComponent {
         // Rimuove eventuali studenti selezionati che non fanno più parte delle classi scelte
         const availableKeys = new Set(this.students.map(s => s.key));
         this.selectedStudentKeys = this.selectedStudentKeys.filter(key => availableKeys.has(key));
+        this.cdr.detectChanges();
       }, [new QueryCondition('classKey', 'in', this.selectedClassKey)]);
     } else {
       this.students = [];
