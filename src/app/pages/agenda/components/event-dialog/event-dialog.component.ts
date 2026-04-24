@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, inject, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ModalController, IonDatetime, IonDatetimeButton } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -8,6 +8,9 @@ import { AgendaEvent, IAgendaEvent, EventType } from '../../models/agendaEvent';
 import { IClasseModel } from 'src/app/pages/classes/models/classModel';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { UsersService } from 'src/app/shared/services/users.service';
+import { UserModel } from 'src/app/shared/models/userModel';
+import { QueryCondition } from 'src/app/shared/models/queryCondition';
 
 // Estendi il tipo AgendaEvent per gestire i targetClasses come stringhe o oggetti ClasseModel
 type ExtendedAgendaEvent = Omit<IAgendaEvent, 'targetClasses'> & {
@@ -37,6 +40,11 @@ export class EventDialogComponent implements OnInit {
     return (classInfo as IClasseModel).key || (classInfo as IClasseModel).id || '';
   }
   private modalCtrl = inject(ModalController);
+  private usersService = inject(UsersService);
+  private cdr = inject(ChangeDetectorRef);
+
+  students: UserModel[] = [];
+  private studentsUnsubscribe?: () => void;
 
   // Input properties
   @ViewChild('eventForm') eventForm?: NgForm;
@@ -102,6 +110,33 @@ export class EventDialogComponent implements OnInit {
       if (this.teacherKey) {
         this.eventData.teacherKey = this.teacherKey;
       }
+    }
+    
+    this.loadStudents();
+  }
+
+  private loadStudents() {
+    if (this.studentsUnsubscribe) {
+      this.studentsUnsubscribe();
+      this.studentsUnsubscribe = undefined;
+    }
+
+    const classKeys = this.eventData.classKey;
+    if (classKeys && Array.isArray(classKeys) && classKeys.length > 0) {
+      this.studentsUnsubscribe = this.usersService.getUsersOnRealTime((users) => {
+        this.students = users.sort((a, b) => (a.lastName || '').localeCompare(b.lastName || ''));
+        
+        const availableKeys = new Set(this.students.map(s => s.key));
+        if (this.eventData.targetStudents) {
+          this.eventData.targetStudents = this.eventData.targetStudents.filter(key => availableKeys.has(key));
+        } else {
+          this.eventData.targetStudents = [];
+        }
+        this.cdr.detectChanges();
+      }, [new QueryCondition('classKey', 'in', classKeys)]);
+    } else {
+      this.students = [];
+      this.eventData.targetStudents = [];
     }
   }
 
@@ -286,6 +321,9 @@ export class EventDialogComponent implements OnInit {
 
   // Handle field changes for validation
   onFieldChange(field: string): void {
+    if (field === 'classKey') {
+      this.loadStudents();
+    }
     if (this.eventForm) {
       const control = this.eventForm.controls[field];
       if (control) {
