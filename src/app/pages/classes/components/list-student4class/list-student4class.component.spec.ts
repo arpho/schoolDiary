@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { ListStudent4classComponent } from './list-student4class.component';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation/evaluation.service';
+import { AgendaService } from 'src/app/shared/services/agenda.service';
 
 describe('ListStudent4classComponent', () => {
   let component: ListStudent4classComponent;
@@ -16,7 +17,8 @@ describe('ListStudent4classComponent', () => {
       providers: [
         { provide: UsersService, useValue: { getLoggedUser: jasmine.createSpy('getLoggedUser'), getCustomClaims4LoggedUser: jasmine.createSpy('getCustomClaims4LoggedUser'), getUserByUid: jasmine.createSpy('getUserByUid') } },
         { provide: EvaluationService, useValue: { getEvaluation4studentAndTeacher: jasmine.createSpy('getEvaluation4studentAndTeacher').and.returnValue(Promise.resolve([])) } },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'test-id' } } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'test-id' } } } },
+        { provide: AgendaService, useValue: { getAgenda4targetedClassesOnrealtime: jasmine.createSpy('getAgenda4targetedClassesOnrealtime') } }
       ]
     }).compileComponents();
 
