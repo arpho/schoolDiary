@@ -51,9 +51,14 @@
         <ion-card class="student-card">
           <ion-card-header>
             <ion-card-title>
-              {{student.lastName}} {{student.firstName}}
-              <ion-icon *ngIf="student.BES || student.DSA || student.ADHD" name="help-buoy-outline" color="warning"
-                style="margin-left: 8px; vertical-align: middle;"></ion-icon>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <div>
+                  {{student.lastName}} {{student.firstName}}
+                  <ion-icon *ngIf="student.BES || student.DSA || student.ADHD" name="help-buoy-outline" color="warning"
+                    style="margin-left: 8px; vertical-align: middle;"></ion-icon>
+                </div>
+                <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()"></app-student-scheduled-interrogation>
+              </div>
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>

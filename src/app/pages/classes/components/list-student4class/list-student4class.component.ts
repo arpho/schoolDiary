@@ -24,6 +24,9 @@ import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
+import { AgendaService } from 'src/app/shared/services/agenda.service';
+import { AgendaEvent } from 'src/app/pages/agenda/models/agendaEvent';
+import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { addIcons } from 'ionicons';
 import {
   create,
@@ -43,6 +46,7 @@ import { ModalController } from '@ionic/angular';
 import { UploadStudentsComponent } from '../uploadStudents/upload-students/upload-students.component';
 import { UserDialogPage } from '../../../users/user-dialog/user-dialog.page';
 import { StudentAverageGradeDisplayComponent } from '../student-average-grade-display/student-average-grade-display.component';
+import { StudentScheduledInterrogationComponent } from '../student-scheduled-interrogation/student-scheduled-interrogation.component';
 
 /**
  * Componente per la visualizzazione e gestione della lista studenti di una classe.
@@ -71,7 +75,8 @@ import { StudentAverageGradeDisplayComponent } from '../student-average-grade-di
     IonModal,
     CommonModule,
     FormsModule,
-    StudentAverageGradeDisplayComponent
+    StudentAverageGradeDisplayComponent,
+    StudentScheduledInterrogationComponent
   ]
 })
 export class ListStudent4classComponent implements OnInit, OnChanges {
@@ -159,6 +164,7 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     this._classkey = value;
     if (value) {
       this.loadStudents();
+      this.loadAgendaEvents();
     }
   }
   get classkey(): string {
@@ -199,6 +205,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
   readonly filterType = signal<string>('all');
   readonly subjects = signal<SubjectModel[]>([]);
   readonly selectedSubjectKey = signal<string>('all');
+  readonly agendaEvents = signal<AgendaEvent[]>([]);
+  private agendaUnsubscribe?: () => void;
 
   constructor(
     private $users: UsersService,
@@ -206,7 +214,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     private router: Router,
     private actionSheetController: ActionSheetController,
     private $modalController: ModalController,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private $agenda: AgendaService
   ) {
     console.log("constructor ListStudent4classComponent#");
     addIcons({
@@ -303,6 +312,29 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
       this.setStudents(users);
       this.loadAveragesForStudents();
     });
+  }
+
+  /**
+   * Carica gli eventi in agenda futuri per la classe corrente (interrogazioni ecc.).
+   */
+  private loadAgendaEvents() {
+    if (this.agendaUnsubscribe) {
+      this.agendaUnsubscribe();
+    }
+    
+    if (this._classkey) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const queries = [
+        new QueryCondition('classKey', 'array-contains-any', [this._classkey]),
+        new QueryCondition('dataFine', '>=', today.toISOString())
+      ];
+      
+      this.agendaUnsubscribe = this.$agenda.getAgenda4targetedClassesOnrealtime((events) => {
+        this.agendaEvents.set(events);
+      }, queries);
+    }
   }
 
   /**
