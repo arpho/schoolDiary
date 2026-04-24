@@ -160,6 +160,25 @@
       </ion-item>
     }
 
+    <!-- Studenti per Interrogazione -->
+    @if (eventData.type === 'interrogation') {
+      <ion-item>
+        <ion-label>Studenti da interrogare</ion-label>
+        <ion-select
+          name="targetStudents"
+          [(ngModel)]="eventData.targetStudents"
+          interface="alert"
+          placeholder="Seleziona studenti (opzionale)"
+          [multiple]="true">
+          @for (student of students; track student.key) {
+            <ion-select-option [value]="student.key">
+              {{ student.lastName }} {{ student.firstName }}
+            </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    }
+
     <!-- Pulsante di salvataggio -->
     <ion-button 
       expand="block" 

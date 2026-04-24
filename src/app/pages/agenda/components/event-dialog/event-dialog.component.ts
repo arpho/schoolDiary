@@ -56,6 +56,7 @@ export class EventDialogComponent implements OnInit {
     dataFine: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 ora dopo
     type: 'other',
     classKey: this.classId ? [this.classId] : [],
+    targetStudents: [],
     teacherKey: this.teacherKey,
     allDay: false
   };
@@ -152,6 +153,7 @@ export class EventDialogComponent implements OnInit {
         type: this.eventData.type || 'other',
         allDay: this.eventData.allDay || false,
         targetClasses,
+        targetStudents: this.eventData.targetStudents || [],
         creationDate: this.eventData.creationDate || Date.now()
       };
 
