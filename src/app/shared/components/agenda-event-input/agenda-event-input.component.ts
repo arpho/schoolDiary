@@ -32,6 +32,9 @@ import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
 import { ClassiService } from '../../../pages/classes/services/classi.service';
 import { ClasseModel } from '../../../pages/classes/models/classModel';
+import { UsersService } from '../../services/users.service';
+import { UserModel } from '../../models/userModel';
+import { QueryCondition } from '../../models/queryCondition';
 
 /**
  * Componente (Modale) per l'inserimento e la modifica di eventi agenda.
@@ -172,6 +175,22 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
         }
       </ion-item>
 
+      @if (type === 'interrogation') {
+        <ion-item>
+          <ion-label>Studenti da interrogare</ion-label>
+          <ion-select 
+            [(ngModel)]="selectedStudentKeys" 
+            placeholder="Seleziona studenti (opzionale)"
+            [multiple]="true">
+            @for (student of students; track student.key) {
+              <ion-select-option [value]="student.key">
+                {{ student.lastName }} {{ student.firstName }}
+              </ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      }
+
       <ion-button expand="block" class="ion-margin-top" (click)="save()" [disabled]="!validateForm().isValid">
         <ion-icon slot="start" name="save"></ion-icon>
         Salva
@@ -310,10 +329,16 @@ export class AgendaEventInputComponent {
   private modalCtrl = inject(ModalController);
   private agendaService = inject(AgendaService);
   private classiService = inject(ClassiService);
+  private usersService = inject(UsersService);
 
   // Lista delle classi disponibili
   classes: ClasseModel[] = [];
   selectedClassKey: string[] = [];
+
+  // Lista degli studenti disponibili
+  students: UserModel[] = [];
+  selectedStudentKeys: string[] = [];
+  private studentsUnsubscribe?: () => void;
 
   title = '';
   description = '';
@@ -357,6 +382,10 @@ export class AgendaEventInputComponent {
         this.selectedClassKey = Array.isArray(this.event.classKey) ? [...this.event.classKey] : [this.event.classKey];
       }
 
+      if (this.event.targetStudents && this.event.targetStudents.length > 0) {
+        this.selectedStudentKeys = [...this.event.targetStudents];
+      }
+
       if (this.event.teacherKey && !this.teacherKey) {
         this.teacherKey = this.event.teacherKey;
       }
@@ -367,6 +396,7 @@ export class AgendaEventInputComponent {
     }
 
     this.classKey = [...this.selectedClassKey];
+    this.loadStudents();
 
     // Carica la lista delle classi
     try {
@@ -497,6 +527,28 @@ export class AgendaEventInputComponent {
       this.classKey = [];
       this.updateValidation();
     }
+    this.loadStudents();
+  }
+
+  private loadStudents() {
+    if (this.studentsUnsubscribe) {
+      this.studentsUnsubscribe();
+      this.studentsUnsubscribe = undefined;
+    }
+
+    if (this.selectedClassKey && this.selectedClassKey.length > 0) {
+      this.studentsUnsubscribe = this.usersService.getUsersOnRealTime((users) => {
+        // Ordiniamo per cognome
+        this.students = users.sort((a, b) => (a.lastName || '').localeCompare(b.lastName || ''));
+        
+        // Rimuove eventuali studenti selezionati che non fanno più parte delle classi scelte
+        const availableKeys = new Set(this.students.map(s => s.key));
+        this.selectedStudentKeys = this.selectedStudentKeys.filter(key => availableKeys.has(key));
+      }, [new QueryCondition('classKey', 'in', this.selectedClassKey)]);
+    } else {
+      this.students = [];
+      this.selectedStudentKeys = [];
+    }
   }
 
   /**
@@ -567,6 +619,7 @@ export class AgendaEventInputComponent {
       teacherKey: this.teacherKey,
       done: this.done,
       targetClasses: [...this.selectedClassKey],
+      targetStudents: [...this.selectedStudentKeys],
       creationDate: this.event?.creationDate || Date.now()
     });
 
