@@ -1,18 +1,22 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonIcon, IonBadge } from '@ionic/angular/standalone';
+import { IonIcon, IonBadge, AlertController, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline } from 'ionicons/icons';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { AgendaEvent } from 'src/app/pages/agenda/models/agendaEvent';
+import { EventDialogComponent } from 'src/app/pages/agenda/components/event-dialog/event-dialog.component';
 
 @Component({
   selector: 'app-student-scheduled-interrogation',
   template: `
     @if (nextInterrogation()) {
-      <ion-badge color="warning" class="interrogation-badge" title="Interrogazione programmata">
+      <ion-badge color="warning" class="interrogation-badge" title="Interrogazioni programmate" (click)="showInterrogations($event)">
         <ion-icon name="calendar-outline"></ion-icon>
         {{ nextInterrogation()?.dataInizio | date:'dd MMM' }}
+        @if (allInterrogations().length > 1) {
+          <span>(+{{ allInterrogations().length - 1 }})</span>
+        }
       </ion-badge>
     }
   `,
@@ -24,6 +28,7 @@ import { AgendaEvent } from 'src/app/pages/agenda/models/agendaEvent';
       font-size: 0.8em;
       padding: 4px 8px;
       font-weight: normal;
+      cursor: pointer;
     }
     ion-icon {
       font-size: 1.1em;
@@ -35,16 +40,17 @@ import { AgendaEvent } from 'src/app/pages/agenda/models/agendaEvent';
 export class StudentScheduledInterrogationComponent {
   student = input.required<UserModel>();
   events = input<AgendaEvent[]>([]);
+  private modalCtrl = inject(ModalController);
 
   constructor() {
     addIcons({ calendarOutline });
   }
 
-  nextInterrogation = computed(() => {
+  allInterrogations = computed(() => {
     const student = this.student();
     const events = this.events();
     
-    if (!student || !events || events.length === 0) return null;
+    if (!student || !events || events.length === 0) return [];
 
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -64,8 +70,6 @@ export class StudentScheduledInterrogationComponent {
       if (student.lastName && event.title) {
         const titleLower = event.title.toLowerCase();
         const lastNameLower = student.lastName.toLowerCase();
-        // Aggiungiamo boundries per evitare falsi positivi (es. "Rossini" quando cerchiamo "Rossi")
-        // ma per semplicità la tua proposta era includes
         if (titleLower.includes(lastNameLower)) {
           return true;
         }
@@ -74,11 +78,35 @@ export class StudentScheduledInterrogationComponent {
       return false;
     });
 
-    if (interrogations.length === 0) return null;
-
     // Ordina per data più vicina
-    interrogations.sort((a, b) => new Date(a.dataInizio).getTime() - new Date(b.dataInizio).getTime());
-
-    return interrogations[0];
+    return interrogations.sort((a, b) => new Date(a.dataInizio).getTime() - new Date(b.dataInizio).getTime());
   });
+
+  nextInterrogation = computed(() => {
+    const list = this.allInterrogations();
+    return list.length > 0 ? list[0] : null;
+  });
+
+  async showInterrogations(event: Event) {
+    event.stopPropagation(); // Previene l'apertura dell'action sheet dello studente
+    
+    const nextInt = this.nextInterrogation();
+    if (!nextInt) return;
+
+    const modal = await this.modalCtrl.create({
+      component: EventDialogComponent,
+      componentProps: {
+        event: nextInt,
+        // Passa la prima classe se presente, in modo che il dialog abbia un contesto
+        classId: nextInt.classKey && nextInt.classKey.length > 0 ? nextInt.classKey[0] : '',
+        teacherKey: nextInt.teacherKey
+      },
+      breakpoints: [0, 0.8, 1],
+      initialBreakpoint: 0.8,
+      handle: true,
+      handleBehavior: 'cycle'
+    });
+
+    await modal.present();
+  }
 }
