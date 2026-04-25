@@ -3,6 +3,7 @@ import { StudentScheduledInterrogationComponent } from './student-scheduled-inte
 import { UserModel } from 'src/app/shared/models/userModel';
 import { AgendaEvent } from 'src/app/pages/agenda/models/agendaEvent';
 import { ComponentRef } from '@angular/core';
+import { ModalController } from '@ionic/angular/standalone';
 
 describe('StudentScheduledInterrogationComponent', () => {
   let component: StudentScheduledInterrogationComponent;
@@ -16,7 +17,10 @@ describe('StudentScheduledInterrogationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StudentScheduledInterrogationComponent]
+      imports: [StudentScheduledInterrogationComponent],
+      providers: [
+        { provide: ModalController, useValue: { create: jasmine.createSpy('create').and.returnValue(Promise.resolve({ present: () => Promise.resolve() })) } }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(StudentScheduledInterrogationComponent);
