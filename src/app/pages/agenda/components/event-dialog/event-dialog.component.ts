@@ -11,6 +11,8 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
+import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 
 // Estendi il tipo AgendaEvent per gestire i targetClasses come stringhe o oggetti ClasseModel
 type ExtendedAgendaEvent = Omit<IAgendaEvent, 'targetClasses'> & {
@@ -41,7 +43,11 @@ export class EventDialogComponent implements OnInit {
   }
   private modalCtrl = inject(ModalController);
   private usersService = inject(UsersService);
+  private subjectService = inject(SubjectService);
   private cdr = inject(ChangeDetectorRef);
+
+  loggedUser: UserModel | null = null;
+  subjects: SubjectModel[] = [];
 
   students: UserModel[] = [];
   private studentsUnsubscribe?: () => void;
@@ -89,8 +95,9 @@ export class EventDialogComponent implements OnInit {
     private toaster: ToasterService
   ) { }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     console.log('EventDialogComponent - ionViewWillEnter');
+    this.loggedUser = await this.usersService.getLoggedUser();
 
     if (this.event) {
       console.log('Editing existing event:', this.event);
@@ -113,6 +120,7 @@ export class EventDialogComponent implements OnInit {
     }
     
     this.loadStudents();
+    await this.loadSubjects();
   }
 
   private loadStudents() {
@@ -137,6 +145,37 @@ export class EventDialogComponent implements OnInit {
     } else {
       this.students = [];
       this.eventData.targetStudents = [];
+    }
+  }
+
+  private async loadSubjects() {
+    if (!this.loggedUser || !this.loggedUser.assignedClasses || !this.eventData.classKey || this.eventData.classKey.length === 0) {
+      this.subjects = [];
+      if (this.eventData.subjectKey && !this.subjects.find(s => s.key === this.eventData.subjectKey)) {
+          this.eventData.subjectKey = '';
+      }
+      return;
+    }
+
+    const availableSubjectKeys = new Set<string>();
+    const classKeys = Array.isArray(this.eventData.classKey) ? this.eventData.classKey : [this.eventData.classKey];
+    
+    for (const classKey of classKeys) {
+      const assignedClass = this.loggedUser.assignedClasses.find((c: any) => c.key === classKey);
+      if (assignedClass && assignedClass.subjectsKey) {
+        assignedClass.subjectsKey.forEach((key: string) => availableSubjectKeys.add(key));
+      }
+    }
+
+    if (availableSubjectKeys.size > 0) {
+      this.subjects = await this.subjectService.fetchSubjectsByKeys(Array.from(availableSubjectKeys));
+    } else {
+      this.subjects = [];
+    }
+
+    // Se la materia selezionata non è più disponibile, resettala
+    if (this.eventData.subjectKey && !this.subjects.find(s => s.key === this.eventData.subjectKey)) {
+      this.eventData.subjectKey = '';
     }
   }
 
@@ -189,6 +228,7 @@ export class EventDialogComponent implements OnInit {
         allDay: this.eventData.allDay || false,
         targetClasses,
         targetStudents: this.eventData.targetStudents || [],
+        subjectKey: this.eventData.subjectKey || '',
         creationDate: this.eventData.creationDate || Date.now()
       };
 
@@ -323,6 +363,7 @@ export class EventDialogComponent implements OnInit {
   onFieldChange(field: string): void {
     if (field === 'classKey') {
       this.loadStudents();
+      this.loadSubjects();
     }
     if (this.eventForm) {
       const control = this.eventForm.controls[field];
@@ -358,6 +399,9 @@ export class EventDialogComponent implements OnInit {
     // Check if targetStudents is selected when type is interrogation
     if (this.eventData.type === 'interrogation') {
       if (!this.eventData.targetStudents || this.eventData.targetStudents.length === 0) {
+        return false;
+      }
+      if (!this.eventData.subjectKey) {
         return false;
       }
     }

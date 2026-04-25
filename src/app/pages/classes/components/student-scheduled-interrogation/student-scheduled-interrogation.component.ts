@@ -6,6 +6,7 @@ import { calendarOutline } from 'ionicons/icons';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { AgendaEvent } from 'src/app/pages/agenda/models/agendaEvent';
 import { EventDialogComponent } from 'src/app/pages/agenda/components/event-dialog/event-dialog.component';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 
 @Component({
   selector: 'app-student-scheduled-interrogation',
@@ -13,6 +14,7 @@ import { EventDialogComponent } from 'src/app/pages/agenda/components/event-dial
     @if (nextInterrogation()) {
       <ion-badge color="warning" class="interrogation-badge" title="Interrogazioni programmate" (click)="showInterrogations($event)">
         <ion-icon name="calendar-outline"></ion-icon>
+        @if (nextSubjectName()) { <span class="subject-name">{{ nextSubjectName() }} -</span> }
         {{ nextInterrogation()?.dataInizio | date:'dd MMM' }}
         @if (allInterrogations().length > 1) {
           <span>(+{{ allInterrogations().length - 1 }})</span>
@@ -30,6 +32,10 @@ import { EventDialogComponent } from 'src/app/pages/agenda/components/event-dial
       font-weight: normal;
       cursor: pointer;
     }
+    .subject-name {
+      font-weight: bold;
+      margin-right: 2px;
+    }
     ion-icon {
       font-size: 1.1em;
     }
@@ -40,6 +46,8 @@ import { EventDialogComponent } from 'src/app/pages/agenda/components/event-dial
 export class StudentScheduledInterrogationComponent {
   student = input.required<UserModel>();
   events = input<AgendaEvent[]>([]);
+  subjectKey = input<string>('all');
+  subjects = input<SubjectModel[]>([]);
   private modalCtrl = inject(ModalController);
 
   constructor() {
@@ -60,6 +68,8 @@ export class StudentScheduledInterrogationComponent {
       
       const eventDate = new Date(event.dataInizio);
       if (eventDate < now) return false; // Solo eventi futuri o di oggi
+
+      if (this.subjectKey() !== 'all' && event.subjectKey !== this.subjectKey()) return false; // Filtra per materia
 
       // 1. Controllo strutturato per targetStudents (Opzione 2)
       if (event.targetStudents && event.targetStudents.includes(student.key)) {
@@ -85,6 +95,13 @@ export class StudentScheduledInterrogationComponent {
   nextInterrogation = computed(() => {
     const list = this.allInterrogations();
     return list.length > 0 ? list[0] : null;
+  });
+
+  nextSubjectName = computed(() => {
+    const nextInt = this.nextInterrogation();
+    if (!nextInt || !nextInt.subjectKey) return '';
+    const subject = this.subjects().find(s => s.key === nextInt.subjectKey);
+    return subject ? subject.name : '';
   });
 
   async showInterrogations(event: Event) {

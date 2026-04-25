@@ -35,6 +35,8 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
 import { UsersService } from '../../services/users.service';
 import { UserModel } from '../../models/userModel';
 import { QueryCondition } from '../../models/queryCondition';
+import { SubjectModel } from '../../../pages/subjects-list/models/subjectModel';
+import { SubjectService } from '../../../pages/subjects-list/services/subjects/subject.service';
 
 /**
  * Componente (Modale) per l'inserimento e la modifica di eventi agenda.
@@ -143,6 +145,7 @@ import { QueryCondition } from '../../models/queryCondition';
         }
       </ion-item>
 
+
       <ion-item lines="none" class="ion-no-margin ion-no-padding">
         <ion-label slot="start" class="ion-margin-horizontal">Classi <ion-text color="danger">*</ion-text></ion-label>
         <ion-buttons slot="end" class="ion-margin-horizontal">
@@ -161,7 +164,7 @@ import { QueryCondition } from '../../models/queryCondition';
           placeholder="Seleziona classi"
           [class.ion-invalid]="showErrors && validationErrors['classKey']"
           [multiple]="true"
-          (ionChange)="onClassChange()">
+          (ionChange)="onClassChange(true)">
           @for (classe of classes; track classe.key) {
             <ion-select-option [value]="classe.key">
               {{ classe.classe }} - {{ classe.year }}
@@ -176,6 +179,26 @@ import { QueryCondition } from '../../models/queryCondition';
       </ion-item>
 
       @if (type === 'interrogation') {
+        <ion-item [class.ion-invalid]="showErrors && validationErrors['subjectKey']" data-field="subjectKey">
+          <ion-label>Materia <ion-text color="danger">*</ion-text></ion-label>
+          <ion-select 
+            [(ngModel)]="subjectKey" 
+            placeholder="Seleziona materia"
+            [class.ion-invalid]="showErrors && validationErrors['subjectKey']"
+            (ionChange)="clearError('subjectKey')">
+            @for (subject of subjects; track subject.key) {
+              <ion-select-option [value]="subject.key">
+                {{ subject.name }}
+              </ion-select-option>
+            }
+          </ion-select>
+          @if (showErrors && validationErrors['subjectKey']) {
+            <ion-note slot="error" color="danger">
+              {{ validationErrors['subjectKey'] }}
+            </ion-note>
+          }
+        </ion-item>
+
         <ion-item [class.ion-invalid]="showErrors && validationErrors['selectedStudentKeys']" data-field="selectedStudentKeys">
           <ion-label>Studenti da interrogare <ion-text color="danger">*</ion-text></ion-label>
           <ion-select 
@@ -329,6 +352,18 @@ export class AgendaEventInputComponent {
   @Input() classKey: string[] | string = [];
   /** Chiave del docente creatore */
   @Input() teacherKey: string = '';
+  /** Tipo di evento predefinito */
+  @Input() defaultType?: EventType;
+  /** Studenti preselezionati */
+  @Input() defaultTargetStudents?: string[];
+  /** Materia preselezionata */
+  @Input() defaultSubjectKey?: string;
+  /** Titolo preselezionato */
+  @Input() defaultTitle?: string;
+  /** Lista studenti precaricata */
+  @Input() preloadedStudents?: UserModel[];
+  /** Lista materie precaricata */
+  @Input() preloadedSubjects?: SubjectModel[];
 
   validationErrors: { [key: string]: string } = {};
   showErrors = false;
@@ -337,7 +372,12 @@ export class AgendaEventInputComponent {
   private agendaService = inject(AgendaService);
   private classiService = inject(ClassiService);
   private usersService = inject(UsersService);
+  private subjectService = inject(SubjectService);
   private cdr = inject(ChangeDetectorRef);
+
+  loggedUser: UserModel | null = null;
+  subjects: SubjectModel[] = [];
+  subjectKey: string = '';
 
   // Lista delle classi disponibili
   classes: ClasseModel[] = [];
@@ -369,6 +409,8 @@ export class AgendaEventInputComponent {
    * Carica la lista delle classi in tempo reale e popola i campi se si sta modificando un evento.
    */
   async ngOnInit() {
+    this.loggedUser = await this.usersService.getLoggedUser();
+
     addIcons({ calendarOutline, timeOutline });
 
     // Se stiamo modificando un evento esistente, popola TUTTI i campi
@@ -394,6 +436,10 @@ export class AgendaEventInputComponent {
         this.selectedStudentKeys = [...this.event.targetStudents];
       }
 
+      if (this.event.subjectKey) {
+        this.subjectKey = this.event.subjectKey;
+      }
+
       if (this.event.teacherKey && !this.teacherKey) {
         this.teacherKey = this.event.teacherKey;
       }
@@ -401,10 +447,23 @@ export class AgendaEventInputComponent {
       if (this.classKey && (!Array.isArray(this.classKey) || this.classKey.length > 0)) {
         this.selectedClassKey = Array.isArray(this.classKey) ? [...this.classKey] : [this.classKey];
       }
+      if (this.defaultType) {
+        this.type = this.defaultType;
+      }
+      if (this.defaultTargetStudents && this.defaultTargetStudents.length > 0) {
+        this.selectedStudentKeys = [...this.defaultTargetStudents];
+      }
+      if (this.defaultSubjectKey) {
+        this.subjectKey = this.defaultSubjectKey;
+      }
+      if (this.defaultTitle) {
+        this.title = this.defaultTitle;
+      }
     }
 
     this.classKey = [...this.selectedClassKey];
     this.loadStudents();
+    await this.loadSubjects();
 
     // Carica la lista delle classi
     try {
@@ -482,6 +541,9 @@ export class AgendaEventInputComponent {
       if (!this.selectedStudentKeys || this.selectedStudentKeys.length === 0) {
         errors['selectedStudentKeys'] = 'Seleziona almeno uno studente per l\'interrogazione';
       }
+      if (!this.subjectKey) {
+        errors['subjectKey'] = 'La materia è obbligatoria per le interrogazioni';
+      }
     }
 
     if (!this.selectedClassKey || this.selectedClassKey.length === 0) {
@@ -530,7 +592,11 @@ export class AgendaEventInputComponent {
   }
 
   // Gestisce il cambio della classe selezionata
-  onClassChange() {
+  async onClassChange(userInitiated: boolean = false) {
+    if (userInitiated) {
+      this.preloadedStudents = undefined;
+      this.preloadedSubjects = undefined;
+    }
     if (this.selectedClassKey && this.selectedClassKey.length > 0) {
       this.classKey = [...this.selectedClassKey];
       this.clearError('classKey');
@@ -540,9 +606,55 @@ export class AgendaEventInputComponent {
       this.updateValidation();
     }
     this.loadStudents();
+    await this.loadSubjects();
+  }
+
+  private async loadSubjects() {
+    if (this.preloadedSubjects && this.preloadedSubjects.length > 0) {
+      this.subjects = [...this.preloadedSubjects];
+      if (this.subjectKey && !this.subjects.find(s => s.key === this.subjectKey)) {
+          this.subjectKey = '';
+      }
+      return;
+    }
+
+    if (!this.loggedUser || !this.loggedUser.assignedClasses || this.selectedClassKey.length === 0) {
+      this.subjects = [];
+      if (!this.subjects.find(s => s.key === this.subjectKey)) {
+          this.subjectKey = '';
+      }
+      return;
+    }
+
+    const availableSubjectKeys = new Set<string>();
+    for (const classKey of this.selectedClassKey) {
+      const assignedClass = this.loggedUser.assignedClasses.find((c: any) => c.key === classKey);
+      if (assignedClass && assignedClass.subjectsKey) {
+        assignedClass.subjectsKey.forEach((key: string) => availableSubjectKeys.add(key));
+      }
+    }
+
+    if (availableSubjectKeys.size > 0) {
+      this.subjects = await this.subjectService.fetchSubjectsByKeys(Array.from(availableSubjectKeys));
+    } else {
+      this.subjects = [];
+    }
+
+    // Se la materia selezionata non è più disponibile, resettala
+    if (this.subjectKey && !this.subjects.find(s => s.key === this.subjectKey)) {
+      this.subjectKey = '';
+    }
   }
 
   private loadStudents() {
+    if (this.preloadedStudents && this.preloadedStudents.length > 0) {
+      this.students = [...this.preloadedStudents].sort((a, b) => (a.lastName || '').localeCompare(b.lastName || ''));
+      const availableKeys = new Set(this.students.map(s => s.key));
+      this.selectedStudentKeys = this.selectedStudentKeys.filter(key => availableKeys.has(key));
+      this.cdr.detectChanges();
+      return;
+    }
+
     if (this.studentsUnsubscribe) {
       this.studentsUnsubscribe();
       this.studentsUnsubscribe = undefined;
@@ -628,6 +740,7 @@ export class AgendaEventInputComponent {
       dataFine: this.dataFine,
       allDay: this.allDay,
       type: this.type,
+      subjectKey: this.subjectKey,
       classKey: [...this.selectedClassKey],
       teacherKey: this.teacherKey,
       done: this.done,

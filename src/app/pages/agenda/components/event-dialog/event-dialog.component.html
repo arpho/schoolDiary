@@ -160,8 +160,32 @@
       </ion-item>
     }
 
-    <!-- Studenti per Interrogazione -->
+    <!-- Studenti e Materia per Interrogazione -->
     @if (eventData.type === 'interrogation') {
+      <ion-item>
+        <ion-label>Materia <span class="required">*</span></ion-label>
+        <ion-select
+          name="subjectKey"
+          [(ngModel)]="eventData.subjectKey"
+          interface="alert"
+          placeholder="Seleziona materia"
+          (ionChange)="onFieldChange('subjectKey')"
+          required>
+          @for (subject of subjects; track subject.key) {
+            <ion-select-option [value]="subject.key">
+              {{ subject.name }}
+            </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      @if (eventForm.controls['subjectKey']?.touched && eventForm.controls['subjectKey']?.errors?.['required']) {
+        <ion-item lines="none">
+          <ion-note color="danger" class="ion-text-center">
+            La materia è obbligatoria per le interrogazioni
+          </ion-note>
+        </ion-item>
+      }
+
       <ion-item>
         <ion-label>Studenti da interrogare <span class="required">*</span></ion-label>
         <ion-select

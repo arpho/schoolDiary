@@ -57,7 +57,7 @@
                   <ion-icon *ngIf="student.BES || student.DSA || student.ADHD" name="help-buoy-outline" color="warning"
                     style="margin-left: 8px; vertical-align: middle;"></ion-icon>
                 </div>
-                <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()"></app-student-scheduled-interrogation>
+                <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()" [subjectKey]="selectedSubjectKey()" [subjects]="subjects()"></app-student-scheduled-interrogation>
               </div>
             </ion-card-title>
           </ion-card-header>

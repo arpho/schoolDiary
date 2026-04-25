@@ -47,6 +47,7 @@ import { UploadStudentsComponent } from '../uploadStudents/upload-students/uploa
 import { UserDialogPage } from '../../../users/user-dialog/user-dialog.page';
 import { StudentAverageGradeDisplayComponent } from '../student-average-grade-display/student-average-grade-display.component';
 import { StudentScheduledInterrogationComponent } from '../student-scheduled-interrogation/student-scheduled-interrogation.component';
+import { AgendaEventInputComponent } from 'src/app/shared/components/agenda-event-input/agenda-event-input.component';
 
 /**
  * Componente per la visualizzazione e gestione della lista studenti di una classe.
@@ -111,6 +112,13 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
           }
         },
         {
+          text: 'Prenota interrogazione',
+          icon: 'calendar-outline',
+          handler: () => {
+            this.scheduleInterrogation(student);
+          }
+        },
+        {
           text: 'nuova valutazione',
 
           icon: 'sparkles',
@@ -140,6 +148,24 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     const subject = this.selectedSubjectKey() !== 'all' ? this.selectedSubjectKey() : 'all';
     this.router.navigate(['/progress', studentKey, subject]);
   }
+
+  async scheduleInterrogation(student: UserModel) {
+    const modal = await this.$modalController.create({
+      component: AgendaEventInputComponent,
+      componentProps: {
+        classKey: [this.classkey],
+        teacherKey: this.teacherkey(),
+        defaultType: 'interrogation',
+        defaultTargetStudents: [student.key],
+        defaultSubjectKey: this.selectedSubjectKey() !== 'all' ? this.selectedSubjectKey() : '',
+        defaultTitle: `Interrogazione ${student.lastName} ${student.firstName}`,
+        preloadedStudents: this.students,
+        preloadedSubjects: this.subjects()
+      }
+    });
+    await modal.present();
+  }
+
   teacherkey = signal<string>('');
   /**
    * Apre il dialog per aggiungere un nuovo studente alla classe.
