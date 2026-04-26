@@ -7,37 +7,39 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
     
-    <!-- Version 2.1.1 - Current Task -->
+    <!-- Version 2.1.2 - Current Task -->
     <ion-card>
       <ion-card-header>
         <div class="header-status">
-          <ion-badge color="success">v2.1.1</ion-badge>
-          <span class="version-date">9 Aprile 2026</span>
+          <ion-badge color="success">v2.1.2</ion-badge>
+          <span class="version-date">26 Aprile 2026</span>
         </div>
-        <ion-card-title>Navigation & Bug Fixes</ion-card-title>
+        <ion-card-title>Agenda & Firestore Fixes</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <p>Piccoli miglioramenti alla navigazione e correzione di bug minori.</p>
+        <p>Risolto un problema critico durante il salvataggio degli eventi e migliorata la stabilità del database.</p>
         
         <ion-list lines="full">
           <ion-item>
-            <ion-icon name="list-outline" slot="start" color="primary"></ion-icon>
+            <ion-icon name="alert-circle-outline" slot="start" color="danger"></ion-icon>
             <ion-label>
-              <h3>Accesso Rapido al Changelog</h3>
-              <p>Aggiunta la voce "Changelog" all'interno del menu utente per permettere un accesso facile e veloce alle novità dell'applicazione.</p>
+              <h3>Fix Errore Salvataggio Eventi</h3>
+              <p>Risolto l'errore <code>FirebaseError: Function addDoc() called with invalid data</code> che impediva il salvataggio di nuove interrogazioni dalla lista studenti.</p>
             </ion-label>
           </ion-item>
 
           <ion-item>
-            <ion-icon name="checkmark-done-outline" slot="start" color="primary"></ion-icon>
+            <ion-icon name="refresh-outline" slot="start" color="primary"></ion-icon>
             <ion-label>
-              <h3>Fix Test Unitari</h3>
-              <p>Risolto un errore di compilazione TypeScript nei test di <code>pending-changes.guard</code> assicurando che l'intera suite di test completi con successo.</p>
+              <h3>Serializzazione Dati Migliorata</h3>
+              <p>Ottimizzato il modello <code>AgendaEvent</code> per gestire correttamente i valori mancanti, garantendo una maggiore compatibilità con Firestore e prevenendo errori di dati non validi.</p>
             </ion-label>
           </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>
+
+    <!-- Version 2.1.1 -->
 
     <!-- Version 2.1.0 -->
     <ion-card>
