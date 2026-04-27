@@ -732,15 +732,15 @@ export class AgendaEventInputComponent {
     }
 
     const eventData = new AgendaEvent({
-      key: this.event?.key,
-      id: this.id || this.event?.id,
+      key: this.event?.key || '',
+      id: this.id || this.event?.id || '',
       title: this.title,
       description: this.description,
       dataInizio: this.dataInizio,
       dataFine: this.dataFine,
       allDay: this.allDay,
       type: this.type,
-      subjectKey: this.subjectKey,
+      subjectKey: this.subjectKey || '',
       classKey: [...this.selectedClassKey],
       teacherKey: this.teacherKey,
       done: this.done,

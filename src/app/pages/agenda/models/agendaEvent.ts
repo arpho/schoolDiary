@@ -98,23 +98,30 @@ export class AgendaEvent implements IAgendaEvent {
      * @returns Oggetto plain.
      */
     serialize(): Record<string, any> {
-        return {
-            key: this.key,
-            id: this.id,
+        const data: Record<string, any> = {
             done: this.done,
             title: this.title,
             description: this.description,
             dataInizio: this.dataInizio,
             dataFine: this.dataFine,
             classKey: this.classKey || [],
-            teacherKey: this.teacherKey,
+            teacherKey: this.teacherKey || '',
             type: this.type,
-            targetClasses: this.targetClasses,
-            targetStudents: this.targetStudents,
-            subjectKey: this.subjectKey,
-            creationDate: this.creationDate,
-            allDay: this.allDay
+            targetClasses: this.targetClasses || [],
+            targetStudents: this.targetStudents || [],
+            subjectKey: this.subjectKey || '',
+            creationDate: this.creationDate || Date.now(),
+            allDay: this.allDay || false
         };
+
+        if (this.key) {
+            data['key'] = this.key;
+        }
+        if (this.id) {
+            data['id'] = this.id;
+        }
+
+        return data;
     }
 
     /**
