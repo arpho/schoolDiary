@@ -7,11 +7,59 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
     
-    <!-- Version 2.1.2 - Current Task -->
+    <!-- Version 2.1.3 - Current Task -->
     <ion-card>
       <ion-card-header>
         <div class="header-status">
-          <ion-badge color="success">v2.1.2</ion-badge>
+          <ion-badge color="success">v2.1.3</ion-badge>
+          <span class="version-date">28 Aprile 2026</span>
+        </div>
+        <ion-card-title>Gestione Studenti & Agenda</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Importanti miglioramenti alla gestione delle interrogazioni e all'integrazione tra la lista studenti e l'agenda di classe.</p>
+        
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="people-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Visualizzazione Dettagliata Interrogazioni</h3>
+              <p>Migliorata la visualizzazione degli impegni nella lista studenti: ora le interrogazioni per materie diverse vengono mostrate separatamente anche nella vista cumulativa.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="checkmark-circle-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Validazione Eventi Agenda</h3>
+              <p>Implementata la validazione obbligatoria per studente e materia durante la creazione di interrogazioni, garantendo l'integrità dei dati inseriti.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="create-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Editing Rapido</h3>
+              <p>È ora possibile aprire e modificare un impegno direttamente cliccando sul badge delle interrogazioni nella lista studenti della classe.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="flask-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Test & Stabilità</h3>
+              <p>Ampliata la suite di test unitari per coprire i nuovi componenti di gestione interrogazioni e assicurare la stabilità delle interazioni UI.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Version 2.1.2 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="secondary">v2.1.2</ion-badge>
           <span class="version-date">26 Aprile 2026</span>
         </div>
         <ion-card-title>Agenda & Firestore Fixes</ion-card-title>
@@ -40,6 +88,36 @@
     </ion-card>
 
     <!-- Version 2.1.1 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="secondary">v2.1.1</ion-badge>
+          <span class="version-date">9 Aprile 2026</span>
+        </div>
+        <ion-card-title>Navigation & Bug Fixes</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Piccoli miglioramenti alla navigazione e correzione di bug minori.</p>
+        
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="list-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Accesso Rapido al Changelog</h3>
+              <p>Aggiunta la voce "Changelog" all'interno del menu utente per permettere un accesso facile e veloce alle novità dell'applicazione.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="checkmark-done-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Fix Test Unitari</h3>
+              <p>Risolto un errore di compilazione TypeScript nei test di <code>pending-changes.guard</code> assicurando che l'intera suite di test completi con successo.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
 
     <!-- Version 2.1.0 -->
     <ion-card>
