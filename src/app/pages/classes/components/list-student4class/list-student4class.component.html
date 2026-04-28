@@ -57,7 +57,15 @@
                   <ion-icon *ngIf="student.BES || student.DSA || student.ADHD" name="help-buoy-outline" color="warning"
                     style="margin-left: 8px; vertical-align: middle;"></ion-icon>
                 </div>
-                <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()" [subjectKey]="selectedSubjectKey()" [subjects]="subjects()"></app-student-scheduled-interrogation>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; flex: 1;">
+                  @if (selectedSubjectKey() === 'all') {
+                    @for (subject of subjects(); track subject.key) {
+                      <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()" [subjectKey]="subject.key" [subjects]="subjects()"></app-student-scheduled-interrogation>
+                    }
+                  } @else {
+                    <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()" [subjectKey]="selectedSubjectKey()" [subjects]="subjects()"></app-student-scheduled-interrogation>
+                  }
+                </div>
               </div>
             </ion-card-title>
           </ion-card-header>
