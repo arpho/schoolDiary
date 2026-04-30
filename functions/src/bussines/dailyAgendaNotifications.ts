@@ -8,7 +8,7 @@ interface AgendaEvent {
   title: string;
   description: string;
   dataInizio: string;
-  classKey: string;
+  classKey: string | string[];
   targetClasses?: string[];
 }
 
@@ -57,18 +57,25 @@ export const dailyAgendaNotifications = onSchedule({
 
       if (!eventData.title || !eventData.description) return;
 
-      const targetClasses: string[] = [];
+      const targetClasses = new Set<string>();
       if (
         eventData.targetClasses &&
         Array.isArray(eventData.targetClasses) &&
         eventData.targetClasses.length > 0
       ) {
-        targetClasses.push(...eventData.targetClasses);
-      } else if (eventData.classKey) {
-        targetClasses.push(eventData.classKey);
+        eventData.targetClasses.forEach((c) => targetClasses.add(c));
+      }
+
+      if (eventData.classKey) {
+        if (Array.isArray(eventData.classKey)) {
+          eventData.classKey.forEach((c) => targetClasses.add(c));
+        } else {
+          targetClasses.add(eventData.classKey);
+        }
       }
 
       targetClasses.forEach((classId) => {
+        if (!classId) return;
         if (!classEventsMap.has(classId)) {
           classEventsMap.set(classId, []);
         }
