@@ -1,9 +1,113 @@
 <section class="dashboard-student">
-  <header>
-    <h2>Dashboard Studente</h2>
-  </header>
-  <main>
-    <p>Benvenuto nell'area studente.</p>
-    <ng-content></ng-content>
-  </main>
+  <div class="glass-container">
+    <ion-segment [value]="activeTab()" (ionChange)="segmentChanged($event)" class="student-segment">
+      <ion-segment-button value="attivita">
+        <ion-label>Attività</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="valutazioni">
+        <ion-label>Valutazioni</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="agenda">
+        <ion-label>Agenda</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div class="tab-content" [ngSwitch]="activeTab()">
+      
+      <!-- TAB ATTIVITA' -->
+      <div *ngSwitchCase="'attivita'" class="fade-in">
+        <div class="filters">
+          <ion-item lines="none" class="glass-item">
+            <ion-select label="Docente" label-placement="floating" [value]="selectedTeacherKey()" (ionChange)="onTeacherChange($event)">
+              <ion-select-option value="all">Tutti i docenti</ion-select-option>
+              @for(teacher of teachersList(); track teacher.key) {
+                <ion-select-option [value]="teacher.key">{{ teacher.firstName }} {{ teacher.lastName }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-item lines="none" class="glass-item">
+            <ion-select label="Materia" label-placement="floating" [value]="selectedSubjectKey()" (ionChange)="onSubjectChange($event)">
+              <ion-select-option value="all">Tutte le materie</ion-select-option>
+              @for(subject of subjectsList(); track subject.key) {
+                <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        </div>
+
+        <div class="activities-list">
+          @if (activities().length === 0) {
+            <p class="empty-state">Nessuna attività trovata.</p>
+          } @else {
+            @for(activity of activities(); track activity.key) {
+              <ion-card class="glass-card">
+                <ion-card-header>
+                  <ion-card-subtitle>{{ getSubjectName(activity.subjectsKey) }} - {{ getTeacherName(activity.teacherKey) }}</ion-card-subtitle>
+                  <ion-card-title>{{ activity.title }}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <p>{{ activity.description }}</p>
+                  <div class="meta">
+                    <ion-badge color="tertiary">{{ activity.date | date:'dd/MM/yyyy' }}</ion-badge>
+                  </div>
+                </ion-card-content>
+              </ion-card>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- TAB VALUTAZIONI -->
+      <div *ngSwitchCase="'valutazioni'" class="fade-in">
+        <div class="evaluations-list">
+          @if (evaluations().length === 0) {
+            <p class="empty-state">Nessuna valutazione trovata.</p>
+          } @else {
+            @for(evaluation of evaluations(); track evaluation.key) {
+              <ion-card class="glass-card">
+                <ion-card-header>
+                  <div class="grade-badge" [class.positive]="evaluation.gradeInDecimal && evaluation.gradeInDecimal >= 6" [class.negative]="evaluation.gradeInDecimal && evaluation.gradeInDecimal < 6">
+                    {{ evaluation.gradeInDecimal | number:'1.1-1' }}
+                  </div>
+                  <ion-card-subtitle>{{ getSubjectName(evaluation.subjectKey) }} - {{ getTeacherName(evaluation.teacherKey) }}</ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                  <p>{{ evaluation.description }}</p>
+                  <div class="meta">
+                    <ion-badge color="tertiary">{{ evaluation.data | date:'dd/MM/yyyy' }}</ion-badge>
+                  </div>
+                </ion-card-content>
+              </ion-card>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- TAB AGENDA -->
+      <div *ngSwitchCase="'agenda'" class="fade-in">
+        <div class="agenda-list">
+          @if (agendaEvents().length === 0) {
+            <p class="empty-state">Nessun evento in agenda.</p>
+          } @else {
+            @for(event of agendaEvents(); track event.key) {
+              <ion-item class="glass-item agenda-item">
+                <ion-icon [name]="getAgendaIcon(event.type)" slot="start" [color]="getAgendaColor(event.type)"></ion-icon>
+                <ion-label>
+                  <h3>{{ event.title }}</h3>
+                  <p>{{ event.description }}</p>
+                  <ion-text color="medium" class="text-sm">
+                    {{ event.dataInizio | date:'dd/MM/yyyy HH:mm' }} 
+                    @if(!event.allDay) {
+                      - {{ event.dataFine | date:'HH:mm' }}
+                    }
+                  </ion-text>
+                </ion-label>
+              </ion-item>
+            }
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
 </section>

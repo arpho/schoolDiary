@@ -1,12 +1,169 @@
 .dashboard-student {
   padding: 1rem;
-  background: #f0f7ff;
-  border-radius: 8px;
-}
-.dashboard-student header {
-  margin-bottom: 1rem;
-}
-.dashboard-student h2 {
-  margin: 0;
-  color: #1a237e;
+  --glass-bg: rgba(var(--ion-color-light-rgb), 0.1);
+  --glass-border: rgba(var(--ion-color-light-rgb), 0.2);
+  --glass-backdrop: blur(10px);
+
+  @media (prefers-color-scheme: light) {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-backdrop: blur(20px);
+  }
+
+  .glass-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .student-segment {
+    margin-bottom: 1.5rem;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border-radius: 12px;
+    padding: 4px;
+    border: 1px solid var(--glass-border);
+
+    ion-segment-button {
+      --border-radius: 8px;
+      --indicator-color: var(--ion-color-primary);
+      --color-checked: var(--ion-color-primary-contrast);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .glass-item {
+    --background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+
+    &.agenda-item {
+      padding: 0.5rem 0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      }
+    }
+  }
+
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    ion-card-title {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--ion-text-color);
+    }
+
+    ion-card-subtitle {
+      color: var(--ion-color-medium);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .meta {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+
+  .evaluations-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    
+    .glass-card {
+      margin-bottom: 0;
+    }
+    
+    ion-card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+
+  .grade-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    background: var(--ion-color-medium);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+    &.positive {
+      background: linear-gradient(135deg, var(--ion-color-success), #1b965c);
+    }
+
+    &.negative {
+      background: linear-gradient(135deg, var(--ion-color-danger), #c22938);
+    }
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--ion-color-medium);
+    font-size: 1.1rem;
+    font-style: italic;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    border-radius: 12px;
+    border: 1px dashed var(--glass-border);
+  }
+
+  .fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
