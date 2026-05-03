@@ -84,6 +84,7 @@ export class LoginPage implements OnInit {
             this.errorMessage = '';
 
             console.log("login successfull");
+            
             // Set up local lock with the used password
             this.localLockService.setupPassword(password);
             
