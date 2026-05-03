@@ -11,6 +11,9 @@
         <div class="logo-container">
           <ion-icon name="lock-closed-outline" class="logo-icon"></ion-icon>
           <h2>App Bloccata</h2>
+          @if (userEmail()) {
+            <p class="user-email">{{ userEmail() }}</p>
+          }
           <p>Inserisci la tua password per continuare</p>
         </div>
 

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -45,7 +45,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonText
   ]
 })
-export class LockScreenPage {
+export class LockScreenPage implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private localLockService = inject(LocalLockService);
@@ -54,12 +54,20 @@ export class LockScreenPage {
 
   lockForm: FormGroup;
   isSubmitting = signal<boolean>(false);
+  userEmail = signal<string>('');
 
   constructor() {
     addIcons({ lockClosedOutline, lockOpenOutline, logOutOutline });
     this.lockForm = this.fb.group({
       password: ['', [Validators.required]]
     });
+  }
+
+  async ngOnInit() {
+    const user = await this.usersService.getLoggedUser();
+    if (user && user.email) {
+      this.userEmail.set(user.email);
+    }
   }
 
   unlock() {

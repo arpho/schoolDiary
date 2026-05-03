@@ -39,6 +39,17 @@ ion-content {
     color: var(--ion-text-color);
   }
 
+  .user-email {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    margin-bottom: 8px;
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    padding: 4px 12px;
+    border-radius: 12px;
+    display: inline-block;
+  }
+
   p {
     margin: 0;
     color: var(--ion-color-medium);
