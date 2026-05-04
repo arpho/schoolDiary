@@ -96,6 +96,38 @@ export class GroupsService {
   }
 
   /**
+   * Trova il gruppo a cui appartiene uno specifico studente in una classe per una materia.
+   * @param studentKey Chiave dello studente.
+   * @param classKey Chiave della classe.
+   * @param subjectKey Chiave della materia.
+   * @returns Promise che risolve con il gruppo trovato o null.
+   */
+  async fetchStudentGroup(studentKey: string, classKey: string, subjectKey: string): Promise<GroupModel | null> {
+    try {
+      const q = query(
+        collection(this.firestore, this.collection),
+        where('classKey', '==', classKey),
+        where('subjectKey', '==', subjectKey),
+        where('studentsKeyList', 'array-contains', studentKey)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        return null;
+      }
+
+      const docSnap = querySnapshot.docs[0];
+      const group = new GroupModel({ ...docSnap.data(), key: docSnap.id }, this.$usersService);
+      await group.fetchStudents();
+      return group;
+    } catch (error) {
+      console.error('Errore durante il recupero del gruppo dello studente. Potrebbe essere necessario creare un indice su Firestore:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Aggiorna i dati di un gruppo esistente.
    * @param group Il gruppo con i dati aggiornati.
    * @returns Promise vuota.
