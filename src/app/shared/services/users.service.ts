@@ -545,6 +545,38 @@ export class UsersService implements OnInit {
     return this.$subjects.fetchSubjectsByKeys(assignedClass.subjectsKey);
   }
 
+  /**
+   * Recupera tutte le materie insegnate in una classe da tutti i docenti assegnati.
+   * @param classKey Chiave della classe.
+   * @returns Promise con la lista di tutte le materie uniche.
+   */
+  async getSubjectsForClass(classKey: string): Promise<SubjectModel[]> {
+    try {
+      const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+      const q = this.queryFn(collectionRef, 
+        this.whereFn('classes', 'array-contains', classKey)
+      );
+      
+      const querySnapshot = await this.getDocsFn(q);
+      const allSubjectKeys = new Set<string>();
+      
+      querySnapshot.forEach(docSnap => {
+        const teacher = new UserModel(docSnap.data());
+        // Cerchiamo la classe specifica tra quelle assegnate al docente
+        const assignedClass = teacher.assignedClasses?.find(c => c.key === classKey);
+        if (assignedClass && assignedClass.subjectsKey) {
+          assignedClass.subjectsKey.forEach(sKey => allSubjectKeys.add(sKey));
+        }
+      });
+
+      if (allSubjectKeys.size === 0) return [];
+      return this.$subjects.fetchSubjectsByKeys(Array.from(allSubjectKeys));
+    } catch (error) {
+      console.error('Errore nel recupero delle materie per la classe:', error);
+      return [];
+    }
+  }
+
   async updateUserFcmToken(uid: string, token: string): Promise<void> {
     const deviceId = this.getDeviceId();
     const docRef = this.docFn(this.firestore, `userProfiles/${uid}/devices/${deviceId}`);

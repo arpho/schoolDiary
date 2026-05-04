@@ -106,20 +106,29 @@ export class UserModel {
   get classe() {
     return this.classKey;
   }
-  build(args?: {}) {
-    Object.assign(this, args)
-
-
-
-    return this
-
+  build(args?: any) {
+    if (args) {
+      Object.assign(this, args);
+      // Assicuriamoci che assignedClasses siano istanze di AssignedClass per avere i metodi (serialize, ecc)
+      if (args.assignedClasses && Array.isArray(args.assignedClasses)) {
+        this.assignedClasses = args.assignedClasses.map((ac: any) => 
+          ac instanceof AssignedClass ? ac : new AssignedClass(ac)
+        );
+      }
+    }
+    return this;
   }
   /**
    * Serializza l'oggetto in un formato adatto per il salvataggio (es. su Firebase).
    * @returns Oggetto JSON serializzato.
    */
   serialize() {
-    console.log("user*", this)
+    // Sincronizziamo classesKey con le chiavi presenti in assignedClasses prima di serializzare
+    // per assicurarci che le query basate su array-contains funzionino sempre.
+    const keysFromAssigned = this.assignedClasses?.map(ac => ac.key).filter(k => !!k) || [];
+    const uniqueKeys = Array.from(new Set([...(this.classesKey || []), ...keysFromAssigned]));
+    this.classesKey = uniqueKeys;
+
     const out = {
       key: this.key,
       birthDate: this.birthDate,
@@ -133,13 +142,14 @@ export class UserModel {
       DSA: this.DSA,
       BES: this.BES,
       ADHD: this.ADHD,
-      assignedClasses: this.assignedClasses.map((classe) => { console.log("serializing classe:", classe, typeof classe); return classe }),
+      assignedClasses: this.assignedClasses.map((classe) => 
+        (classe && (classe as any).serialize) ? (classe as any).serialize() : classe
+      ),
       noteDisabilita: this.noteDisabilita,
       pdpUrl: Array.isArray(this.pdpUrl) ? this.pdpUrl.map((doc) => doc.serialize ? doc.serialize() : doc) : [],
       userName: this.userName,
       classes: this.classesKey
     };
-    console.log("out*", out)
     return out;
   }
 }
