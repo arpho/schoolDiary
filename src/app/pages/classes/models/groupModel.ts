@@ -17,6 +17,8 @@ export class GroupModel {
     description: string = "";
     /** Lista delle chiavi degli studenti nel gruppo */
     studentsKeyList: string[] = [];
+    /** Chiave della materia associata al gruppo */
+    subjectKey: string = "";
     /** Lista dei modelli User degli studenti (popolata asincronamente) */
     studentsList: UserModel[] = [];
     readonly $usersService: UsersService | undefined;
@@ -67,6 +69,7 @@ export class GroupModel {
             this.createdAt = data.createdAt || this.createdAt;
             this.updatedAt = data.updatedAt || this.updatedAt;
             this.description = data.description || this.description;
+            this.subjectKey = data.subjectKey || this.subjectKey;
         }
         return this;
     }
@@ -81,6 +84,7 @@ export class GroupModel {
             classKey: this.classKey,
             note: this.note,
             description: this.description,
+            subjectKey: this.subjectKey,
             studentsKeyList: this.studentsList.map(user => user.key),
         }
     }
