@@ -105,6 +105,13 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
           }
         },
         {
+          text: 'Interrogazioni programmate',
+          icon: 'calendar',
+          handler: () => {
+            this.router.navigate(['/interrogations4user', student.key]);
+          }
+        },
+        {
           text: 'Progressi',
           icon: 'trending-up',
           handler: () => {
