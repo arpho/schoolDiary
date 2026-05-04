@@ -159,5 +159,9 @@ export const routes: Routes = [
   {
     path: 'changelog',
     loadComponent: () => import('./pages/changelog/changelog.page').then( m => m.ChangelogPage)
+  },
+  {
+    path: 'interrogations4user/:studentKey',
+    loadComponent: () => import('./pages/agenda/pages/interrogations4user/interrogations4user.page').then( m => m.Interrogations4userPage)
   }
 ];
