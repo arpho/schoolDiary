@@ -3,14 +3,16 @@ import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal, effe
 import { CommonModule } from '@angular/common';
 import { GroupsService } from '../../services/groups/groups.service';
 import { GroupModel } from '../../models/groupModel';
-import { IonButton, IonIcon, AlertController, IonSearchbar } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, AlertController, IonSearchbar, IonSelect, IonSelectOption, IonItem, IonLabel, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
-import { medkit } from 'ionicons/icons';
+import { medkit, cogOutline } from 'ionicons/icons';
 import { ClassiService } from '../../services/classi.service';
 import { ClasseModel } from '../../models/classModel';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { ToasterService } from '../../../../shared/services/toaster.service';
+import { GroupEditModalComponent } from './group-edit-modal/group-edit-modal.component';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 
 
 import {
@@ -33,7 +35,12 @@ import {
     IonIcon,
     CdkDrag,
     CdkDropList,
-    IonSearchbar
+    IonSearchbar,
+    IonItem,
+    IonLabel,
+    GroupEditModalComponent,
+    IonSelect,
+    IonSelectOption
   ],
   templateUrl: './groups-manager.component.html',
   styleUrls: ['./groups-manager.component.scss'],
@@ -55,53 +62,66 @@ export class GroupsManagerComponent implements OnInit {
    * @param group Il gruppo da modificare.
    */
   async editGroup(group: GroupModel) {
-
-    const alert = await this.alertController.create({
-      header: 'Edit Group',
-      message: `Modifica il gruppo ${group.nome}`,
-      inputs: [
-        {
-          name: 'nome',
-          type: 'text',
-          placeholder: 'Nome del gruppo',
-          value: group.nome
-        },
-        { name: 'description', type: 'text', placeholder: 'descrizione', value: group.description }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary'
-        },
-        {
-          text: 'salva',
-          handler: (data: { nome: string, description: string }) => {
-
-            group.nome = data.nome;
-            group.description = data.description;
-
-            try {
-              this.service.updateGroup(group).then(() => {
-                this.toast.showToast({ message: "Gruppo modificato con successo", duration: 2000, position: "bottom" });
-
-              }).catch((error) => {
-                this.toast.showToast({ message: "Errore durante la modifica del gruppo", duration: 2000, position: "bottom" });
-
-              });
-            }
-
-
-
-
-            catch (error) {
-              console.error("Errore durante la modifica del gruppo", error);
-            }
-          }
-        }
-      ]
+    const modal = await this.modalController.create({
+      component: GroupEditModalComponent,
+      componentProps: {
+        group: group,
+        subjects: this.subjects()
+      }
     });
-    await alert.present();
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+    const result = data as any;
+
+    if (role === 'confirm' && result) {
+      group.nome = result.nome;
+      group.description = result.description;
+      group.subjectKey = result.subjectKey;
+      group.note = result.note;
+
+      try {
+        await this.service.updateGroup(group);
+        this.toast.showToast({ message: "Gruppo modificato con successo", duration: 2000, position: "bottom" });
+      } catch (error) {
+        this.toast.showToast({ message: "Errore durante la modifica del gruppo", duration: 2000, position: "bottom" });
+        console.error("Errore durante la modifica del gruppo", error);
+      }
+    }
+  }
+
+  async openSettings(event: Event, group: GroupModel) {
+    event.stopPropagation();
+    const modal = await this.modalController.create({
+      component: GroupEditModalComponent,
+      componentProps: {
+        group: group,
+        subjects: this.subjects(),
+        showOnlySettings: true
+      },
+      breakpoints: [0, 0.5, 0.8],
+      initialBreakpoint: 0.5
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+    const result = data as any;
+
+    if (role === 'confirm' && result) {
+      group.nome = result.nome;
+      group.subjectKey = result.subjectKey;
+      group.note = result.note;
+
+      try {
+        await this.service.updateGroup(group);
+        this.toast.showToast({ message: "Impostazioni gruppo aggiornate", duration: 2000, position: "bottom" });
+      } catch (error) {
+        this.toast.showToast({ message: "Errore durante l'aggiornamento", duration: 2000, position: "bottom" });
+        console.error("Errore durante l'aggiornamento del gruppo", error);
+      }
+    }
   }
   groupidfactory(group: GroupModel) {
     return `group-${group.key}`;
@@ -111,8 +131,16 @@ export class GroupsManagerComponent implements OnInit {
   private service = inject(GroupsService);
   private classi = inject(ClassiService);
   alertController = inject(AlertController);
+  modalController = inject(ModalController);
   classkey = input<string>();
   groupsList = signal<GroupModel[]>([]);
+  filterSubjectKey = signal<string>('all');
+  filteredGroupsList = computed(() => {
+    const filter = this.filterSubjectKey();
+    if (filter === 'all') return this.groupsList();
+    return this.groupsList().filter(group => group.subjectKey === filter);
+  });
+  subjects = signal<SubjectModel[]>([]);
   toast = inject(ToasterService);
   $users = inject(UsersService);
   filterStudents = signal<(user: UserModel) => boolean>((user: UserModel) => true);
@@ -122,53 +150,29 @@ export class GroupsManagerComponent implements OnInit {
    * Apre un dialog per creare un nuovo gruppo.
    */
   async addGroup() {
-    console.log("addGroup")
-    const alert = await this.alertController.create({
-      header: 'Crea Gruppo',
-      message: 'Inserisci il nome del gruppo',
-      inputs: [
-        {
-          name: 'nome',
-          type: 'text',
-          placeholder: 'Nome del gruppo',
-          value: `gruppo ${this.groupsList().length + 1}`
-        },
-        { name: 'description', type: 'text', placeholder: 'description', value: '' }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary'
-        },
-        {
-          text: 'Create',
-          handler: (data: { nome: string, description: string }) => {
-            console.log('Creating group', data);
-            const group = new GroupModel({ ...data, classKey: this.classkey() })
-            console.log("group aggiunto", group)
-            try {
-              this.service.createGroup(group).then((groupKey: string) => {
-                this.toast.showToast({ message: "Gruppo aggiunto con successo", duration: 2000, position: "bottom" });
-                console.log("gruppo creato", group);
-                group.setKey(groupKey);
-              }).catch((error) => {
-                this.toast.showToast({ message: "Errore durante l'aggiunta del gruppo", duration: 2000, position: "bottom" });
-                console.log("errore durante l'aggiunta del gruppo", error);
-              });
-            }
-
-
-
-
-            catch (error) {
-              console.error("Errore durante la creazione del gruppo", error);
-            }
-          }
-        }
-      ]
+    const modal = await this.modalController.create({
+      component: GroupEditModalComponent,
+      componentProps: {
+        subjects: this.subjects()
+      }
     });
-    await alert.present();
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+    const result = data as any;
+
+    if (role === 'confirm' && result) {
+      const group = new GroupModel({ ...result, classKey: this.classkey() });
+      try {
+        const groupKey = await this.service.createGroup(group);
+        group.setKey(groupKey);
+        this.toast.showToast({ message: "Gruppo aggiunto con successo", duration: 2000, position: "bottom" });
+      } catch (error) {
+        this.toast.showToast({ message: "Errore durante l'aggiunta del gruppo", duration: 2000, position: "bottom" });
+        console.error("Errore durante la creazione del gruppo", error);
+      }
+    }
   }
   classe = signal<ClasseModel | null>(null);
   availableStudents = signal<UserModel[]>([]);
@@ -177,9 +181,9 @@ export class GroupsManagerComponent implements OnInit {
 
 
   constructor() {
-    addIcons({ medkit });
+    addIcons({ medkit, cogOutline });
     this.connectedLists = computed(() => {
-      return ["studentslist", ...this.groupsList().map(group => `group-${group.key}`)];
+      return ["studentslist", ...this.filteredGroupsList().map(group => `group-${group.key}`)];
     });
     // Effetto reattivo che si attiva quando classkey cambia
     effect(async () => {
@@ -196,8 +200,14 @@ export class GroupsManagerComponent implements OnInit {
           this.$users.getUsersByClass(key, (users: UserModel[]) => {
             this.availableStudents.set(users.sort((a, b) => this.makeName(a).localeCompare(this.makeName(b))));
           });
+          
+          const loggedUser = await this.$users.getLoggedUser();
+          if (loggedUser) {
+            const subjects = await this.$users.getSubjectsByTeacherAndClass(loggedUser.key, key);
+            this.subjects.set(subjects);
+          }
         } catch (error) {
-          console.error("Errore durante la recupero degli studenti", error);
+          console.error("Errore durante il recupero dei dati della classe", error);
         }
       }
     });
@@ -208,6 +218,12 @@ export class GroupsManagerComponent implements OnInit {
   }
   makeName(user: UserModel) {
     return `${user.lastName} ${user.firstName}`;
+  }
+
+  getSubjectName(subjectKey?: string) {
+    if (!subjectKey) return '';
+    const subject = this.subjects().find(s => s.key === subjectKey);
+    return subject ? subject.name : '';
   }
 
   async ngOnInit() {
@@ -229,10 +245,10 @@ export class GroupsManagerComponent implements OnInit {
     console.log("previouscontainerId", previouscontainerId)
     const destinationcontainerId = event.container.id.split("-")[1];
 
-    const destinationGroup = this.groupsList().find(group => group.key === destinationcontainerId);
+    const destinationGroup = this.filteredGroupsList().find(group => group.key === destinationcontainerId);
     console.log("destinationGroup", destinationGroup)
 
-    const originGroup = this.groupsList().find(group => group.key === previouscontainerId);
+    const originGroup = this.filteredGroupsList().find(group => group.key === previouscontainerId);
     console.log("originGroup", originGroup)
     console.log("destinationGroup", destinationGroup);
     if (originGroup && destinationGroup && event.previousContainer === event.container) {// se lo studente viene spostato all'interno dello stesso gruppo

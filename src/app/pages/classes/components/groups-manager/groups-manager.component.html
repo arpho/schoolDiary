@@ -61,9 +61,20 @@
         </div>
 
         <div class="groups-container">
-          <h4>Gruppi</h4>
+          <div class="groups-header">
+            <h4>Gruppi</h4>
+            <ion-item lines="none" class="filter-item">
+              <ion-label>Filtra per materia:</ion-label>
+              <ion-select [value]="filterSubjectKey()" (ionChange)="filterSubjectKey.set($event.detail.value)" interface="popover">
+                <ion-select-option value="all">Tutte le materie</ion-select-option>
+                @for (subject of subjects(); track subject.key) {
+                  <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </div>
           <div id="groupslist">
-            @for(group of groupsList(); track group.key) {
+            @for(group of filteredGroupsList(); track group.key) {
               <div class="group-item"
               (click)="editGroup(group)"
               id="{{groupidfactory(group)}}"
@@ -71,7 +82,15 @@
      [cdkDropListData]="group.studentsList"
      [cdkDropListConnectedTo]="connectedLists()"
      (cdkDropListDropped)="drop($event, group.key)">
-                <h4>{{ group.nome }}</h4>
+                 <div class="group-title-container">
+                   <h4>{{ group.nome }}</h4>
+                   <ion-button (click)="openSettings($event, group)" size="small">
+                     <ion-icon name="cog-outline" slot="icon-only"></ion-icon>
+                   </ion-button>
+                 </div>
+                @if (group.subjectKey) {
+                  <p class="subject-badge">{{ getSubjectName(group.subjectKey) }}</p>
+                }
                 <h2>{{ group.description }}</h2>
                 @for(student of group.studentsList; track student.key) {
                   @if(student.firstName && student.lastName) {

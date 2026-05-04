@@ -26,6 +26,33 @@
   background-color: #fff;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
   
+  .groups-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--ion-color-light-shade);
+    padding-bottom: 0.5rem;
+
+    h4 {
+      margin: 0;
+    }
+
+    .filter-item {
+      --padding-start: 0;
+      --background: transparent;
+      font-size: 0.9rem;
+      width: auto;
+      
+      ion-select {
+        --padding-start: 8px;
+        min-height: 36px;
+        background: var(--ion-color-light);
+        border-radius: 6px;
+      }
+    }
+  }
+  
   #groupslist {
     display: flex;
     flex-wrap: wrap;
@@ -44,10 +71,37 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       min-height: 100px;
       
-      h4 {
-        margin: 0 0 0.5rem 0;
-        color: #333;
-        font-size: 1.2rem;
+      .group-title-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+
+        h4 {
+          margin: 0;
+          color: #333;
+          font-size: 1.2rem;
+          flex: 1;
+        }
+
+        ion-button {
+          --padding-start: 0;
+          --padding-end: 0;
+          width: 32px;
+          height: 32px;
+          margin: 0;
+          --background: white;
+          --background-hover: #f0f0f0;
+          --background-activated: #e0e0e0;
+          --background-focused: white;
+          --color: var(--ion-color-medium-shade);
+          --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          --border-radius: 50%;
+          
+          ion-icon {
+            font-size: 1.2rem;
+          }
+        }
       }
       
       p {
@@ -59,7 +113,20 @@
         display: flex;
         align-content: space-around;
         justify-content: center;
-    }
+      }
+      
+      .subject-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        background-color: var(--ion-color-primary-light, #e3f2fd);
+        color: var(--ion-color-primary, #1976d2);
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
     }
   }
 }
