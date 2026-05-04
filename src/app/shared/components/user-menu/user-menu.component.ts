@@ -96,7 +96,10 @@ export class UserMenuComponent implements OnInit {
     try {
       this.localLockService.clearLock();
       await this.usersService.logout();
-      this.router.navigate(['/login']);
+      // Effettuiamo un ricaricamento completo della pagina verso la login
+      // Questo è il modo più sicuro per pulire tutti i singleton, le cache dei servizi
+      // e lo stato globale dell'applicazione, evitando leak di dati tra sessioni.
+      window.location.href = '/login';
     } catch (error) {
       console.error('Errore durante il logout:', error);
     }

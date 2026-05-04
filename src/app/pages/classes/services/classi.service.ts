@@ -189,4 +189,15 @@ export class ClassiService {
   getClassiOnRealtime(): Observable<ClasseModel[]> {
     return this.classes$;
   }
+
+  /**
+   * Pulisce la cache delle classi.
+   */
+  clearCache(): void {
+    this.classesSubject.next([]);
+    if (this.unsubscribeSnapshot) {
+      this.unsubscribeSnapshot();
+      this.unsubscribeSnapshot = undefined;
+    }
+  }
 }

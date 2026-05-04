@@ -485,6 +485,12 @@ export class UsersService implements OnInit {
   logout(): Promise<void> {
     const auth = this.getAuthFn();
     console.log('auth', auth);
+    
+    // Pulisci la cache degli utenti per evitare leak di dati tra sessioni diverse
+    this.usersCache.clear();
+    this.usersOnCache.set([]);
+    this.$classes.clearCache();
+    
     return auth.signOut();
   }
 
