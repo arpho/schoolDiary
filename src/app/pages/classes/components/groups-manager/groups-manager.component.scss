@@ -3,10 +3,19 @@
   gap: 2rem;
   align-items: flex-start;
   width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 
 .students-container {
   flex: 0 0 300px;
+
+  @media (max-width: 768px) {
+    flex: 1 1 auto;
+    width: 100%;
+  }
   
   .drag-container {
     margin: 1rem 0;
@@ -25,6 +34,11 @@
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    width: 100%;
+    box-sizing: border-box;
+  }
   
   .groups-header {
     display: flex;
