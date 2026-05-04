@@ -10,6 +10,9 @@
       <ion-segment-button value="agenda">
         <ion-label>Agenda</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="gruppi">
+        <ion-label>Gruppi</ion-label>
+      </ion-segment-button>
     </ion-segment>
 
     <div class="tab-content" [ngSwitch]="activeTab()">
@@ -104,6 +107,52 @@
                 </ion-label>
               </ion-item>
             }
+          }
+        </div>
+      </div>
+
+      <!-- TAB GRUPPI -->
+      <div *ngSwitchCase="'gruppi'" class="fade-in">
+        <div class="filters">
+          <ion-item lines="none" class="glass-item">
+            <ion-select label="Scegli Materia" label-placement="floating" [value]="selectedGroupSubjectKey()" (ionChange)="onGroupSubjectChange($event)">
+              <ion-select-option value="">Seleziona una materia</ion-select-option>
+              @for(subject of allClassSubjects(); track subject.key) {
+                <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        </div>
+
+        <div class="group-display">
+          @if (!selectedGroupSubjectKey()) {
+            <p class="empty-state">Seleziona una materia per vedere il tuo gruppo.</p>
+          } @else if (!studentGroup()) {
+            <p class="empty-state">Non sei assegnato a nessun gruppo per questa materia.</p>
+          } @else {
+            <ion-card class="glass-card group-card">
+              <ion-card-header>
+                <ion-card-title>{{ studentGroup()?.nome }}</ion-card-title>
+                @if (studentGroup()?.note) {
+                  <p class="group-notes">{{ studentGroup()?.note }}</p>
+                }
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list lines="none" class="transparent-list">
+                  @for(member of studentGroup()?.studentsList; track member.key) {
+                    <ion-item class="member-item glass-item-sm">
+                      <ion-icon name="person-circle-outline" slot="start" color="primary"></ion-icon>
+                      <ion-label>
+                        {{ member.lastName }} {{ member.firstName }}
+                        @if (member.key === loggedUser()?.key) {
+                          <ion-badge color="success" class="ion-margin-start">Tu</ion-badge>
+                        }
+                      </ion-label>
+                    </ion-item>
+                  }
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
           }
         </div>
       </div>

@@ -14,6 +14,8 @@ import { AgendaEvent } from 'src/app/pages/agenda/models/agendaEvent';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
+import { GroupsService } from 'src/app/pages/classes/services/groups/groups.service';
+import { GroupModel } from 'src/app/pages/classes/models/groupModel';
 
 @Component({
   standalone: true,
@@ -47,6 +49,7 @@ export class DashboardStudentComponent implements OnInit, OnDestroy {
   private evaluationService = inject(EvaluationService);
   private agendaService = inject(AgendaService);
   private subjectService = inject(SubjectService);
+  private groupsService = inject(GroupsService);
 
   activeTab = signal<string>('attivita');
   
@@ -59,6 +62,11 @@ export class DashboardStudentComponent implements OnInit, OnDestroy {
   selectedTeacherKey = signal<string>('all');
   selectedSubjectKey = signal<string>('all');
   
+  // Group Tab
+  allClassSubjects = signal<SubjectModel[]>([]);
+  selectedGroupSubjectKey = signal<string>('');
+  studentGroup = signal<GroupModel | null>(null);
+  
   // Data
   activities = signal<ActivityModel[]>([]);
   evaluations = signal<Evaluation[]>([]);
@@ -70,7 +78,37 @@ export class DashboardStudentComponent implements OnInit, OnDestroy {
   private agendaSub?: () => void;
   private teachersSub?: () => void;
 
-  constructor() {}
+  constructor() {
+    effect(() => {
+      const teachers = this.teachersList();
+      const user = this.loggedUser();
+      const tKey = this.selectedTeacherKey();
+      
+      if (user && user.classKey) {
+        // Collect all unique subject keys taught in this class
+        const allKeys = new Set<string>();
+        teachers.forEach(t => {
+          const ac = t.assignedClasses?.find(c => c.key === user.classKey);
+          ac?.subjectsKey?.forEach(k => allKeys.add(k));
+        });
+
+        if (allKeys.size > 0) {
+          this.subjectService.fetchSubjectsByKeys(Array.from(allKeys)).then(subs => {
+            this.allClassSubjects.set(subs);
+            // If no teacher is selected, show all subjects in the activities filter
+            if (tKey === 'all') {
+              this.subjectsList.set(subs);
+            }
+          });
+        } else {
+          this.allClassSubjects.set([]);
+          if (tKey === 'all') {
+            this.subjectsList.set([]);
+          }
+        }
+      }
+    }, { allowSignalWrites: true });
+  }
 
   async ngOnInit() {
     const user = await this.usersService.getLoggedUser();
@@ -90,7 +128,7 @@ export class DashboardStudentComponent implements OnInit, OnDestroy {
       (users) => {
         this.teachersList.set(users);
       },
-      [new QueryCondition('role', '==', UsersRole.TEACHER), new QueryCondition('classes', 'array-contains', classKey)]
+      [new QueryCondition('classes', 'array-contains', classKey)]
     );
   }
 
@@ -117,15 +155,6 @@ export class DashboardStudentComponent implements OnInit, OnDestroy {
     }
 
     this.activitiesSub = this.activitiesService.fetchActivitiesOnRealTime((acts) => {
-       // Also populate subjects based on activities if subject filter is 'all'
-       if (sKey === 'all' && tKey === 'all') {
-         const uniqueSubjectKeys = [...new Set(acts.map(a => a.subjectsKey).filter(k => k))];
-         if (uniqueSubjectKeys.length > 0) {
-            this.subjectService.fetchSubjectsByKeys(uniqueSubjectKeys).then(subs => {
-               this.subjectsList.set(subs);
-            });
-         }
-       }
        this.activities.set(acts);
     }, conditions);
   }
@@ -141,10 +170,9 @@ export class DashboardStudentComponent implements OnInit, OnDestroy {
        this.usersService.getSubjectsByTeacherAndClass(tKey, user.classKey).then(subs => {
           this.subjectsList.set(subs);
        });
-       // If selected subject is not in the new list, reset it
        this.selectedSubjectKey.set('all');
     } else {
-       // Reset subjects logic will run inside loadActivities when both are 'all'
+       this.subjectsList.set(this.allClassSubjects());
        this.selectedSubjectKey.set('all');
     }
     
@@ -183,6 +211,22 @@ export class DashboardStudentComponent implements OnInit, OnDestroy {
     this.activeTab.set(event.detail.value);
   }
 
+  async onGroupSubjectChange(event: any) {
+    const sKey = event.detail.value;
+    this.selectedGroupSubjectKey.set(sKey);
+    const user = this.loggedUser();
+    if (user && user.classKey && sKey) {
+      try {
+        const group = await this.groupsService.fetchStudentGroup(user.key, user.classKey, sKey);
+        this.studentGroup.set(group);
+      } catch (error) {
+        console.error("Errore caricamento gruppo:", error);
+      }
+    } else {
+      this.studentGroup.set(null);
+    }
+  }
+
   ngOnDestroy() {
     if (this.activitiesSub) this.activitiesSub();
     if (this.evaluationsSub) this.evaluationsSub();
@@ -196,7 +240,7 @@ export class DashboardStudentComponent implements OnInit, OnDestroy {
   }
   
   getSubjectName(subjectKey: string): string {
-    const subject = this.subjectsList().find(s => s.key === subjectKey);
+    const subject = this.allClassSubjects().find(s => s.key === subjectKey);
     return subject ? subject.name : 'Materia Sconosciuta';
   }
   

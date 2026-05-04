@@ -166,4 +166,64 @@
       transform: translateY(0);
     }
   }
+
+  .group-display {
+    padding: 0;
+    
+    .group-card {
+      margin-top: 1rem;
+      border: 1px solid var(--glass-border);
+      
+      ion-card-header {
+        border-bottom: 1px solid var(--glass-border);
+        margin-bottom: 0.5rem;
+      }
+    }
+    
+    .group-notes {
+      font-size: 0.95rem;
+      color: var(--ion-color-medium);
+      margin-top: 0.5rem;
+      font-style: italic;
+      padding: 0 1rem 1rem 0;
+      line-height: 1.4;
+    }
+    
+    .transparent-list {
+      background: transparent;
+      padding: 0;
+    }
+    
+    .glass-item-sm {
+      --background: rgba(var(--ion-color-light-rgb), 0.05);
+      backdrop-filter: var(--glass-backdrop);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      --padding-start: 12px;
+      border: 1px solid var(--glass-border);
+      transition: all 0.2s ease;
+
+      &:hover {
+        --background: rgba(var(--ion-color-light-rgb), 0.1);
+        transform: scale(1.02);
+      }
+      
+      ion-label {
+        font-weight: 500;
+        font-size: 1.1rem;
+      }
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+
+    .member-item {
+      ion-badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+      }
+    }
+  }
 }
