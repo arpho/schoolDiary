@@ -1,0 +1,99 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Interrogazioni {{ student()?.firstName }} {{ student()?.lastName }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Interrogazioni {{ student()?.firstName }} {{ student()?.lastName }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  @if (student()) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Filtri</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-select
+            label="Materia"
+            [value]="selectedSubjectKey()"
+            (ionChange)="onSubjectChange($event)"
+            interface="popover"
+            class="custom-select"
+          >
+            <ion-select-option value="all">Tutte le Materie</ion-select-option>
+            @for (subject of allSubjects(); track subject.key) {
+              <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="events-container">
+      @if (filteredEvents().length > 0) {
+        <ion-list>
+          @for (event of filteredEvents(); track event.key) {
+            <ion-item-sliding>
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="editEvent(event)">
+                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                </ion-item-option>
+                <ion-item-option color="danger" (click)="deleteEvent(event)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+              
+              <ion-item lines="none" class="ion-no-padding event-item">
+                <ion-card class="event-card" style="width: 100%; margin: 8px;">
+                  <ion-card-header>
+                    <div class="event-header" style="display: flex; align-items: center; gap: 8px;">
+                      <ion-icon name="mic" color="warning" class="event-icon" style="font-size: 24px;"></ion-icon>
+                      <div>
+                        <ion-card-title>{{ event.title }}</ion-card-title>
+                        <ion-card-subtitle>{{ getSubjectName(event.subjectKey) }}</ion-card-subtitle>
+                      </div>
+                    </div>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <div class="event-details">
+                      <div class="detail-item" style="display: flex; align-items: center; gap: 4px; margin-bottom: 8px;">
+                        <ion-icon name="calendar-outline" color="medium"></ion-icon>
+                        <span>{{ event.dataInizio | date:'dd/MM/yyyy HH:mm' }}</span>
+                      </div>
+                      @if (event.description) {
+                        <p class="event-description">{{ event.description }}</p>
+                      }
+                    </div>
+                  </ion-card-content>
+                </ion-card>
+              </ion-item>
+            </ion-item-sliding>
+          }
+        </ion-list>
+      } @else {
+        <div class="empty-state" style="text-align: center; padding: 2rem; color: var(--ion-color-medium);">
+          <ion-icon name="calendar" style="font-size: 48px;"></ion-icon>
+          <p>Nessuna interrogazione programmata trovata.</p>
+        </div>
+      }
+    </div>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="scheduleInterrogation()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  } @else {
+    <div class="loading-state" style="text-align: center; padding: 2rem;">
+      <p>Caricamento dati studente...</p>
+    </div>
+  }
+</ion-content>

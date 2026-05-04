@@ -1,0 +1,35 @@
+.events-container {
+  margin-top: 10px;
+}
+
+.event-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.event-card {
+  width: 100%;
+  margin: 8px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.event-description {
+  margin-top: 8px;
+  color: var(--ion-color-step-600);
+  font-size: 0.95rem;
+}
+
+.empty-state, .loading-state {
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
