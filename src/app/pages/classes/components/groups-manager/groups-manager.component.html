@@ -7,12 +7,7 @@
     </div>
   } @else {
       
-      @if (groupsList().length > 0) {
-        <h4>Gruppi disponibili:</h4>
-        <ul>
-
-        </ul>
-      } @else {
+      @if (groupsList().length === 0) {
         <p>Nessun gruppo trovato per questa classe.</p>
       }
   <ion-button (click)="addGroup()">Crea Gruppo<ion-icon name="medkit"></ion-icon></ion-button>
