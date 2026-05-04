@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController, ActionSheetController } from '@ionic/angular';
 
 import { ListStudent4classComponent } from './list-student4class.component';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -18,7 +18,9 @@ describe('ListStudent4classComponent', () => {
         { provide: UsersService, useValue: { getLoggedUser: jasmine.createSpy('getLoggedUser'), getCustomClaims4LoggedUser: jasmine.createSpy('getCustomClaims4LoggedUser'), getUserByUid: jasmine.createSpy('getUserByUid') } },
         { provide: EvaluationService, useValue: { getEvaluation4studentAndTeacher: jasmine.createSpy('getEvaluation4studentAndTeacher').and.returnValue(Promise.resolve([])) } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'test-id' } } } },
-        { provide: AgendaService, useValue: { getAgenda4targetedClassesOnrealtime: jasmine.createSpy('getAgenda4targetedClassesOnrealtime') } }
+        { provide: AgendaService, useValue: { getAgenda4targetedClassesOnrealtime: jasmine.createSpy('getAgenda4targetedClassesOnrealtime') } },
+        { provide: ModalController, useValue: { create: jasmine.createSpy('create').and.returnValue(Promise.resolve({ present: () => Promise.resolve() })) } },
+        { provide: ActionSheetController, useValue: { create: jasmine.createSpy('create').and.returnValue(Promise.resolve({ present: () => Promise.resolve() })) } }
       ]
     }).compileComponents();
 

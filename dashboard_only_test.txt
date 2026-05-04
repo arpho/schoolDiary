@@ -1,0 +1,107 @@
+04 05 2026 17:41:19.018:INFO [karma-server]: Karma v6.4.4 server started at http://localhost:9876/
+04 05 2026 17:41:19.022:INFO [launcher]: Launching browsers ChromeHeadless with concurrency unlimited
+04 05 2026 17:41:19.028:INFO [launcher]: Starting browser ChromeHeadless
+04 05 2026 17:41:19.646:INFO [Chrome Headless 147.0.0.0 (Linux 0.0.0)]: Connected on socket cqjpNYu-OeqatRsYAAAB with id 4116036
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+[1A[2KLOG: 'ConnectionStatusComponent - Constructor'
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+LOG: 'ConnectionStatusComponent - Constructor'
+[1A[2KLOG: 'ConnectionStatusComponent - OnInit'
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+LOG: 'ConnectionStatusComponent - OnInit'
+[1A[2KLOG: 'e', TypeError: Failed to construct 'URL': Invalid base URL
+TypeError: Failed to construct 'URL': Invalid base URL
+    at getAssetPath (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:345:20)
+    at getNamedUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:47:28)
+    at getUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:27:16)
+    at Icon.loadIcon (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:365:25)
+    at cb (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:303:18)
+    at Icon.waitUntilVisible (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:348:20)
+    at Icon.call (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:301:14)
+    at Icon.insertBefore [as connectedCallback] (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3987:35)
+    at EmulatedEncapsulationDomRenderer2.insertBefore (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/platform-browser/fesm2022/dom_renderer.mjs:564:26)
+    at nativeInsertBefore (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/core/fesm2022/debug_node.mjs:6792:14)
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+LOG: 'e', TypeError: Failed to construct 'URL': Invalid base URL
+TypeError: Failed to construct 'URL': Invalid base URL
+    at getAssetPath (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:345:20)
+    at getNamedUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:47:28)
+    at getUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:27:16)
+    at Icon.loadIcon (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:365:25)
+    at cb (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:303:18)
+    at Icon.waitUntilVisible (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:348:20)
+    at Icon.call (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:301:14)
+    at Icon.insertBefore [as connectedCallback] (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3987:35)
+    at EmulatedEncapsulationDomRenderer2.insertBefore (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/platform-browser/fesm2022/dom_renderer.mjs:564:26)
+    at nativeInsertBefore (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@angular/core/fesm2022/debug_node.mjs:6792:14)
+[1A[2KWARN: '[Ionicons Warning]: Could not load icon with name "wifi". Ensure that the icon is registered using addIcons or that the icon SVG data is passed directly to the icon component.', <ion-icon _ngcontent-a-c4054984992="" name="wifi" title="Online"></ion-icon>
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+WARN: '[Ionicons Warning]: Could not load icon with name "wifi". Ensure that the icon is registered using addIcons or that the icon SVG data is passed directly to the icon component.', <ion-icon _ngcontent-a-c4054984992="" name="wifi" title="Online"></ion-icon>
+[1A[2KLOG: 'e', TypeError: Failed to construct 'URL': Invalid base URL
+TypeError: Failed to construct 'URL': Invalid base URL
+    at getAssetPath (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:345:20)
+    at getNamedUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:47:28)
+    at getUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:27:16)
+    at Icon.loadIcon (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:365:25)
+    at cb (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:303:18)
+    at Icon.waitUntilVisible (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:348:20)
+    at Icon.call (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:301:14)
+    at Icon.insertBefore [as connectedCallback] (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3987:35)
+    at insertBefore (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:2943:45)
+    at renderVdom (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3061:15)
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+LOG: 'e', TypeError: Failed to construct 'URL': Invalid base URL
+TypeError: Failed to construct 'URL': Invalid base URL
+    at getAssetPath (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:345:20)
+    at getNamedUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:47:28)
+    at getUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:27:16)
+    at Icon.loadIcon (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:365:25)
+    at cb (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:303:18)
+    at Icon.waitUntilVisible (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:348:20)
+    at Icon.call (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:301:14)
+    at Icon.insertBefore [as connectedCallback] (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3987:35)
+    at insertBefore (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:2943:45)
+    at renderVdom (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3061:15)
+[1A[2KWARN: '[Ionicons Warning]: Could not load icon with name "wifi". Ensure that the icon is registered using addIcons or that the icon SVG data is passed directly to the icon component.', <ion-icon _ngcontent-a-c4054984992="" name="wifi" title="Online"></ion-icon>
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+WARN: '[Ionicons Warning]: Could not load icon with name "wifi". Ensure that the icon is registered using addIcons or that the icon SVG data is passed directly to the icon component.', <ion-icon _ngcontent-a-c4054984992="" name="wifi" title="Online"></ion-icon>
+[1A[2KLOG: 'ConnectionStatusComponent - OnDestroy'
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 0 of 1 SUCCESS (0 secs / 0 secs)
+LOG: 'ConnectionStatusComponent - OnDestroy'
+[1A[2KChrome Headless 147.0.0.0 (Linux 0.0.0) Dashboard should create FAILED
+	FirebaseError: Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore
+	error properties: FirebaseError: [code=invalid-argument]: Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 1 of 1 (1 FAILED) (0 secs / 0.254 secs)
+[1A[2KWARN: '[Ionic Warning]: [ion-popover] - A trigger element with the ID "user-menu-trigger" was not found in the DOM. The trigger element must be in the DOM when the "trigger" property is set on ion-popover.', <ion-popover _ngcontent-a-c3114054914="" trigger="user-menu-trigger" dismissonselect="true" id="ion-overlay-1" aria-modal="true" no-router="" tabindex="-1" class="undefined overlay-hidden popover-desktop popover-side-bottom hydrated" style="z-index: 20002;"><!--container--></ion-popover>
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 1 of 1 (1 FAILED) (0 secs / 0.254 secs)
+WARN: '[Ionic Warning]: [ion-popover] - A trigger element with the ID "user-menu-trigger" was not found in the DOM. The trigger element must be in the DOM when the "trigger" property is set on ion-popover.', <ion-popover _ngcontent-a-c3114054914="" trigger="user-menu-trigger" dismissonselect="true" id="ion-overlay-1" aria-modal="true" no-router="" tabindex="-1" class="undefined overlay-hidden popover-desktop popover-side-bottom hydrated" style="z-index: 20002;"><!--container--></ion-popover>
+[1A[2KLOG: 'e', TypeError: Failed to construct 'URL': Invalid base URL
+TypeError: Failed to construct 'URL': Invalid base URL
+    at getAssetPath (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:345:20)
+    at getNamedUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:47:28)
+    at getUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:27:16)
+    at Icon.loadIcon (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:365:25)
+    at Icon.componentDidLoad (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:317:18)
+    at safeCall (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3362:30)
+    at postUpdateComponent (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3295:5)
+    at postUpdate (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3223:30)
+    at http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3225:7
+    at Generator.next (<anonymous>)
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 1 of 1 (1 FAILED) (0 secs / 0.254 secs)
+LOG: 'e', TypeError: Failed to construct 'URL': Invalid base URL
+TypeError: Failed to construct 'URL': Invalid base URL
+    at getAssetPath (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:345:20)
+    at getNamedUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:47:28)
+    at getUrl (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:27:16)
+    at Icon.loadIcon (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:365:25)
+    at Icon.componentDidLoad (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@ionic/core/components/icon.js:317:18)
+    at safeCall (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3362:30)
+    at postUpdateComponent (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3295:5)
+    at postUpdate (http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3223:30)
+    at http://localhost:9876/_karma_webpack_/webpack:/node_modules/@stencil/core/internal/client/index.js:3225:7
+    at Generator.next (<anonymous>)
+[1A[2KWARN: '[Ionicons Warning]: Could not load icon with name "wifi". Ensure that the icon is registered using addIcons or that the icon SVG data is passed directly to the icon component.', <ion-icon _ngcontent-a-c4054984992="" name="wifi" title="Online" role="img" class="md hydrated"></ion-icon>
+Chrome Headless 147.0.0.0 (Linux 0.0.0): Executed 1 of 1 (1 FAILED) (0 secs / 0.254 secs)
+WARN: '[Ionicons Warning]: Could not load icon with name "wifi". Ensure that the icon is registered using addIcons or that the icon SVG data is passed directly to the icon component.', <ion-icon _ngcontent-a-c4054984992="" name="wifi" title="Online" role="img" class="md hydrated"></ion-icon>
+[1A[2KChrome Headless 147.0.0.0 (Linux 0.0.0): Executed 1 of 1 (1 FAILED) (0.29 secs / 0.254 secs)
+TOTAL: 1 FAILED, 0 SUCCESS

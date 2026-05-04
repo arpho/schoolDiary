@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular/standalone';
+import { IonicModule } from '@ionic/angular';
 import { GroupsService } from '../../services/groups/groups.service';
 import { ClassiService } from '../../services/classi.service';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -16,6 +17,7 @@ describe('GroupsManagerComponent', () => {
     const classiServiceSpy = jasmine.createSpyObj('ClassiService', ['fetchClasse']);
     const usersServiceSpy = jasmine.createSpyObj('UsersService', ['getUsersByClass']);
     const alertSpy = jasmine.createSpyObj('AlertController', ['create']);
+    const modalSpy = jasmine.createSpyObj('ModalController', ['create']);
     const toasterSpy = jasmine.createSpyObj('ToasterService', ['showToast']);
 
     TestBed.configureTestingModule({
@@ -25,6 +27,7 @@ describe('GroupsManagerComponent', () => {
         { provide: ClassiService, useValue: classiServiceSpy },
         { provide: UsersService, useValue: usersServiceSpy },
         { provide: AlertController, useValue: alertSpy },
+        { provide: ModalController, useValue: modalSpy },
         { provide: ToasterService, useValue: toasterSpy }
       ]
     }).compileComponents();
