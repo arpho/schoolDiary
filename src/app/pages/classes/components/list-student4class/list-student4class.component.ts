@@ -17,7 +17,9 @@ import {
   IonSelect,
   IonSelectOption,
   IonModal,
-  IonDatetime
+  IonDatetime,
+  IonToggle,
+  IonLabel
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation/evaluation.service';
@@ -74,6 +76,8 @@ import { AgendaEventInputComponent } from 'src/app/shared/components/agenda-even
     IonSelectOption,
     IonDatetime,
     IonModal,
+    IonToggle,
+    IonLabel,
     CommonModule,
     FormsModule,
     StudentAverageGradeDisplayComponent,
@@ -238,6 +242,7 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
   readonly filterType = signal<string>('all');
   readonly subjects = signal<SubjectModel[]>([]);
   readonly selectedSubjectKey = signal<string>('all');
+  readonly onlyInterrogatedToday = signal<boolean>(false);
   readonly agendaEvents = signal<AgendaEvent[]>([]);
   private agendaUnsubscribe?: () => void;
 
@@ -279,6 +284,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     const students = this._students();
     const averages = this.studentAverages();
     const filter = this.filterType();
+    const showOnlyInterrogatedToday = this.onlyInterrogatedToday();
+    const events = this.agendaEvents();
 
     let filtered = students;
 
@@ -292,6 +299,32 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
         const avg = averages.get(s.key);
         return avg !== undefined && avg >= 6;
       });
+    }
+
+    if (showOnlyInterrogatedToday) {
+      const today = new Date();
+      const todayYear = today.getFullYear();
+      const todayMonth = today.getMonth();
+      const todayDay = today.getDate();
+
+      const studentsWithInterrogationToday = new Set<string>();
+      events.forEach(event => {
+        if (event.type === 'interrogation' && event.dataInizio) {
+          const eventDate = new Date(event.dataInizio);
+          if (
+            eventDate.getFullYear() === todayYear &&
+            eventDate.getMonth() === todayMonth &&
+            eventDate.getDate() === todayDay &&
+            event.targetStudents
+          ) {
+            event.targetStudents.forEach(studentKey => {
+              studentsWithInterrogationToday.add(studentKey);
+            });
+          }
+        }
+      });
+
+      filtered = filtered.filter(s => studentsWithInterrogationToday.has(s.key));
     }
 
     const makeFullName = (user: UserModel) => `${user.lastName} ${user.firstName}`;

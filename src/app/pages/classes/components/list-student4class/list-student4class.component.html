@@ -26,6 +26,11 @@
     </div>
 
     <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0;">
+      <ion-label style="font-size: 0.9rem; color: var(--ion-color-medium);">Interrogati oggi:</ion-label>
+      <ion-toggle [checked]="onlyInterrogatedToday()" (ionChange)="onlyInterrogatedToday.set($event.detail.checked)"></ion-toggle>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0;">
       <span style="font-size: 0.9rem; color: var(--ion-color-medium);">Inizio periodo:</span>
       <div id="open-date-picker" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
         <span style="font-weight: 500; font-size: 1rem; color: var(--ion-color-primary);">{{ dataInizioPeriodo() |
