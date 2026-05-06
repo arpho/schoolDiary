@@ -19,6 +19,16 @@ class MockUserMenuComponent {}
 @Component({ selector: 'app-connection-status', standalone: true, template: '' })
 class MockConnectionStatusComponent {}
 
+@Component({ selector: 'app-dashboard-student', standalone: true, template: '' })
+class MockDashboardStudentComponent {}
+
+@Component({ selector: 'app-dashboard-teacher', standalone: true, template: '' })
+class MockDashboardTeacherComponent {}
+
+@Component({ selector: 'app-dashboard-admin', standalone: true, template: '' })
+class MockDashboardAdminComponent {}
+
+
 describe('Dashboard', () => {
   let component: DashboardPage;
   let fixture: ComponentFixture<DashboardPage>;
@@ -39,8 +49,8 @@ describe('Dashboard', () => {
       schemas: [NO_ERRORS_SCHEMA]
     })
     .overrideComponent(DashboardPage, {
-      remove: { imports: [UserMenuComponent, ConnectionStatusComponent] },
-      add: { imports: [MockUserMenuComponent, MockConnectionStatusComponent] }
+      remove: { imports: [UserMenuComponent, ConnectionStatusComponent, DashboardStudentComponent, DashboardTeacherComponent, DashboardAdminComponent] },
+      add: { imports: [MockUserMenuComponent, MockConnectionStatusComponent, MockDashboardStudentComponent, MockDashboardTeacherComponent, MockDashboardAdminComponent] }
     })
     .compileComponents();
 
