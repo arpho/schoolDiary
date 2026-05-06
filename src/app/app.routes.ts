@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth.guard';
 import { pendingChangesGuard } from './shared/guards/pending-changes.guard';
+import { roleGuard } from './shared/guards/role.guard';
+import { UsersRole } from './shared/models/usersRole';
 
 /**
  * Definizione delle rotte principali dell'applicazione.
@@ -37,29 +39,41 @@ export const routes: Routes = [
 
   {
     path: 'grids-list',
-    loadComponent: () => import('./pages/grids/grids-list/grids-list').then(m => m.GridsListComponent)
+    loadComponent: () => import('./pages/grids/grids-list/grids-list').then(m => m.GridsListComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'gridsdialog',
-    loadComponent: () => import('./pages/grids/gridsdialog/gridsdialog').then(m => m.GridsdialogPage)
+    loadComponent: () => import('./pages/grids/gridsdialog/gridsdialog').then(m => m.GridsdialogPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'classes-list',
-    loadComponent: () => import('./pages/classes/classes-list/classes-list').then(m => m.ClassesListComponent)
+    loadComponent: () => import('./pages/classes/classes-list/classes-list').then(m => m.ClassesListComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'class-dialog/:classkey',
     loadComponent: () => import('./pages/classes/classe-dialog/classe-dialog').then(m => m.ClasseDialogPage),
-    canDeactivate: [pendingChangesGuard]
+    canActivate: [authGuard, roleGuard],
+    canDeactivate: [pendingChangesGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'users-list',
-    loadComponent: () => import('./pages/users/users-list/users-list.page').then(m => m.UsersListPage)
+    loadComponent: () => import('./pages/users/users-list/users-list.page').then(m => m.UsersListPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN] }
   },
   {
     path: 'user-dialog/:userKey',
     loadComponent: () => import('./pages/users/user-dialog/user-dialog.page').then(m => m.UserDialogPage),
-    canDeactivate: [pendingChangesGuard]
+    canActivate: [authGuard, roleGuard],
+    canDeactivate: [pendingChangesGuard],
+    data: { roles: [UsersRole.ADMIN] }
   },
   {
     path: 'classes-selector',
@@ -77,12 +91,16 @@ export const routes: Routes = [
   {
     path: 'evaluation-dialog',
     loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then(m => m.EvaluationDialogPage),
-    canDeactivate: [pendingChangesGuard]
+    canActivate: [authGuard, roleGuard],
+    canDeactivate: [pendingChangesGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'evaluation-dialog/:evaluationKey',
     loadComponent: () => import('./pages/evaluations/evaluation-dialog/evaluation-dialog.page').then(m => m.EvaluationDialogPage),
-    canDeactivate: [pendingChangesGuard]
+    canActivate: [authGuard, roleGuard],
+    canDeactivate: [pendingChangesGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'evaluation/:studentKey/:classKey/:teacherKey',
@@ -90,7 +108,9 @@ export const routes: Routes = [
   },
   {
     path: 'evaluations-list',
-    loadComponent: () => import("./pages/evaluations/pages/evaluations-list/evaluations-list.page").then(m => m.EvaluationsListPage)
+    loadComponent: () => import("./pages/evaluations/pages/evaluations-list/evaluations-list.page").then(m => m.EvaluationsListPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'reset-password',
@@ -102,12 +122,16 @@ export const routes: Routes = [
   },
   {
     path: 'activities-list',
-    loadComponent: () => import('./pages/activities/activities-list/activities-list.page').then(m => m.ActivitiesListPage)
+    loadComponent: () => import('./pages/activities/activities-list/activities-list.page').then(m => m.ActivitiesListPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'edit-evaluation/:evaluationKey',
     loadComponent: () => import('./pages/evaluations/edit-evaluation/edit-evaluation.page').then(m => m.EditEvaluationPage),
-    canDeactivate: [pendingChangesGuard]
+    canActivate: [authGuard, roleGuard],
+    canDeactivate: [pendingChangesGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: "pdf-evaluation/:evaluationKey",
@@ -128,17 +152,23 @@ export const routes: Routes = [
   },
   {
     path: 'subjects-list',
-    loadComponent: () => import('./pages/subjects-list/subjects-list.page').then(m => m.SubjectsListPage)
+    loadComponent: () => import('./pages/subjects-list/subjects-list.page').then(m => m.SubjectsListPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN] }
   },
   {
     path: 'edit-subject/:subjectKey',
     loadComponent: () => import('./pages/subjects-list/pages/edit-subject/edit-subject.page').then(m => m.EditSubjectPage),
-    canDeactivate: [pendingChangesGuard]
+    canActivate: [authGuard, roleGuard],
+    canDeactivate: [pendingChangesGuard],
+    data: { roles: [UsersRole.ADMIN] }
   },
   {
     path: 'create-subject',
     loadComponent: () => import('./pages/subjects-list/pages/create-subject/create-subject.page').then(m => m.CreateSubjectPage),
-    canDeactivate: [pendingChangesGuard]
+    canActivate: [authGuard, roleGuard],
+    canDeactivate: [pendingChangesGuard],
+    data: { roles: [UsersRole.ADMIN] }
   },
   {
     path: 'progress/:studentKey/:subjectsKey',
