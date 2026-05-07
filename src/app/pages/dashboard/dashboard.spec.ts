@@ -12,6 +12,10 @@ import { LocalLockService } from 'src/app/shared/services/local-lock.service';
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { UserMenuComponent } from 'src/app/shared/components/user-menu/user-menu.component';
 import { ConnectionStatusComponent } from 'src/app/shared/components/connectionStatus/connection-status/connection-status.component';
+import { DashboardAdminComponent } from 'src/app/shared/components/dashboard-admin/dashboard-admin';
+import { DashboardTeacherComponent } from 'src/app/shared/components/dashboard-teacher/dashboard-teacher';
+import { DashboardStudentComponent } from 'src/app/shared/components/dashboard-student/dashboard-student';
+import { UsersRole } from 'src/app/shared/models/usersRole';
 
 @Component({ selector: 'app-user-menu', standalone: true, template: '' })
 class MockUserMenuComponent {}
@@ -56,6 +60,14 @@ describe('Dashboard', () => {
 
     fixture = TestBed.createComponent(DashboardPage);
     component = fixture.componentInstance;
+    
+    // Replace the real components with our mocks
+    component.dashboards = {
+      [UsersRole.ADMIN]: MockDashboardAdminComponent as any,
+      [UsersRole.TEACHER]: MockDashboardTeacherComponent as any,
+      [UsersRole.STUDENT]: MockDashboardStudentComponent as any
+    };
+
     fixture.detectChanges();
   });
 
