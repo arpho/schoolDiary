@@ -52,6 +52,8 @@ export class EventDialogComponent implements OnInit {
   students: UserModel[] = [];
   private studentsUnsubscribe?: () => void;
 
+  uniqueId: string = Math.random().toString(36).substring(2, 9);
+
   // Input properties
   @ViewChild('eventForm') eventForm?: NgForm;
   @ViewChild('startDatetime') startDatetime?: IonDatetime;
