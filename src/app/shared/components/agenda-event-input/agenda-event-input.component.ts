@@ -135,6 +135,7 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
           <ion-select-option value="interrogation">Interrogazione</ion-select-option>
           <ion-select-option value="note">Nota</ion-select-option>
           <ion-select-option value="meeting">Riunione</ion-select-option>
+          <ion-select-option value="online_meeting">Riunione On-line</ion-select-option>
           <ion-select-option value="colloquio">Colloquio</ion-select-option>
           <ion-select-option value="other">Altro</ion-select-option>
         </ion-select>
@@ -144,6 +145,17 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
           </ion-note>
         }
       </ion-item>
+
+      @if (type === 'online_meeting') {
+        <ion-item>
+          <ion-label position="stacked">Link Riunione</ion-label>
+          <ion-input 
+            [(ngModel)]="link" 
+            placeholder="https://meet.google.com/..."
+            type="url">
+          </ion-input>
+        </ion-item>
+      }
 
 
       <ion-item lines="none" class="ion-no-margin ion-no-padding">
@@ -395,6 +407,7 @@ export class AgendaEventInputComponent {
   allDay = false;
   type: EventType = 'homework';
   done = false;
+  link = '';
   id?: string;
   minDate = this.toLocalISOString(new Date());
   maxDate = this.toLocalISOString(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
@@ -423,6 +436,7 @@ export class AgendaEventInputComponent {
       this.allDay = this.event.allDay || false;
       this.type = this.event.type || 'homework';
       this.done = this.event.done || false;
+      this.link = this.event.link || '';
       this.id = this.event.id || undefined;
 
       // Inizializza le classi target
@@ -746,6 +760,7 @@ export class AgendaEventInputComponent {
       done: this.done,
       targetClasses: [...this.selectedClassKey],
       targetStudents: [...this.selectedStudentKeys],
+      link: this.type === 'online_meeting' ? this.link : '',
       creationDate: this.event?.creationDate || Date.now()
     });
 
