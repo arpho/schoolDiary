@@ -83,6 +83,7 @@ export class EventDialogComponent implements OnInit {
     { value: 'test', label: 'Verifica' },
     { value: 'interrogation', label: 'Interrogazione' },
     { value: 'meeting', label: 'Riunione' },
+    { value: 'online_meeting', label: 'Riunione On-line' },
     { value: 'colloquio', label: 'Colloquio' },
     { value: 'note', label: 'Nota' },
     { value: 'other', label: 'Altro' }

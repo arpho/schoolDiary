@@ -41,10 +41,25 @@
         <ion-select-option value="interrogation">Interrogazione</ion-select-option>
         <ion-select-option value="note">Nota</ion-select-option>
         <ion-select-option value="meeting">Riunione</ion-select-option>
+        <ion-select-option value="online_meeting">Riunione On-line</ion-select-option>
         <ion-select-option value="colloquio">Colloquio</ion-select-option>
         <ion-select-option value="other">Altro</ion-select-option>
       </ion-select>
     </ion-item>
+
+    <!-- Link Riunione On-line -->
+    @if (eventData.type === 'online_meeting') {
+      <ion-item>
+        <ion-label position="floating">Link Riunione</ion-label>
+        <ion-input
+          type="url"
+          name="link"
+          [(ngModel)]="eventData.link"
+          placeholder="https://meet.google.com/..."
+          (ionChange)="onFieldChange('link')">
+        </ion-input>
+      </ion-item>
+    }
 
     <!-- All Day Toggle -->
     <ion-item>
