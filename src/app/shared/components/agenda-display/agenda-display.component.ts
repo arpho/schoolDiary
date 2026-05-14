@@ -28,7 +28,8 @@ import {
   checkmarkDoneOutline,
   closeCircleOutline,
   eyeOutline,
-  micOutline
+  micOutline,
+  desktopOutline
 } from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
@@ -53,10 +54,18 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
               <h2 [class.completed]="event.done">
                 {{ event.title }}
                 @if (event.done) {
-                  <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
+                   <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
                 }
               </h2>
               <p>{{ event.description }}</p>
+              @if (event.type === 'online_meeting' && event.link) {
+                <p>
+                  <ion-icon name="desktop-outline" color="secondary"></ion-icon>
+                  <a [href]="event.link" target="_blank" (click)="$event.stopPropagation()">
+                    Apri Riunione
+                  </a>
+                </p>
+              }
               @if (!classKey() && event.classKey) {
                 <p>
                   <ion-note color="medium">
@@ -201,6 +210,7 @@ export class AgendaDisplayComponent implements OnInit {
       calendarOutline,
       arrowForwardOutline,
       micOutline,
+      desktopOutline,
       'checkmark-circle-outline': checkmarkCircleOutline,
       'checkmark-done-outline': checkmarkDoneOutline,
       'close-circle-outline': closeCircleOutline,
@@ -259,6 +269,7 @@ export class AgendaDisplayComponent implements OnInit {
       case 'interrogation': return 'mic-outline';
       case 'note': return 'document-text-outline';
       case 'meeting': return 'people-outline';
+      case 'online_meeting': return 'desktop-outline';
       case 'colloquio': return 'people-circle-outline';
       default: return 'help-circle-outline';
     }
@@ -266,6 +277,7 @@ export class AgendaDisplayComponent implements OnInit {
 
   getColor(type: string): string | undefined {
     switch (type) {
+      case 'online_meeting': return 'secondary';
       case 'colloquio': return 'tertiary';
       default: return undefined;
     }
