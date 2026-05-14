@@ -1,4 +1,4 @@
-export type EventType = 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'colloquio' | 'other';
+export type EventType = 'homework' | 'test' | 'interrogation' | 'note' | 'meeting' | 'online_meeting' | 'colloquio' | 'other';
 
 /**
  * Interfaccia base per un evento dell'agenda.
@@ -18,6 +18,7 @@ export interface IAgendaEvent {
     subjectKey?: string; // Chiave della materia
     creationDate: number;
     allDay: boolean;
+    link?: string; // Link per riunioni on-line
     // Campi legacy per retrocompatibilità
     date?: string;
 }
@@ -42,6 +43,7 @@ export class AgendaEvent implements IAgendaEvent {
     subjectKey: string = ''; // Chiave della materia
     creationDate: number = Date.now();
     allDay: boolean = false; // Per eventi che durano tutto il giorno
+    link: string = ''; // Link per riunioni on-line
 
     /**
      * Costruttore: Inizializza l'evento, gestendo la compatibilità con vecchi formati di data.
@@ -111,7 +113,8 @@ export class AgendaEvent implements IAgendaEvent {
             targetStudents: this.targetStudents || [],
             subjectKey: this.subjectKey || '',
             creationDate: this.creationDate || Date.now(),
-            allDay: this.allDay || false
+            allDay: this.allDay || false,
+            link: this.link || ''
         };
 
         if (this.key) {
