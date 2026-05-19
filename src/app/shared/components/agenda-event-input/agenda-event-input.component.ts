@@ -89,6 +89,7 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
           </ion-item>
           <div slot="content" class="ion-no-padding">
             <ion-datetime 
+              [id]="startDatetimeId"
               [(ngModel)]="dataInizio" 
               [presentation]="allDay ? 'date' : 'date-time'" 
               (ionChange)="onStartDateChange($event)"
@@ -107,6 +108,7 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
           </ion-item>
           <div slot="content" class="ion-no-padding">
             <ion-datetime 
+              [id]="endDatetimeId"
               [(ngModel)]="dataFine" 
               [presentation]="allDay ? 'date' : 'date-time'" 
               (ionChange)="onEndDateChange($event)"
@@ -376,6 +378,11 @@ export class AgendaEventInputComponent {
   @Input() preloadedStudents?: UserModel[];
   /** Lista materie precaricata */
   @Input() preloadedSubjects?: SubjectModel[];
+
+  /** ID univoco generato per ogni istanza del componente, usato come prefisso degli id dei datetime picker */
+  readonly instanceId = Math.random().toString(36).slice(2, 9);
+  readonly startDatetimeId = `datetime-start-${this.instanceId}`;
+  readonly endDatetimeId = `datetime-end-${this.instanceId}`;
 
   validationErrors: { [key: string]: string } = {};
   showErrors = false;

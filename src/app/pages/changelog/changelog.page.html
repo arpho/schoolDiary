@@ -7,6 +7,30 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
     
+    <!-- Version 2.4.2 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v2.4.2</ion-badge>
+          <span class="version-date">19 Maggio 2026</span>
+        </div>
+        <ion-card-title>Fix Agenda & Stabilità Componenti</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Risolto un problema di rendering del componente di inserimento eventi dell'agenda che impediva il corretto aggiornamento dei campi data dopo il primo caricamento.</p>
+        
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="alert-circle-outline" slot="start" color="danger"></ion-icon>
+            <ion-label>
+              <h3>Fix Datetime Picker (AgendaEventInput)</h3>
+              <p>Assegnati ID univoci ai selettori di data/ora di inizio e fine per ogni istanza del componente, risolvendo il mancato aggiornamento dei campi alla riapertura del form senza ricaricare la pagina.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Version 2.4.1 -->
     <ion-card>
       <ion-card-header>
