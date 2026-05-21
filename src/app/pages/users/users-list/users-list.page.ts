@@ -33,7 +33,10 @@ import {
   close,
   save,
   trash,
-  ellipsisVertical
+  ellipsisVertical,
+  school,
+  easel,
+  shieldHalf
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
@@ -142,6 +145,9 @@ export class UsersListPage implements OnInit, OnDestroy {
       close,
       save,
       trash,
+      school,
+      easel,
+      shieldHalf
     });
 
     // Sottoscrizione per il caricamento delle classi
