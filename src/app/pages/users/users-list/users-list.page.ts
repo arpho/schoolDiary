@@ -10,9 +10,6 @@ import {
   IonTitle,
   IonToolbar,
   IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
   IonIcon,
   IonList,
   IonItem,
@@ -20,9 +17,7 @@ import {
   IonSearchbar,
   IonSelect,
   IonSelectOption,
-  IonLabel,
-  IonButton,
-  IonButtons
+  IonLabel
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
@@ -62,18 +57,13 @@ import { ClasseModel } from '../../classes/models/classModel';
     ReactiveFormsModule,
     IonItem,
     IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
     IonIcon,
     IonList,
     IonBackButton,
     IonSearchbar,
     IonSelect,
     IonSelectOption,
-    IonLabel,
-    IonButton,
-    IonButtons
+    IonLabel
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
