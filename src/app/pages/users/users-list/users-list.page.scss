@@ -1,3 +1,152 @@
-ion-fab {
-    .fab { display: inline-block !important}
+// Contenitore della lista
+.user-list {
+  background: transparent;
+  padding: 8px;
+}
+
+// Card del singolo utente
+.user-card {
+  margin: 12px 8px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  background: var(--ion-card-background, #ffffff);
+  border: 1px solid rgba(var(--ion-color-step-150-rgb, 220, 220, 220), 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
   }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Layout interno della card
+.user-card-layout {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 16px;
+}
+
+// Avatar con icona del ruolo
+.user-role-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  // Stili differenziati per ruolo
+  &.role-student {
+    background-color: rgba(var(--ion-color-secondary-rgb, 59, 89, 152), 0.12);
+    color: var(--ion-color-secondary, #3b5998);
+  }
+
+  &.role-teacher {
+    background-color: rgba(var(--ion-color-tertiary-rgb, 112, 68, 255), 0.12);
+    color: var(--ion-color-tertiary, #7044ff);
+  }
+
+  &.role-admin {
+    background-color: rgba(var(--ion-color-danger-rgb, 235, 68, 90), 0.12);
+    color: var(--ion-color-danger, #eb445a);
+  }
+}
+
+// Sezione delle informazioni utente
+.user-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+
+  .user-fullname {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #222);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .user-email {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--ion-color-medium, #666);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+// Sezione badge di metadati (ruolo e classe)
+.user-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+
+  // Badge generico
+  .user-role-badge, .user-class-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  // Ruoli
+  .user-role-badge {
+    &.role-student {
+      background-color: rgba(var(--ion-color-secondary-rgb, 59, 89, 152), 0.15);
+      color: var(--ion-color-secondary, #3b5998);
+    }
+
+    &.role-teacher {
+      background-color: rgba(var(--ion-color-tertiary-rgb, 112, 68, 255), 0.15);
+      color: var(--ion-color-tertiary, #7044ff);
+    }
+
+    &.role-admin {
+      background-color: rgba(var(--ion-color-danger-rgb, 235, 68, 90), 0.15);
+      color: var(--ion-color-danger, #eb445a);
+    }
+  }
+
+  // Classi
+  .user-class-badge {
+    background-color: rgba(var(--ion-color-light-rgb, 244, 245, 248), 0.8);
+    color: var(--ion-color-dark, #222);
+    border: 1px solid rgba(var(--ion-color-step-200-rgb, 200, 200, 200), 0.15);
+
+    strong {
+      margin-left: 3px;
+      font-weight: 700;
+    }
+
+    &.no-classes {
+      background-color: rgba(var(--ion-color-medium-rgb, 146, 148, 156), 0.1);
+      color: var(--ion-color-medium, #92949c);
+      font-style: italic;
+    }
+  }
+}
+
+// Mantieni gli stili del FAB esistenti se presenti
+ion-fab {
+  .fab { display: inline-block !important}
+}

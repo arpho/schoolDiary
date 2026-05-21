@@ -40,19 +40,38 @@
     <button type="submit" style="display: none" hidden>Cerca</button>
   </form>
 
-  <ion-list>
+  <ion-list class="user-list">
     @for(users of users2BeShown(); track users.key) {
-        <ion-item>
-            <ion-card (click)="showUserActions(users)">
-                <ion-card-header>
-                    <ion-card-title>{{users.lastName}} {{users.firstName}}</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                    <p>{{users.email}}</p>
-                </ion-card-content>
-            </ion-card>
+      <ion-card class="user-card" (click)="showUserActions(users)">
+        <div class="user-card-layout">
+          <!-- Left side: Role Icon -->
+          <div class="user-role-avatar" [ngClass]="getRoleClass(users.role)">
+            <ion-icon [name]="getRoleIcon(users.role)"></ion-icon>
+          </div>
 
-        </ion-item>
+          <!-- Right side: Content -->
+          <div class="user-info">
+            <h2 class="user-fullname">{{ users.lastName }} {{ users.firstName }}</h2>
+            <p class="user-email">{{ users.email }}</p>
+            
+            <div class="user-meta">
+              <span class="user-role-badge" [ngClass]="getRoleClass(users.role)">
+                {{ getRoleLabel(users.role) }}
+              </span>
+              
+              @if (users.role === usersRole.STUDENT) {
+                <span class="user-class-badge">
+                  Classe: <strong>{{ getStudentClassName(users.classKey) }}</strong>
+                </span>
+              } @else if (users.role === usersRole.TEACHER || users.role === usersRole.ADMIN) {
+                <span class="user-class-badge" [class.no-classes]="!users.assignedClasses || users.assignedClasses.length === 0">
+                  Classi: <strong>{{ getTeacherClassesNames(users.assignedClasses) }}</strong>
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      </ion-card>
     }
-</ion-list>
+  </ion-list>
 </ion-content>
