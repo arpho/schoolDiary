@@ -192,6 +192,69 @@ export class UsersListPage implements OnInit, OnDestroy {
       .subscribe((values) => this.applyFilter(values));
   }
 
+  getRoleIcon(role: UsersRole): string {
+    switch (role) {
+      case UsersRole.STUDENT:
+        return 'school';
+      case UsersRole.TEACHER:
+        return 'easel';
+      case UsersRole.ADMIN:
+        return 'shield-half';
+      default:
+        return 'person';
+    }
+  }
+
+  getRoleLabel(role: UsersRole): string {
+    switch (role) {
+      case UsersRole.STUDENT:
+        return 'Studente';
+      case UsersRole.TEACHER:
+        return 'Docente';
+      case UsersRole.ADMIN:
+        return 'Amministratore';
+      default:
+        return 'Utente';
+    }
+  }
+
+  getRoleClass(role: UsersRole): string {
+    switch (role) {
+      case UsersRole.STUDENT:
+        return 'role-student';
+      case UsersRole.TEACHER:
+        return 'role-teacher';
+      case UsersRole.ADMIN:
+        return 'role-admin';
+      default:
+        return 'role-unknown';
+    }
+  }
+
+  getStudentClassName(classKey: string): string {
+    if (!classKey) return 'Non assegnata';
+    const found = this.classes().find(c => c.key === classKey);
+    return found ? found.classe : 'Non assegnata';
+  }
+
+  getTeacherClassesNames(assignedClasses: any[]): string {
+    if (!assignedClasses || assignedClasses.length === 0) {
+      return 'Nessuna classe';
+    }
+    return assignedClasses
+      .map(ac => {
+        if (ac && ac.classe) return ac.classe;
+        const key = ac && ac.key;
+        if (key) {
+          const found = this.classes().find(c => c.key === key);
+          return found ? found.classe : '';
+        }
+        return '';
+      })
+      .filter(name => !!name)
+      .join(', ') || 'Nessuna classe';
+  }
+
   applyFilter(values: { searchTerm: string; selectedClass: string; selectedRole: string }) {
     const searchTerm = values?.searchTerm?.toLowerCase() || '';
     const selectedClass = values?.selectedClass || '';
