@@ -1,8 +1,8 @@
-import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import {
   IonContent,
@@ -60,9 +60,8 @@ import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionic
     IonFabButton
   ]
 })
-export class ClassesListComponent implements OnInit, OnDestroy {
-  classiList = signal<ClasseModel[]>([]);
-  private sub: Subscription = new Subscription();
+export class ClassesListComponent {
+  classiList = toSignal(this.service.getClassiOnRealtime(), { initialValue: [] });
 
   sortedClassiList = computed(() =>
     [...this.classiList()].sort((a, b) => {
@@ -80,19 +79,6 @@ export class ClassesListComponent implements OnInit, OnDestroy {
     private toaster: ToasterService
   ) {
     addIcons({ add, eye, trash, close, archive, ellipsisVertical });
-  }
-
-  ngOnInit(): void {
-    this.sub.add(
-      this.service.getClassiOnRealtime()
-        .subscribe((classi) => {
-          this.classiList.set(classi);
-        })
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
   }
 
   /**
