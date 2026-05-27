@@ -1,6 +1,6 @@
-import { Component, computed, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, OnDestroy } from '@angular/core';
+import { Component, computed, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActionSheetController } from '@ionic/angular/standalone';
-import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -67,7 +67,7 @@ import { ClasseModel } from '../../classes/models/classModel';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class UsersListPage implements OnInit, OnDestroy {
+export class UsersListPage implements OnInit {
   private selectedUser: UserModel | null = null;
 
   async showUserActions(user: UserModel) {
@@ -112,23 +112,64 @@ export class UsersListPage implements OnInit, OnDestroy {
     this.router.navigate(['user-dialog', userKey]);
   }
 
+  private readonly usersService = inject(UsersService);
+  private readonly router = inject(Router);
+  private readonly toaster = inject(ToasterService);
+  private readonly fb = inject(FormBuilder);
+  private readonly classesService = inject(ClassiService);
+  private readonly actionSheetController = inject(ActionSheetController);
+
   userList = signal<UserModel[]>([]);
-  usersFilter = signal<() => UserModel[]>(() => this.userList());
-  users2BeShown = computed(() => this.usersFilter()().sort((a, b) => this.factoryName(a).localeCompare(this.factoryName(b))));
-  classes = signal<ClasseModel[]>([]);
-  filterUserForm!: FormGroup;
+  classes = toSignal(this.classesService.getClassiOnRealtime(), { initialValue: [] });
   usersRole = UsersRole; // Make UsersRole available in template
 
-  private readonly destroy$ = new Subject<void>();
+  filterUserForm = this.fb.group({
+    searchTerm: [''],
+    selectedClass: [''],
+    selectedRole: ['']
+  });
 
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly router: Router,
-    private readonly toaster: ToasterService,
-    private readonly fb: FormBuilder,
-    private readonly classesService: ClassiService,
-    private readonly actionSheetController: ActionSheetController
-  ) {
+  filterValues = toSignal(
+    this.filterUserForm.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ),
+    { initialValue: { searchTerm: '', selectedClass: '', selectedRole: '' } }
+  );
+
+  users2BeShown = computed(() => {
+    const list = this.userList();
+    const values = this.filterValues();
+    const searchTerm = values?.searchTerm?.toLowerCase() || '';
+    const selectedClass = values?.selectedClass || '';
+    const selectedRole = values?.selectedRole ? parseInt(values.selectedRole) : null;
+
+    let filteredUsers = list;
+
+    // Filtro per testo
+    if (searchTerm) {
+      filteredUsers = filteredUsers.filter(user =>
+        user.firstName?.toLowerCase().includes(searchTerm) ||
+        user.lastName?.toLowerCase().includes(searchTerm) ||
+        user.email?.toLowerCase().includes(searchTerm) ||
+        this.factoryName(user).toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Filtro per classe
+    if (selectedClass) {
+      filteredUsers = filteredUsers.filter(user => user.classKey === selectedClass);
+    }
+
+    // Filtro per ruolo
+    if (selectedRole !== null) {
+      filteredUsers = filteredUsers.filter(user => user.role === selectedRole);
+    }
+
+    return [...filteredUsers].sort((a, b) => this.factoryName(a).localeCompare(this.factoryName(b)));
+  });
+
+  constructor() {
     addIcons({
       ellipsisVertical,
       create,
@@ -139,13 +180,6 @@ export class UsersListPage implements OnInit, OnDestroy {
       easel,
       shieldHalf
     });
-
-    // Sottoscrizione per il caricamento delle classi
-    this.classesService.getClassiOnRealtime()
-      .subscribe((classi) => {
-        console.log('Classi ricevute dal servizio:', classi);
-        this.classes.set(classi);
-      });
   }
 
   private factoryName(user: UserModel): string {
@@ -153,33 +187,10 @@ export class UsersListPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.initializeForm();
-
     const cb = (users: UserModel[]) => {
       this.userList.set(users);
     };
     this.usersService.getUsersOnRealTime(cb);
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private initializeForm() {
-    this.filterUserForm = this.fb.group({
-      searchTerm: [''],
-      selectedClass: [''],
-      selectedRole: ['']
-    });
-
-    // Sottoscrizione ai cambiamenti del form
-    this.filterUserForm.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe((values) => this.applyFilter(values));
   }
 
   getRoleIcon(role: UsersRole): string {
@@ -243,38 +254,6 @@ export class UsersListPage implements OnInit, OnDestroy {
       })
       .filter(name => !!name)
       .join(', ') || 'Nessuna classe';
-  }
-
-  applyFilter(values: { searchTerm: string; selectedClass: string; selectedRole: string }) {
-    const searchTerm = values?.searchTerm?.toLowerCase() || '';
-    const selectedClass = values?.selectedClass || '';
-    const selectedRole = values?.selectedRole ? parseInt(values.selectedRole) : null;
-
-    this.usersFilter.set(() => {
-      let filteredUsers = this.userList();
-
-      // Filtro per testo
-      if (searchTerm) {
-        filteredUsers = filteredUsers.filter(user =>
-          user.firstName?.toLowerCase().includes(searchTerm) ||
-          user.lastName?.toLowerCase().includes(searchTerm) ||
-          user.email?.toLowerCase().includes(searchTerm) ||
-          this.factoryName(user).toLowerCase().includes(searchTerm)
-        );
-      }
-
-      // Filtro per classe
-      if (selectedClass) {
-        filteredUsers = filteredUsers.filter(user => user.classKey === selectedClass);
-      }
-
-      // Filtro per ruolo
-      if (selectedRole !== null) {
-        filteredUsers = filteredUsers.filter(user => user.role === selectedRole);
-      }
-
-      return filteredUsers;
-    });
   }
 
 }
