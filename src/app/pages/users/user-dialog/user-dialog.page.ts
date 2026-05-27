@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, signal, effect, ViewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ModalController, IonBackButton, IonContent, IonHeader, IonIcon, IonTabs, IonTabBar, IonTabButton, IonTitle, IonToolbar, IonTab, IonLabel, IonGrid, IonRow, IonCol, IonItemDivider, IonList, IonItem, IonInput, IonButton } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -113,7 +114,7 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
     }
   }
   usersClasses = signal<ClasseModel[]>([]);
-  elencoClassi = signal<ClasseModel[]>([]);
+  elencoClassi = toSignal(this.$classes.getClassiOnRealtime(), { initialValue: [] });
   loggedUser = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
 
   rolesValue: any[] = [];
@@ -202,12 +203,6 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
     } else {
       console.log("nuovo studente")
     }
-
-    // Inizializza le classi
-    this.$classes.getClassiOnRealtime()
-      .subscribe((classi) => {
-        this.elencoClassi.set(classi);
-      });
 
     // Inizializza i ruoli
     const rolesKey = Object.keys(UsersRole);
