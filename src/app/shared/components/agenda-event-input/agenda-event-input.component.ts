@@ -27,7 +27,7 @@ import {
   IonAccordionGroup
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, timeOutline } from 'ionicons/icons';
+import { calendarOutline, timeOutline, openOutline } from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
 import { ClassiService } from '../../../pages/classes/services/classi.service';
@@ -156,6 +156,11 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
             placeholder="https://meet.google.com/..."
             type="url">
           </ion-input>
+          @if (link) {
+            <ion-button slot="end" fill="clear" [href]="link" target="_blank" rel="noopener noreferrer" style="margin-top: 15px;">
+              <ion-icon name="open-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          }
         </ion-item>
       }
 
@@ -431,7 +436,7 @@ export class AgendaEventInputComponent {
   async ngOnInit() {
     this.loggedUser = await this.usersService.getLoggedUser();
 
-    addIcons({ calendarOutline, timeOutline });
+    addIcons({ calendarOutline, timeOutline, openOutline });
 
     // Se stiamo modificando un evento esistente, popola TUTTI i campi
     if (this.event) {
