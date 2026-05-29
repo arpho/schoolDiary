@@ -2,7 +2,7 @@ import { Component, OnInit, signal, inject, ChangeDetectorRef, computed } from '
 import { UserModel } from 'src/app/shared/models/userModel';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonSelect, IonSelectOption, IonButtons, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonSelect, IonSelectOption, IonButtons, IonButton, IonBackButton } from '@ionic/angular/standalone';
 import { ChartModule } from 'primeng/chart';
 import { ActivatedRoute } from '@angular/router';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
@@ -19,7 +19,7 @@ import { Chart, registerables } from 'chart.js';
   templateUrl: './progress.page.html',
   styleUrls: ['./progress.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, ChartModule, IonSelect, IonSelectOption, IonButtons, IonButton]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, ChartModule, IonSelect, IonSelectOption, IonButtons, IonButton, IonBackButton]
 })
 export class ProgressPage implements OnInit {
 
@@ -116,12 +116,33 @@ export class ProgressPage implements OnInit {
     );
   }
 
-  processEvaluations(evaluations: Evaluation[], preselectedSubject: string | null) {
-    // 2. Determine selected subject
+  async processEvaluations(evaluations: Evaluation[], preselectedSubject: string | null) {
+    // Fallback: se la lista delle materie è vuota, carichiamo le materie dalle valutazioni stesse dello studente
+    if (this.subjects().length === 0 && evaluations.length > 0) {
+      const uniqueKeys = Array.from(new Set(evaluations.map(e => e.subjectKey).filter(k => !!k)));
+      if (uniqueKeys.length > 0) {
+        try {
+          const subjects = await this.subjectService.fetchSubjectsByKeys(uniqueKeys);
+          this.subjects.set(subjects);
+        } catch (err) {
+          console.error("Error loading subjects from evaluations:", err);
+        }
+      }
+    }
+
+    // Determina la materia selezionata
     if (preselectedSubject && this.subjects().some(s => s.key === preselectedSubject)) {
       this.selectedSubject.set(preselectedSubject);
-    } else if (this.subjects().length > 0 && !this.selectedSubject()) {
-      this.selectedSubject.set(this.subjects()[0].key);
+    } else if (this.subjects().length > 0) {
+      // Seleziona la prima materia che ha valutazioni, per garantire di mostrare i dati subito
+      const subjectsWithEvaluations = this.subjects().filter(s => 
+        evaluations.some(e => e.subjectKey === s.key)
+      );
+      if (subjectsWithEvaluations.length > 0) {
+        this.selectedSubject.set(subjectsWithEvaluations[0].key);
+      } else {
+        this.selectedSubject.set(this.subjects()[0].key);
+      }
     }
 
     this.updateChartData(evaluations);
@@ -153,18 +174,32 @@ export class ProgressPage implements OnInit {
     if (now.getMonth() < 8) { // Jan(0) to Aug(7)
       startYear = startYear - 1;
     }
-    const cutoffDate = `${startYear}-09-01`; // ISO string comparison should work for yyyy-mm-dd
+    const cutoffDate = new Date(startYear, 8, 1); // 8 is September
+    cutoffDate.setHours(0, 0, 0, 0);
 
-    filtered = filtered.filter(e => e.data >= cutoffDate);
+    filtered = filtered.filter(e => {
+      const d = this.getAsDate(e.data);
+      return d ? d >= cutoffDate : false;
+    });
 
     // Sort by date
-    filtered.sort((a, b) => a.data.localeCompare(b.data));
+    filtered.sort((a, b) => {
+      const dA = this.getAsDate(a.data);
+      const dB = this.getAsDate(b.data);
+      if (!dA && !dB) return 0;
+      if (!dA) return 1;
+      if (!dB) return -1;
+      return dA.getTime() - dB.getTime();
+    });
 
     // Prepare Chart Data
     // Labels: Dates (e.g. DD/MM)
     const labels = filtered.map(e => {
-      const dateParts = e.data.split('-'); // assuming yyyy-mm-dd
-      return `${dateParts[2]}/${dateParts[1]}`;
+      const d = this.getAsDate(e.data);
+      if (!d) return '';
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      return `${day}/${month}`;
     });
 
     const grades = filtered.map(e => e.gradeInDecimal);
@@ -182,6 +217,15 @@ export class ProgressPage implements OnInit {
       ]
     });
     this.cdr.detectChanges();
+  }
+
+  private getAsDate(dateVal: any): Date | null {
+    if (!dateVal) return null;
+    if (typeof dateVal.toDate === 'function') {
+      return dateVal.toDate();
+    }
+    const parsed = new Date(dateVal);
+    return isNaN(parsed.getTime()) ? null : parsed;
   }
 
   initChartOptions() {

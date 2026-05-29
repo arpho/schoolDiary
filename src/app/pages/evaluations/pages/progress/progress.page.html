@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="student()?.classKey ? '/class-dialog/' + student()?.classKey : '/classes-list'" text="Indietro"></ion-back-button>
+    </ion-buttons>
     <ion-title class="ion-text-center">
       @if (selectedSubjectName() && student()) {
       Andamento voti di {{ selectedSubjectName() }} dello studente {{ student()?.lastName }} {{ student()?.firstName }}
