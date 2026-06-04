@@ -1,0 +1,27 @@
+# Changelog
+
+Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in questo file.
+
+## [Unreleased] - 2026-06-04
+
+### Aggiunto
+- **Componente `student-avatar`**: Inserimento dell'avatar studente nel pannello `user-dialog` con possibilità di caricare foto su Firebase Storage, visualizzare le iniziali (se nessuna foto è presente) e ritagliare le immagini tramite `ngx-image-cropper`.
+- **Componente `student-disability`**: Nuovo tab dedicato "Disabilità & PDP" all'interno del `user-dialog`. Include:
+  - Gestione dei chip disabilità (DVA, DSA, BES, ADHD) con gradienti cromatici e animazioni.
+  - Elenco dinamico dei Documenti PDP con bottoni azione (apri link, copia link, elimina).
+- **Nuovo Layout `user-dialog`**: Sostituite le tab mobili (`<ion-tabs>`) con una sidebar laterale responsiva che divide l'interfaccia in 4 sezioni principali: Generalità, Disabilità & PDP, Note, Valutazioni.
+
+### Modificato
+- **`user-generalities2`**: Rimosse le sezioni relative a disabilità e documenti PDP. Il form è stato riprogettato con un layout a griglia (`<ion-grid>`) a due colonne per migliorare l'usabilità desktop e tablet.
+- **`reserved-notes4student`**: Restyling completo dell'interfaccia:
+  - Categorie implementate tramite bottoni (chip) interattivi con un tema cromatico specifico (Comportamento, Profitto, Comunicazione Famiglia, Salute, Altro).
+  - Ricerca Full-Text implementata direttamente lato client (tramite signal `computed`) che estende i filtri a testo, categorie, URL degli allegati e data di creazione.
+  - Le note ora vengono visualizzate con un layout a card verticali arricchite da un bordo sinistro colorato a seconda della categoria.
+- **`evaluation4-student`**: Completa rivisitazione in chiave moderna delle valutazioni:
+  - Le valutazioni appaiono con un layout a card compatte e orizzontali.
+  - Implementato un sistema di "Badge Score" visivo per i voti: verde (`>= 0.7`), arancione (`>= 0.5` e `< 0.7`) e rosso (`< 0.5`).
+  - Materie, attività, e griglie sono evidenziate con meta-tag visivi e gli allegati con chip cliccabili.
+- Pulizia del codice e rimozione dei `console.log` residui per i componenti legati all'`user-dialog`.
+
+### Risolto
+- Risolto un bug di sincronizzazione reattiva all'interno di `student-disability` legato all'uso del nuovo `input()` di Angular in combinazione con `ngOnChanges` (sostituito da un `effect()`).
