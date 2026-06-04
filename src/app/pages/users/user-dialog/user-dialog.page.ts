@@ -1,9 +1,20 @@
 import { Component, OnInit, Input, signal, effect, ViewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ModalController, IonBackButton, IonContent, IonHeader, IonIcon, IonTabs, IonTabBar, IonTabButton, IonTitle, IonToolbar, IonTab, IonLabel, IonGrid, IonRow, IonCol, IonItemDivider, IonList, IonItem, IonInput, IonButton } from '@ionic/angular/standalone';
+import {
+  ModalController,
+  IonBackButton,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonTitle,
+  IonToolbar,
+  IonLabel,
+  IonButton,
+  IonItem,
+  IonButtons
+} from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DocumentModel } from 'src/app/pages/classes/models/documentModel';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
@@ -14,10 +25,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReservedNotes4studentComponent } from "../components/reserved-notes4student/reserved-notes4student.component";
 import { Evaluation4StudentComponent } from "../components/evaluation4-student/evaluation4-student.component";
 import { UserGeneralities2Component } from '../components/user-generalities2/user-generalities2.component';
+import { StudentAvatarComponent } from '../components/student-avatar/student-avatar.component';
+import { StudentDisabilityComponent } from '../components/student-disability/student-disability.component';
+import { DisabilityData } from '../components/student-disability/student-disability.component';
 import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
 import { addIcons } from 'ionicons';
-import { documentTextOutline, personOutline, sparklesOutline, trash, add } from 'ionicons/icons';
+import { personOutline, sparklesOutline, documentTextOutline, menu, close, accessibilityOutline } from 'ionicons/icons';
 import { AlertController } from '@ionic/angular/standalone';
+
+type TabType = 'generalita' | 'disabilita' | 'note' | 'valutazioni';
 
 /**
  * Pagina di dialogo principale per la gestione di un utente.
@@ -38,46 +54,61 @@ import { AlertController } from '@ionic/angular/standalone';
     IonIcon,
     IonTitle,
     IonToolbar,
-    IonTabs,
-    IonTabBar,
-    IonTabButton,
-    IonTab,
     IonLabel,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonItemDivider,
-    IonList,
     IonItem,
-    IonInput,
     IonButton,
+    IonButtons,
     UserGeneralities2Component,
     ReservedNotes4studentComponent,
-    Evaluation4StudentComponent
+    Evaluation4StudentComponent,
+    StudentAvatarComponent,
+    StudentDisabilityComponent
   ]
 })
 export class UserDialogPage implements OnInit, HasUnsavedChanges {
-  @ViewChild('tabs') tabs!: IonTabs;
   @ViewChild(UserGeneralities2Component) generalitiesComp!: UserGeneralities2Component;
 
-  // Gestione tab attivo
-  selectedTab: string = 'generalita';
+  // Gestione sidebar e tab
+  selectedTab = signal<TabType>('generalita');
+  sidebarOpen = signal<boolean>(false);
 
+  selectTab(tab: TabType) {
+    this.selectedTab.set(tab);
+    this.sidebarOpen.set(false);
+  }
 
-
-  // Handle tab changes
-  setSelectedTab(tab: any) {
-    if (tab) {
-      this.selectedTab = tab;
-    }
+  toggleSidebar() {
+    this.sidebarOpen.update(v => !v);
   }
   nomeStudente() {
     return this.user()?.lastName + " " + this.user()?.firstName;
   }
+
   editedUser($event: any | UserModel) {
-    console.log("editedUser*", $event);
     this.user.set(new UserModel($event));
-    console.log("userSignal*", this.user());
+  }
+
+  /** Aggiorna la foto profilo dopo l'upload */
+  onPhotoChanged(newUrl: string) {
+    const updated = new UserModel({ ...this.user(), photoUrl: newUrl });
+    this.user.set(updated);
+    if (updated.key) {
+      this.$users.updateUser(updated.key, updated)
+        .catch(e => console.error('Errore salvataggio photoUrl:', e));
+    }
+  }
+
+  /** Aggiorna i dati disabilità + PDP quando il sotto-componente emette */
+  onDisabilityChanged(data: DisabilityData) {
+    this.user.set(new UserModel({
+      ...this.user(),
+      DVA:  data.DVA,
+      DSA:  data.DSA,
+      BES:  data.BES,
+      ADHD: data.ADHD,
+      noteDisabilita: data.noteDisabilita,
+      pdpUrl: data.pdpUrl
+    }));
   }
 
   // Variabili di stato
@@ -118,18 +149,6 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
   loggedUser = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
 
   rolesValue: any[] = [];
-  rolesName: string[] = [];
-  userForm: FormGroup = new FormGroup({
-    firstName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    lastName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    userName: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    email: new FormControl('', [Validators.email]),
-    role: new FormControl(UsersRole.STUDENT),
-    phoneNumber: new FormControl(''),
-    birthDate: new FormControl(''),
-    classes: new FormControl([]),
-    classe: new FormControl('')
-  });
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -140,13 +159,13 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
     private readonly modalCtrl: ModalController,
     private readonly alertCtrl: AlertController
   ) {
-    console.log("UserDialogPage constructor");
     addIcons({
-      'document-text': documentTextOutline,
       'person': personOutline,
       'sparkles': sparklesOutline,
-      'trash': trash,
-      'add': add
+      'document-text': documentTextOutline,
+      'accessibility-outline': accessibilityOutline,
+      'menu': menu,
+      'close': close
     });
 
     // Inizializzazione nel constructor
@@ -167,51 +186,39 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
   }
 
   async ngOnInit() {
-    console.log("UserDialogPage ngOnInit");
     const loggedUser = await this.$users.getLoggedUser();
     if (loggedUser) {
       this.loggedUser.set(loggedUser);
     }
-    const userKey = this.route.snapshot.paramMap.get('userKey');
-    console.log("userKey", userKey);
 
-    // Imposta la userKey nella proprietà del componente
+    const userKey = this.route.snapshot.paramMap.get('userKey');
     if (userKey) {
       this.userKey = userKey;
     }
 
-    // Se classKey è presente, imposta la classe predefinita
     const classKeyValue = this.classKey;
     if (classKeyValue) {
       this._updateUserClass(classKeyValue);
     }
 
-    // Se userKey esiste, carica l'utente
     if (userKey) {
       try {
         const user = await this.$users.fetchUserOnCache(userKey);
-        if (user) {
-          console.log("user showed", user);
-          if (user instanceof UserModel) {
-            this.user.set(user);
-          }
+        if (user instanceof UserModel) {
+          this.user.set(user);
         }
-
       } catch (error) {
         console.error("Errore nel caricamento dell'utente:", error);
       }
-    } else {
-      console.log("nuovo studente")
     }
 
-    // Inizializza i ruoli
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
   }
 
 
   hasUnsavedChanges(): boolean {
-    return this.userForm.dirty || (this.generalitiesComp && this.generalitiesComp.hasUnsavedChanges());
+    return !!(this.generalitiesComp && this.generalitiesComp.hasUnsavedChanges());
   }
 
   async dismiss() {
@@ -221,38 +228,26 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
   save() {
     const user = this.user();
     user.key = this.user()?.key;
-    console.log("User to save:", user);
     const claims = {
       role: user.role,
       classes: user.classes,
       classKey: user.classe
     };
     if (user.key) {
-      this.$users.updateUser(user.key, user).then(() => {
-        console.log("user updated");
-        this.toaster.presentToast({ message: "User aggiornato con successo", duration: 2000, position: "bottom" });
-      }).catch((error: any) => {
-        console.log("error updating user", error);
-        this.toaster.presentToast({ message: "Errore durante l'aggiornamento del user", duration: 2000, position: "bottom" });
-      });
+      this.$users.updateUser(user.key, user)
+        .then(() => this.toaster.presentToast({ message: "Utente aggiornato con successo", duration: 2000, position: "bottom" }))
+        .catch(() => this.toaster.presentToast({ message: "Errore durante l'aggiornamento", duration: 2000, position: "bottom" }));
 
-      this.$users.setUserClaims2user(user.key, claims).then(async (data: any) => {
-        const usersClaims = await this.$users.getCustomClaims4LoggedUser();
-        this.toaster.presentToast({ message: "Claims aggiornati con successo", duration: 2000, position: "bottom" });
-      }).catch((error: any) => {
-        this.toaster.presentToast({ message: "Errore durante l'aggiornamento dei claims", duration: 2000, position: "bottom" });
-      });
+      this.$users.setUserClaims2user(user.key, claims)
+        .then(() => this.toaster.presentToast({ message: "Autorizzazioni aggiornate", duration: 2000, position: "bottom" }))
+        .catch(() => this.toaster.presentToast({ message: "Errore durante l'aggiornamento delle autorizzazioni", duration: 2000, position: "bottom" }));
+    } else {
+      this.$users.createUser(user)
+        .then(() => {
+          this.toaster.presentToast({ message: "Utente creato con successo", duration: 2000, position: "bottom" });
+          this.modalCtrl.dismiss();
+        })
+        .catch(() => this.toaster.presentToast({ message: "Errore durante la creazione dell'utente", duration: 2000, position: "bottom" }));
     }
-    else {
-      this.$users.createUser(user).then(() => {
-        console.log("user created");
-        this.toaster.presentToast({ message: "Utente creato con successo", duration: 2000, position: "bottom" });
-        this.modalCtrl.dismiss();
-      }).catch((error: any) => {
-        console.log("error creating user", error);
-        this.toaster.presentToast({ message: "Errore durante la creazione dell'utente", duration: 2000, position: "bottom" });
-      });
-    }
-
   }
 }

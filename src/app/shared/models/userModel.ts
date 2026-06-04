@@ -58,6 +58,8 @@ export class UserModel {
   classesKey: string[] = [];
   /** Token FCM per le notifiche push */
   fcmTokens: string[] = [];
+  /** URL della foto profilo (Firebase Storage) */
+  photoUrl: string = '';
 
   /**
    * Setter per le chiavi delle classi.
@@ -148,7 +150,8 @@ export class UserModel {
       noteDisabilita: this.noteDisabilita,
       pdpUrl: Array.isArray(this.pdpUrl) ? this.pdpUrl.map((doc) => doc.serialize ? doc.serialize() : doc) : [],
       userName: this.userName,
-      classes: this.classesKey
+      classes: this.classesKey,
+      photoUrl: this.photoUrl || ''
     };
     return out;
   }
