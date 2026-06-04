@@ -7,7 +7,49 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
     
+
+    <!-- Version 2.4.5 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v2.4.5</ion-badge>
+          <span class="version-date">4 Giugno 2026</span>
+        </div>
+        <ion-card-title>Azioni Rapide sui Link ai Documenti</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Migliorata l'usabilità nella gestione dei link a documenti PDP (studenti) e verbali (classi): oltre al pulsante di eliminazione, ora è possibile aprire o copiare ogni link direttamente dall'interfaccia.</p>
+
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="open-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Pulsante "Apri Link"</h3>
+              <p>Aggiunto un pulsante per aprire direttamente il documento in una nuova scheda del browser, sia nella scheda PDP dello studente che nella sezione Verbali della classe.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="copy-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Pulsante "Copia Link"</h3>
+              <p>Aggiunto un pulsante per copiare l'URL del documento negli appunti con un solo tocco. Un toast di conferma avvisa l'utente dell'avvenuta copia.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="shield-checkmark-outline" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>Pulsanti Contestuali</h3>
+              <p>I pulsanti "Apri" e "Copia" risultano disabilitati automaticamente quando il campo URL è vuoto, evitando azioni accidentali su link non ancora inseriti.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Version 2.4.4 -->
+
     <ion-card>
       <ion-card-header>
         <div class="header-status">
