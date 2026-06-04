@@ -1,0 +1,121 @@
+<div class="disability-page ion-padding">
+
+  <!-- ─── CHIP DISABILITÀ ────────────────────────────────── -->
+  <div class="section-title">
+    <ion-icon name="accessibility-outline"></ion-icon>
+    <span>Disabilità & Bisogni Speciali</span>
+  </div>
+
+  <p class="chip-hint">Tocca un badge per attivarlo o disattivarlo</p>
+
+  <div class="disability-chips">
+    <button type="button" class="chip" [class.chip-dva]="localDVA()" (click)="toggle('DVA')">
+      <span class="chip-dot"></span>
+      <span class="chip-label">DVA</span>
+      <span class="chip-desc">Diversamente Abile</span>
+    </button>
+    <button type="button" class="chip" [class.chip-dsa]="localDSA()" (click)="toggle('DSA')">
+      <span class="chip-dot"></span>
+      <span class="chip-label">DSA</span>
+      <span class="chip-desc">Disturbi Specifici Apprendimento</span>
+    </button>
+    <button type="button" class="chip" [class.chip-bes]="localBES()" (click)="toggle('BES')">
+      <span class="chip-dot"></span>
+      <span class="chip-label">BES</span>
+      <span class="chip-desc">Bisogni Educativi Speciali</span>
+    </button>
+    <button type="button" class="chip" [class.chip-adhd]="localADHD()" (click)="toggle('ADHD')">
+      <span class="chip-dot"></span>
+      <span class="chip-label">ADHD</span>
+      <span class="chip-desc">Deficit Attenzione/Iperattività</span>
+    </button>
+  </div>
+
+  <!-- ─── NOTE DISABILITÀ ────────────────────────────────── -->
+  <ion-textarea
+    class="note-textarea"
+    fill="outline"
+    labelPlacement="floating"
+    label="Note disabilità"
+    rows="4"
+    autoGrow="true"
+    [value]="localNote()"
+    (ionChange)="onNoteChange($event.detail.value ?? '')">
+  </ion-textarea>
+
+  <!-- ─── DOCUMENTI PDP ──────────────────────────────────── -->
+  <div class="section-title pdp-title">
+    <ion-icon name="document-text-outline"></ion-icon>
+    <span>Documenti PDP</span>
+    <ion-button fill="clear" size="small" (click)="addPdp()">
+      <ion-icon name="add" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+
+  <ion-list class="pdp-list">
+    @for (pdp of localPdp(); track $index) {
+      <div class="pdp-card">
+        <div class="pdp-card-fields">
+          <ion-input
+            fill="outline"
+            labelPlacement="floating"
+            label="Descrizione"
+            [(ngModel)]="pdp.descrizione"
+            (ionChange)="onPdpChange()"
+            placeholder="es. PDP 2024-2025">
+          </ion-input>
+          <div class="url-row">
+            <ion-input
+              class="url-input"
+              fill="outline"
+              labelPlacement="floating"
+              label="URL Documento"
+              [(ngModel)]="pdp.path"
+              (ionChange)="onPdpChange()"
+              placeholder="https://...">
+            </ion-input>
+          </div>
+        </div>
+        <div class="pdp-card-actions">
+          <ion-button
+            fill="clear" color="primary" size="small"
+            [disabled]="!pdp.path"
+            (click)="openLink(pdp.path)"
+            title="Apri link">
+            <ion-icon name="open-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear" color="medium" size="small"
+            [disabled]="!pdp.path"
+            (click)="copyLink(pdp.path)"
+            title="Copia link">
+            <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear" color="danger" size="small"
+            (click)="removePdp($index)"
+            title="Elimina">
+            <ion-icon name="trash" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+        <!-- Anteprima URL -->
+        @if (pdp.path) {
+          <a class="pdp-preview-link" [href]="pdp.path" target="_blank" rel="noopener">
+            <ion-icon name="link-outline"></ion-icon>
+            {{ pdp.path | slice:0:60 }}{{ pdp.path.length > 60 ? '...' : '' }}
+          </a>
+        }
+      </div>
+    } @empty {
+      <div class="empty-pdp">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <p>Nessun documento PDP aggiunto</p>
+        <ion-button fill="outline" size="small" (click)="addPdp()">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Aggiungi documento
+        </ion-button>
+      </div>
+    }
+  </ion-list>
+
+</div>
