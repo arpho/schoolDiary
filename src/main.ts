@@ -47,6 +47,7 @@ import {
 } from '@angular/fire/firestore';
 import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { provideMessaging, getMessaging } from '@angular/fire/messaging';
+import { provideStorage, getStorage } from '@angular/fire/storage';
 import { addIcons } from 'ionicons';
 import {
   wifi,
@@ -91,6 +92,7 @@ bootstrapApplication(AppComponent, {
     provideFirestore(() => getFirestore()),
     provideFunctions(() => getFunctions()),
     provideMessaging(() => getMessaging()),
+    provideStorage(() => getStorage()),
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }, provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'
