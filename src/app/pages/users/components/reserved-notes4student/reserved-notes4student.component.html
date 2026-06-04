@@ -1,30 +1,83 @@
-<div class="container">
-  <h2>Note Riservate</h2>
-  <ion-list>
-    @for(note of notes(); track note.key) {
-    <ion-card>
-      <ion-label>
-        <p>{{ note.date | date:"dd/MM/yyyy" }}</p>
-        <h2>{{ note.note }}</h2>
-      </ion-label>
-      <ion-fab id="test" vertical="bottom" horizontal="end" size="small">
-        <ion-fab-button size="small" color="medium">
-          <ion-icon name="ellipsis-vertical"></ion-icon>
-        </ion-fab-button>
-        <ion-fab-list side="start">
-          <ion-fab-button size="small" color="light" (click)="updateNote(note)">
-            <ion-icon name="create"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button size="small" color="danger" (click)="deleteNote(note.key)">
-            <ion-icon name="trash"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button size="small" color="light">
-            <ion-icon name="close"></ion-icon>
-          </ion-fab-button>
-        </ion-fab-list>
-      </ion-fab>
-    </ion-card>
+<div class="notes-container ion-padding">
+
+  <!-- ─── BARRA RICERCA + AGGIUNGI ────────────────────────── -->
+  <div class="search-bar-row">
+    <div class="search-wrapper">
+      <ion-icon name="search-outline" class="search-icon"></ion-icon>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Cerca nelle note..."
+        [value]="searchQuery()"
+        (input)="onSearch($event)">
+      @if (searchQuery()) {
+        <button class="search-clear" (click)="clearSearch()">
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
+      }
+    </div>
+    <ion-button class="add-btn" (click)="addNote()">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Nuova nota
+    </ion-button>
+  </div>
+
+  <!-- ─── FILTRO CATEGORIE ─────────────────────────────────── -->
+  <div class="category-filter">
+    <button class="cat-chip" [class.active]="activeCategory() === null"
+      (click)="filterByCategory(null)">
+      Tutte
+    </button>
+    @for (cat of categories; track cat.value) {
+      <button class="cat-chip" [class.active]="activeCategory() === cat.value"
+        [style.--cat-color]="cat.color"
+        (click)="filterByCategory(cat.value)">
+        {{ cat.label }}
+      </button>
     }
-  </ion-list>
-  <ion-button expand="full" color="primary" shape="round" (click)="addNote()">Aggiungi Nota</ion-button>
+  </div>
+
+  <!-- ─── LISTA NOTE ───────────────────────────────────────── -->
+  <div class="notes-list">
+    @for (note of filteredNotes(); track note.key) {
+      <div class="note-card" [style.--note-color]="getCategoryColor(note.category)">
+        <div class="note-card-header">
+          <span class="note-category-badge"
+            [style.background]="getCategoryColor(note.category)">
+            {{ getCategoryLabel(note.category) }}
+          </span>
+          <span class="note-date">{{ note.date | date:'dd/MM/yyyy HH:mm' }}</span>
+          <div class="note-actions">
+            <button class="note-action-btn edit" (click)="updateNote(note)" title="Modifica">
+              <ion-icon name="create-outline"></ion-icon>
+            </button>
+            <button class="note-action-btn delete" (click)="deleteNote(note.key)" title="Elimina">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <p class="note-text">{{ note.note }}</p>
+
+        @if (note.attachmentUrl) {
+          <a class="note-attachment" [href]="note.attachmentUrl" target="_blank" rel="noopener">
+            <ion-icon name="link-outline"></ion-icon>
+            <span>{{ note.attachmentUrl | slice:0:55 }}{{ note.attachmentUrl.length > 55 ? '...' : '' }}</span>
+          </a>
+        }
+      </div>
+    } @empty {
+      <div class="empty-notes">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <p>{{ searchQuery() || activeCategory() ? 'Nessuna nota corrisponde ai filtri' : 'Nessuna nota riservata' }}</p>
+        @if (!searchQuery() && !activeCategory()) {
+          <ion-button fill="outline" (click)="addNote()">
+            <ion-icon name="add" slot="start"></ion-icon>
+            Aggiungi la prima nota
+          </ion-button>
+        }
+      </div>
+    }
+  </div>
+
 </div>

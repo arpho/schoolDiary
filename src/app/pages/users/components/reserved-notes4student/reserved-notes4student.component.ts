@@ -1,191 +1,220 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { AlertController, IonButton, IonContent, IonHeader, IonToolbar, IonTitle, IonList, IonItem, IonLabel, IonCard, IonFab, IonFabButton, IonIcon, IonFabList } from '@ionic/angular/standalone';
-import { DatePipe } from '@angular/common';
-import { signal } from '@angular/core';
+import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import {
+  AlertController, IonButton, IonIcon
+} from '@ionic/angular/standalone';
+import {
+  add, searchOutline, closeCircle, createOutline, trashOutline,
+  documentTextOutline, linkOutline, closeOutline
+} from 'ionicons/icons';
+import { addIcons } from 'ionicons';
 import { ReservedNotes4studentsService } from '../../services/reservedNotes4Students/reserved-notes4students.service';
 import { UsersService } from '../../../../shared/services/users.service';
-import { ReservedNotes4student } from '../../models/reservedNotes4student';
+import {
+  ReservedNotes4student,
+  NoteCategory,
+  NOTE_CATEGORIES
+} from '../../models/reservedNotes4student';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
-import { archive, create, ellipsisVertical, eye, sparkles, close } from 'ionicons/icons';
-import { addIcons } from 'ionicons';
 
 /**
  * Componente per la gestione delle note riservate su uno studente.
- * Permette visualizzazione, aggiunta, modifica ed eliminazione delle note.
+ * Card layout con categorie, ricerca, allegati.
  */
 @Component({
   selector: 'app-reserved-notes4student',
   templateUrl: './reserved-notes4student.component.html',
   styleUrls: ['./reserved-notes4student.component.scss'],
   standalone: true,
-  imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonLabel,
-    IonItem,
-    CommonModule,
-    IonButton,
-    IonCard,
-    IonFab,
-    IonFabButton,
-    IonIcon,
-    IonFabList,
-    DatePipe
-  ],
+  imports: [CommonModule, IonButton, IonIcon, DatePipe],
   providers: [AlertController]
 })
 export class ReservedNotes4studentComponent implements OnInit {
 
   @Input()
   set studentkey(value: string) {
-    console.log('studentKey set to:', value, 'Previous value:', this._studentKey);
     if (value !== this._studentKey) {
       this._studentKey = value;
-      console.log('studentKey updated, loading notes...');
       this.loadNotes();
     }
   }
-  get studentkey(): string {
-    return this._studentKey;
-  }
+  get studentkey(): string { return this._studentKey; }
 
   @Input()
   set ownerkey(value: string) {
-    console.log('ownerKey set to:', value, 'Previous value:', this._ownerKey);
     if (value !== this._ownerKey) {
       this._ownerKey = value;
-      console.log('ownerKey updated, loading notes...');
       this.loadNotes();
     }
   }
-  get ownerkey(): string {
-    return this._ownerKey;
-  }
+  get ownerkey(): string { return this._ownerKey; }
 
   private _studentKey = '';
   private _ownerKey = '';
-  notes = signal<ReservedNotes4student[]>([]);
+
+  // ── State ──────────────────────────────────────────────────
+  notes         = signal<ReservedNotes4student[]>([]);
+  searchQuery   = signal('');
+  activeCategory = signal<NoteCategory | null>(null);
+
+  // Lista categorie disponibile nel template
+  categories = NOTE_CATEGORIES;
+
+  // Note filtrate in base a ricerca full-text e categoria
+  filteredNotes = computed(() => {
+    let list = this.notes();
+    const q = this.searchQuery().toLowerCase().trim();
+    const cat = this.activeCategory();
+
+    if (q) {
+      list = list.filter(n => {
+        const categoryLabel = this.getCategoryLabel(n.category).toLowerCase();
+        return (
+          n.note.toLowerCase().includes(q) ||
+          categoryLabel.includes(q) ||
+          (n.category || 'altro').toLowerCase().includes(q) ||
+          (n.attachmentUrl || '').toLowerCase().includes(q) ||
+          (n.date || '').toLowerCase().includes(q)
+        );
+      });
+    }
+
+    if (cat) list = list.filter(n => (n.category || 'altro') === cat);
+    return list;
+  });
+
+
+  private alertController = inject(AlertController);
+
   constructor(
     private toast: ToasterService,
     private $users: UsersService,
-    private notesService: ReservedNotes4studentsService,
-    private usersService: UsersService
+    private notesService: ReservedNotes4studentsService
   ) {
-    console.log("constructor ReservedNotes4studentComponent");
     addIcons({
-      ellipsisVertical,
-      create,
-      eye,
-      sparkles,
-      close,
-      archive,
-    })
+      'add': add,
+      'search-outline': searchOutline,
+      'close-circle': closeCircle,
+      'create-outline': createOutline,
+      'trash-outline': trashOutline,
+      'document-text-outline': documentTextOutline,
+      'link-outline': linkOutline,
+      'close-outline': closeOutline
+    });
   }
 
   private loadNotes() {
-    console.log("loading notes 4 student", this._studentKey, "and owner", this._ownerKey);
     if (this._studentKey && this._ownerKey) {
       this.notesService.getNotesByStudentAndOwner(this._studentKey, this._ownerKey)
-        .then(notes => {
-          this.notes.set(notes);
-        });
+        .then(notes => this.notes.set(notes));
     }
   }
 
   ngOnInit() {
-    console.log("ngOnInit ReservedNotes4studentComponent");
-    console.log("studentkey", this._studentKey);
-    console.log("ownerkey", this._ownerKey);
-
-    // Load notes if we already have the required keys
     if (this._studentKey && this._ownerKey) {
       this.loadNotes();
     }
-
-    // Initialize real-time updates
-    this.initializeNotes();
+    this.initializeRealtime();
   }
 
-  private async initializeNotes() {
-    const user = await this.usersService.getLoggedUser();
-    if (user && typeof user === 'object' && 'key' in user) {
-      // Use the private fields directly to ensure we have the latest values
-      this.notesService.getNotesOnRealtime(user.key, this._studentKey, (notes) => {
+  private async initializeRealtime() {
+    const user = await this.$users.getLoggedUser();
+    if (user?.key) {
+      this.notesService.getNotesOnRealtime(user.key, this._studentKey, notes => {
         this.notes.set(notes);
       });
     }
   }
 
-  private alertController = inject(AlertController);
+  // ── Ricerca e filtro ────────────────────────────────────────
+  onSearch(event: Event) {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
+  }
 
+  clearSearch() {
+    this.searchQuery.set('');
+  }
+
+  filterByCategory(cat: NoteCategory | null) {
+    this.activeCategory.set(cat);
+  }
+
+  // ── Helpers categoria ───────────────────────────────────────
+  getCategoryLabel(cat: NoteCategory | undefined): string {
+    return NOTE_CATEGORIES.find(c => c.value === (cat || 'altro'))?.label || 'Altro';
+  }
+
+  getCategoryColor(cat: NoteCategory | undefined): string {
+    return NOTE_CATEGORIES.find(c => c.value === (cat || 'altro'))?.color || '#757575';
+  }
+
+  // ── CRUD ────────────────────────────────────────────────────
   async addNote() {
     const alert = await this.alertController.create({
       header: 'Nuova Nota',
       inputs: [
         {
           name: 'note',
+          type: 'textarea',
+          placeholder: 'Testo della nota...'
+        },
+        {
+          name: 'category',
           type: 'text',
-          placeholder: 'Inserisci la nota'
+          placeholder: 'Categoria (comportamento/profitto/famiglia/salute/altro)'
+        },
+        {
+          name: 'attachmentUrl',
+          type: 'url',
+          placeholder: 'Link allegato (opzionale)'
         }
       ],
       buttons: [
-        {
-          text: 'Annulla',
-          role: 'cancel'
-        },
+        { text: 'Annulla', role: 'cancel' },
         {
           text: 'Aggiungi',
-          handler: async (data: { note: string }) => {
-            if (data.note) {
-              const loggedUser = await this.$users.getLoggedUser();
-              const note = new ReservedNotes4student()
-                .setOwner(loggedUser?.key ? loggedUser.key : "")
-                .setNote(data.note)
-                .setStudentKey(this.studentkey)
-                .setDate(new Date().toISOString());
-              console.log("note", note);
+          handler: async (data: { note: string; category: string; attachmentUrl: string }) => {
+            if (!data.note) return;
+            const loggedUser = await this.$users.getLoggedUser();
+            const validCategories: NoteCategory[] = ['comportamento','profitto','famiglia','salute','altro'];
+            const category: NoteCategory = validCategories.includes(data.category as NoteCategory)
+              ? (data.category as NoteCategory)
+              : 'altro';
 
-              this.notesService.addNote(note).then((docRef) => {
-                this.toast.presentToast({ message: "Nota aggiunta con successo", duration: 2000, position: "bottom" });
-                console.log("nota creata", note);
+            const note = new ReservedNotes4student()
+              .setOwner(loggedUser?.key || '')
+              .setNote(data.note)
+              .setStudentKey(this.studentkey)
+              .setDate(new Date().toISOString());
+            note.category = category;
+            note.attachmentUrl = data.attachmentUrl || '';
+
+            this.notesService.addNote(note)
+              .then(docRef => {
                 note.setKey(docRef.id);
-              }).catch((error) => {
-                this.toast.presentToast({ message: "Errore durante l'aggiunta della nota", duration: 2000, position: "bottom" });
-                console.log("errore durante l'aggiunta della nota", error);
-              });
-            }
+                this.toast.presentToast({ message: 'Nota aggiunta', duration: 2000, position: 'bottom' });
+              })
+              .catch(() => this.toast.presentToast({ message: 'Errore aggiunta nota', duration: 2000, position: 'bottom' }));
           }
         }
       ]
     });
-
     await alert.present();
   }
 
   async deleteNote(noteKey: string) {
     const alert = await this.alertController.create({
-      header: 'Conferma',
-      message: 'Sei sicuro di voler eliminare la nota?',
+      header: 'Elimina nota',
+      message: 'Sei sicuro di voler eliminare questa nota?',
       buttons: [
-        {
-          text: 'Annulla',
-          role: 'cancel'
-        },
+        { text: 'Annulla', role: 'cancel' },
         {
           text: 'Elimina',
+          role: 'destructive',
           handler: () => {
-            this.notesService.deleteNote(noteKey).then(() => {
-              this.toast.presentToast({ message: "Nota eliminata con successo", duration: 2000, position: "bottom" });
-              console.log("nota eliminata", noteKey);
-            }).catch((error) => {
-              this.toast.presentToast({ message: "Errore durante l'eliminazione della nota", duration: 2000, position: "bottom" });
-              console.log("errore durante l'eliminazione della nota", error);
-            });
+            this.notesService.deleteNote(noteKey)
+              .then(() => this.toast.presentToast({ message: 'Nota eliminata', duration: 2000, position: 'bottom' }))
+              .catch(() => this.toast.presentToast({ message: 'Errore eliminazione', duration: 2000, position: 'bottom' }));
           }
         }
       ]
@@ -199,34 +228,42 @@ export class ReservedNotes4studentComponent implements OnInit {
       inputs: [
         {
           name: 'note',
+          type: 'textarea',
+          value: note.note,
+          placeholder: 'Testo della nota...'
+        },
+        {
+          name: 'category',
           type: 'text',
-          placeholder: 'Inserisci la nota',
-          value: note.note
+          value: note.category || 'altro',
+          placeholder: 'Categoria'
+        },
+        {
+          name: 'attachmentUrl',
+          type: 'url',
+          value: note.attachmentUrl || '',
+          placeholder: 'Link allegato (opzionale)'
         }
       ],
       buttons: [
-        {
-          text: 'Annulla',
-          role: 'cancel'
-        },
+        { text: 'Annulla', role: 'cancel' },
         {
           text: 'Aggiorna',
-          handler: async (data: { note: string }) => {
-            if (data.note) {
-              note.setNote(data.note);
-              this.notesService.updateNote(note.key, note).then(() => {
-                this.toast.presentToast({ message: "Nota aggiornata con successo", duration: 2000, position: "bottom" });
-                console.log("nota aggiornata", note);
-              }).catch((error) => {
-                this.toast.presentToast({ message: "Errore durante l'aggiornamento della nota", duration: 2000, position: "bottom" });
-                console.log("errore durante l'aggiornamento della nota", error);
-              });
-            }
+          handler: (data: { note: string; category: string; attachmentUrl: string }) => {
+            if (!data.note) return;
+            const validCategories: NoteCategory[] = ['comportamento','profitto','famiglia','salute','altro'];
+            note.setNote(data.note);
+            note.category = validCategories.includes(data.category as NoteCategory)
+              ? (data.category as NoteCategory)
+              : 'altro';
+            note.attachmentUrl = data.attachmentUrl || '';
+            this.notesService.updateNote(note.key, note)
+              .then(() => this.toast.presentToast({ message: 'Nota aggiornata', duration: 2000, position: 'bottom' }))
+              .catch(() => this.toast.presentToast({ message: 'Errore aggiornamento', duration: 2000, position: 'bottom' }));
           }
         }
       ]
     });
-
     await alert.present();
   }
 }

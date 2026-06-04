@@ -1,9 +1,213 @@
-h2 {
-    display: flex;
-    justify-content: space-evenly;
+.notes-container {
+  padding-bottom: 32px;
 }
 
+// ─── BARRA RICERCA + PULSANTE ────────────────────────────────
+.search-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
 
-ion-card.md.hydrated {
-    height: 75px;
+  .search-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ion-color-light);
+    border-radius: 12px;
+    padding: 0 12px;
+    border: 1.5px solid var(--ion-color-light-shade);
+    transition: border-color 0.2s;
+
+    &:focus-within {
+      border-color: var(--ion-color-primary);
+    }
+
+    .search-icon {
+      font-size: 18px;
+      color: var(--ion-color-medium);
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 15px;
+      color: var(--ion-color-dark);
+      padding: 10px 0;
+
+      &::placeholder { color: var(--ion-color-medium); }
+    }
+
+    .search-clear {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      color: var(--ion-color-medium);
+      padding: 0;
+
+      ion-icon { font-size: 18px; }
+    }
+  }
+
+  .add-btn {
+    flex-shrink: 0;
+    --border-radius: 12px;
+  }
+}
+
+// ─── FILTRO CATEGORIE ────────────────────────────────────────
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.cat-chip {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #ddd;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    border-color: var(--cat-color, var(--ion-color-primary));
+    background: var(--cat-color, var(--ion-color-primary));
+    color: #fff;
+    font-weight: 700;
+  }
+
+  &:not(.active):hover {
+    border-color: var(--cat-color, var(--ion-color-primary));
+    color: var(--cat-color, var(--ion-color-primary));
+  }
+}
+
+// ─── LISTA NOTE ──────────────────────────────────────────────
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ─── CARD NOTA ───────────────────────────────────────────────
+.note-card {
+  background: var(--ion-color-light, #fff);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  border-left: 4px solid var(--note-color, #757575);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  animation: slideIn 0.25s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+  }
+
+  // ── Header card ────────────────────────────────────────
+  .note-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+
+    .note-category-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 12px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .note-date {
+      font-size: 12px;
+      color: var(--ion-color-medium);
+      flex: 1;
+      text-align: right;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 2px;
+    }
+
+    .note-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: 8px;
+      transition: background 0.2s;
+
+      ion-icon { font-size: 18px; }
+
+      &.edit   { color: var(--ion-color-primary); }
+      &.delete { color: var(--ion-color-danger);  }
+
+      &:hover {
+        background: var(--ion-color-light-shade);
+      }
+    }
+  }
+
+  // ── Testo nota ─────────────────────────────────────────
+  .note-text {
+    font-size: 15px;
+    color: var(--ion-color-dark);
+    line-height: 1.55;
+    margin: 0 0 8px;
+    white-space: pre-wrap;
+  }
+
+  // ── Link allegato ──────────────────────────────────────
+  .note-attachment {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ion-color-primary);
+    text-decoration: none;
+    word-break: break-all;
+    opacity: 0.85;
+
+    &:hover { opacity: 1; text-decoration: underline; }
+    ion-icon { flex-shrink: 0; font-size: 14px; }
+  }
+}
+
+// ─── STATO VUOTO ────────────────────────────────────────────
+.empty-notes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 48px 16px;
+  color: var(--ion-color-medium);
+  text-align: center;
+
+  ion-icon { font-size: 56px; opacity: 0.35; }
+  p { margin: 0; font-size: 16px; }
+}
+
+// ─── ANIMAZIONE ─────────────────────────────────────────────
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
