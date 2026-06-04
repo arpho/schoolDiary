@@ -1,0 +1,97 @@
+// ─── WRAPPER ────────────────────────────────────────────────
+.avatar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 16px;
+  gap: 10px;
+}
+
+// ─── CERCHIO AVATAR ─────────────────────────────────────────
+.avatar-circle {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+
+    .avatar-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+// ─── FOTO ───────────────────────────────────────────────────
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+// ─── INIZIALI ───────────────────────────────────────────────
+.avatar-initials {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+// ─── OVERLAY FOTOCAMERA ─────────────────────────────────────
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  ion-icon {
+    font-size: 30px;
+    color: #fff;
+  }
+}
+
+// ─── NOME ───────────────────────────────────────────────────
+.avatar-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  margin: 0;
+  text-align: center;
+}
+
+// ─── MODAL CROPPER ──────────────────────────────────────────
+.cropper-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  min-height: 300px;
+
+  image-cropper {
+    max-width: 100%;
+  }
+}
+
+.crop-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  padding: 0 16px 16px;
+}
