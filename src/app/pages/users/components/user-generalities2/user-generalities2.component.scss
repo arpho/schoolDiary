@@ -1,73 +1,165 @@
-// Base styles for all ion-label elements
-ion-label {
-    font-weight: 600;
-    color: var(--ion-color-medium);
-  
-    // Style for required field indicator
-    &::after {
-      content: ' *';
-      color: var(--ion-color-danger);
-      font-weight: bold;
-      margin-left: 2px;
-      opacity: 0;
-    }
+// ─── TITOLI SEZIONE ────────────────────────────────────────
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 0 12px;
+  padding: 0 4px;
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--ion-color-primary);
+    flex-shrink: 0;
   }
-  
-  // Required field styles
-  .required-field {
-    --highlight-color-focused: var(--ion-color-danger);
-    --highlight-color-valid: var(--ion-color-primary);
-  
-    // Show required indicator for required fields
-    ion-label::after {
-      opacity: 1;
-    }
+
+  span {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ion-color-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex: 1;
   }
-  
-  // Error message styles
-  ion-note[slot="error"] {
-    color: var(--ion-color-danger);
-    font-size: 12px;
-    margin-top: 4px;
+
+  .add-btn {
+    --padding-start: 4px;
+    --padding-end: 4px;
+  }
+
+  &::after {
+    content: '';
     display: block;
+    height: 2px;
+    background: linear-gradient(to right, var(--ion-color-primary), transparent);
+    border-radius: 1px;
+    flex: 1;
+    min-width: 20px;
   }
-  
-  // Form item styles
+}
+
+// ─── GRIGLIA FORM ───────────────────────────────────────────
+.form-grid {
+  padding: 0;
+
+  ion-col {
+    padding: 4px 6px;
+  }
+}
+
+.custom-input {
+  margin-bottom: 4px;
+}
+
+.field-error {
+  font-size: 12px;
+  padding: 2px 16px 6px;
+  display: block;
+}
+
+// ─── SEZIONE CLASSI ─────────────────────────────────────────
+.classes-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  margin: 4px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.classes-field-wrapper {
+  padding: 8px 4px 4px;
+}
+
+// ─── CHIP DISABILITÀ ────────────────────────────────────────
+.disability-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 4px 4px 16px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 22px;
+  border-radius: 24px;
+  border: 2px solid #ccc;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  color: #aaa;
+  transition: all 0.2s ease;
+  min-width: 72px;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    opacity: 0.8;
+    transform: scale(1.04);
+  }
+
+  // DVA — rosso
+  &.chip-dva {
+    border-color: #e53935;
+    background: #e53935;
+    color: #fff;
+  }
+
+  // DSA — arancione
+  &.chip-dsa {
+    border-color: #f57c00;
+    background: #f57c00;
+    color: #fff;
+  }
+
+  // BES — giallo/ambra
+  &.chip-bes {
+    border-color: #fbc02d;
+    background: #fbc02d;
+    color: #333;
+  }
+
+  // ADHD — viola
+  &.chip-adhd {
+    border-color: #7b1fa2;
+    background: #7b1fa2;
+    color: #fff;
+  }
+}
+
+// ─── TEXTAREA NOTE ──────────────────────────────────────────
+.note-textarea {
+  margin-bottom: 8px;
+}
+
+// ─── LISTA PDP ──────────────────────────────────────────────
+.pdp-list {
+  margin-bottom: 80px; // spazio per il FAB
+
+  .action-col {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
   ion-item {
-    --highlight-color-valid: var(--ion-color-success);
-    --highlight-color-invalid: var(--ion-color-danger);
-    --highlight-color-focused: var(--ion-color-primary);
-    --border-color: var(--ion-color-medium);
-    --border-radius: 8px;
-    --padding-start: 0;
-    --inner-padding-end: 0;
-    margin-bottom: 16px;
-  
-    &.ion-invalid {
-      --border-color: var(--ion-color-danger);
-      --highlight-color: var(--ion-color-danger);
-    }
-  
-    &.ion-valid {
-      --border-color: var(--ion-color-success);
-      --highlight-color: var(--ion-color-success);
-    }
+    --padding-start: 4px;
+    --inner-padding-end: 4px;
+  }
+}
 
-    &:not(.ion-touched) {
-      ion-input, ion-select, ion-datetime {
-        border-left: 3px solid orange;
-        padding-left: 5px;
-      }
-    }
-    
-    // Assicura che i valori siano visibili
-    ion-input, ion-select, ion-datetime {
-      opacity: 1 !important;
-      --placeholder-opacity: 1;
-    }
+// ─── RESPONSIVE 2 COLONNE ───────────────────────────────────
+// Su mobile già funziona con size="12", su tablet usa size-md="6"
+@media (max-width: 575px) {
+  .disability-chips {
+    justify-content: center;
   }
 
-  .debug-border {
-    border: 1px solid red;
+  .chip {
+    flex: 1;
+    min-width: 60px;
   }
-  
+}

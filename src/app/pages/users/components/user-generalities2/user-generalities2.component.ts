@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, DestroyRef, effect, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
-import { list, saveOutline, listCircleOutline, documentTextOutline, trash, add, copyOutline, openOutline } from 'ionicons/icons';
-
+import {
+  saveOutline, documentTextOutline, trash, add,
+  copyOutline, openOutline, schoolOutline, accessibilityOutline,
+  personOutline
+} from 'ionicons/icons';
 import { DocumentModel } from 'src/app/pages/classes/models/documentModel';
 import {
   IonContent,
@@ -13,39 +16,26 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
-  IonToolbar,
-  IonHeader,
-  IonTitle,
-  IonBackButton,
   IonFooter,
   IonFabButton,
-  IonTabs,
-  IonTabBar,
-  IonTabButton,
-  IonTab,
   IonIcon,
   IonNote,
-  IonDatetime,
   IonFab,
-  IonToggle,
   IonTextarea,
   IonButton,
   IonGrid,
   IonRow,
   IonCol,
-  IonList,
-  IonItemDivider
+  IonList
 } from '@ionic/angular/standalone';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { UsersService } from 'src/app/shared/services/users.service';
-import { Evaluation4StudentComponent } from '../evaluation4-student/evaluation4-student.component';
-import { ReservedNotes4studentComponent } from '../reserved-notes4student/reserved-notes4student.component';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { IonTextareaCustomEvent } from '@ionic/core';
 import { ClassesFieldComponent } from 'src/app/pages/classes/components/classes-field/classes-field.component';
-import { IonicModule, TextareaChangeEventDetail } from "@ionic/angular";
+import { TextareaChangeEventDetail } from "@ionic/angular";
 import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
 /**
  * Componente per la gestione delle generalità di un utente.
@@ -60,29 +50,16 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonBackButton,
     IonContent,
-    IonHeader,
     IonIcon,
-    IonTitle,
-    IonToolbar,
-    IonTabs,
-    IonTabBar,
-    IonTabButton,
-    IonTab,
-    ReservedNotes4studentComponent,
     IonLabel,
-    Evaluation4StudentComponent,
     IonItem,
     IonSelectOption,
     IonNote,
-    IonDatetime,
     ClassesFieldComponent,
-    IonToggle,
     IonFooter,
     IonFab,
     IonFabButton,
-    IonIcon,
     IonTextarea,
     IonInput,
     IonSelect,
@@ -90,7 +67,6 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
     IonGrid,
     IonRow,
     IonCol,
-    IonItemDivider,
     IonList
   ]
 })
@@ -104,7 +80,8 @@ export class UserGeneralities2Component implements OnInit {
 
   usersClasses = signal<AssignedClass[]>([]);
   $UsersRole = UsersRole;
-  private destroyRef = inject(DestroyRef);
+
+
 
   /** Lista locale dei documenti PDP per lo studente */
   pdpList = signal<DocumentModel[]>([]);
@@ -118,11 +95,14 @@ export class UserGeneralities2Component implements OnInit {
     addIcons({
       'save': saveOutline,
       'pdf': documentTextOutline,
-      'listCircleOutline': listCircleOutline,
       'trash': trash,
       'add': add,
       'copy-outline': copyOutline,
-      'open-outline': openOutline
+      'open-outline': openOutline,
+      'school-outline': schoolOutline,
+      'accessibility-outline': accessibilityOutline,
+      'person-outline': personOutline,
+      'document-text-outline': documentTextOutline
     });
 
 
@@ -173,35 +153,23 @@ export class UserGeneralities2Component implements OnInit {
 
   private readonly userEffect = effect(async () => {
     const loggedUser = await this.$users.getLoggedUser();
-    console.log("logged user*", loggedUser)
     const user = this.user();
     if (loggedUser) {
       this.elencoClassi.set(loggedUser.assignedClasses)
     }
-    console.log("elenco classi*", this.elencoClassi())
     this.usersClasses.set(this.elencoClassi().map(c => new AssignedClass(c)))
-    console.log('User input changed on effect*:', user);
     if (user.key) {
-      console.log("User key:", user.key);
-      // Update classes from user
       if (user.classesKey) {
         const classPromises = user.classesKey.map((classKey: string) => this.$classes.fetchClasseOnCache(classKey));
-        const classResults = await Promise.all(classPromises);
-        const classi = classResults.filter((classe): classe is ClasseModel => classe !== undefined);
-        console.log("Classi aggiunte:", classi);
-
+        await Promise.all(classPromises);
       }
       this.syncFormWithUser(user);
-      this.logFormState();
     }
   });
   ngOnInit() {
-    console.log('UserGeneralities2Component - ngOnInit*');
-    console.log('User input value on init*:', this.user());
     this.cdr.detectChanges();
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
-    console.log("ngOnInit - user:*", this.user());
     this.userForm = this.fb.group({
       firstName: [''],
       lastName: [''],
@@ -221,14 +189,7 @@ export class UserGeneralities2Component implements OnInit {
     });
   }
   ngAfterViewInit() {
-    console.log('UserGeneralities2Component - ngAfterViewInit');
-    console.log('Form controls after view init:', this.userForm.controls);
-
-    // Forza un ulteriore controllo dopo l'inizializzazione della vista
-    setTimeout(() => {
-      console.log('Form values after timeout:', this.userForm.value);
-      this.cdr.detectChanges();
-    });
+    setTimeout(() => this.cdr.detectChanges());
   }
   generatePassword(): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -240,40 +201,35 @@ export class UserGeneralities2Component implements OnInit {
   }
 
   save() {
-    console.log("Saving user...");
     const formValue = this.userForm.value;
-    console.log("Form value:", formValue);
-
     // Escludiamo pdpUrl dal formValue: il campo del form è una stringa ausiliaria,
     // mentre il vero pdpUrl è un DocumentModel[] gestito separatamente tramite pdpList signal.
     const { pdpUrl: _ignoredPdpUrl, ...formValueWithoutPdp } = formValue;
-
     const userData = {
       ...this.user(),
       ...formValueWithoutPdp,
       pdpUrl: this.pdpList(),
       assignedClasses: this.usersClasses()
     };
-
-
     const user = new UserModel(userData);
-    console.log("User to save:", user);
-    console.log("User to save:", user.serialize());
-
     const claims = {
       role: user.role,
       classes: user.classes,
       classKey: user.classe,
     };
-
-    console.log("Claims to set:", claims);
-
     if (user.key) {
       this.updateUser(user, claims);
     } else {
       user.password = this.generatePassword();
       this.createUser(user, claims);
     }
+  }
+
+  /** Attiva/disattiva un chip di disabilità */
+  toggleChip(field: 'DVA' | 'DSA' | 'BES' | 'ADHD'): void {
+    const current = this.userForm.get(field)?.value;
+    this.userForm.get(field)?.setValue(!current);
+    this.userForm.get(field)?.markAsDirty();
   }
 
   /** Aggiunge un documento PDP vuoto alla lista */
@@ -313,10 +269,8 @@ export class UserGeneralities2Component implements OnInit {
   }
 
   private updateUser(user: UserModel, claims: any) {
-    console.log("Updating user...", user);
     this.$users.updateUser(user.key, user)
       .then(() => {
-        console.log("User updated successfully");
         this.toaster.presentToast({
           message: "Utente aggiornato con successo",
           duration: 2000,
@@ -325,7 +279,7 @@ export class UserGeneralities2Component implements OnInit {
         return this.updateUserClaims(user.key, claims);
       })
       .catch(error => {
-        console.error("Error updating user:", error);
+        console.error("Errore aggiornamento utente:", error);
         this.toaster.presentToast({
           message: "Errore durante l'aggiornamento dell'utente",
           duration: 2000,
@@ -404,37 +358,10 @@ export class UserGeneralities2Component implements OnInit {
     return control ? control.invalid && (control.dirty || control.touched) : false;
   }
 
-  logFormState() {
-    console.log('Form controls:', this.userForm.controls);
-    console.log('noteDisabilita control:', this.userForm.get('noteDisabilita'));
-    console.log('noteDisabilita value:', this.userForm.get('noteDisabilita')?.value);
-    console.log('classes control:', this.userForm.get('classes'));
-    console.log('firstName value:', this.userForm.get('firstName')?.value);
-    console.log('lastName value:', this.userForm.get('lastName')?.value);
-    console.log('userName value:', this.userForm.get('userName')?.value);
-    console.log('email value:', this.userForm.get('email')?.value);
-    console.log('role value:', this.userForm.get('role')?.value);
-    console.log('DVA value:', this.userForm.get('DVA')?.value);
-    console.log('DSA value:', this.userForm.get('DSA')?.value);
-    console.log('BES value:', this.userForm.get('BES')?.value);
-    console.log('ADHD value:', this.userForm.get('ADHD')?.value);
-    console.log('noteDisabilita value:', this.userForm.get('noteDisabilita')?.value);
-    console.log('pdpUrl value:', this.userForm.get('pdpUrl')?.value);
-    console.log('phoneNumber value:', this.userForm.get('phoneNumber')?.value);
-    console.log('birthDate value:', this.userForm.get('birthDate')?.value);
-    console.log('classe value:', this.userForm.get('classe')?.value);
-    console.log('classes value:', this.userForm.get('classes')?.value);
-    console.log('Form state:', this.userForm.value);
-  }
+  /** Logga lo stato del form (rimosso per produzione) */
+  private logFormState(): void { /* no-op */ }
   syncFormWithUser(user: UserModel) {
-    console.log("syncFormWithUser - user:*", user);
-    if (!this.userForm) {
-      console.error('Form non inizializzata!*');
-      return;
-    }
-
-    console.log("Form controls before patch:*", Object.keys(this.userForm.controls));
-
+    if (!this.userForm) return;
     if (user.key) {
       try {
         this.userForm.patchValue({
@@ -453,9 +380,8 @@ export class UserGeneralities2Component implements OnInit {
           birthDate: user.birthDate || '',
           classKey: user.classKey || '',
           classes: user.classesKey || []
-        }, { emitEvent: false });  // Aggiungi emitEvent: false
+        }, { emitEvent: false });
 
-        // Inizializza la lista PDP dal modello utente
         if (user.pdpUrl && Array.isArray(user.pdpUrl)) {
           this.pdpList.set(user.pdpUrl.map(doc => new DocumentModel({ ...doc })));
         } else {
@@ -463,16 +389,11 @@ export class UserGeneralities2Component implements OnInit {
         }
 
         this.usersClasses.set(user.assignedClasses || []);
-
-        this.cdr.detectChanges();  // Forza il rilevamento delle modifiche
+        this.cdr.detectChanges();
         this.userForm.updateValueAndValidity();
-        console.log("Form dopo la sincronizzazione:*", this.userForm.value)
       } catch (error) {
-        console.error("Error patching form with user:*", error);
+        console.error("Errore sincronizzazione form:", error);
       }
-    }
-    else {
-      console.warn("User is null or undefined*");
     }
   }
 
