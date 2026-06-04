@@ -72,7 +72,9 @@ import {
   add,
   trash,
   alertCircle,
-  link
+  link,
+  copyOutline,
+  openOutline
 } from 'ionicons/icons';
 import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
 /**
@@ -204,7 +206,7 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
     private alertCtrl: AlertController
   ) {
     // Register icons
-    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash, alertCircle, link });
+    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash, alertCircle, link, copyOutline, openOutline });
 
     // Initialize with empty model
     this.classe.set(new ClasseModel({
@@ -278,6 +280,32 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
 
   removeVerbale(index: number) {
     this.verbaliList.update(list => list.filter((_, i) => i !== index));
+  }
+
+  /** Apre il link in una nuova scheda */
+  openLink(url: string): void {
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }
+
+  /** Copia il link negli appunti */
+  copyLink(url: string): void {
+    if (url) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.toaster.presentToast({
+          message: 'Link copiato negli appunti',
+          duration: 1500,
+          position: 'bottom'
+        });
+      }).catch(() => {
+        this.toaster.presentToast({
+          message: 'Impossibile copiare il link',
+          duration: 1500,
+          position: 'bottom'
+        });
+      });
+    }
   }
 
   /**

@@ -122,9 +122,12 @@
                   placeholder="Descrizione" class="ion-margin-end"></ion-input>
                 <ion-input [(ngModel)]="verbale.path" [ngModelOptions]="{standalone: true}"
                   placeholder="URL Link" class="ion-margin-end"></ion-input>
-                <a [href]="verbale.path" target="_blank" *ngIf="verbale.path" class="ion-margin-end">
-                  <ion-icon name="link"></ion-icon>
-                </a>
+                <ion-button slot="end" fill="clear" color="primary" [disabled]="!verbale.path" (click)="openLink(verbale.path)">
+                  <ion-icon name="open-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+                <ion-button slot="end" fill="clear" color="secondary" [disabled]="!verbale.path" (click)="copyLink(verbale.path)">
+                  <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+                </ion-button>
                 <ion-button slot="end" fill="clear" color="danger" (click)="removeVerbale($index)">
                   <ion-icon name="trash" slot="icon-only"></ion-icon>
                 </ion-button>

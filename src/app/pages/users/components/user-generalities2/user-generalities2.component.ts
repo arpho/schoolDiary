@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, DestroyRef, effect, inject, input, OnInit
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
-import { list, saveOutline, listCircleOutline, documentTextOutline, trash, add } from 'ionicons/icons';
+import { list, saveOutline, listCircleOutline, documentTextOutline, trash, add, copyOutline, openOutline } from 'ionicons/icons';
 
 import { DocumentModel } from 'src/app/pages/classes/models/documentModel';
 import {
@@ -120,7 +120,9 @@ export class UserGeneralities2Component implements OnInit {
       'pdf': documentTextOutline,
       'listCircleOutline': listCircleOutline,
       'trash': trash,
-      'add': add
+      'add': add,
+      'copy-outline': copyOutline,
+      'open-outline': openOutline
     });
 
 
@@ -284,6 +286,31 @@ export class UserGeneralities2Component implements OnInit {
     this.pdpList.update(list => list.filter((_, i) => i !== index));
   }
 
+  /** Apre il link in una nuova scheda */
+  openLink(url: string): void {
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }
+
+  /** Copia il link negli appunti */
+  copyLink(url: string): void {
+    if (url) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.toaster.presentToast({
+          message: 'Link copiato negli appunti',
+          duration: 1500,
+          position: 'bottom'
+        });
+      }).catch(() => {
+        this.toaster.presentToast({
+          message: 'Impossibile copiare il link',
+          duration: 1500,
+          position: 'bottom'
+        });
+      });
+    }
+  }
 
   private updateUser(user: UserModel, claims: any) {
     console.log("Updating user...", user);

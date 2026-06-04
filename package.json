@@ -10,7 +10,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "deploy": "ng test --watch=false && ionic build --prod && firebase deploy"
+    "deploy": "ng test --watch=false && ionic build --prod && firebase deploy",
+    "deploy-all": "node scripts/deploy-all.js"
   },
   "private": true,
   "dependencies": {
