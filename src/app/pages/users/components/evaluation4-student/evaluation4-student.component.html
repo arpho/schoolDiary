@@ -1,176 +1,121 @@
-<ion-grid>
-  <ion-row>
-    <ion-col size="12">
-      <div style="display: flex; align-items: center; justify-content: flex-end; padding: 10px;">
-        <span style="font-size: 0.9rem; color: var(--ion-color-medium); margin-right: 10px;">Inizio periodo di riferimento:</span>
-        <div id="open-date-picker-eval" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-          <span style="font-weight: 500; font-size: 1rem; color: var(--ion-color-primary);">{{ dataInizioPeriodo() |
-            date:'dd/MM/yyyy' }}</span>
-          <ion-icon name="calendar" color="primary"></ion-icon>
-        </div>
-        
-        <ion-modal #dateModal [keepContentsMounted]="true" cssClass="datetime-modal" trigger="open-date-picker-eval">
-          <ng-template>
-            <ion-datetime id="startDatePickerEval" presentation="date" [value]="dataInizioPeriodo()"
-              (ionChange)="onDateChange($event); dateModal.dismiss()" (ionCancel)="dateModal.dismiss()"
-              [showDefaultButtons]="true">
-            </ion-datetime>
-          </ng-template>
-        </ion-modal>
-      </div>
-    </ion-col>
-  </ion-row>
+<div class="eval-container">
 
-  <ion-row>
-    <ion-col size="12">
-      @if (filteredEvaluations().length === 0) {
-      <ion-card>
-        <ion-card-content>
-          <p>Nessuna valutazione trovata per questo studente nel periodo selezionato.</p>
-        </ion-card-content>
-      </ion-card>
-      } @else {
+  <!-- ─── HEADER: selezione periodo ───────────────────────── -->
+  <div class="period-bar">
+    <span class="period-label">Periodo da:</span>
+    <div id="open-date-picker-eval" class="period-date-btn">
+      <ion-icon name="calendar"></ion-icon>
+      <span>{{ dataInizioPeriodo() | date:'dd/MM/yyyy' }}</span>
+    </div>
+    <ion-modal #dateModal [keepContentsMounted]="true" trigger="open-date-picker-eval">
+      <ng-template>
+        <ion-datetime
+          id="startDatePickerEval"
+          presentation="date"
+          [value]="dataInizioPeriodo()"
+          [showDefaultButtons]="true"
+          (ionChange)="onDateChange($event); dateModal.dismiss()"
+          (ionCancel)="dateModal.dismiss()">
+        </ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </div>
+
+  <!-- ─── RIEPILOGO ────────────────────────────────────────── -->
+  @if (filteredEvaluations().length > 0) {
+    <div class="summary-bar">
+      <div class="summary-chip">
+        <span class="summary-value">{{ filteredEvaluations().length }}</span>
+        <span class="summary-key">valutazioni</span>
+      </div>
+    </div>
+  }
+
+  <!-- ─── LISTA VALUTAZIONI ────────────────────────────────── -->
+  @if (filteredEvaluations().length === 0) {
+    <div class="empty-eval">
+      <ion-icon name="star-outline"></ion-icon>
+      <p>Nessuna valutazione nel periodo selezionato</p>
+    </div>
+  } @else {
+    <div class="eval-list">
       @for (evaluation of filteredEvaluations(); track evaluation.key) {
-      <ion-card (click)="openActionSheet(evaluation, $event)">
-        <ion-card-header>
-          <ion-card-title>{{ evaluation.description }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-list>
-            <ion-item>
-              <ion-label>
-                <h3>attività</h3>
-              </ion-label>
-            </ion-item>
-            <ion-item>
-              <ion-label>
-                <h3>Data creazione</h3>
-                <p>{{ sanitizeDate(evaluation.data) |date:"dd/MM/yyyy"}}</p>
-              </ion-label>
-            </ion-item>
-            <ion-item>
-              <ion-label>
-                <h3>Data ultima modifica</h3>
-                <p>{{ evaluation.lastUpdateDate |date:"dd/MM/yyyy"}}</p>
-              </ion-label>
-            </ion-item>
+        <div class="eval-card" (click)="openActionSheet(evaluation, $event)">
+
+          <!-- Score badge -->
+          <div class="eval-score-col">
+            <div class="score-badge"
+              [class.score-high]="evaluation.gradeInDecimal >= 0.7"
+              [class.score-mid]="evaluation.gradeInDecimal >= 0.5 && evaluation.gradeInDecimal < 0.7"
+              [class.score-low]="evaluation.gradeInDecimal < 0.5 && evaluation.gradeInDecimal > 0">
+              @if (evaluation.voto !== undefined && evaluation.voto !== null && evaluation.voto !== 0) {
+                <span class="score-num">{{ evaluation.voto }}</span>
+                <span class="score-den">/{{ evaluation.votoMax }}</span>
+              } @else {
+                <span class="score-na">—</span>
+              }
+            </div>
+            @if (evaluation.gradeInDecimal > 0) {
+              <span class="score-decimal">{{ evaluation.gradeInDecimal | number:'1.2-2' }}</span>
+            }
+          </div>
+
+          <!-- Dettagli valutazione -->
+          <div class="eval-body">
+            <div class="eval-title-row">
+              <span class="eval-title">{{ evaluation.description }}</span>
+              <ion-icon name="ellipsis-vertical" class="eval-menu-icon"></ion-icon>
+            </div>
+
+            <div class="eval-meta">
+              @if (evaluation.subjectKey) {
+                @if (getSubject(evaluation.subjectKey); as subject) {
+                  <span class="meta-tag subject-tag">{{ subject.name }}</span>
+                }
+              }
+              @if (evaluation.activityKey) {
+                @if (getActivity(evaluation.activityKey); as activity) {
+                  <span class="meta-tag activity-tag">{{ activity.title }}</span>
+                }
+              }
+              @if (evaluation.grid?.nome) {
+                <span class="meta-tag grid-tag">{{ evaluation.grid.nome }}</span>
+              }
+            </div>
+
+            <div class="eval-dates">
+              <span class="eval-date">
+                <ion-icon name="calendar-outline"></ion-icon>
+                {{ sanitizeDate(evaluation.data) | date:'dd/MM/yyyy' }}
+              </span>
+              @if (evaluation.lastUpdateDate) {
+                <span class="eval-date update">
+                  <ion-icon name="refresh-outline"></ion-icon>
+                  {{ evaluation.lastUpdateDate | date:'dd/MM/yyyy' }}
+                </span>
+              }
+            </div>
 
             @if (evaluation.note) {
-            <ion-item>
-              <ion-label>
-                <h3>Note</h3>
-                <p>{{ evaluation.note }}</p>
-              </ion-label>
-            </ion-item>
+              <p class="eval-note">{{ evaluation.note }}</p>
             }
 
-            @if (evaluation.subjectKey) {
-            @if (getSubject(evaluation.subjectKey); as subject) {
-            <ion-item>
-              <ion-label>
-                <h3>Materia</h3>
-                <p>{{ subject.name }}</p>
-              </ion-label>
-            </ion-item>
-            }
-            }
-
-            @if (evaluation.grid && evaluation.grid.nome) {
-            <ion-item>
-              <ion-label>
-                <h3>Griglia di valutazione</h3>
-                <p>{{ evaluation.grid.nome }}</p>
-              </ion-label>
-            </ion-item>
-            }
-
-            @if (evaluation.activityKey) {
-            @if (getActivity(evaluation.activityKey); as activity) {
-            <ion-item>
-
-              <ion-label>
-                <h3>Attività</h3>
-                <p><strong>{{ activity.title }}</strong></p>
-                @if (activity.description) {
-                <p>{{ activity.description }}</p>
-                }
-              </ion-label>
-            </ion-item>
-
-            <!-- Sezione voto separata -->
-            <ion-item>
-              <ion-label>
-                <h3>Voto</h3>
-                <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0
-                    ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined
-                    &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' :
-                    evaluation.votoMax) : 'N/A' }}</strong></p>
-              </ion-label>
-            </ion-item>
-            <ion-item>
-              <ion-label>
-                <h3>Voto decimale</h3>
-                <p><strong>{{ evaluation.gradeInDecimal | number:'1.2-2'}}</strong></p>
-              </ion-label>
-            </ion-item>
-            } @else {
-            <ion-item>
-              <ion-label>
-                <h3>Attività</h3>
-                <p>Attività non trovata ({{ evaluation.activityKey }})</p>
-              </ion-label>
-            </ion-item>
-
-            <!-- Sezione voto anche se attività non trovata -->
-            <ion-item>
-              <ion-label>
-                <h3>Voto</h3>
-                <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0
-                    ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined
-                    &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' :
-                    evaluation.votoMax) : 'N/A' }}</strong></p>
-              </ion-label>
-            </ion-item>
-            }
-            } @else {
-            <!-- Valutazione senza attività -->
-            <ion-item>
-              <ion-label>
-                <h3>Valutazione</h3>
-                <p>{{ evaluation.description }}</p>
-              </ion-label>
-            </ion-item>
-
-            <!-- Sezione voto anche senza activityKey -->
-            <ion-item>
-              <ion-label>
-                <h3>Voto</h3>
-                <p><strong>{{ evaluation.voto !== undefined &amp;&amp; evaluation.voto !== null ? (evaluation.voto === 0
-                    ? '0 (non ancora valutato)' : evaluation.voto) : 'N/A' }}/{{ evaluation.votoMax !== undefined
-                    &amp;&amp; evaluation.votoMax !== null ? (evaluation.votoMax === 0 ? '0 (non ancora valutato)' :
-                    evaluation.votoMax) : 'N/A' }}</strong></p>
-
-              </ion-label>
-            </ion-item>
-
-            }
             @if (evaluation.enclosedDocuments && evaluation.enclosedDocuments.length > 0) {
-              <div class="ion-padding-start ion-padding-end ion-padding-bottom">
-                <p><strong>Documenti allegati:</strong></p>
-                <div class="ion-flex ion-flex-wrap">
-                  <ion-button *ngFor="let doc of evaluation.enclosedDocuments" fill="outline" size="small" [href]="doc.path" target="_blank" class="ion-margin-end attachment-link" (click)="$event.stopPropagation()">
-                    <ion-icon slot="start" name="link"></ion-icon>
+              <div class="eval-docs">
+                @for (doc of evaluation.enclosedDocuments; track $index) {
+                  <a class="doc-chip" [href]="doc.path" target="_blank" rel="noopener"
+                    (click)="$event.stopPropagation()">
+                    <ion-icon name="link"></ion-icon>
                     {{ doc.descrizione || doc.name }}
-                  </ion-button>
-                </div>
+                  </a>
+                }
               </div>
             }
+          </div>
 
-          </ion-list>
-        </ion-card-content>
-      </ion-card>
+        </div>
       }
-      }
-    </ion-col>
-  </ion-row>
-</ion-grid>
+    </div>
+  }
+
+</div>

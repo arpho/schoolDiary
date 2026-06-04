@@ -36,7 +36,7 @@ import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
 import { addIcons } from 'ionicons';
-import { eyeOutline, print, ellipsisVertical, create, archive, trash, close, calendar, link } from 'ionicons/icons';
+import { eyeOutline, print, ellipsisVertical, create, archive, trash, close, calendar, link, calendarOutline, refreshOutline, starOutline } from 'ionicons/icons';
 import { UsersRole } from 'functions/src/shared/models/UsersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -84,7 +84,6 @@ export class Evaluation4StudentComponent implements OnInit {
   private toastCtrl = inject(ToastController);
   async openActionSheet(evaluation: Evaluation, evente: Event) {
     evente.stopPropagation();
-    console.log("openActionSheet", evaluation);
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Azioni valutazione',
       buttons: [
@@ -145,26 +144,13 @@ export class Evaluation4StudentComponent implements OnInit {
   loggedUser = signal<UserModel | null>(null)
   $users = inject(UsersService);
   userCanEdit(evaluation: Evaluation) {
-    console.log("userCanEdit", evaluation);
-
     const canEdit = this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
-    console.log("can edit ", canEdit)
     return true;
   }
   viewEvaluation(_t12: Evaluation) {
     throw new Error('Method not implemented.');
   }
   async evaluationPdf(valutazione: Evaluation) {
-    console.log("evaluationPdf", valutazione);
-    /* const modal = await this.modalCtrl.create({
-      component: Evaluation2PdfComponent,
-      componentProps: {
-        evaluation: valutazione,
-      },
-      cssClass: "fullscreen"
-    });
-    await modal.present();  */
-
     this.router.navigate(['/pdf-evaluation', valutazione.key]);
   }
   async confirmDelete(evaluation: Evaluation) {
@@ -215,14 +201,11 @@ export class Evaluation4StudentComponent implements OnInit {
     });
     await toast.present();
   }
-  archiveEvaluation(valutazione: Evaluation) {
-    console.log("archiveEvaluation chiamato", valutazione);
-  }
+  archiveEvaluation(valutazione: Evaluation) { /* TODO */ }
+
   async editEvaluation(valutazione: Evaluation) {
-    console.log("editEvaluation chiamato", valutazione);
     this.classKey.set(valutazione.classKey);
     this.router.navigate(['/edit-evaluation', valutazione.key]);
-
   }
   private $evaluation = inject(EvaluationService);
   private $activities = inject(ActivitiesService);
@@ -246,10 +229,12 @@ export class Evaluation4StudentComponent implements OnInit {
       create: create,
       archive: archive,
       trash: trash,
-
       close: close,
       calendar: calendar,
-      link: link
+      link: link,
+      'calendar-outline': calendarOutline,
+      'refresh-outline': refreshOutline,
+      'star-outline': starOutline
     });
     // Usa effect per reagire ai signal inputs
     try {
@@ -260,15 +245,10 @@ export class Evaluation4StudentComponent implements OnInit {
         // Chiama il servizio solo quando gli input sono valorizzati
         if (studentKey && teacherKey) {
           this.$evaluation.getEvaluation4studentAndTeacher(studentKey, teacherKey, async (evaluations: Evaluation[]) => {
-            console.log("getEvaluation4studentAndTeacher", evaluations);
             this.evaluationsList.set(evaluations);
-
-            // Pre-carica tutte le attività associate alle valutazioni
             await this.loadActivitiesForEvaluations(evaluations);
             await this.loadSubjectsForEvaluations(evaluations);
           });
-        } else {
-          // Situazione normale - chiavi non ancora valorizzate
         }
       });
     } catch (error) {
