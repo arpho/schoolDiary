@@ -2,7 +2,7 @@
 
 Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in questo file.
 
-## [Unreleased] - 2026-06-04
+## [Unreleased] - 2026-06-06
 
 ### Aggiunto
 - **Componente `student-avatar`**: Inserimento dell'avatar studente nel pannello `user-dialog` con possibilità di caricare foto su Firebase Storage, visualizzare le iniziali (se nessuna foto è presente) e ritagliare le immagini tramite `ngx-image-cropper`.
@@ -25,3 +25,5 @@ Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in
 
 ### Risolto
 - Risolto un bug di sincronizzazione reattiva all'interno di `student-disability` legato all'uso del nuovo `input()` di Angular in combinazione con `ngOnChanges` (sostituito da un `effect()`).
+- Risolto un problema di visibilità del testo nel menu di navigazione laterale in `class-dialog` e `user-dialog` quando è impostato il tema scuro.
+- Corretto il selettore CSS in `class-dialog` per applicare correttamente lo stile di "voce attiva" (`ion-item`).

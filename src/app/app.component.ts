@@ -10,6 +10,7 @@ import { ActivitiesService } from './pages/activities/services/activities.servic
 import { Messaging, getToken } from '@angular/fire/messaging';
 import { environment } from 'src/environments/environment';
 import { LocalLockService } from './shared/services/local-lock.service';
+import { ThemeService } from './shared/services/theme.service';
 
 /**
  * Componente principale dell'applicazione.
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit {
   private messaging = inject(Messaging);
   private swUpdate = inject(SwUpdate);
   private toastController = inject(ToastController);
+  private themeService = inject(ThemeService);
 
   constructor(
     private router: Router,
@@ -35,6 +37,7 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.themeService.initializeTheme();
     this.setupAuthListener();
     this.checkUpdate();
   }

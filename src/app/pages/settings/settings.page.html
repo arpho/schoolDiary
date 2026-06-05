@@ -1,0 +1,37 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Impostazioni</ion-title>
+  
+    <ion-buttons slot="end">
+      <app-user-menu></app-user-menu>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Impostazioni</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list inset="true" class="glass-panel">
+    <ion-item lines="none">
+      <ion-icon slot="start" name="color-palette-outline"></ion-icon>
+      <ion-select
+        label="Tema dell'applicazione"
+        label-placement="stacked"
+        [value]="currentTheme"
+        (ionChange)="onThemeChange($event)"
+        interface="popover"
+      >
+        <ion-select-option value="system">Sistema (Automatico)</ion-select-option>
+        <ion-select-option value="light">Chiaro</ion-select-option>
+        <ion-select-option value="dark">Scuro</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+</ion-content>

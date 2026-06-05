@@ -77,21 +77,17 @@
       }
 
       @if (selectedTab() === 'note') {
-        <ion-content class="tab-content">
-          <app-reserved-notes4student
-            [studentkey]="userKey"
-            [ownerkey]="loggedUser().key">
-          </app-reserved-notes4student>
-        </ion-content>
+        <app-reserved-notes4student
+          [studentkey]="userKey"
+          [ownerkey]="loggedUser().key">
+        </app-reserved-notes4student>
       }
 
       @if (selectedTab() === 'valutazioni') {
-        <ion-content class="tab-content">
-          <app-evaluation4-student
-            [studentkey]="userKey"
-            [teacherkey]="loggedUser().key">
-          </app-evaluation4-student>
-        </ion-content>
+        <app-evaluation4-student
+          [studentkey]="userKey"
+          [teacherkey]="loggedUser().key">
+        </app-evaluation4-student>
       }
 
     </div>

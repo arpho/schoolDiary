@@ -120,7 +120,7 @@ ion-modal::part(backdrop) {
  */
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.class.css";
 /* @import "@ionic/angular/css/palettes/dark.system.css"; */
 
 /* Compact datetime modal */
@@ -140,4 +140,100 @@ ion-modal::part(backdrop) {
 
 ion-toolbar {
   --min-height: 60px;
+}
+
+/* ── MIDNIGHT BLUE THEME (from wodlog) ── */
+ion-app {
+  background: var(--ion-background-color);
+  background-image: radial-gradient(circle at 0% 0%, rgba(30, 64, 175, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.1) 0%, transparent 40%);
+}
+
+.ion-palette-dark ion-app {
+  background-image: radial-gradient(circle at 0% 0%, rgba(30, 64, 175, 0.2) 0%, transparent 50%),
+                    radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.2) 0%, transparent 50%);
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(var(--glass-blur, 10px)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur, 10px)) saturate(180%);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.2));
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow, 0 4px 30px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+ion-toolbar {
+  --background: transparent;
+  --border-style: none;
+}
+
+ion-content {
+  --background: transparent;
+  
+  &::part(background) {
+    background: transparent;
+  }
+}
+
+/* Restore solid backgrounds for modals and popovers so text remains readable */
+ion-popover,
+ion-modal,
+ion-popover ion-content,
+ion-modal ion-content {
+  --background: var(--ion-background-color, #ffffff) !important;
+  
+  &::part(background) {
+    background: var(--ion-background-color, #ffffff) !important;
+  }
+}
+
+.ion-palette-dark ion-popover,
+.ion-palette-dark ion-modal,
+.ion-palette-dark ion-popover ion-content,
+.ion-palette-dark ion-modal ion-content {
+  --background: var(--ion-background-color, #1e1e1e) !important;
+  
+  &::part(background) {
+    background: var(--ion-background-color, #1e1e1e) !important;
+  }
+}
+
+/* Ensure text is always readable inside popovers */
+ion-popover ion-item,
+ion-popover ion-label,
+ion-popover ion-icon {
+  --color: var(--ion-text-color) !important;
+  color: var(--ion-text-color) !important;
+}
+
+.ion-palette-dark ion-content::part(background) {
+  background-image: radial-gradient(circle at 0% 0%, rgba(30, 64, 175, 0.2) 0%, transparent 50%),
+                    radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.2) 0%, transparent 50%);
+}
+
+.ion-palette-dark ion-item {
+  --border-color: rgba(255, 255, 255, 0.15);
+  --background: rgba(255, 255, 255, 0.03);
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  
+  &.item-has-focus {
+    --background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.ion-palette-dark ion-item,
+.ion-palette-dark ion-item ion-col,
+.ion-palette-dark ion-item strong,
+.ion-palette-dark ion-item span,
+.ion-palette-dark ion-item p,
+.ion-palette-dark ion-item div,
+.ion-palette-dark ion-item ion-label,
+.ion-palette-dark ion-item ion-icon {
+  --color: #ffffff !important;
+  color: #ffffff !important;
 }

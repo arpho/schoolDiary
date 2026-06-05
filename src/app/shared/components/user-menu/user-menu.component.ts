@@ -19,7 +19,8 @@ import {
   lockClosedOutline,
   personOutline,
   keyOutline,
-  listOutline
+  listOutline,
+  settingsOutline
 } from 'ionicons/icons';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { LocalLockService } from 'src/app/shared/services/local-lock.service';
@@ -61,7 +62,8 @@ export class UserMenuComponent implements OnInit {
       lockClosedOutline,
       personOutline,
       keyOutline,
-      listOutline
+      listOutline,
+      settingsOutline
     });
   }
 
@@ -85,6 +87,10 @@ export class UserMenuComponent implements OnInit {
 
   openChangelog() {
     this.router.navigate(['/changelog']);
+  }
+
+  openSettings() {
+    this.router.navigate(['/settings']);
   }
 
   lockApp() {

@@ -193,5 +193,9 @@ export const routes: Routes = [
   {
     path: 'interrogations4user/:studentKey',
     loadComponent: () => import('./pages/agenda/pages/interrogations4user/interrogations4user.page').then( m => m.Interrogations4userPage)
+  },
+  {
+    path: 'settings',
+    loadComponent: () => import('./pages/settings/settings.page').then( m => m.SettingsPage)
   }
 ];

@@ -6,7 +6,37 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
-    
+    <!-- Version 2.5.2 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v2.5.2</ion-badge>
+          <span class="version-date">6 Giugno 2026</span>
+        </div>
+        <ion-card-title>Fix Tema Scuro & Navigazione</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Correzione di problemi di visibilità e di stile nella navigazione laterale di utenti e classi.</p>
+
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="contrast-outline" slot="start" color="tertiary"></ion-icon>
+            <ion-label>
+              <h3>Fix Visibilità Tema Scuro</h3>
+              <p>Risolto un problema che rendeva invisibili le voci del menu laterale in modalità scura nei pannelli utente e classe.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="color-wand-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Stili Voce Attiva</h3>
+              <p>Ripristinato il corretto funzionamento dell'evidenziazione della voce selezionata nel pannello della classe.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
     <!-- Version 2.5.1 -->
     <ion-card>
       <ion-card-header>

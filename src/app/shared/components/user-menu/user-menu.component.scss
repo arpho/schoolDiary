@@ -30,3 +30,13 @@ ion-popover {
     object-fit: cover;
   }
 }
+
+/* Force colors explicitly so the menu is always readable regardless of global transparent CSS */
+ion-item {
+  --color: var(--ion-text-color) !important;
+  color: var(--ion-text-color) !important;
+  
+  ion-label, ion-icon {
+    color: var(--ion-text-color) !important;
+  }
+}

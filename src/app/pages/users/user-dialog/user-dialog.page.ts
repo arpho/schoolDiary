@@ -125,7 +125,7 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
   }
 
   // Variabili di stato
-  userKey: string = ""
+  @Input() userKey: string = ""
   user = signal<UserModel>(new UserModel({ role: UsersRole.STUDENT }));
 
   @Input()
@@ -204,9 +204,9 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
       this.loggedUser.set(loggedUser);
     }
 
-    const userKey = this.route.snapshot.paramMap.get('userKey');
-    if (userKey) {
-      this.userKey = userKey;
+    const routeUserKey = this.route.snapshot.paramMap.get('userKey');
+    if (routeUserKey) {
+      this.userKey = routeUserKey;
     }
 
     const classKeyValue = this.classKey;
@@ -214,9 +214,9 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
       this._updateUserClass(classKeyValue);
     }
 
-    if (userKey) {
+    if (this.userKey) {
       try {
-        const user = await this.$users.fetchUserOnCache(userKey);
+        const user = await this.$users.fetchUserOnCache(this.userKey);
         if (user instanceof UserModel) {
           this.user.set(user);
         }

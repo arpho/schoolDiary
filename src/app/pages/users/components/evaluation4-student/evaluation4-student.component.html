@@ -1,15 +1,25 @@
 <div class="eval-container">
 
-  <!-- ─── HEADER: selezione periodo ───────────────────────── -->
+  <!-- ─── HEADER: selezione periodo e filtri rapidi ──────── -->
   <div class="period-bar">
     <div class="period-left">
-      <ion-icon name="calendar" class="period-icon"></ion-icon>
-      <span class="period-label">Periodo da</span>
+      <ion-icon name="funnel-outline" class="period-icon"></ion-icon>
+      <span class="period-label">Periodo</span>
     </div>
+    
+    <div class="quick-filters">
+      <button class="filter-chip" [class.active]="activeFilterDays() === 15" (click)="setQuickFilter(15)">15G</button>
+      <button class="filter-chip" [class.active]="activeFilterDays() === 30" (click)="setQuickFilter(30)">1M</button>
+      <button class="filter-chip" [class.active]="activeFilterDays() === 90" (click)="setQuickFilter(90)">3M</button>
+      <button class="filter-chip" [class.active]="activeFilterDays() === null" (click)="setQuickFilter(null)">Tutto</button>
+    </div>
+
     <div id="open-date-picker-eval" class="period-date-btn">
+      <ion-icon name="calendar-outline"></ion-icon>
       <span>{{ dataInizioPeriodo() | date:'dd MMM yyyy' }}</span>
-      <ion-icon name="chevron-down-outline"></ion-icon>
+      <ion-icon name="chevron-down-outline" class="chevron-icon"></ion-icon>
     </div>
+    
     <ion-modal #dateModal [keepContentsMounted]="true" trigger="open-date-picker-eval">
       <ng-template>
         <ion-datetime
@@ -24,28 +34,70 @@
     </ion-modal>
   </div>
 
-  <!-- ─── RIEPILOGO STATISTICHE ───────────────────────────── -->
+  <!-- ─── RIEPILOGO STATISTICHE (DASHBOARD) ───────────────── -->
   @if (filteredEvaluations().length > 0) {
-    <div class="summary-bar">
-      <div class="summary-chip chip-count">
-        <span class="summary-value">{{ filteredEvaluations().length }}</span>
-        <span class="summary-key">valutazioni</span>
-      </div>
-      @if (averageGrade() > 0) {
-        <div class="summary-chip chip-avg"
+    <div class="stats-dashboard-card">
+      
+      <!-- Sezione sinistra: gauge circolare per la media -->
+      <div class="stats-gauge-col">
+        <div class="svg-gauge-container"
           [class.avg-high]="averageGrade() >= 7"
           [class.avg-mid]="averageGrade() >= 5 && averageGrade() < 7"
           [class.avg-low]="averageGrade() < 5">
-          <span class="summary-value">{{ averageGrade() | number:'1.1-1' }}</span>
-          <span class="summary-key">media</span>
+          <svg class="gauge-svg" viewBox="0 0 100 100">
+            <!-- Cerchio traccia -->
+            <circle class="gauge-track" cx="50" cy="50" r="40" stroke-width="8" fill="transparent"/>
+            <!-- Cerchio progresso -->
+            <circle class="gauge-progress" cx="50" cy="50" r="40" stroke-width="8" fill="transparent"
+              stroke-dasharray="251.2"
+              [style.stroke-dashoffset]="251.2 - (251.2 * (averageGrade() / 10))"
+              transform="rotate(-90 50 50)"/>
+          </svg>
+          <div class="gauge-content">
+            @if (averageGrade() > 0) {
+              <span class="gauge-val">{{ averageGrade() | number:'1.1-1' }}</span>
+              <span class="gauge-label">Media</span>
+            } @else {
+              <span class="gauge-na">—</span>
+            }
+          </div>
         </div>
-      }
-      @if (highestGrade() > 0) {
-        <div class="summary-chip chip-best">
-          <span class="summary-value">{{ highestGrade() | number:'1.1-1' }}</span>
-          <span class="summary-key">migliore</span>
+      </div>
+
+      <!-- Sezione destra: info generali e distribuzione voti -->
+      <div class="stats-info-col">
+        <div class="stats-top-row">
+          <div class="mini-stat">
+            <span class="mini-val">{{ filteredEvaluations().length }}</span>
+            <span class="mini-lbl">Valutazioni</span>
+          </div>
+          @if (highestGrade() > 0) {
+            <div class="mini-stat">
+              <span class="mini-val best-color">
+                <ion-icon name="ribbon-outline" class="mini-icon"></ion-icon>
+                {{ highestGrade() | number:'1.1-1' }}
+              </span>
+              <span class="mini-lbl">Migliore</span>
+            </div>
+          }
         </div>
-      }
+
+        <!-- Barra di distribuzione dei voti (CSS puro) -->
+        @if (averageGrade() > 0) {
+          <div class="dist-container">
+            <div class="dist-bar">
+              <div class="dist-segment seg-high" [style.width.%]="gradeDistribution().highPct" title="Ottimi/Buoni (>= 7)"></div>
+              <div class="dist-segment seg-mid" [style.width.%]="gradeDistribution().midPct" title="Sufficienti (5-7)"></div>
+              <div class="dist-segment seg-low" [style.width.%]="gradeDistribution().lowPct" title="Insufficienti (< 5)"></div>
+            </div>
+            <div class="dist-labels">
+              <span class="dist-lbl high"><span class="dot green"></span> {{ gradeDistribution().high }} &ge; 7</span>
+              <span class="dist-lbl mid"><span class="dot amber"></span> {{ gradeDistribution().mid }} 5-7</span>
+              <span class="dist-lbl low"><span class="dot red"></span> {{ gradeDistribution().low }} &lt; 5</span>
+            </div>
+          </div>
+        }
+      </div>
     </div>
   }
 
@@ -59,9 +111,21 @@
       <p>Non ci sono valutazioni nel periodo selezionato</p>
     </div>
   } @else {
-    <div class="eval-list">
-      @for (evaluation of filteredEvaluations(); track evaluation.key; let i = $index) {
-        <div class="eval-card" (click)="openActionSheet(evaluation, $event)"
+    <ion-segment [ngModel]="viewMode()" (ngModelChange)="viewMode.set($event)" class="view-segment" mode="ios" style="margin-bottom: 20px;">
+      <ion-segment-button value="list">
+        <ion-label>Lista</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="chart">
+        <ion-label>Grafico</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    @if (viewMode() === 'list') {
+      <div class="eval-list">
+        @for (evaluation of filteredEvaluations(); track $index; let i = $index) {
+        <div class="eval-card" 
+          [class.expanded]="expandedCard() === evaluation.key"
+          (click)="toggleExpand(evaluation.key, $event)"
           [style.animation-delay]="(i * 50) + 'ms'">
 
           <!-- Score badge circolare -->
@@ -94,9 +158,14 @@
           <div class="eval-body">
             <div class="eval-title-row">
               <span class="eval-title">{{ evaluation.description }}</span>
-              <button class="eval-menu-btn">
-                <ion-icon name="ellipsis-vertical"></ion-icon>
-              </button>
+              <div class="eval-actions-wrapper">
+                <button class="eval-expand-btn" [class.rotated]="expandedCard() === evaluation.key">
+                  <ion-icon name="chevron-down-outline"></ion-icon>
+                </button>
+                <button class="eval-menu-btn" (click)="openActionSheet(evaluation, $event)">
+                  <ion-icon name="ellipsis-vertical"></ion-icon>
+                </button>
+              </div>
             </div>
 
             <div class="eval-meta">
@@ -137,28 +206,90 @@
               }
             </div>
 
-            @if (evaluation.note) {
-              <div class="eval-note-wrap">
-                <p class="eval-note">{{ evaluation.note }}</p>
-              </div>
-            }
+            <!-- ── SEZIONE ESPANDIBILE (DETTAGLI E GRIGLIA) ── -->
+            <div class="eval-expanded-content" [class.show]="expandedCard() === evaluation.key" (click)="$event.stopPropagation()">
+              
+              <!-- Note del docente -->
+              @if (evaluation.note) {
+                <div class="eval-note-box">
+                  <span class="note-label">Note del docente</span>
+                  <p class="eval-note">{{ evaluation.note }}</p>
+                </div>
+              }
 
-            @if (evaluation.enclosedDocuments && evaluation.enclosedDocuments.length > 0) {
-              <div class="eval-docs">
-                @for (doc of evaluation.enclosedDocuments; track $index) {
-                  <a class="doc-chip" [href]="doc.path" target="_blank" rel="noopener"
-                    (click)="$event.stopPropagation()">
-                    <ion-icon name="document-outline"></ion-icon>
-                    {{ doc.descrizione || doc.name }}
-                  </a>
-                }
+              <!-- Breakdown degli indicatori della griglia -->
+              @if (evaluation.grid?.indicatori && evaluation.grid.indicatori.length > 0) {
+                <div class="eval-grid-breakdown">
+                  <span class="grid-label">Dettaglio Criteri di Valutazione</span>
+                  <div class="grid-indicators-list">
+                    @for (indicatore of evaluation.grid.indicatori; track $index) {
+                      <div class="indicator-row">
+                        <div class="indicator-info">
+                          <span class="indicator-desc">{{ indicatore.descrizione }}</span>
+                          <span class="indicator-score">{{ indicatore.voto }} / {{ indicatore.valore }}</span>
+                        </div>
+                        <div class="indicator-bar-track">
+                          <div class="indicator-bar-fill"
+                            [style.width.%]="(indicatore.voto / (+indicatore.valore || 1)) * 100"
+                            [class.bar-high]="(indicatore.voto / (+indicatore.valore || 1)) >= 0.7"
+                            [class.bar-mid]="(indicatore.voto / (+indicatore.valore || 1)) >= 0.5 && (indicatore.voto / (+indicatore.valore || 1)) < 0.7"
+                            [class.bar-low]="(indicatore.voto / (+indicatore.valore || 1)) < 0.5">
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Documenti allegati -->
+              @if (evaluation.enclosedDocuments && evaluation.enclosedDocuments.length > 0) {
+                <div class="eval-docs-section">
+                  <span class="docs-label">
+                    <ion-icon name="document-attach-outline"></ion-icon>
+                    Documenti allegati
+                  </span>
+                  <div class="eval-docs">
+                    @for (doc of evaluation.enclosedDocuments; track $index) {
+                      <a class="doc-chip" [href]="doc.path" target="_blank" rel="noopener"
+                        (click)="$event.stopPropagation()">
+                        <ion-icon name="document-outline"></ion-icon>
+                        {{ doc.descrizione || doc.name }}
+                      </a>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Pulsantiera Azioni rapide -->
+              <div class="eval-actions-footer">
+                <button class="action-btn edit" (click)="editEvaluation(evaluation)">
+                  <ion-icon name="create"></ion-icon> Modifica
+                </button>
+                <button class="action-btn pdf" (click)="evaluationPdf(evaluation)">
+                  <ion-icon name="print"></ion-icon> Esporta PDF
+                </button>
+                <button class="action-btn delete" (click)="confirmDelete(evaluation)">
+                  <ion-icon name="trash"></ion-icon> Elimina
+                </button>
               </div>
-            }
+
+            </div>
+
           </div>
 
         </div>
       }
-    </div>
+      </div>
+    } @else {
+      <div class="chart-container" style="position: relative; height: 350px; background: white; border-radius: 24px; padding: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); width: 100%;">
+        @if (chartData() && chartData().labels.length > 0) {
+          <p-chart type="line" [data]="chartData()" [options]="chartOptions()"></p-chart>
+        } @else {
+          <p class="ion-text-center">Nessun dato disponibile.</p>
+        }
+      </div>
+    }
   }
 
 </div>

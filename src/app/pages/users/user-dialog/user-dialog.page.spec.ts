@@ -12,6 +12,7 @@ import { ActivitiesService } from '../../activities/services/activities.service'
 import { SubjectService } from '../../subjects-list/services/subjects/subject.service';
 import { of } from 'rxjs';
 import { UserModel } from 'src/app/shared/models/userModel';
+import { StudentPhotoService } from '../services/student-photo.service';
 
 describe('UserDialogPage', () => {
   let component: UserDialogPage;
@@ -47,7 +48,8 @@ describe('UserDialogPage', () => {
         { provide: ReservedNotes4studentsService, useValue: { getNotesByStudentAndOwner: jasmine.createSpy('getNotesByStudentAndOwner').and.returnValue(Promise.resolve([])), getNotesOnRealtime: jasmine.createSpy('getNotesOnRealtime').and.callFake(() => { }) } },
         { provide: EvaluationService, useValue: { addEvaluation: jasmine.createSpy('addEvaluation') } },
         { provide: ActivitiesService, useValue: { getActivitiesByClassAndTeacher: jasmine.createSpy('getActivitiesByClassAndTeacher').and.returnValue(Promise.resolve([])) } },
-        { provide: SubjectService, useValue: { fetchSubject: jasmine.createSpy('fetchSubject') } }
+        { provide: SubjectService, useValue: { fetchSubject: jasmine.createSpy('fetchSubject') } },
+        { provide: StudentPhotoService, useValue: jasmine.createSpyObj('StudentPhotoService', ['uploadPhoto']) }
       ]
     }).compileComponents();
 

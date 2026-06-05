@@ -27,7 +27,9 @@ import {
   IonDatetime,
   IonModal,
   IonButton,
-  IonItemDivider
+  IonItemDivider,
+  IonSegment,
+  IonSegmentButton
 } from '@ionic/angular/standalone';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -35,8 +37,36 @@ import { EvaluationService } from '../../../../pages/evaluations/services/evalua
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
+import { ChartModule } from 'primeng/chart';
+import { Chart, registerables } from 'chart.js';
 import { addIcons } from 'ionicons';
-import { eyeOutline, print, ellipsisVertical, create, archive, trash, close, calendar, link, calendarOutline, refreshOutline, starOutline } from 'ionicons/icons';
+import {
+  eyeOutline,
+  print,
+  ellipsisVertical,
+  create,
+  archive,
+  trash,
+  close,
+  calendar,
+  link,
+  calendarOutline,
+  refreshOutline,
+  starOutline,
+  chevronDownOutline,
+  chevronUpOutline,
+  funnelOutline,
+  statsChartOutline,
+  ribbonOutline,
+  documentAttachOutline,
+  checkmarkCircleOutline,
+  alertCircleOutline,
+  bookOutline,
+  clipboardOutline,
+  gridOutline,
+  documentOutline,
+  sparklesOutline
+} from 'ionicons/icons';
 import { UsersRole } from 'functions/src/shared/models/UsersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -53,7 +83,8 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
 @Component({
   selector: 'app-evaluation4-student',
   templateUrl: './evaluation4-student.component.html',
-
+  styleUrls: ['./evaluation4-student.component.scss'],
+  standalone: true,
   imports: [
     CommonModule,
     IonGrid,
@@ -75,7 +106,10 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
     IonModal,
     IonButton,
     FormsModule,
-    IonItemDivider
+    IonItemDivider,
+    IonSegment,
+    IonSegmentButton,
+    ChartModule
   ]
 })
 export class Evaluation4StudentComponent implements OnInit {
@@ -220,8 +254,27 @@ export class Evaluation4StudentComponent implements OnInit {
   modalCtrl = inject(ModalController);
   private router = inject(Router);
 
+  expandedCard = signal<string | null>(null);
+  activeFilterDays = signal<number | null>(null);
+
+  toggleExpand(key: string, event: Event) {
+    event.stopPropagation();
+    if (this.expandedCard() === key) {
+      this.expandedCard.set(null);
+    } else {
+      this.expandedCard.set(key);
+    }
+  }
+
+
+  // Signals per grafici e UI
+  viewMode = signal<'list' | 'chart'>('list');
+  chartOptions = signal<any>(null);
+  chartData = signal<any>(null);
+
   constructor() {
-    this.ngOnInit()
+    this.ngOnInit();
+    Chart.register(...registerables);
     addIcons({
       eye: eyeOutline,
       print: print,
@@ -234,21 +287,46 @@ export class Evaluation4StudentComponent implements OnInit {
       link: link,
       'calendar-outline': calendarOutline,
       'refresh-outline': refreshOutline,
-      'star-outline': starOutline
+      'star-outline': starOutline,
+      'chevron-down-outline': chevronDownOutline,
+      'chevron-up-outline': chevronUpOutline,
+      'funnel-outline': funnelOutline,
+      'stats-chart-outline': statsChartOutline,
+      'ribbon-outline': ribbonOutline,
+      'document-attach-outline': documentAttachOutline,
+      'checkmark-circle-outline': checkmarkCircleOutline,
+      'alert-circle-outline': alertCircleOutline,
+      'book-outline': bookOutline,
+      'clipboard-outline': clipboardOutline,
+      'grid-outline': gridOutline,
+      'document-outline': documentOutline,
+      'sparkles-outline': sparklesOutline
     });
+
+    effect(() => {
+      const evaluations = this.filteredEvaluations();
+      this.updateChart(evaluations);
+    });
+
     // Usa effect per reagire ai signal inputs
     try {
       effect(() => {
         const studentKey = this.studentkey();
         const teacherKey = this.teacherkey();
 
+        console.log('[Evaluation4StudentComponent] effect triggered! studentKey:', studentKey, 'teacherKey:', teacherKey);
+
         // Chiama il servizio solo quando gli input sono valorizzati
         if (studentKey && teacherKey) {
+          console.log('[Evaluation4StudentComponent] Both keys present. Calling getEvaluation4studentAndTeacher...');
           this.$evaluation.getEvaluation4studentAndTeacher(studentKey, teacherKey, async (evaluations: Evaluation[]) => {
+            console.log('[Evaluation4StudentComponent] Evaluations received:', evaluations?.length);
             this.evaluationsList.set(evaluations);
             await this.loadActivitiesForEvaluations(evaluations);
             await this.loadSubjectsForEvaluations(evaluations);
           });
+        } else {
+          console.warn('[Evaluation4StudentComponent] Missing keys! studentKey:', studentKey, 'teacherKey:', teacherKey);
         }
       });
     } catch (error) {
@@ -256,27 +334,100 @@ export class Evaluation4StudentComponent implements OnInit {
     }
   }
 
+  private updateChart(evaluations: Evaluation[]) {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color') || '#333';
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#666';
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#e5e7eb';
+
+    if (!this.chartOptions()) {
+      this.chartOptions.set({
+        maintainAspectRatio: false,
+        aspectRatio: 0.6,
+        plugins: {
+          legend: { labels: { color: textColor } }
+        },
+        scales: {
+          x: { ticks: { color: textColorSecondary }, grid: { color: surfaceBorder, drawBorder: false } },
+          y: { ticks: { color: textColorSecondary }, grid: { color: surfaceBorder, drawBorder: false }, min: 0, max: 10 }
+        }
+      });
+    }
+
+    let evals = [...evaluations].sort((a, b) => {
+      const dA = this.sanitizeDate(a.data);
+      const dB = this.sanitizeDate(b.data);
+      if (!dA && !dB) return 0;
+      if (!dA) return 1;
+      if (!dB) return -1;
+      return dA.getTime() - dB.getTime();
+    });
+
+    const labels: string[] = [];
+    const grades: number[] = [];
+
+    evals.forEach(e => {
+      const d = this.sanitizeDate(e.data);
+      if (d) {
+        labels.push(`${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`);
+        // Se gradeInDecimal è NaN o null, mettiamo uno 0 di default o non lo filtriamo
+        grades.push(e.gradeInDecimal || 0);
+      }
+    });
+
+    this.chartData.set({
+      labels: labels,
+      datasets: [{
+        label: 'Voti (in decimi)',
+        data: grades,
+        fill: false,
+        borderColor: '#6366f1',
+        backgroundColor: '#6366f1',
+        tension: 0.4
+      }]
+    });
+  }
+
   dataInizioPeriodo = signal<string>(
-    localStorage.getItem('dataInizioPeriodo') ||
-    new Date(new Date().getFullYear(), 0, 2).toISOString()
+    localStorage.getItem('evalDataInizioPeriodo') || ''
   );
 
   onDateChange(event: any) {
     const newDate = event.detail.value;
     this.dataInizioPeriodo.set(newDate);
-    localStorage.setItem('dataInizioPeriodo', newDate);
+    localStorage.setItem('evalDataInizioPeriodo', newDate);
+    this.activeFilterDays.set(null); // Reset quick filter when manually selecting date
+  }
+
+  setQuickFilter(days: number | null) {
+    this.activeFilterDays.set(days);
+    if (days === null) {
+      this.dataInizioPeriodo.set('');
+      localStorage.removeItem('evalDataInizioPeriodo');
+    } else {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      const isoStr = date.toISOString();
+      this.dataInizioPeriodo.set(isoStr);
+      localStorage.setItem('evalDataInizioPeriodo', isoStr);
+    }
   }
 
   filteredEvaluations = computed(() => {
     const evaluations = this.evaluationsList();
     const startDateStr = this.dataInizioPeriodo();
     
-    if (!startDateStr) return evaluations;
+    console.log('[Evaluation4StudentComponent] filteredEvaluations computed triggered. Total:', evaluations.length, 'startDateStr:', startDateStr);
+    
+    if (!startDateStr) {
+      console.log('[Evaluation4StudentComponent] No filter date. Returning all:', evaluations.length, evaluations);
+      return evaluations;
+    }
     
     const startDate = new Date(startDateStr);
     startDate.setHours(0, 0, 0, 0);
 
-    return evaluations.filter(e => {
+    const filtered = evaluations.filter(e => {
       const evalDate = this.sanitizeDate(e.data);
       if (!evalDate) return false;
       
@@ -285,6 +436,28 @@ export class Evaluation4StudentComponent implements OnInit {
       
       return dateObj >= startDate;
     });
+
+    console.log('[Evaluation4StudentComponent] Filter applied. Returning:', filtered.length, filtered);
+    return filtered;
+  });
+
+  gradeDistribution = computed(() => {
+    const evals = this.filteredEvaluations().filter(e => e.gradeInDecimal > 0);
+    const total = evals.length;
+    if (total === 0) {
+      return { high: 0, mid: 0, low: 0, highPct: 0, midPct: 0, lowPct: 0 };
+    }
+    const high = evals.filter(e => e.gradeInDecimal >= 7).length;
+    const mid = evals.filter(e => e.gradeInDecimal >= 5 && e.gradeInDecimal < 7).length;
+    const low = evals.filter(e => e.gradeInDecimal < 5).length;
+    return {
+      high,
+      mid,
+      low,
+      highPct: (high / total) * 100,
+      midPct: (mid / total) * 100,
+      lowPct: (low / total) * 100
+    };
   });
 
   /** Media voti in decimi (solo valutazioni con voto > 0) */
@@ -306,8 +479,13 @@ export class Evaluation4StudentComponent implements OnInit {
     const user = await this.$users.getLoggedUser();
     this.loggedUser.set(user);
   }
-  sanitizeDate(date: any) {
-    return date?.toDate ? date.toDate() : date
+  sanitizeDate(dateVal: any): Date | null {
+    if (!dateVal) return null;
+    if (typeof dateVal.toDate === 'function') {
+      return dateVal.toDate();
+    }
+    const parsed = new Date(dateVal);
+    return isNaN(parsed.getTime()) ? null : parsed;
   }
 
   // Pre-carica tutte le attività per le valutazioni
