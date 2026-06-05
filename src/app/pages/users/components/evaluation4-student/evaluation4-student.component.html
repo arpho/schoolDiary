@@ -2,10 +2,13 @@
 
   <!-- ─── HEADER: selezione periodo ───────────────────────── -->
   <div class="period-bar">
-    <span class="period-label">Periodo da:</span>
+    <div class="period-left">
+      <ion-icon name="calendar" class="period-icon"></ion-icon>
+      <span class="period-label">Periodo da</span>
+    </div>
     <div id="open-date-picker-eval" class="period-date-btn">
-      <ion-icon name="calendar"></ion-icon>
-      <span>{{ dataInizioPeriodo() | date:'dd/MM/yyyy' }}</span>
+      <span>{{ dataInizioPeriodo() | date:'dd MMM yyyy' }}</span>
+      <ion-icon name="chevron-down-outline"></ion-icon>
     </div>
     <ion-modal #dateModal [keepContentsMounted]="true" trigger="open-date-picker-eval">
       <ng-template>
@@ -21,42 +24,69 @@
     </ion-modal>
   </div>
 
-  <!-- ─── RIEPILOGO ────────────────────────────────────────── -->
+  <!-- ─── RIEPILOGO STATISTICHE ───────────────────────────── -->
   @if (filteredEvaluations().length > 0) {
     <div class="summary-bar">
-      <div class="summary-chip">
+      <div class="summary-chip chip-count">
         <span class="summary-value">{{ filteredEvaluations().length }}</span>
         <span class="summary-key">valutazioni</span>
       </div>
+      @if (averageGrade() > 0) {
+        <div class="summary-chip chip-avg"
+          [class.avg-high]="averageGrade() >= 7"
+          [class.avg-mid]="averageGrade() >= 5 && averageGrade() < 7"
+          [class.avg-low]="averageGrade() < 5">
+          <span class="summary-value">{{ averageGrade() | number:'1.1-1' }}</span>
+          <span class="summary-key">media</span>
+        </div>
+      }
+      @if (highestGrade() > 0) {
+        <div class="summary-chip chip-best">
+          <span class="summary-value">{{ highestGrade() | number:'1.1-1' }}</span>
+          <span class="summary-key">migliore</span>
+        </div>
+      }
     </div>
   }
 
   <!-- ─── LISTA VALUTAZIONI ────────────────────────────────── -->
   @if (filteredEvaluations().length === 0) {
     <div class="empty-eval">
-      <ion-icon name="star-outline"></ion-icon>
-      <p>Nessuna valutazione nel periodo selezionato</p>
+      <div class="empty-eval-icon-wrap">
+        <ion-icon name="star-outline"></ion-icon>
+      </div>
+      <h3>Nessuna valutazione</h3>
+      <p>Non ci sono valutazioni nel periodo selezionato</p>
     </div>
   } @else {
     <div class="eval-list">
-      @for (evaluation of filteredEvaluations(); track evaluation.key) {
-        <div class="eval-card" (click)="openActionSheet(evaluation, $event)">
+      @for (evaluation of filteredEvaluations(); track evaluation.key; let i = $index) {
+        <div class="eval-card" (click)="openActionSheet(evaluation, $event)"
+          [style.animation-delay]="(i * 50) + 'ms'">
 
-          <!-- Score badge -->
+          <!-- Score badge circolare -->
           <div class="eval-score-col">
-            <div class="score-badge"
+            <div class="score-ring"
               [class.score-high]="evaluation.gradeInDecimal >= 0.7"
               [class.score-mid]="evaluation.gradeInDecimal >= 0.5 && evaluation.gradeInDecimal < 0.7"
               [class.score-low]="evaluation.gradeInDecimal < 0.5 && evaluation.gradeInDecimal > 0">
-              @if (evaluation.voto !== undefined && evaluation.voto !== null && evaluation.voto !== 0) {
-                <span class="score-num">{{ evaluation.voto }}</span>
-                <span class="score-den">/{{ evaluation.votoMax }}</span>
-              } @else {
-                <span class="score-na">—</span>
-              }
+              <div class="score-inner">
+                @if (evaluation.voto !== undefined && evaluation.voto !== null && evaluation.voto !== 0) {
+                  <span class="score-num">{{ evaluation.voto }}</span>
+                  <span class="score-den">/{{ evaluation.votoMax }}</span>
+                } @else {
+                  <span class="score-na">—</span>
+                }
+              </div>
             </div>
             @if (evaluation.gradeInDecimal > 0) {
-              <span class="score-decimal">{{ evaluation.gradeInDecimal | number:'1.2-2' }}</span>
+              <span class="score-decimal"
+                [class.text-high]="evaluation.gradeInDecimal >= 7"
+                [class.text-mid]="evaluation.gradeInDecimal >= 5 && evaluation.gradeInDecimal < 7"
+                [class.text-low]="evaluation.gradeInDecimal < 5">
+                {{ evaluation.gradeInDecimal | number:'1.1-1' }}
+              </span>
+              <span class="score-label">decimi</span>
             }
           </div>
 
@@ -64,22 +94,33 @@
           <div class="eval-body">
             <div class="eval-title-row">
               <span class="eval-title">{{ evaluation.description }}</span>
-              <ion-icon name="ellipsis-vertical" class="eval-menu-icon"></ion-icon>
+              <button class="eval-menu-btn">
+                <ion-icon name="ellipsis-vertical"></ion-icon>
+              </button>
             </div>
 
             <div class="eval-meta">
               @if (evaluation.subjectKey) {
                 @if (getSubject(evaluation.subjectKey); as subject) {
-                  <span class="meta-tag subject-tag">{{ subject.name }}</span>
+                  <span class="meta-tag subject-tag">
+                    <ion-icon name="book-outline"></ion-icon>
+                    {{ subject.name }}
+                  </span>
                 }
               }
               @if (evaluation.activityKey) {
                 @if (getActivity(evaluation.activityKey); as activity) {
-                  <span class="meta-tag activity-tag">{{ activity.title }}</span>
+                  <span class="meta-tag activity-tag">
+                    <ion-icon name="clipboard-outline"></ion-icon>
+                    {{ activity.title }}
+                  </span>
                 }
               }
               @if (evaluation.grid?.nome) {
-                <span class="meta-tag grid-tag">{{ evaluation.grid.nome }}</span>
+                <span class="meta-tag grid-tag">
+                  <ion-icon name="grid-outline"></ion-icon>
+                  {{ evaluation.grid.nome }}
+                </span>
               }
             </div>
 
@@ -97,7 +138,9 @@
             </div>
 
             @if (evaluation.note) {
-              <p class="eval-note">{{ evaluation.note }}</p>
+              <div class="eval-note-wrap">
+                <p class="eval-note">{{ evaluation.note }}</p>
+              </div>
             }
 
             @if (evaluation.enclosedDocuments && evaluation.enclosedDocuments.length > 0) {
@@ -105,7 +148,7 @@
                 @for (doc of evaluation.enclosedDocuments; track $index) {
                   <a class="doc-chip" [href]="doc.path" target="_blank" rel="noopener"
                     (click)="$event.stopPropagation()">
-                    <ion-icon name="link"></ion-icon>
+                    <ion-icon name="document-outline"></ion-icon>
                     {{ doc.descrizione || doc.name }}
                   </a>
                 }

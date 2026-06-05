@@ -274,7 +274,6 @@ export class Evaluation4StudentComponent implements OnInit {
     if (!startDateStr) return evaluations;
     
     const startDate = new Date(startDateStr);
-    // Reset hours to compare only dates
     startDate.setHours(0, 0, 0, 0);
 
     return evaluations.filter(e => {
