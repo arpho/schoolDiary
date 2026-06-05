@@ -98,9 +98,12 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
     }
   }
 
+  /** Timer per debounce del salvataggio disabilità */
+  private _disabilitySaveTimer: ReturnType<typeof setTimeout> | null = null;
+
   /** Aggiorna i dati disabilità + PDP quando il sotto-componente emette */
   onDisabilityChanged(data: DisabilityData) {
-    this.user.set(new UserModel({
+    const updated = new UserModel({
       ...this.user(),
       DVA:  data.DVA,
       DSA:  data.DSA,
@@ -108,7 +111,17 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
       ADHD: data.ADHD,
       noteDisabilita: data.noteDisabilita,
       pdpUrl: data.pdpUrl
-    }));
+    });
+    this.user.set(updated);
+    // Persistere su Firestore con debounce (evita scritture eccessive durante la digitazione)
+    if (updated.key) {
+      if (this._disabilitySaveTimer) clearTimeout(this._disabilitySaveTimer);
+      this._disabilitySaveTimer = setTimeout(() => {
+        this.$users.updateUser(updated.key, updated)
+          .then(() => this.toaster.presentToast({ message: 'Dati salvati', duration: 1500, position: 'bottom' }))
+          .catch(e => console.error('Errore salvataggio dati disabilità:', e));
+      }, 800);
+    }
   }
 
   // Variabili di stato
