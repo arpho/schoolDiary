@@ -288,12 +288,24 @@ export class Evaluation4StudentComponent implements OnInit {
     });
   });
 
+  /** Media voti in decimi (solo valutazioni con voto > 0) */
+  averageGrade = computed(() => {
+    const evals = this.filteredEvaluations().filter(e => e.gradeInDecimal > 0);
+    if (evals.length === 0) return 0;
+    const sum = evals.reduce((acc, e) => acc + e.gradeInDecimal, 0);
+    return sum / evals.length;
+  });
+
+  /** Voto più alto in decimi */
+  highestGrade = computed(() => {
+    const evals = this.filteredEvaluations().filter(e => e.gradeInDecimal > 0);
+    if (evals.length === 0) return 0;
+    return Math.max(...evals.map(e => e.gradeInDecimal));
+  });
+
   async ngOnInit() {
     const user = await this.$users.getLoggedUser();
     this.loggedUser.set(user);
-
-    // Prova anche con setTimeout
-
   }
   sanitizeDate(date: any) {
     return date?.toDate ? date.toDate() : date
