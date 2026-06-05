@@ -127,24 +127,19 @@ export class UserGeneralities2Component implements OnInit {
 
     effect(() => {
       const user = this.user();
-      console.log('User in effect:*', user);
       if (user.key) {
-        console.log('Syncing form with user:*', user);
         this.syncFormWithUser(user);
-      } else {
-        console.warn('User is null or undefined*');
       }
     }, { allowSignalWrites: true });
   }
 
   onClassesChange(classes: AssignedClass[]) {
-    console.log("onClassesChange - classes:", classes);
+
     this.usersClasses.set(classes);
     this.userForm.get('classes')?.setValue(classes.map(c => c.key));
   }
 
   onNoteDisabilitaChange($event: IonTextareaCustomEvent<TextareaChangeEventDetail>) {
-    console.log("Note disabilità changed:", $event.detail.value);
 
     const value = $event.detail.value;
     this.userForm.get('noteDisabilita')?.setValue(value);
@@ -291,7 +286,7 @@ export class UserGeneralities2Component implements OnInit {
   private createUser(user: UserModel, claims: any) {
     this.$users.createUser(user)
       .then((data: any) => {
-        console.log("User created successfully:", data);
+
         this.toaster.presentToast({
           message: "Utente creato con successo",
           duration: 2000,
@@ -312,9 +307,7 @@ export class UserGeneralities2Component implements OnInit {
   private updateUserClaims(userId: string, claims: any) {
     return this.$users.setUserClaims2user(userId, claims)
       .then(async (data: any) => {
-        console.log("Claims set successfully:", data);
-        const usersClaims = await this.$users.getCustomClaims4LoggedUser();
-        console.log("Current user claims:", usersClaims);
+
         this.toaster.presentToast({
           message: "Autorizzazioni aggiornate con successo",
           duration: 2000,
