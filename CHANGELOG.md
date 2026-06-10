@@ -2,7 +2,14 @@
 
 Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in questo file.
 
-## [Unreleased] - 2026-06-06
+## [Unreleased] - 2026-06-10
+
+### Aggiunto
+- **Navigazione Rapida Studenti**: Aggiunti i pulsanti "Precedente" e "Successivo" in `evaluations4student` per scorrere rapidamente gli studenti di una classe, migliorando notevolmente il workflow di valutazione continua.
+- **Panoramica Globale (Tabellone Voti)**: Creata una nuova schermata a griglia (`class-evaluations-overview`) accessibile dalla lista studenti. Permette di visualizzare le medie della classe a colpo d'occhio e inserire in modo massivo le "proposte di voto finale", con salvataggio diretto nel profilo studente (`UserModel`).
+- I colori del Tabellone Voti sono stati ottimizzati con l'uso di variabili CSS in RGBA che si adattano dinamicamente alla modalità chiara e scura (Dark Mode).
+
+## [Precedente] - 2026-06-06
 
 ### Aggiunto
 - **Componente `student-avatar`**: Inserimento dell'avatar studente nel pannello `user-dialog` con possibilità di caricare foto su Firebase Storage, visualizzare le iniziali (se nessuna foto è presente) e ritagliare le immagini tramite `ngx-image-cropper`.
