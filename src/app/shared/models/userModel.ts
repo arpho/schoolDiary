@@ -61,7 +61,7 @@ export class UserModel {
   /** URL della foto profilo (Firebase Storage) */
   photoUrl: string = '';
   /** Voti finali (es. per anno accademico/materia) */
-  finalGrades: { voto: number, data: string, nota: string }[] = [];
+  finalGrades: { voto: number, data: string, nota: string, subjectKey?: string }[] = [];
 
   /**
    * Setter per le chiavi delle classi.
