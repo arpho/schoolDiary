@@ -1,0 +1,31 @@
+.header-row {
+  background: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.1);
+  border-bottom: 2px solid var(--ion-color-medium);
+  font-weight: bold;
+  padding: 8px 0;
+}
+
+.student-row {
+  border-bottom: 1px solid rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.1);
+  padding: 8px 0;
+  align-items: center;
+}
+
+.student-row:nth-child(even) {
+  background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.04);
+}
+
+.input-item {
+  --background: transparent;
+  --min-height: 36px;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  border: 1px solid rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.2);
+  border-radius: 4px;
+  background-color: transparent;
+  
+  ion-input {
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+}

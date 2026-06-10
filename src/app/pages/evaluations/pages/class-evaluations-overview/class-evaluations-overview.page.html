@@ -1,0 +1,84 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title align="center">Tabellone Voti Classe</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tabellone Voti Classe</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid>
+    <ion-row class="header-row">
+      <ion-col size="3"><strong>Studente</strong></ion-col>
+      <ion-col size="2" class="ion-text-center"><strong>Media Attuale</strong></ion-col>
+      <ion-col size="2"><strong>Voto Proposto</strong></ion-col>
+      <ion-col size="2"><strong>Data</strong></ion-col>
+      <ion-col size="2"><strong>Nota</strong></ion-col>
+      <ion-col size="1" class="ion-text-center"><strong>Salva</strong></ion-col>
+    </ion-row>
+
+    @for (student of students(); track student.key) {
+      <ion-row class="student-row">
+        <!-- Nome Studente -->
+        <ion-col size="3" style="display: flex; align-items: center;">
+          {{ student.lastName }} {{ student.firstName }}
+        </ion-col>
+
+        <!-- Media -->
+        <ion-col size="2" class="ion-text-center" style="display: flex; align-items: center; justify-content: center;">
+          <ion-badge [color]="(studentAverages().get(student.key) || 0) >= 6 ? 'success' : 'danger'">
+            {{ studentAverages().get(student.key) | number:'1.1-2' }}
+          </ion-badge>
+        </ion-col>
+
+        <!-- Voto -->
+        <ion-col size="2">
+          <ion-item lines="none" class="input-item">
+            <ion-input type="number" 
+                       [ngModel]="editingGrades().get(student.key)?.voto"
+                       (ngModelChange)="updateGradeField(student.key, 'voto', $event)"
+                       placeholder="Voto"
+                       min="0" max="10">
+            </ion-input>
+          </ion-item>
+        </ion-col>
+
+        <!-- Data -->
+        <ion-col size="2">
+          <ion-item lines="none" class="input-item">
+            <ion-input type="date" 
+                       [ngModel]="editingGrades().get(student.key)?.data"
+                       (ngModelChange)="updateGradeField(student.key, 'data', $event)">
+            </ion-input>
+          </ion-item>
+        </ion-col>
+
+        <!-- Nota -->
+        <ion-col size="2">
+          <ion-item lines="none" class="input-item">
+            <ion-input type="text" 
+                       [ngModel]="editingGrades().get(student.key)?.nota"
+                       (ngModelChange)="updateGradeField(student.key, 'nota', $event)"
+                       placeholder="Nota (opzionale)">
+            </ion-input>
+          </ion-item>
+        </ion-col>
+
+        <!-- Bottone Salva -->
+        <ion-col size="1" class="ion-text-center" style="display: flex; align-items: center; justify-content: center;">
+          <ion-button fill="clear" (click)="saveFinalGrade(student)" title="Salva Voto">
+            <ion-icon name="save-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    }
+  </ion-grid>
+
+</ion-content>

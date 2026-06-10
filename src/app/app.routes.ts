@@ -142,6 +142,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/evaluations/pages/evaluations4-student/evaluations4-student.page').then(m => m.Evaluations4StudentPage)
   },
   {
+    path: 'class-evaluations-overview/:classKey/:teacherKey',
+    loadComponent: () => import('./pages/evaluations/pages/class-evaluations-overview/class-evaluations-overview.page').then(m => m.ClassEvaluationsOverviewPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
+  },
+  {
     path: 'activity-detail/:activityKey',
     loadComponent: () => import('./pages/activities/activity-detail/activity-detail.component').then(m => m.ActivityDetailComponent),
     canActivate: [authGuard]
