@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject, input, output, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, input, output, signal, model } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { EvaluationService } from '../../../evaluations/services/evaluation/evaluation.service';
@@ -36,6 +36,7 @@ import { clipboardOutline, documentText, statsChart } from 'ionicons/icons';
 export class StudentAverageGradeDisplayComponent implements OnInit {
   student = input.required<UserModel>();
   teacherkey = input.required<string>();
+  classKey = model<string>('');
   subjectKey = input<string>('all');
   startDate = input<string>('');
 
@@ -77,7 +78,7 @@ export class StudentAverageGradeDisplayComponent implements OnInit {
   openEvaluationList(event: Event) {
     event.stopPropagation();
     console.log("openEvaluationList for student", this.student().key);
-    this.router.navigate(['/evaluations4-student', this.student().key, this.teacherkey()]);
+    this.router.navigate(['/evaluations4-student', this.student().key, this.teacherkey()], { queryParams: { classKey: this.classKey() } });
   }
 
   getCardBackground(grade: number): SafeStyle {
