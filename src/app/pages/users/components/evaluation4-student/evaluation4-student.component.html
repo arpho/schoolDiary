@@ -14,16 +14,16 @@
       <button class="filter-chip" [class.active]="activeFilterDays() === null" (click)="setQuickFilter(null)">Tutto</button>
     </div>
 
-    <div id="open-date-picker-eval" class="period-date-btn">
+    <div [id]="'open-date-picker-eval-' + studentkey()" class="period-date-btn">
       <ion-icon name="calendar-outline"></ion-icon>
       <span>{{ dataInizioPeriodo() | date:'dd MMM yyyy' }}</span>
       <ion-icon name="chevron-down-outline" class="chevron-icon"></ion-icon>
     </div>
     
-    <ion-modal #dateModal [keepContentsMounted]="true" trigger="open-date-picker-eval">
+    <ion-modal #dateModal [keepContentsMounted]="true" [trigger]="'open-date-picker-eval-' + studentkey()">
       <ng-template>
         <ion-datetime
-          id="startDatePickerEval"
+          [id]="'startDatePickerEval-' + studentkey()"
           presentation="date"
           [value]="dataInizioPeriodo()"
           [showDefaultButtons]="true"
