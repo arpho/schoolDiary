@@ -6,8 +6,12 @@ Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in
 
 ### Aggiunto
 - **Navigazione Rapida Studenti**: Aggiunti i pulsanti "Precedente" e "Successivo" in `evaluations4student` per scorrere rapidamente gli studenti di una classe, migliorando notevolmente il workflow di valutazione continua.
+- **Scorciatoia Navigazione**: Introdotto un pulsante per tornare direttamente al pannello classe dalla vista delle valutazioni studente, ottimizzando il flusso di lavoro.
 - **Panoramica Globale (Tabellone Voti)**: Creata una nuova schermata a griglia (`class-evaluations-overview`) accessibile dalla lista studenti. Permette di visualizzare le medie della classe a colpo d'occhio e inserire in modo massivo le "proposte di voto finale", con salvataggio diretto nel profilo studente (`UserModel`).
-- I colori del Tabellone Voti sono stati ottimizzati con l'uso di variabili CSS in RGBA che si adattano dinamicamente alla modalità chiara e scura (Dark Mode).
+- **Filtro Multi-Materia**: I docenti che insegnano più materie possono ora filtrare le valutazioni per il singolo insegnamento sia nel Tabellone Voti che nella scheda del singolo studente. Le proposte di voto finale tengono traccia della materia, e la selezione della materia viene ricordata scorrendo la classe.
+- **Fix UI & Bugfix**:
+  - I colori del Tabellone Voti e della lista studenti sono stati ottimizzati per la modalità scura (Dark Mode) sfruttando sfondi in formato RGBA dinamico.
+  - Corretto l'uso di ID duplicati nei selettori data di `evaluation4-student` per impedire conflitti UI navigando rapidamente tra gli studenti.
 
 ## [Precedente] - 2026-06-06
 
