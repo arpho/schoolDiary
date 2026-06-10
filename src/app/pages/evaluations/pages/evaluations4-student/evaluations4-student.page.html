@@ -2,6 +2,9 @@
 
   <ion-buttons slot="start">
     <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    <ion-button *ngIf="classKey" (click)="goToClassDialog()" title="Torna alla classe">
+      <ion-icon name="people-outline"></ion-icon>
+    </ion-button>
   </ion-buttons>
 
   <ion-toolbar>    
@@ -26,5 +29,10 @@
       <ion-title size="large">evaluations4Student</ion-title>
     </ion-toolbar>
   </ion-header>
-  <app-evaluation4-student [studentkey]="student().key" [teacherkey]="teacherKey"></app-evaluation4-student>
+  <app-evaluation4-student 
+    [studentkey]="student().key" 
+    [teacherkey]="teacherKey"
+    [selectedSubjectKey]="subjectKey()"
+    (selectedSubjectKeyChange)="subjectKey.set($event)">
+  </app-evaluation4-student>
 </ion-content>

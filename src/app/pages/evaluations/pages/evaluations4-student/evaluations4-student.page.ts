@@ -12,7 +12,7 @@ import { Evaluation4StudentComponent } from "src/app/pages/users/components/eval
  * Utilizza il componente `Evaluation4StudentComponent` per la visualizzazione dettagliata.
  */
 import { addIcons } from 'ionicons';
-import { chevronBack, chevronForward } from 'ionicons/icons';
+import { chevronBack, chevronForward, peopleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-evaluations4-student',
@@ -40,13 +40,14 @@ export class Evaluations4StudentPage implements OnInit {
   student = signal<UserModel>(new UserModel());
   prevStudentKey = signal<string | null>(null);
   nextStudentKey = signal<string | null>(null);
+  subjectKey = signal<string | null>(null);
 
   $users = inject(UsersService);
   private router = inject(Router);
 
   constructor(private route: ActivatedRoute) {
     console.log("Evaluations4StudentPage");
-    addIcons({ chevronBack, chevronForward });
+    addIcons({ chevronBack, chevronForward, peopleOutline });
   }
 
   ngOnInit() {
@@ -63,6 +64,7 @@ export class Evaluations4StudentPage implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       this.classKey = params['classKey'];
+      this.subjectKey.set(params['subjectKey'] || null);
       if (this.classKey) {
         this.loadClassStudents();
       }
@@ -86,7 +88,15 @@ export class Evaluations4StudentPage implements OnInit {
   }
 
   goToStudent(studentKey: string) {
-    this.router.navigate(['/evaluations4-student', studentKey, this.teacherKey], { queryParams: { classKey: this.classKey } });
+    this.router.navigate(['/evaluations4-student', studentKey, this.teacherKey], { 
+      queryParams: { classKey: this.classKey, subjectKey: this.subjectKey() } 
+    });
+  }
+
+  goToClassDialog() {
+    if (this.classKey) {
+      this.router.navigate(['/class-dialog', this.classKey]);
+    }
   }
 
 }
