@@ -60,6 +60,8 @@ export class UserModel {
   fcmTokens: string[] = [];
   /** URL della foto profilo (Firebase Storage) */
   photoUrl: string = '';
+  /** Voti finali (es. per anno accademico/materia) */
+  finalGrades: { voto: number, data: string, nota: string }[] = [];
 
   /**
    * Setter per le chiavi delle classi.
@@ -151,7 +153,8 @@ export class UserModel {
       pdpUrl: Array.isArray(this.pdpUrl) ? this.pdpUrl.map((doc) => doc.serialize ? doc.serialize() : doc) : [],
       userName: this.userName,
       classes: this.classesKey,
-      photoUrl: this.photoUrl || ''
+      photoUrl: this.photoUrl || '',
+      finalGrades: this.finalGrades || []
     };
     return out;
   }
