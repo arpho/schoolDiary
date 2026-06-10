@@ -6,7 +6,8 @@ import {
   OnInit,
   inject,
   signal,
-  computed
+  computed,
+  model
 } from '@angular/core';
 import {
   IonGrid,
@@ -29,7 +30,9 @@ import {
   IonButton,
   IonItemDivider,
   IonSegment,
-  IonSegmentButton
+  IonSegmentButton,
+  IonSelect,
+  IonSelectOption
 } from '@ionic/angular/standalone';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -109,7 +112,9 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
     IonItemDivider,
     IonSegment,
     IonSegmentButton,
-    ChartModule
+    ChartModule,
+    IonSelect,
+    IonSelectOption
   ]
 })
 export class Evaluation4StudentComponent implements OnInit {
@@ -256,6 +261,11 @@ export class Evaluation4StudentComponent implements OnInit {
 
   expandedCard = signal<string | null>(null);
   activeFilterDays = signal<number | null>(null);
+  selectedSubjectKey = model<string | null>(null);
+
+  availableSubjects = computed(() => {
+    return Array.from(this.subjectsMap().values());
+  });
 
   toggleExpand(key: string, event: Event) {
     event.stopPropagation();
@@ -416,18 +426,25 @@ export class Evaluation4StudentComponent implements OnInit {
   filteredEvaluations = computed(() => {
     const evaluations = this.evaluationsList();
     const startDateStr = this.dataInizioPeriodo();
+    const selectedSubj = this.selectedSubjectKey();
     
     console.log('[Evaluation4StudentComponent] filteredEvaluations computed triggered. Total:', evaluations.length, 'startDateStr:', startDateStr);
     
+    let filtered = evaluations;
+
+    if (selectedSubj) {
+      filtered = filtered.filter(e => e.subjectKey === selectedSubj);
+    }
+
     if (!startDateStr) {
-      console.log('[Evaluation4StudentComponent] No filter date. Returning all:', evaluations.length, evaluations);
-      return evaluations;
+      console.log('[Evaluation4StudentComponent] No filter date. Returning all:', filtered.length, filtered);
+      return filtered;
     }
     
     const startDate = new Date(startDateStr);
     startDate.setHours(0, 0, 0, 0);
 
-    const filtered = evaluations.filter(e => {
+    filtered = filtered.filter(e => {
       const evalDate = this.sanitizeDate(e.data);
       if (!evalDate) return false;
       

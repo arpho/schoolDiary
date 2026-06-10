@@ -2,6 +2,16 @@
 
   <!-- ─── HEADER: selezione periodo e filtri rapidi ──────── -->
   <div class="period-bar">
+    <div class="subject-filter" style="margin-right: auto; min-width: 150px; display: flex; align-items: center;">
+      <ion-icon name="book-outline" class="period-icon"></ion-icon>
+      <ion-select interface="popover" placeholder="Materia" [ngModel]="selectedSubjectKey()" (ngModelChange)="selectedSubjectKey.set($event)" style="min-width: 120px;">
+        <ion-select-option [value]="null">Tutte le materie</ion-select-option>
+        @for (subject of availableSubjects(); track subject.key) {
+          <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+        }
+      </ion-select>
+    </div>
+
     <div class="period-left">
       <ion-icon name="funnel-outline" class="period-icon"></ion-icon>
       <span class="period-label">Periodo</span>
