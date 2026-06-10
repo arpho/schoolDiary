@@ -1,10 +1,16 @@
 <div class="container">
-  <div class="header">
+  <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
     <h1>Lista Studenti</h1>
-    <ion-button shape="round" (click)="addStudent()" color="tertiary">
-      <ion-icon slot="start" name="add"></ion-icon>
-      Aggiungi
-    </ion-button>
+    <div>
+      <ion-button shape="round" (click)="goToTabellone()" color="secondary" style="margin-right: 8px;">
+        <ion-icon slot="start" name="grid-outline"></ion-icon>
+        Tabellone Voti
+      </ion-button>
+      <ion-button shape="round" (click)="addStudent()" color="tertiary">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Aggiungi
+      </ion-button>
+    </div>
   </div>
 
   <div class="filter-container" style="padding: 0 16px; display: flex; flex-direction: column; gap: 8px;">

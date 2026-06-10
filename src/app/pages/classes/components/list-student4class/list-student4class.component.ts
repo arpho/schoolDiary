@@ -40,7 +40,8 @@ import {
   add,
   calendarOutline,
   trendingUp,
-  archive
+  archive,
+  gridOutline
 } from 'ionicons/icons';
 import { cloudUploadOutline, helpBuoyOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -237,6 +238,10 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     this.router.navigate(['/user-dialog', arg0]);
   }
 
+  goToTabellone() {
+    this.router.navigate(['/class-evaluations-overview', this.classkey, this.teacherkey()]);
+  }
+
   readonly _students = signal<UserModel[]>([]);
   readonly studentAverages = signal<Map<string, number>>(new Map());
   readonly filterType = signal<string>('all');
@@ -266,7 +271,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
       'calendar-outline': calendarOutline,
       'help-buoy-outline': helpBuoyOutline,
       'cloud-upload': cloudUploadOutline,
-      'trending-up': trendingUp
+      'trending-up': trendingUp,
+      'grid-outline': gridOutline
     });
 
     // Re-load averages whenever subjectKey, classKey or dataInizioPeriodo changes
