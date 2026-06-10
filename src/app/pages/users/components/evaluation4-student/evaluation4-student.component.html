@@ -146,7 +146,7 @@
               [class.score-low]="evaluation.gradeInDecimal < 0.5 && evaluation.gradeInDecimal > 0">
               <div class="score-inner">
                 @if (evaluation.voto !== undefined && evaluation.voto !== null && evaluation.voto !== 0) {
-                  <span class="score-num">{{ evaluation.voto }}</span>
+                  <span class="score-num">{{ evaluation.voto | number:'1.0-0' }}</span>
                   <span class="score-den">/{{ evaluation.votoMax }}</span>
                 } @else {
                   <span class="score-na">—</span>

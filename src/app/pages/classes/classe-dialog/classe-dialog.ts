@@ -46,7 +46,7 @@ import {
 } from '../services/classi.service';
 import { ClasseModel } from '../models/classModel';
 import { DocumentModel } from '../models/documentModel';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ListStudent4classComponent } from '../components/list-student4class/list-student4class.component';
 import { Evaluation } from 'src/app/pages/evaluations/models/evaluation';
@@ -74,7 +74,8 @@ import {
   alertCircle,
   link,
   copyOutline,
-  openOutline
+  openOutline,
+  grid
 } from 'ionicons/icons';
 import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
 /**
@@ -201,12 +202,13 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
     private modalCtrl: ModalController,
     private service: ClassiService,
     private route: ActivatedRoute,
+    private router: Router,
     private toaster: ToasterService,
     private $users: UsersService,
     private alertCtrl: AlertController
   ) {
     // Register icons
-    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash, alertCircle, link, copyOutline, openOutline });
+    addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash, alertCircle, link, copyOutline, openOutline, grid });
 
     // Initialize with empty model
     this.classe.set(new ClasseModel({
@@ -433,6 +435,12 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
     } catch (error) {
       console.error('Errore nell\'apertura del form evento:', error);
       this.toaster.presentToast({ message: 'Errore durante l\'apertura del form evento', duration: 2000, position: "bottom" });
+    }
+  }
+
+  goToTabellone() {
+    if (this.classe()?.key && this.teacherkey()) {
+      this.router.navigate(['/class-evaluations-overview', this.classe().key, this.teacherkey()]);
     }
   }
 }

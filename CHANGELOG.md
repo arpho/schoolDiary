@@ -13,6 +13,11 @@ Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in
   - I colori del Tabellone Voti e della lista studenti sono stati ottimizzati per la modalità scura (Dark Mode) sfruttando sfondi in formato RGBA dinamico.
   - Corretto l'uso di ID duplicati nei selettori data di `evaluation4-student` per impedire conflitti UI navigando rapidamente tra gli studenti.
 
+### Modificato
+- **Integrazione Tabellone Voti**: Aggiunto un link diretto al Tabellone Voti nel menu laterale della schermata classe.
+- **Navigazione Dettaglio Studente**: Nel Tabellone Voti, i nomi degli studenti sono ora cliccabili per accedere direttamente al loro dettaglio valutazioni.
+- **Formattazione Voti**: I voti mostrati all'interno dei badge circolari nella lista valutazioni dello studente vengono ora arrotondati a numeri interi per una maggiore chiarezza visiva.
+
 ## [Precedente] - 2026-06-06
 
 ### Aggiunto

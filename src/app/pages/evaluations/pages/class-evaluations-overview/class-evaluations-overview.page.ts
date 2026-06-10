@@ -5,7 +5,7 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, 
   IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonIcon, IonBadge, IonSelect, IonSelectOption 
 } from '@ionic/angular/standalone';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
@@ -42,7 +42,7 @@ export class ClassEvaluationsOverviewPage implements OnInit {
   $evaluations = inject(EvaluationService);
   $subjects = inject(SubjectService);
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute, private router: Router) {
     addIcons({ saveOutline, createOutline, bookOutline });
   }
 
@@ -165,4 +165,9 @@ export class ClassEvaluationsOverviewPage implements OnInit {
     console.log(`Voto finale salvato per ${student.lastName}`);
   }
 
+  goToStudentEvaluations(studentKey: string) {
+    if (this.teacherKey) {
+      this.router.navigate(['/evaluations4-student', studentKey, this.teacherKey]);
+    }
+  }
 }
