@@ -4,8 +4,17 @@
     <ion-back-button defaultHref="/dashboard"></ion-back-button>
   </ion-buttons>
 
-  <ion-toolbar>    <ion-title align="center">Valutazioni per lo  studente {{student().lastName}} {{student().firstName}}</ion-title>
-  
+  <ion-toolbar>    
+    <ion-title align="center">Valutazioni per lo studente {{student().lastName}} {{student().firstName}}</ion-title>
+    
+    <ion-buttons slot="end" *ngIf="classKey">
+      <ion-button [disabled]="!prevStudentKey()" (click)="prevStudentKey() && goToStudent(prevStudentKey()!)" title="Studente Precedente">
+        <ion-icon name="chevron-back"></ion-icon>
+      </ion-button>
+      <ion-button [disabled]="!nextStudentKey()" (click)="nextStudentKey() && goToStudent(nextStudentKey()!)" title="Studente Successivo">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

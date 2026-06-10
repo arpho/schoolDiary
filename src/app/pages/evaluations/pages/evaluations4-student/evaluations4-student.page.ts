@@ -1,8 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons } from '@ionic/angular/standalone';
-import { ActivatedRoute } from '@angular/router';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonButton, IonIcon } from '@ionic/angular/standalone';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { inject } from '@angular/core';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -11,6 +11,9 @@ import { Evaluation4StudentComponent } from "src/app/pages/users/components/eval
  * Pagina per visualizzare le valutazioni specifiche di uno studente.
  * Utilizza il componente `Evaluation4StudentComponent` per la visualizzazione dettagliata.
  */
+import { addIcons } from 'ionicons';
+import { chevronBack, chevronForward } from 'ionicons/icons';
+
 @Component({
   selector: 'app-evaluations4-student',
   templateUrl: './evaluations4-student.page.html',
@@ -25,17 +28,25 @@ import { Evaluation4StudentComponent } from "src/app/pages/users/components/eval
     FormsModule,
     Evaluation4StudentComponent,
     IonBackButton,
-    IonButtons
+    IonButtons,
+    IonButton,
+    IonIcon
   ]
 })
 export class Evaluations4StudentPage implements OnInit {
   studentKey = '';
   teacherKey = '';
+  classKey = '';
   student = signal<UserModel>(new UserModel());
+  prevStudentKey = signal<string | null>(null);
+  nextStudentKey = signal<string | null>(null);
+
   $users = inject(UsersService);
+  private router = inject(Router);
 
   constructor(private route: ActivatedRoute) {
     console.log("Evaluations4StudentPage");
+    addIcons({ chevronBack, chevronForward });
   }
 
   ngOnInit() {
@@ -48,8 +59,34 @@ export class Evaluations4StudentPage implements OnInit {
       if (user) {
         this.student.set(user);
       }
-
     });
+
+    this.route.queryParams.subscribe(params => {
+      this.classKey = params['classKey'];
+      if (this.classKey) {
+        this.loadClassStudents();
+      }
+    });
+  }
+
+  private loadClassStudents() {
+    this.$users.getUsersByClass(this.classKey, (users: UserModel[]) => {
+      const sortedUsers = users.sort((a, b) => {
+        const nameA = `${a.lastName} ${a.firstName}`;
+        const nameB = `${b.lastName} ${b.firstName}`;
+        return nameA.localeCompare(nameB);
+      });
+      
+      const currentIndex = sortedUsers.findIndex(u => u.key === this.studentKey);
+      if (currentIndex !== -1) {
+        this.prevStudentKey.set(currentIndex > 0 ? sortedUsers[currentIndex - 1].key : null);
+        this.nextStudentKey.set(currentIndex < sortedUsers.length - 1 ? sortedUsers[currentIndex + 1].key : null);
+      }
+    });
+  }
+
+  goToStudent(studentKey: string) {
+    this.router.navigate(['/evaluations4-student', studentKey, this.teacherKey], { queryParams: { classKey: this.classKey } });
   }
 
 }
