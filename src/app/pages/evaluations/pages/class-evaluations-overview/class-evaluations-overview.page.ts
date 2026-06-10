@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, 
-  IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonIcon, IonBadge 
+  IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonIcon, IonBadge, IonSelect, IonSelectOption 
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
 import { addIcons } from 'ionicons';
-import { saveOutline, createOutline } from 'ionicons/icons';
+import { saveOutline, createOutline, bookOutline } from 'ionicons/icons';
+import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
+import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 
 @Component({
   selector: 'app-class-evaluations-overview',
@@ -20,6 +22,7 @@ import { saveOutline, createOutline } from 'ionicons/icons';
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton,
     IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonIcon, IonBadge,
+    IonSelect, IonSelectOption,
     CommonModule, FormsModule
   ]
 })
@@ -29,14 +32,18 @@ export class ClassEvaluationsOverviewPage implements OnInit {
   students = signal<UserModel[]>([]);
   studentAverages = signal<Map<string, number>>(new Map());
 
-  // Stato locale per l'editing dei voti finali per ogni studente: studentKey -> { voto, data, nota }
-  editingGrades = signal<Map<string, { voto: number, data: string, nota: string }>>(new Map());
+  selectedSubjectKey = signal<string | null>(null);
+  availableSubjects = signal<SubjectModel[]>([]);
+
+  // Stato locale per l'editing dei voti finali per ogni studente: studentKey -> { voto, data, nota, subjectKey }
+  editingGrades = signal<Map<string, { voto: number, data: string, nota: string, subjectKey?: string }>>(new Map());
 
   $users = inject(UsersService);
   $evaluations = inject(EvaluationService);
+  $subjects = inject(SubjectService);
 
   constructor(private route: ActivatedRoute) {
-    addIcons({ saveOutline, createOutline });
+    addIcons({ saveOutline, createOutline, bookOutline });
   }
 
   ngOnInit() {
@@ -50,20 +57,36 @@ export class ClassEvaluationsOverviewPage implements OnInit {
   }
 
   private loadStudents() {
-    this.$users.getUsersByClass(this.classKey, (users: UserModel[]) => {
+    this.$users.getUsersByClass(this.classKey, async (users: UserModel[]) => {
       const sortedUsers = users.sort((a, b) => {
         const nameA = `${a.lastName} ${a.firstName}`;
         const nameB = `${b.lastName} ${b.firstName}`;
         return nameA.localeCompare(nameB);
       });
       this.students.set(sortedUsers);
+      
+      await this.loadAvailableSubjects();
+      
       this.loadAverages(sortedUsers);
       this.initEditingStates(sortedUsers);
     });
   }
 
-  private loadAverages(users: UserModel[]) {
+  private async loadAvailableSubjects() {
     if (!this.teacherKey) return;
+    const teacher = await this.$users.getUser(this.teacherKey);
+    if (teacher && teacher.assignedClasses) {
+      const assignedClass = teacher.assignedClasses.find(c => c.key === this.classKey);
+      if (assignedClass && assignedClass.subjectsKey && assignedClass.subjectsKey.length > 0) {
+        const subjects = await this.$subjects.fetchSubjectsByKeys(assignedClass.subjectsKey);
+        this.availableSubjects.set(subjects);
+      }
+    }
+  }
+
+  loadAverages(users: UserModel[]) {
+    if (!this.teacherKey) return;
+    const selectedSubj = this.selectedSubjectKey();
     users.forEach(student => {
       this.$evaluations.fetchAverageGrade4StudentAndTeacher(
         student.key,
@@ -74,22 +97,36 @@ export class ClassEvaluationsOverviewPage implements OnInit {
             newMap.set(student.key, average);
             return newMap;
           });
-        }
+        },
+        selectedSubj || undefined
       );
     });
   }
 
-  private initEditingStates(users: UserModel[]) {
-    const map = new Map<string, { voto: number, data: string, nota: string }>();
+  initEditingStates(users: UserModel[]) {
+    const map = new Map<string, { voto: number, data: string, nota: string, subjectKey?: string }>();
+    const selectedSubj = this.selectedSubjectKey();
+
     users.forEach(user => {
-      // Prendiamo l'ultimo voto finale se esiste, altrimenti un oggetto vuoto
-      const lastGrade = (user.finalGrades && user.finalGrades.length > 0) 
-        ? user.finalGrades[user.finalGrades.length - 1] 
-        : { voto: 0, data: new Date().toISOString().split('T')[0], nota: '' };
+      let lastGrade: { voto: number, data: string, nota: string, subjectKey?: string } = { voto: 0, data: new Date().toISOString().split('T')[0], nota: '', subjectKey: selectedSubj || undefined };
       
-      map.set(user.key, { ...lastGrade });
+      if (user.finalGrades && user.finalGrades.length > 0) {
+        // Filtra i voti finali che corrispondono alla materia selezionata
+        const gradesForSubj = user.finalGrades.filter(g => g.subjectKey === selectedSubj || (!g.subjectKey && !selectedSubj));
+        if (gradesForSubj.length > 0) {
+          lastGrade = { ...gradesForSubj[gradesForSubj.length - 1] };
+        }
+      }
+      
+      map.set(user.key, lastGrade);
     });
     this.editingGrades.set(map);
+  }
+
+  onSubjectChange(subjectKey: string | null) {
+    this.selectedSubjectKey.set(subjectKey);
+    this.loadAverages(this.students());
+    this.initEditingStates(this.students());
   }
 
   updateGradeField(studentKey: string, field: 'voto' | 'data' | 'nota', value: any) {
@@ -113,8 +150,15 @@ export class ClassEvaluationsOverviewPage implements OnInit {
       student.finalGrades = [];
     }
 
-    // Aggiungiamo o aggiorniamo il voto
-    student.finalGrades.push({ ...gradeObj });
+    const selectedSubj = this.selectedSubjectKey();
+    
+    // Troviamo se esiste già un voto finale per questa materia in modo da sovrascriverlo, oppure aggiungiamo
+    const existingIndex = student.finalGrades.findIndex(g => g.subjectKey === selectedSubj || (!g.subjectKey && !selectedSubj));
+    if (existingIndex >= 0) {
+      student.finalGrades[existingIndex] = { ...gradeObj, subjectKey: selectedSubj || undefined };
+    } else {
+      student.finalGrades.push({ ...gradeObj, subjectKey: selectedSubj || undefined });
+    }
 
     // Salviamo l'utente
     await this.$users.updateUser(student.key, student);

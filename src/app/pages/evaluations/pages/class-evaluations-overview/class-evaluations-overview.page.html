@@ -4,6 +4,20 @@
       <ion-back-button defaultHref="/dashboard"></ion-back-button>
     </ion-buttons>
     <ion-title align="center">Tabellone Voti Classe</ion-title>
+    
+    @if (availableSubjects().length > 0) {
+      <ion-buttons slot="end">
+        <ion-item lines="none" style="--background: transparent; margin-right: 8px;">
+          <ion-icon name="book-outline" slot="start"></ion-icon>
+          <ion-select interface="popover" placeholder="Materia" [ngModel]="selectedSubjectKey()" (ngModelChange)="onSubjectChange($event)">
+            <ion-select-option [value]="null">Tutte le materie</ion-select-option>
+            @for (subject of availableSubjects(); track subject.key) {
+              <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </ion-buttons>
+    }
   </ion-toolbar>
 </ion-header>
 
