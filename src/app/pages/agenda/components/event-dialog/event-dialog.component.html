@@ -75,11 +75,11 @@
     <!-- Data e Ora Inizio -->
     <ion-item>
       <ion-label>Inizio <span class="required">*</span></ion-label>
-      <ion-datetime-button [datetime]="'startDatetime-' + uniqueId"></ion-datetime-button>
+      <ion-datetime-button [datetime]="startDatetimeId"></ion-datetime-button>
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime
-            [id]="'startDatetime-' + uniqueId"
+            [id]="startDatetimeId"
             #startDatetime
             name="dataInizio"
             [(ngModel)]="eventData.dataInizio"
@@ -98,13 +98,13 @@
     <ion-item>
       <ion-label>Fine <span class="required">*</span></ion-label>
       <ion-datetime-button 
-        [datetime]="'endDatetime-' + uniqueId" 
+        [datetime]="endDatetimeId" 
         [disabled]="!eventData.dataInizio">
       </ion-datetime-button>
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime
-            [id]="'endDatetime-' + uniqueId"
+            [id]="endDatetimeId"
             #endDatetime
             name="dataFine"
             [(ngModel)]="eventData.dataFine"

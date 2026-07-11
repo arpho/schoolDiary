@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { EvaluationService } from './evaluation.service';
 import { Firestore } from '@angular/fire/firestore';
+import { ToastController } from '@ionic/angular/standalone';
 
 describe('EvaluationService', () => {
   let service: EvaluationService;
@@ -9,7 +10,15 @@ describe('EvaluationService', () => {
     TestBed.configureTestingModule({
       providers: [
         EvaluationService,
-        { provide: Firestore, useValue: {} }
+        { provide: Firestore, useValue: {} },
+        { 
+          provide: ToastController, 
+          useValue: { 
+            create: jasmine.createSpy('create').and.returnValue(Promise.resolve({
+              present: jasmine.createSpy('present').and.returnValue(Promise.resolve())
+            }))
+          } 
+        }
       ]
     });
     service = TestBed.inject(EvaluationService);
@@ -32,15 +41,20 @@ describe('EvaluationService', () => {
         data: '2025-01-01'
       } as any));
 
-      // Mock the Firestore logic or other dependencies if needed, 
-      // but here we just want to see if the first step is correct.
-      // Since generatePdf is complex, we might just verify the initial call.
-      
+      // Spy on doc and getDoc to prevent actual Firestore calls
+      spyOn<any>(service, 'docFn').and.returnValue({});
+      spyOn<any>(service, 'getDocFn').and.returnValue(Promise.resolve({
+        exists: () => false,
+        data: () => ({})
+      }));
+
+      // Spy on Promise.race to resolve immediately and prevent Worker creation in tests
+      spyOn(Promise, 'race').and.returnValue(Promise.resolve('mock-base64'));
+
       try {
         await service.generatePdf(evaluationKey);
       } catch (e) {
-        // Expected to fail eventually because Worker is not mocked, 
-        // but fetchEvaluation should have been called.
+        // Ignored
       }
 
       expect(fetchSpy).toHaveBeenCalledWith(evaluationKey);

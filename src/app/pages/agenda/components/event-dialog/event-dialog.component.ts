@@ -52,12 +52,16 @@ export class EventDialogComponent implements OnInit {
   students: UserModel[] = [];
   private studentsUnsubscribe?: () => void;
 
-  uniqueId: string = Math.random().toString(36).substring(2, 9);
+  static idCounter = 0;
+  uniqueId: string = `evt_${Date.now()}_${EventDialogComponent.idCounter++}`;
+  startDatetimeId = `start_${this.uniqueId}`;
+  endDatetimeId = `end_${this.uniqueId}`;
 
   // Input properties
   @ViewChild('eventForm') eventForm?: NgForm;
   @ViewChild('startDatetime') startDatetime?: IonDatetime;
   @ViewChild('endDatetime') endDatetime?: IonDatetime;
+
 
   @Input() event: AgendaEvent | null = null;
   @Input() targetedClasses: IClasseModel[] = [];
