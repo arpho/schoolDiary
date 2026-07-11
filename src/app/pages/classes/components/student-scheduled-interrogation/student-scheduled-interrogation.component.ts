@@ -1,4 +1,4 @@
-import { Component, input, computed, inject } from '@angular/core';
+import { Component, input, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonIcon, IonBadge, AlertController, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -15,7 +15,7 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
       <ion-badge color="warning" class="interrogation-badge" title="Interrogazioni programmate" (click)="showInterrogations($event)">
         <ion-icon name="calendar-outline"></ion-icon>
         @if (nextSubjectName()) { <span class="subject-name">{{ nextSubjectName() }} -</span> }
-        {{ nextInterrogation()?.dataInizio | date:'dd MMM' }}
+        {{ $safeNavigationMigration(nextInterrogation()?.dataInizio) | date:'dd MMM' }}
         @if (allInterrogations().length > 1) {
           <span>(+{{ allInterrogations().length - 1 }})</span>
         }
@@ -41,6 +41,7 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
     }
   `],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, IonIcon, IonBadge]
 })
 export class StudentScheduledInterrogationComponent {

@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -49,6 +49,7 @@ import { UsersRole } from 'src/app/shared/models/usersRole';
   selector: 'app-evaluations-list',
   templateUrl: './evaluations-list.page.html',
   styleUrls: ['./evaluations-list.page.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent,
     IonHeader,

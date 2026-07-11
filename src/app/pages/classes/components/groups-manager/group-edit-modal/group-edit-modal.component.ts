@@ -1,4 +1,4 @@
-import { Component, Input, inject, signal, OnInit } from '@angular/core';
+import { Component, Input, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
@@ -118,6 +118,7 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
       </div>
     </ion-content>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .form-container {
       max-width: 500px;

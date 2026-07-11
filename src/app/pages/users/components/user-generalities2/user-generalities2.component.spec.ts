@@ -8,7 +8,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { FormBuilder } from '@angular/forms';
 import { UserModel } from 'src/app/shared/models/userModel';
 
-import { Component, Input, Output, EventEmitter, forwardRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
 import { ClassesFieldComponent } from 'src/app/pages/classes/components/classes-field/classes-field.component';
@@ -17,6 +17,7 @@ import { ClassesFieldComponent } from 'src/app/pages/classes/components/classes-
   selector: 'app-classes-field',
   template: '',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

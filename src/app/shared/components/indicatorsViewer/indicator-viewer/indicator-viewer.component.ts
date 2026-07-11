@@ -1,4 +1,4 @@
-import { Component, input, OnInit } from '@angular/core';
+import { Component, input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import {
   IonCard,
@@ -23,6 +23,7 @@ import {
   templateUrl: './indicator-viewer.component.html',
   styleUrls: ['./indicator-viewer.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonCard,
     IonCardHeader,

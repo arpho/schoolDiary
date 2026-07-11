@@ -40,7 +40,8 @@ import {
   environment
 } from './environments/environment';
 import {
-  provideHttpClient
+  provideHttpClient,
+  withXhr
 } from '@angular/common/http';
 import {
   getFirestore,
@@ -84,7 +85,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection(),{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
-    provideHttpClient(),
+    provideHttpClient(withXhr()),
     IconService,
     provideRouter(routes, withPreloading(PreloadAllModules)),
     importProvidersFrom(IonicModule.forRoot()),

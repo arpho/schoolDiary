@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, effect, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, signal, effect, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonSegment, IonSegmentButton, IonLabel, IonContent, IonSelect, IonSelectOption, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonItem, IonList, IonBadge, IonIcon, IonText } from '@ionic/angular/standalone';
@@ -21,6 +21,7 @@ import { GroupModel } from 'src/app/pages/classes/models/groupModel';
   standalone: true,
   templateUrl: './dashboard-student.html',
   styleUrls: ['./dashboard-student.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule, 
     FormsModule, 

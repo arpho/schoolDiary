@@ -6,7 +6,7 @@ import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ModalController } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import { of } from 'rxjs';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('AgendaPage', () => {
@@ -38,7 +38,7 @@ describe('AgendaPage', () => {
         { provide: AgendaService, useValue: agendaServiceMock },
         { provide: ClassiService, useValue: classesServiceMock },
         { provide: ModalController, useValue: modalCtrlMock },
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting()
       ]
     }).compileComponents();

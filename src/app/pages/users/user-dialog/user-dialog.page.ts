@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, signal, effect, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, signal, effect, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   ModalController,
@@ -44,6 +44,7 @@ type TabType = 'generalita' | 'disabilita' | 'note' | 'valutazioni';
   templateUrl: './user-dialog.page.html',
   styleUrls: ['./user-dialog.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     ReactiveFormsModule,
     FormsModule,

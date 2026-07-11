@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, computed, OnChanges, SimpleChanges, effect } from '@angular/core';
+import { Component, OnInit, Input, computed, OnChanges, SimpleChanges, effect, ChangeDetectionStrategy } from '@angular/core';
 import { signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -61,6 +61,7 @@ import { AgendaEventInputComponent } from 'src/app/shared/components/agenda-even
   templateUrl: './list-student4class.component.html',
   styleUrls: ['./list-student4class.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonList,
     IonItem,

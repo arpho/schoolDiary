@@ -183,7 +183,7 @@
                   class="datetime-button"
                   (click)="openDatetimePicker('date')">
                   <ion-icon name="calendar" slot="start"></ion-icon>
-                  {{ formatDate(activityForm.get('date')?.value) }}
+                  {{ formatDate($safeNavigationMigration(activityForm.get('date')?.value)) }}
                 </ion-button>
                 
                 <!-- Hidden Datetime Picker -->
@@ -191,7 +191,7 @@
                   <ion-datetime
                     class="datetime-picker"
                     presentation="date"
-                    [value]="activityForm.get('date')?.value"
+                    [value]="$safeNavigationMigration(activityForm.get('date')?.value)"
                     [max]="dueDateControl?.value || ''"
                     (ionChange)="onDatetimeChange($event, 'date')"
                     (ionCancel)="currentDatetimeField = null"
@@ -240,7 +240,7 @@
                   class="datetime-button"
                   (click)="openDatetimePicker('dueDate')">
                   <ion-icon name="calendar" slot="start"></ion-icon>
-                  {{ formatDate(activityForm.get('dueDate')?.value) || 'Seleziona data' }}
+                  {{ formatDate($safeNavigationMigration(activityForm.get('dueDate')?.value)) || 'Seleziona data' }}
                 </ion-button>
                 
                 <!-- Hidden Datetime Picker -->
@@ -248,7 +248,7 @@
                   <ion-datetime
                     class="datetime-picker"
                     presentation="date"
-                    [value]="activityForm.get('dueDate')?.value"
+                    [value]="$safeNavigationMigration(activityForm.get('dueDate')?.value)"
                     [min]="dateControl?.value || minDate"
                     (ionchange)="onDatetimeChange($event, 'dueDate')"
                     (ioncancel)="currentDatetimeField = null"

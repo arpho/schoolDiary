@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal, inject } from '@angular/core';
+import { Component, computed, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonList, IonCard, IonCardContent, IonIcon, IonText, IonInputPasswordToggle } from '@ionic/angular/standalone';
@@ -18,6 +18,7 @@ import { personOutline, mailOutline, lockClosedOutline, personAddOutline } from 
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent,
     IonHeader,

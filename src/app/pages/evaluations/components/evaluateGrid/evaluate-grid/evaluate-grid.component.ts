@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, signal, model, output, effect } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, signal, model, output, effect, ChangeDetectionStrategy } from '@angular/core';
 import { Grids } from 'src/app/shared/models/grids';
 import { IonList, IonItem, IonLabel, IonCard, IonGrid, IonRow, IonCol, IonInput, IonCardContent, IonContent } from "@ionic/angular/standalone";
 import { IndicatorViewerComponent } from "src/app/shared/components/indicatorsViewer/indicator-viewer/indicator-viewer.component";
@@ -13,6 +13,7 @@ import { CriteriComponent } from "../../criteri/criteri/criteri.component";
   selector: 'app-evaluate-grid',
   templateUrl: './evaluate-grid.component.html',
   styleUrls: ['./evaluate-grid.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonList,
     IonItem,

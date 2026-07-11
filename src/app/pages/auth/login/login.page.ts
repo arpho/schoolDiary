@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton, IonInputPasswordToggle, IonCard, IonCardContent, IonIcon, IonText } from '@ionic/angular/standalone';
@@ -19,6 +19,7 @@ import { LocalLockService } from 'src/app/shared/services/local-lock.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonButton,
     IonInput,

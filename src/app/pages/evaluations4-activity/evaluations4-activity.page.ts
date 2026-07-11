@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, signal, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ import { eye, link, create, archive, trash, print, close } from 'ionicons/icons'
   templateUrl: './evaluations4-activity.page.html',
   styleUrls: ['./evaluations4-activity.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent, 
     IonHeader, 

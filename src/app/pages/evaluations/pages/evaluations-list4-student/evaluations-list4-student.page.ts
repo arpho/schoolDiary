@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
@@ -11,6 +11,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
   templateUrl: './evaluations-list4-student.page.html',
   styleUrls: ['./evaluations-list4-student.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule]
 })
 export class EvaluationsList4StudentPage implements OnInit {

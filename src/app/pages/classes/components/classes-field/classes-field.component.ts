@@ -6,7 +6,8 @@ import {
   inject,
   model,
   output,
-  input
+  input,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
@@ -40,6 +41,7 @@ import { list } from 'ionicons/icons';
 ],
   templateUrl: './classes-field.component.html',
   styleUrls: ['./classes-field.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

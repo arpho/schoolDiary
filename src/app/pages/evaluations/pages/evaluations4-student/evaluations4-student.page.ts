@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonButton, IonIcon } from '@ionic/angular/standalone';
@@ -19,6 +19,7 @@ import { chevronBack, chevronForward, peopleOutline } from 'ionicons/icons';
   templateUrl: './evaluations4-student.page.html',
   styleUrls: ['./evaluations4-student.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent,
     IonHeader,

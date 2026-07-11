@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect, input, OnInit } from '@angular/core';
+import { Component, inject, signal, effect, input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import {
   AlertController,
@@ -133,6 +133,7 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
     IonItemOption,
     DatePipe
 ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     :host {
       display: block;

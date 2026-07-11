@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { Criterio } from 'src/app/shared/models/criterio';
 import { IonList, IonItem, AlertInput, AlertController } from "@ionic/angular/standalone";
 
@@ -11,6 +11,7 @@ import { IonList, IonItem, AlertInput, AlertController } from "@ionic/angular/st
   templateUrl: './criteri.component.html',
   styleUrls: ["./criteri.component.scss"],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonList,
     IonItem,

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -19,6 +19,7 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
   templateUrl: './class-evaluations-overview.page.html',
   styleUrls: ['./class-evaluations-overview.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton,
     IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonIcon, IonBadge,

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output, signal, effect, OnChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output, signal, effect, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { ClasseModel } from '../../models/classModel';
 import { AssignedClass } from '../../../subjects-list/models/assignedClass';
 import { SubjectModel } from '../../../subjects-list/models/subjectModel';
@@ -17,6 +17,7 @@ import { settingsOutline, schoolOutline, recording } from 'ionicons/icons';
   templateUrl: './class-viewer.component.html',
   styleUrls: ['./class-viewer.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonCardContent,
     IonCardHeader,

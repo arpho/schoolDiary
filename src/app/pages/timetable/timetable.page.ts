@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, signal, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonSpinner, IonText, IonIcon, ModalController, IonFab, IonFabButton, IonButtons, IonBackButton } from '@ionic/angular/standalone';
@@ -18,6 +18,7 @@ import { add } from 'ionicons/icons';
   templateUrl: './timetable.page.html',
   styleUrls: ['./timetable.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonSpinner, IonText, IonIcon, TimetableToastUiComponent, IonFab, IonFabButton, IonButtons, IonBackButton]
 })
 export class TimetablePage implements OnInit, OnDestroy {

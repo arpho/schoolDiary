@@ -1,4 +1,4 @@
-import { Component, effect, input } from '@angular/core';
+import { Component, effect, input, ChangeDetectionStrategy } from '@angular/core';
 
 import {
   FormsModule,
@@ -62,6 +62,7 @@ import { DocumentModel } from '../../classes/models/documentModel';
   templateUrl: './evaluation.page.html',
   styleUrls: ['./evaluation.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormsModule,
     ReactiveFormsModule,

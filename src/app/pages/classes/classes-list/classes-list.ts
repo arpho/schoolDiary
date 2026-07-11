@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -40,6 +40,7 @@ import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionic
   templateUrl: './classes-list.html',
   styleUrls: ['./classes-list.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormsModule,
     IonContent,

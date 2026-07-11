@@ -1,4 +1,4 @@
-import { Component, input, output, signal, effect } from '@angular/core';
+import { Component, input, output, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -34,6 +34,7 @@ export interface DisabilityData {
   templateUrl: './student-disability.component.html',
   styleUrls: ['./student-disability.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule,
     FormsModule,

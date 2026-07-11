@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, ɵflushModuleScopingQueueAsMuchAsPossible } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ɵflushModuleScopingQueueAsMuchAsPossible, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
@@ -60,6 +60,7 @@ import { Subject } from 'rxjs';
     IonItemOption,
     FormsModule
 ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [UnsubscribeService]
 })
 export class SubjectsListPage implements OnInit, OnDestroy {

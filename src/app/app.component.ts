@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { IonApp, IonRouterOutlet, ToastController } from '@ionic/angular/standalone';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
@@ -19,6 +19,7 @@ import { ThemeService } from './shared/services/theme.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent implements OnInit {

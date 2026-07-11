@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { Component, computed, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA, inject, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActionSheetController } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
@@ -65,6 +65,7 @@ import { ClasseModel } from '../../classes/models/classModel';
     IonSelectOption,
     IonLabel
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class UsersListPage implements OnInit {

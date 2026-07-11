@@ -1,5 +1,6 @@
 import {
-  Component, input, output, signal, ViewChild, ElementRef
+  Component, input, output, signal, ViewChild, ElementRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { ImageCropperComponent, ImageCroppedEvent, LoadedImage } from 'ngx-image-cropper';
@@ -19,6 +20,7 @@ import { StudentPhotoService } from '../../services/student-photo.service';
   templateUrl: './student-avatar.component.html',
   styleUrls: ['./student-avatar.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     ImageCropperComponent,
     IonButton,

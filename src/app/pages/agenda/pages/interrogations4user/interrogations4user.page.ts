@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonSelect, IonSelectOption, IonList, IonItem, IonLabel, IonBadge, IonIcon, IonText, IonItemSliding, IonItemOptions, IonItemOption, IonFab, IonFabButton, ModalController, AlertController } from '@ionic/angular/standalone';
@@ -20,6 +20,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
   templateUrl: './interrogations4user.page.html',
   styleUrls: ['./interrogations4user.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonSelect, IonSelectOption, IonList, IonItem, IonLabel, IonBadge, IonIcon, IonText, IonItemSliding, IonItemOptions, IonItemOption, IonFab, IonFabButton, CommonModule, FormsModule, DatePipe]
 })
 export class Interrogations4userPage implements OnInit, OnDestroy {

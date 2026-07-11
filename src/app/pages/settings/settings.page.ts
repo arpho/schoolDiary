@@ -1,5 +1,5 @@
 import { UserMenuComponent } from '../../shared/components/user-menu/user-menu.component';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
@@ -24,6 +24,7 @@ import { colorPaletteOutline } from 'ionicons/icons';
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [UserMenuComponent, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonList, IonItem, IonSelect, IonSelectOption, IonIcon, FormsModule]
 })
 export class SettingsPage {

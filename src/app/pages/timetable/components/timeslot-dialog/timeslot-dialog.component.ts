@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, effect, Input } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonItem, IonSelect, IonSelectOption, IonInput, IonList, ModalController, IonFooter } from '@ionic/angular/standalone';
@@ -15,6 +15,7 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
   templateUrl: './timeslot-dialog.component.html',
   styleUrls: ['./timeslot-dialog.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormsModule,
     IonHeader,

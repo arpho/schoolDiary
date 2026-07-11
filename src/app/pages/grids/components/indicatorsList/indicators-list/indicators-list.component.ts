@@ -1,4 +1,4 @@
-import { Component, computed, effect, model, OnInit } from '@angular/core';
+import { Component, computed, effect, model, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Indicatore } from 'src/app/shared/models/indicatore';
 import { GridsService } from 'src/app/shared/services/grids/grids.service';
 import { IndicatorsDialogComponent } from "../../indicatorsDialog/indicators-dialog.component";
@@ -14,6 +14,7 @@ import { AsyncPipe } from '@angular/common';
   templateUrl: './indicators-list.component.html',
   styleUrls: ['./indicators-list.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IndicatorsDialogComponent,
     IonButton,

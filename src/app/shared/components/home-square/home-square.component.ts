@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonImg } from "@ionic/angular/standalone";
 
@@ -11,6 +11,7 @@ import { IonImg } from "@ionic/angular/standalone";
   templateUrl: './home-square.component.html',
   styleUrls: ['./home-square.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonImg]
 })
 export class HomeSquareComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Dashboard specifica per i docenti.
@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
 @Component({
   //selector: 'app-dashboard-teacher',
   templateUrl: './dashboard-teacher.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./dashboard-teacher.scss']
 })
 export class DashboardTeacherComponent {

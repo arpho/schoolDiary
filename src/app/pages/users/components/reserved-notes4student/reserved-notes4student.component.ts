@@ -1,4 +1,4 @@
-import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, Input, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import {
   AlertController, IonButton, IonIcon
@@ -27,6 +27,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
   styleUrls: ['./reserved-notes4student.component.scss'],
   standalone: true,
   imports: [CommonModule, IonButton, IonIcon, DatePipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [AlertController]
 })
 export class ReservedNotes4studentComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, Input, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
@@ -33,6 +33,7 @@ import { SubjectService } from '../../services/subjects/subject.service';
   templateUrl: './subject-selector.component.html',
   styleUrls: ['./subject-selector.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormsModule,
     IonHeader,

@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
@@ -34,6 +34,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
   templateUrl: './gridsdialog.html',
   styleUrls: ['./gridsdialog.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonButton,
     IonContent,

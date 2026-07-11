@@ -4,7 +4,8 @@ import {
   input,
   signal,
   inject,
-  effect
+  effect,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
@@ -42,6 +43,7 @@ import { SubjectSelectorComponent } from '../../../subjects-list/components/subj
   templateUrl: './classes-selector.page.html',
   styleUrls: ['./classes-selector.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent,
     IonList,

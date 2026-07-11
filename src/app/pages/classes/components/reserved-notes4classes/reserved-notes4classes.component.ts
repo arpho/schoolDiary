@@ -6,7 +6,8 @@ import {
   inject,
   computed,
   signal,
-  effect
+  effect,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -62,6 +63,7 @@ import {
     IonIcon,
     IonFabList
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [AlertController]
 })
 export class ReservedNotes4ClassesComponent implements OnInit {

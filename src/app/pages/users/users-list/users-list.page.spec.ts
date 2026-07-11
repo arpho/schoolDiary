@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { provideIonicAngular, IonBackButton } from '@ionic/angular/standalone';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -59,6 +59,7 @@ describe('UsersListPage', () => {
 @Component({
   selector: 'ion-back-button',
   template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true
 })
 class MockIonBackButton {}

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model, computed } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model, computed, ChangeDetectionStrategy } from '@angular/core';
 
 import {
   FormsModule,
@@ -54,6 +54,7 @@ import { ClassiService } from '../../classes/services/classi.service';
   templateUrl: './evaluation-dialog.page.html',
   styleUrls: ['./evaluation-dialog.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormsModule,
     ReactiveFormsModule,

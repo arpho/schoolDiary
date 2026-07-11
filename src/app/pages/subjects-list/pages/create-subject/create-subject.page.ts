@@ -1,4 +1,4 @@
-import { Component, inject, model, OnInit } from '@angular/core';
+import { Component, inject, model, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
@@ -46,6 +46,7 @@ const COLOR_PALETTE = [
   templateUrl: './create-subject.page.html',
   styleUrls: ['./create-subject.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonHeader,
     IonContent,

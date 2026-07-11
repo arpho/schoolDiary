@@ -58,7 +58,7 @@
         <ion-col size="2">
           <ion-item lines="none" class="input-item">
             <ion-input type="number" 
-                       [ngModel]="editingGrades().get(student.key)?.voto"
+                       [ngModel]="$safeNavigationMigration(editingGrades().get(student.key)?.voto)"
                        (ngModelChange)="updateGradeField(student.key, 'voto', $event)"
                        placeholder="Voto"
                        min="0" max="10">
@@ -70,7 +70,7 @@
         <ion-col size="2">
           <ion-item lines="none" class="input-item">
             <ion-input type="date" 
-                       [ngModel]="editingGrades().get(student.key)?.data"
+                       [ngModel]="$safeNavigationMigration(editingGrades().get(student.key)?.data)"
                        (ngModelChange)="updateGradeField(student.key, 'data', $event)">
             </ion-input>
           </ion-item>
@@ -80,7 +80,7 @@
         <ion-col size="2">
           <ion-item lines="none" class="input-item">
             <ion-input type="text" 
-                       [ngModel]="editingGrades().get(student.key)?.nota"
+                       [ngModel]="$safeNavigationMigration(editingGrades().get(student.key)?.nota)"
                        (ngModelChange)="updateGradeField(student.key, 'nota', $event)"
                        placeholder="Nota (opzionale)">
             </ion-input>

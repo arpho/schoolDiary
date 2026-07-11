@@ -9,7 +9,7 @@ import { of } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { LocalLockService } from 'src/app/shared/services/local-lock.service';
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, ChangeDetectionStrategy } from '@angular/core';
 import { UserMenuComponent } from 'src/app/shared/components/user-menu/user-menu.component';
 import { ConnectionStatusComponent } from 'src/app/shared/components/connectionStatus/connection-status/connection-status.component';
 import { DashboardAdminComponent } from 'src/app/shared/components/dashboard-admin/dashboard-admin';
@@ -17,19 +17,24 @@ import { DashboardTeacherComponent } from 'src/app/shared/components/dashboard-t
 import { DashboardStudentComponent } from 'src/app/shared/components/dashboard-student/dashboard-student';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 
-@Component({ selector: 'app-user-menu', standalone: true, template: '' })
+@Component({ selector: 'app-user-menu', standalone: true, changeDetection: ChangeDetectionStrategy.Eager,
+ template: '' })
 class MockUserMenuComponent {}
 
-@Component({ selector: 'app-connection-status', standalone: true, template: '' })
+@Component({ selector: 'app-connection-status', standalone: true, changeDetection: ChangeDetectionStrategy.Eager,
+ template: '' })
 class MockConnectionStatusComponent {}
 
-@Component({ selector: 'app-dashboard-student', standalone: true, template: '' })
+@Component({ selector: 'app-dashboard-student', standalone: true, changeDetection: ChangeDetectionStrategy.Eager,
+ template: '' })
 class MockDashboardStudentComponent {}
 
-@Component({ selector: 'app-dashboard-teacher', standalone: true, template: '' })
+@Component({ selector: 'app-dashboard-teacher', standalone: true, changeDetection: ChangeDetectionStrategy.Eager,
+ template: '' })
 class MockDashboardTeacherComponent {}
 
-@Component({ selector: 'app-dashboard-admin', standalone: true, template: '' })
+@Component({ selector: 'app-dashboard-admin', standalone: true, changeDetection: ChangeDetectionStrategy.Eager,
+ template: '' })
 class MockDashboardAdminComponent {}
 
 

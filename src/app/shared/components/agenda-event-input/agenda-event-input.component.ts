@@ -1,4 +1,4 @@
-import { Component, Input, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { EventType } from '../../../pages/agenda/models/agendaEvent';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -289,6 +289,7 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
     IonAccordion,
     IonAccordionGroup
   ] as any[],
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .time-icon {
       margin-right: 8px;

@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal, inject } from '@angular/core';
+import { Component, computed, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import {
   FormsModule
@@ -54,6 +54,7 @@ import { Router } from '@angular/router';
   templateUrl: './grids-list.html',
   styleUrls: ['./grids-list.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent,
     IonHeader,

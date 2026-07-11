@@ -1,4 +1,4 @@
-import { Component, input, signal, inject } from '@angular/core';
+import { Component, input, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ClassiService } from '../../../pages/classes/services/classi.service';
 import { ClasseModel } from '../../../pages/classes/models/classModel';
 
@@ -9,6 +9,7 @@ import { ClasseModel } from '../../../pages/classes/models/classModel';
 @Component({
   selector: 'app-class-wiever',
   templateUrl: './class-wiever.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./class-wiever.component.scss'],
 })
 export class ClassViewerComponent {

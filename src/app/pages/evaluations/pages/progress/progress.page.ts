@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, ChangeDetectorRef, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectorRef, computed, ChangeDetectionStrategy } from '@angular/core';
 import { UserModel } from 'src/app/shared/models/userModel';
 
 import { FormsModule } from '@angular/forms';
@@ -19,6 +19,7 @@ import { Chart, registerables } from 'chart.js';
   templateUrl: './progress.page.html',
   styleUrls: ['./progress.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, ChartModule, IonSelect, IonSelectOption, IonButtons, IonButton, IonBackButton]
 })
 export class ProgressPage implements OnInit {

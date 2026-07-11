@@ -1,5 +1,5 @@
 
-import { ChangeDetectorRef, Component, effect, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, input, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
@@ -46,6 +46,7 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
   templateUrl: './user-generalities2.component.html',
   styleUrls: ['./user-generalities2.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormsModule,
     ReactiveFormsModule,

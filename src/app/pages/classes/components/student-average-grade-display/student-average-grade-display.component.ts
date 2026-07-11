@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject, input, output, signal, model } from '@angular/core';
+import { Component, OnInit, effect, inject, input, output, signal, model, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { EvaluationService } from '../../../evaluations/services/evaluation/evaluation.service';
@@ -23,6 +23,7 @@ import { clipboardOutline, documentText, statsChart } from 'ionicons/icons';
   templateUrl: './student-average-grade-display.component.html',
   styleUrls: ['./student-average-grade-display.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule,
     DecimalPipe,

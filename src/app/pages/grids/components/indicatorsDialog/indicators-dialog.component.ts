@@ -1,12 +1,13 @@
 import {
-    Component,
-    computed,
-    EventEmitter,
-    Input,
-    model,
-    OnInit,
-    Output,
-    signal
+  Component,
+  computed,
+  EventEmitter,
+  Input,
+  model,
+  OnInit,
+  Output,
+  signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTextarea, IonItem, IonList, IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
 import { Criterio } from 'src/app/shared/models/criterio';
@@ -34,6 +35,7 @@ import {
     templateUrl: './indicators-dialog.component.html',
     styleUrls: ['./indicators-dialog.component.scss'],
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         FormsModule,
         ReactiveFormsModule,

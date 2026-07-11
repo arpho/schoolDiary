@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -94,6 +94,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
     IonSpinner,
     DatePipe
 ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ActivityDialogComponent implements OnInit {

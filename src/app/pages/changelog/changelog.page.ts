@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
@@ -24,6 +24,7 @@ import { bookOutline, lockClosedOutline, personOutline, refreshOutline, alertCir
   templateUrl: './changelog.page.html',
   styleUrls: ['./changelog.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent,
     IonHeader,

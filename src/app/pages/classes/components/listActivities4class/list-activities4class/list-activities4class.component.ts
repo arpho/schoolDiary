@@ -1,4 +1,4 @@
-import { Component, effect, input, OnDestroy, signal, WritableSignal, inject } from '@angular/core';
+import { Component, effect, input, OnDestroy, signal, WritableSignal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivityModel } from 'src/app/pages/activities/models/activityModel';
@@ -49,6 +49,7 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
   templateUrl: './list-activities4class.component.html',
   styleUrls: ['./list-activities4class.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule,
     DatePipe,

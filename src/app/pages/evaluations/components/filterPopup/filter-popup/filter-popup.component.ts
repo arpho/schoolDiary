@@ -1,4 +1,4 @@
-import { Component, effect, model, OnInit, signal } from '@angular/core';
+import { Component, effect, model, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
@@ -34,6 +34,7 @@ import { refreshOutline } from 'ionicons/icons';
   templateUrl: './filter-popup.component.html',
   styleUrls: ['./filter-popup.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     FormsModule,
     ReactiveFormsModule,

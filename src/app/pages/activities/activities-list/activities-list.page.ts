@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, effect, OnDestroy } from '@angular/core';
+import { Component, OnInit, signal, inject, effect, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonFab, IonFabButton, IonFabList, IonBackButton, IonButtons, IonCardSubtitle, IonButton, AlertInput, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { ActivityModel } from '../models/activityModel';
 import { UsersService } from '../../../shared/services/users.service';
@@ -24,6 +24,7 @@ import { user } from '@angular/fire/auth';
   templateUrl: './activities-list.page.html',
   styleUrls: ['./activities-list.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent,
     IonHeader,

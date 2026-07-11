@@ -88,6 +88,7 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
   templateUrl: './evaluation4-student.component.html',
   styleUrls: ['./evaluation4-student.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule,
     IonGrid,
