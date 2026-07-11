@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit, ɵflushModuleScopingQueueAsMuchAsPossible } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -42,7 +42,6 @@ import { Subject } from 'rxjs';
   styleUrls: ['./subjects-list.page.scss'],
   standalone: true,
   imports: [
-    // Componenti Ionic
     IonContent,
     IonHeader,
     IonTitle,
@@ -59,10 +58,8 @@ import { Subject } from 'rxjs';
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
-    // Moduli Angular
-    CommonModule,
     FormsModule
-  ],
+],
   providers: [UnsubscribeService]
 })
 export class SubjectsListPage implements OnInit, OnDestroy {

@@ -1,5 +1,5 @@
 import { Component, effect, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -63,7 +63,6 @@ import { DocumentModel } from '../../classes/models/documentModel';
   styleUrls: ['./evaluation.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonButtons,
@@ -88,7 +87,7 @@ import { DocumentModel } from '../../classes/models/documentModel';
     EvaluateGridComponent,
     ActivityDialogComponent,
     IonItemDivider
-  ]
+]
 })
 export class EvaluationPage implements OnInit {
   evaluationParam = input<Evaluation>(new Evaluation());

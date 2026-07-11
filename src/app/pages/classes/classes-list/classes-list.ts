@@ -1,5 +1,5 @@
 import { Component, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -41,7 +41,6 @@ import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionic
   styleUrls: ['./classes-list.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     IonContent,
     IonHeader,
@@ -58,7 +57,7 @@ import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionic
     IonCol,
     IonFab,
     IonFabButton
-  ]
+]
 })
 export class ClassesListComponent {
   classiList = toSignal(this.service.getClassiOnRealtime(), { initialValue: [] });

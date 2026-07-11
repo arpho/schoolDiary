@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectorRef, Component, effect, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
@@ -47,7 +47,6 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
   styleUrls: ['./user-generalities2.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonContent,
@@ -68,7 +67,7 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
     IonRow,
     IonCol,
     IonList
-  ]
+]
 })
 export class UserGeneralities2Component implements OnInit {
   user = input.required<UserModel>();

@@ -1,5 +1,5 @@
 import { Component, computed, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonList, IonCard, IonCardContent, IonIcon, IonText, IonInputPasswordToggle } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
@@ -23,7 +23,6 @@ import { personOutline, mailOutline, lockClosedOutline, personAddOutline } from 
     IonHeader,
     IonTitle,
     IonToolbar,
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     IonLabel,
@@ -37,7 +36,7 @@ import { personOutline, mailOutline, lockClosedOutline, personAddOutline } from 
     IonIcon,
     IonText,
     IonInputPasswordToggle
-  ]
+]
 })
 export class SignupPage {
   private fb = inject(FormBuilder);

@@ -1,5 +1,5 @@
 import { Component, Input, inject, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
@@ -31,7 +31,6 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
   selector: 'app-group-edit-modal',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -46,7 +45,7 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
     IonButton,
     IonButtons,
     IonIcon
-  ],
+],
   template: `
     <ion-header>
       <ion-toolbar [color]="showOnlySettings ? 'tertiary' : 'primary'">

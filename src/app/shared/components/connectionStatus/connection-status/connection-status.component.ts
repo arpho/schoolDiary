@@ -7,7 +7,7 @@ import {
   signal,
   inject
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ConnectionStatus } from 'src/app/shared/models/connectionStatus';
 import { IonIcon } from '@ionic/angular/standalone';
 import { ConnectionStatusService } from 'src/app/shared/services/connectionStatus/connection-status.service';
@@ -19,7 +19,7 @@ import { ConnectionStatusService } from 'src/app/shared/services/connectionStatu
 @Component({
   selector: 'app-connection-status',
   standalone: true,
-  imports: [IonIcon, CommonModule],
+  imports: [IonIcon],
   template: `
     <div class="status-container">
       @if(isOnline) {

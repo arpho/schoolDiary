@@ -1,6 +1,6 @@
 import { UserMenuComponent } from '../../shared/components/user-menu/user-menu.component';
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -24,21 +24,7 @@ import { colorPaletteOutline } from 'ionicons/icons';
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
   standalone: true,
-  imports: [UserMenuComponent, 
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonButtons,
-    IonBackButton,
-    IonList,
-    IonItem,
-    IonSelect,
-    IonSelectOption,
-    IonIcon,
-    CommonModule,
-    FormsModule
-  ]
+  imports: [UserMenuComponent, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonList, IonItem, IonSelect, IonSelectOption, IonIcon, FormsModule]
 })
 export class SettingsPage {
   private themeService = inject(ThemeService);

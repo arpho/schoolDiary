@@ -8,7 +8,7 @@ import {
   output,
   input
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
@@ -29,7 +29,6 @@ import { list } from 'ionicons/icons';
   selector: 'app-classes-field',
   standalone: true,
   imports: [
-    CommonModule,
     IonList,
     IonItem,
     IonButton,
@@ -38,7 +37,7 @@ import { list } from 'ionicons/icons';
     FormsModule,
     IonFabButton,
     IonFab
-  ],
+],
   templateUrl: './classes-field.component.html',
   styleUrls: ['./classes-field.component.scss'],
   providers: [

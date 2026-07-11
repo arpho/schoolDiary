@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonSpinner, IonText, IonIcon, ModalController, IonFab, IonFabButton, IonButtons, IonBackButton } from '@ionic/angular/standalone';
 import { TimetableService } from './services/timetable.service';
@@ -18,7 +18,7 @@ import { add } from 'ionicons/icons';
   templateUrl: './timetable.page.html',
   styleUrls: ['./timetable.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonSpinner, IonText, IonIcon, TimetableToastUiComponent, IonFab, IonFabButton, IonButtons, IonBackButton]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonSpinner, IonText, IonIcon, TimetableToastUiComponent, IonFab, IonFabButton, IonButtons, IonBackButton]
 })
 export class TimetablePage implements OnInit, OnDestroy {
   private timetableService = inject(TimetableService);

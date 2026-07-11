@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, signal, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import Calendar from '@toast-ui/calendar';
 import { AgendaEvent } from '../../models/agendaEvent';
 import { IonButtons, IonButton, IonIcon, IonText, IonSegment, IonSegmentButton, IonLabel } from '@ionic/angular/standalone';
@@ -24,7 +24,7 @@ import { FormsModule } from '@angular/forms';
   `],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonButtons, IonButton, IonIcon, IonText, IonSegment, IonSegmentButton, IonLabel, FormsModule]
+  imports: [IonButtons, IonButton, IonIcon, IonText, IonSegment, IonSegmentButton, IonLabel, FormsModule]
 })
 export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy {
   @ViewChild('calendar') calendarContainer!: ElementRef;

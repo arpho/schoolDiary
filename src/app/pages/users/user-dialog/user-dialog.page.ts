@@ -13,7 +13,7 @@ import {
   IonItem,
   IonButtons
 } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
@@ -45,7 +45,6 @@ type TabType = 'generalita' | 'disabilita' | 'note' | 'valutazioni';
   styleUrls: ['./user-dialog.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     IonBackButton,
@@ -63,7 +62,7 @@ type TabType = 'generalita' | 'disabilita' | 'note' | 'valutazioni';
     Evaluation4StudentComponent,
     StudentAvatarComponent,
     StudentDisabilityComponent
-  ]
+]
 })
 export class UserDialogPage implements OnInit, HasUnsavedChanges {
   @ViewChild(UserGeneralities2Component) generalitiesComp!: UserGeneralities2Component;

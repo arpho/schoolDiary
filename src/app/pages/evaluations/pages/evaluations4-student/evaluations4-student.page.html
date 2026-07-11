@@ -2,22 +2,26 @@
 
   <ion-buttons slot="start">
     <ion-back-button defaultHref="/dashboard"></ion-back-button>
-    <ion-button *ngIf="classKey" (click)="goToClassDialog()" title="Torna alla classe">
-      <ion-icon name="people-outline"></ion-icon>
-    </ion-button>
+    @if (classKey) {
+      <ion-button (click)="goToClassDialog()" title="Torna alla classe">
+        <ion-icon name="people-outline"></ion-icon>
+      </ion-button>
+    }
   </ion-buttons>
 
-  <ion-toolbar>    
+  <ion-toolbar>
     <ion-title align="center">Valutazioni per lo studente {{student().lastName}} {{student().firstName}}</ion-title>
-    
-    <ion-buttons slot="end" *ngIf="classKey">
-      <ion-button [disabled]="!prevStudentKey()" (click)="prevStudentKey() && goToStudent(prevStudentKey()!)" title="Studente Precedente">
-        <ion-icon name="chevron-back"></ion-icon>
-      </ion-button>
-      <ion-button [disabled]="!nextStudentKey()" (click)="nextStudentKey() && goToStudent(nextStudentKey()!)" title="Studente Successivo">
-        <ion-icon name="chevron-forward"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+
+    @if (classKey) {
+      <ion-buttons slot="end">
+        <ion-button [disabled]="!prevStudentKey()" (click)="prevStudentKey() && goToStudent(prevStudentKey()!)" title="Studente Precedente">
+          <ion-icon name="chevron-back"></ion-icon>
+        </ion-button>
+        <ion-button [disabled]="!nextStudentKey()" (click)="nextStudentKey() && goToStudent(nextStudentKey()!)" title="Studente Successivo">
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
   </ion-toolbar>
 </ion-header>
 
@@ -29,8 +33,8 @@
       <ion-title size="large">evaluations4Student</ion-title>
     </ion-toolbar>
   </ion-header>
-  <app-evaluation4-student 
-    [studentkey]="student().key" 
+  <app-evaluation4-student
+    [studentkey]="student().key"
     [teacherkey]="teacherKey"
     [selectedSubjectKey]="subjectKey()"
     (selectedSubjectKeyChange)="subjectKey.set($event)">

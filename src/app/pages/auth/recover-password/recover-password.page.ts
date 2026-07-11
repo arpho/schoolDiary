@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -19,7 +19,6 @@ import { mailOutline, personOutline } from 'ionicons/icons';
   styleUrls: ['./recover-password.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     IonContent,
@@ -33,7 +32,7 @@ import { mailOutline, personOutline } from 'ionicons/icons';
     IonCardContent,
     IonIcon,
     IonText
-  ]
+]
 })
 export class RecoverPasswordPage implements OnInit {
   recoverForm: FormGroup;

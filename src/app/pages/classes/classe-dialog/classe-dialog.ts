@@ -35,9 +35,7 @@ import {
   IonCol,
   IonItemDivider
 } from '@ionic/angular/standalone';
-import {
-  CommonModule
-} from '@angular/common';
+
 import {
   FormsModule,
 } from '@angular/forms';
@@ -104,7 +102,6 @@ import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
     IonItem,
     IonLabel,
     IonIcon,
-    CommonModule,
     ListStudent4classComponent,
     ReservedNotes4ClassesComponent,
     ListActivities4classComponent,
@@ -116,7 +113,7 @@ import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
     IonRow,
     IonCol,
     IonItemDivider
-  ],
+],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ClasseDialogPage implements OnInit, HasUnsavedChanges {

@@ -1,5 +1,5 @@
 import { Component, inject, model, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -58,9 +58,8 @@ const COLOR_PALETTE = [
     IonItem,
     IonLabel,
     IonList,
-    CommonModule,
     FormsModule
-  ]
+]
 })
 export class CreateSubjectPage implements OnInit {
   // Model per il binding bidirezionale

@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { UserModel } from 'src/app/shared/models/userModel';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   IonButtons,
@@ -35,7 +35,6 @@ import { refreshOutline } from 'ionicons/icons';
   styleUrls: ['./filter-popup.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonButtons,
@@ -51,8 +50,8 @@ import { refreshOutline } from 'ionicons/icons';
     IonDatetime,
     IonButton,
     IonList,
-    IonIcon,
-  ]
+    IonIcon
+]
 })
 export class FilterPopupComponent implements OnInit {
   resetFilter() {

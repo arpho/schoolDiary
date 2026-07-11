@@ -18,10 +18,10 @@
   <ion-list>
     <ion-item>
       <ion-label position="stacked">Nome Materia <span class="required">*</span></ion-label>
-      <ion-input 
-        [ngModel]="name" 
+      <ion-input
+        [ngModel]="name"
         (ngModelChange)="onNameChange($event)"
-        type="text" 
+        type="text"
         placeholder="Inserisci il nome della materia"
         clearinput="true"
         required
@@ -31,10 +31,10 @@
 
     <ion-item>
       <ion-label position="stacked">Classe di Concorso (opzionale)</ion-label>
-      <ion-input 
+      <ion-input
         [ngModel]="classeDiConcorso"
         (ngModelChange)="onClasseDiConcorsoChange($event)"
-        type="text" 
+        type="text"
         placeholder="Inserisci la classe di concorso"
         clearinput="true">
       </ion-input>
@@ -43,16 +43,17 @@
     <ion-item>
       <ion-label>Colore</ion-label>
       <div class="color-palette">
-        <button 
-          *ngFor="let color of colorPalette" 
-          [style.background]="color" 
-          [class.selected]="selectedColor === color"
-          (click)="selectColor(color)"
-          type="button"
-          [attr.aria-label]="'Seleziona colore ' + color"
-          [attr.aria-pressed]="selectedColor === color">
-          <span class="visually-hidden">Colore {{ color }}</span>
-        </button>
+        @for (color of colorPalette; track color) {
+          <button
+            [style.background]="color"
+            [class.selected]="selectedColor === color"
+            (click)="selectColor(color)"
+            type="button"
+            [attr.aria-label]="'Seleziona colore ' + color"
+            [attr.aria-pressed]="selectedColor === color">
+            <span class="visually-hidden">Colore {{ color }}</span>
+          </button>
+        }
       </div>
     </ion-item>
   </ion-list>
@@ -60,39 +61,39 @@
 
 <style>
   .required {
-    color: var(--ion-color-danger);
-  }
-  
-  .color-palette {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px 0;
-  }
-  
-  .color-palette button {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-  
-  .color-palette button.selected {
-    border-color: var(--ion-color-dark);
-    transform: scale(1.1);
-  }
-  
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
+  color: var(--ion-color-danger);
+}
+
+.color-palette {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+padding: 8px 0;
+}
+
+.color-palette button {
+width: 32px;
+height: 32px;
+border-radius: 50%;
+border: 2px solid transparent;
+cursor: pointer;
+transition: transform 0.2s;
+}
+
+.color-palette button.selected {
+border-color: var(--ion-color-dark);
+transform: scale(1.1);
+}
+
+.visually-hidden {
+position: absolute;
+width: 1px;
+height: 1px;
+padding: 0;
+margin: -1px;
+overflow: hidden;
+clip: rect(0, 0, 0, 0);
+white-space: nowrap;
+border: 0;
+}
 </style>

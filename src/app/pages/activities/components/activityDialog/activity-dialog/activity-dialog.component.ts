@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivityModel } from '../../../models/activityModel';
@@ -67,10 +67,8 @@ import { UsersService } from 'src/app/shared/services/users.service';
   },
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    // Ionic Components
     IonDatetime,
     IonItem,
     IonLabel,
@@ -95,7 +93,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
     IonGrid,
     IonSpinner,
     DatePipe
-  ],
+],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ActivityDialogComponent implements OnInit {

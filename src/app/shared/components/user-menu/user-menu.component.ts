@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule, Router } from '@angular/router';
 import {
   IonButton,
@@ -34,7 +34,6 @@ import { Md5 } from 'ts-md5';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterModule,
     IonButton,
     IonIcon,
@@ -45,7 +44,7 @@ import { Md5 } from 'ts-md5';
     IonLabel,
     IonAvatar,
     IonText
-  ]
+]
 })
 export class UserMenuComponent implements OnInit {
   private usersService = inject(UsersService);

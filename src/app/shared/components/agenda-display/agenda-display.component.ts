@@ -1,5 +1,5 @@
 import { Component, inject, signal, effect, input, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {
   AlertController,
   IonList,
@@ -123,7 +123,6 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
   `,
   standalone: true,
   imports: [
-    CommonModule,
     IonList,
     IonItem,
     IonLabel,
@@ -133,7 +132,7 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
     IonItemOptions,
     IonItemOption,
     DatePipe
-  ],
+],
   styles: [`
     :host {
       display: block;

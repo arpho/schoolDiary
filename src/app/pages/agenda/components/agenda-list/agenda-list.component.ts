@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   IonList,
   IonListHeader,
@@ -20,13 +20,12 @@ import { AgendaDisplayComponent } from 'src/app/shared/components/agenda-display
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    CommonModule,
     IonList,
     IonListHeader,
     IonItem,
     IonLabel,
     AgendaDisplayComponent
-  ]
+]
 })
 export class AgendaListComponent {
   events = input.required<AgendaEvent[]>();

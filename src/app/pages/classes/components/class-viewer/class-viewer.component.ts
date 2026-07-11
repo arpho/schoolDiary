@@ -4,7 +4,7 @@ import { AssignedClass } from '../../../subjects-list/models/assignedClass';
 import { SubjectModel } from '../../../subjects-list/models/subjectModel';
 import { SubjectService } from '../../../subjects-list/services/subjects/subject.service';
 import { IonCardContent, IonCardHeader, IonCardTitle, IonCard, IonBadge, IonButton, IonIcon } from "@ionic/angular/standalone";
-import { CommonModule } from '@angular/common';
+
 import { addIcons } from 'ionicons';
 import { settingsOutline, schoolOutline, recording } from 'ionicons/icons';
 
@@ -18,7 +18,6 @@ import { settingsOutline, schoolOutline, recording } from 'ionicons/icons';
   styleUrls: ['./class-viewer.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
@@ -26,7 +25,7 @@ import { settingsOutline, schoolOutline, recording } from 'ionicons/icons';
     IonBadge,
     IonButton,
     IonIcon
-  ],
+],
 })
 export class ClassViewerComponent implements OnInit, OnChanges {
   @Input() classe: ClasseModel | AssignedClass = new ClasseModel();

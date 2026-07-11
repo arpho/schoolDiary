@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -55,7 +55,6 @@ import { ClassiService } from '../../classes/services/classi.service';
   styleUrls: ['./evaluation-dialog.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonButtons,
@@ -75,7 +74,7 @@ import { ClassiService } from '../../classes/services/classi.service';
     EvaluateGridComponent,
     IonIcon,
     IonItemDivider
-  ]
+]
 })
 export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
   /**

@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, effect, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonTextarea, IonFabButton, IonFab, IonFooter, IonToolbar, IonTitle, IonBackButton, IonButtons } from '@ionic/angular/standalone';
@@ -80,7 +80,7 @@ export class GridsdialogPage implements OnInit {
     effect(() => {
       console.log("indicatorsList", this.indicatorsList());
     });
-    const navigation = this.router.getCurrentNavigation();
+    const navigation = this.router.currentNavigation();
     this.gridKey = navigation?.extras.state?.['gridKey'];
     console.log("gridKey", this.gridKey);
   }

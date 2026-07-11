@@ -1,7 +1,7 @@
 import {
   Component, input, output, signal, ViewChild, ElementRef
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ImageCropperComponent, ImageCroppedEvent, LoadedImage } from 'ngx-image-cropper';
 import { IonButton, IonIcon, IonSpinner, IonModal, IonContent, IonHeader,
          IonToolbar, IonTitle, IonButtons, IonFooter } from '@ionic/angular/standalone';
@@ -20,11 +20,18 @@ import { StudentPhotoService } from '../../services/student-photo.service';
   styleUrls: ['./student-avatar.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     ImageCropperComponent,
-    IonButton, IonIcon, IonSpinner, IonModal, IonContent,
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonFooter
-  ]
+    IonButton,
+    IonIcon,
+    IonSpinner,
+    IonModal,
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonFooter
+]
 })
 export class StudentAvatarComponent {
   /** Chiave dello studente (usata per il path su Storage) */

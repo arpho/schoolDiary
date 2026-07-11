@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed, effect, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonItem, IonSelect, IonSelectOption, IonInput, IonList, ModalController, IonFooter } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -16,9 +16,21 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
   styleUrls: ['./timeslot-dialog.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon,
-    IonContent, IonItem, IonSelect, IonSelectOption, IonInput, IonList, IonFooter
-  ]
+    FormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonIcon,
+    IonContent,
+    IonItem,
+    IonSelect,
+    IonSelectOption,
+    IonInput,
+    IonList,
+    IonFooter
+]
 })
 export class TimeslotDialogComponent implements OnInit {
   @Input() item?: TimetableModel;

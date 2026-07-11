@@ -1,7 +1,5 @@
 import { Component, computed, OnInit, signal, inject } from '@angular/core';
-import {
-  CommonModule
-} from '@angular/common';
+
 import {
   FormsModule
 } from '@angular/forms';
@@ -61,7 +59,6 @@ import { Router } from '@angular/router';
     IonHeader,
     IonTitle,
     IonToolbar,
-    CommonModule,
     FormsModule,
     IonGrid,
     IonRow,
@@ -74,7 +71,7 @@ import { Router } from '@angular/router';
     IonIcon,
     IonItem,
     IonBackButton
-  ]
+]
 })
 export class GridsListComponent implements OnInit {
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -38,9 +38,8 @@ import { bookOutline, lockClosedOutline, personOutline, refreshOutline, alertCir
     IonLabel,
     IonBadge,
     IonIcon,
-    CommonModule,
     FormsModule
-  ]
+]
 })
 export class ChangelogPage implements OnInit {
 

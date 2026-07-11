@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Evaluation } from '../models/evaluation';
@@ -56,8 +56,6 @@ import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonContent,
@@ -81,7 +79,7 @@ import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
     EvaluateGridComponent,
     IonItemDivider,
     IonButtons
-  ]
+]
 })
 export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
   $classes = inject(ClassiService);

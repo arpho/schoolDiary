@@ -33,7 +33,8 @@ import {
   AppComponent
 } from './app/app.component';
 import {
-  importProvidersFrom, isDevMode
+  importProvidersFrom, isDevMode,
+  provideZoneChangeDetection
 } from '@angular/core';
 import {
   environment
@@ -81,7 +82,7 @@ addIcons({
 
 bootstrapApplication(AppComponent, {
   providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    provideZoneChangeDetection(),{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideHttpClient(),
     IconService,

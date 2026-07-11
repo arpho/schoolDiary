@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject, ChangeDetectorRef, computed } from '@angular/core';
 import { UserModel } from 'src/app/shared/models/userModel';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonSelect, IonSelectOption, IonButtons, IonButton, IonBackButton } from '@ionic/angular/standalone';
 import { ChartModule } from 'primeng/chart';
@@ -19,7 +19,7 @@ import { Chart, registerables } from 'chart.js';
   templateUrl: './progress.page.html',
   styleUrls: ['./progress.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, ChartModule, IonSelect, IonSelectOption, IonButtons, IonButton, IonBackButton]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, ChartModule, IonSelect, IonSelectOption, IonButtons, IonButton, IonBackButton]
 })
 export class ProgressPage implements OnInit {
 

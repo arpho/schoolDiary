@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonItem, IonLabel, IonInput, IonDatetime, IonButton, IonBackButton, IonButtons, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
@@ -34,13 +34,12 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
     IonDatetime,
     IonButton,
     IonBackButton,
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonButtons,
     IonSelect,
     IonSelectOption
-  ]
+]
 })
 export class ProfilePage implements OnInit {
   private userKey = signal<string>('');

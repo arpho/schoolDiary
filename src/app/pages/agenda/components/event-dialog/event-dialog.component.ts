@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, inject, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ModalController, IonDatetime, IonDatetimeButton } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, NgForm } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
@@ -28,7 +28,7 @@ type ExtendedAgendaEvent = Omit<IAgendaEvent, 'targetClasses'> & {
   templateUrl: './event-dialog.component.html',
   styleUrls: ['./event-dialog.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [FormsModule, IonicModule]
 })
 export class EventDialogComponent implements OnInit {
   /**

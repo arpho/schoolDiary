@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,14 +24,13 @@ import { chevronBack, chevronForward, peopleOutline } from 'ionicons/icons';
     IonHeader,
     IonTitle,
     IonToolbar,
-    CommonModule,
     FormsModule,
     Evaluation4StudentComponent,
     IonBackButton,
     IonButtons,
     IonButton,
     IonIcon
-  ]
+]
 })
 export class Evaluations4StudentPage implements OnInit {
   studentKey = '';

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy, effect, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -44,7 +44,6 @@ import { AgendaEventInputComponent } from '../../shared/components/agenda-event-
     IonHeader,
     IonTitle,
     IonToolbar,
-    CommonModule,
     FormsModule,
     IonButtons,
     IonBackButton,
@@ -56,7 +55,7 @@ import { AgendaEventInputComponent } from '../../shared/components/agenda-event-
     IonLabel,
     AgendaListComponent,
     AgendaSchedulerToastUiComponent
-  ]
+]
 })
 export class AgendaPage implements OnInit {
   protected readonly Array = Array;

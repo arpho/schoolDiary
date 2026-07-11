@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonButtons, IonBackButton } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
@@ -17,7 +17,6 @@ import { UsersService } from 'src/app/shared/services/users.service';
   styleUrls: ['./reset-password.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     IonContent,
     IonHeader,
     IonTitle,
@@ -30,7 +29,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
     IonBackButton,
     FormsModule,
     ReactiveFormsModule
-  ]
+]
 })
 export class ResetPasswordPage implements OnInit {
   resetPasswordForm!: FormGroup;

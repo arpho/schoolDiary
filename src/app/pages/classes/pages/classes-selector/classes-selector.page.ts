@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -49,7 +49,6 @@ import { SubjectSelectorComponent } from '../../../subjects-list/components/subj
     IonHeader,
     IonTitle,
     IonToolbar,
-    CommonModule,
     FormsModule,
     ClassViewerComponent,
     IonSelectOption,
@@ -59,7 +58,7 @@ import { SubjectSelectorComponent } from '../../../subjects-list/components/subj
     IonIcon,
     IonLabel,
     SubjectSelectorComponent
-  ]
+]
 })
 export class ClassesSelectorPage {
   private readonly classiService = inject(ClassiService);

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton, IonInputPasswordToggle, IonCard, IonCardContent, IonIcon, IonText } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -27,7 +27,6 @@ import { LocalLockService } from 'src/app/shared/services/local-lock.service';
     IonHeader,
     IonTitle,
     IonToolbar,
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
@@ -36,7 +35,7 @@ import { LocalLockService } from 'src/app/shared/services/local-lock.service';
     IonCardContent,
     IonIcon,
     IonText
-  ]
+]
 })
 export class LoginPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);

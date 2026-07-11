@@ -1,5 +1,5 @@
 import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
@@ -34,7 +34,6 @@ import { SubjectService } from '../../services/subjects/subject.service';
   styleUrls: ['./subject-selector.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -51,7 +50,7 @@ import { SubjectService } from '../../services/subjects/subject.service';
     IonRadio,
     IonListHeader,
     IonSearchbar
-  ]
+]
 })
 export class SubjectSelectorComponent implements OnInit {
   @Input() selectedSubjectsKey: string[] = [];

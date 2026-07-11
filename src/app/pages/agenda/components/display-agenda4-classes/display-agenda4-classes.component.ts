@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, effect, input, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   IonList,
   IonListHeader,
@@ -36,7 +36,6 @@ import { AgendaEventInputComponent } from 'src/app/shared/components/agenda-even
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    CommonModule,
     IonList,
     IonListHeader,
     IonItem,
@@ -49,7 +48,7 @@ import { AgendaEventInputComponent } from 'src/app/shared/components/agenda-even
     IonToolbar,
     AgendaDisplayComponent,
     AgendaSchedulerToastUiComponent
-  ]
+]
 })
 export class DisplayAgenda4ClassesComponent {
   targetedClasses = input.required<string[]>();

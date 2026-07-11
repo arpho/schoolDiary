@@ -19,14 +19,14 @@
         placeholder="Filtra per media" style="flex: 1;">
         <ion-select-option value="all">Filtra per media</ion-select-option>
         <ion-select-option value="insufficient">Insufficienti (< 6)</ion-select-option>
-            <ion-select-option value="sufficient">Sufficienti (>= 6)</ion-select-option>
+        <ion-select-option value="sufficient">Sufficienti (>= 6)</ion-select-option>
       </ion-select>
 
       <ion-select [ngModel]="selectedSubjectKey()" (ngModelChange)="selectedSubjectKey.set($event)" interface="popover"
         placeholder="Materia" style="flex: 1;">
         <ion-select-option value="all">Tutte le materie</ion-select-option>
         @for (subject of subjects(); track subject.key) {
-        <ion-select-option [value]="subject.key">{{subject.name}}</ion-select-option>
+          <ion-select-option [value]="subject.key">{{subject.name}}</ion-select-option>
         }
       </ion-select>
     </div>
@@ -40,7 +40,7 @@
       <span style="font-size: 0.9rem; color: var(--ion-color-medium);">Inizio periodo:</span>
       <div id="open-date-picker" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
         <span style="font-weight: 500; font-size: 1rem; color: var(--ion-color-primary);">{{ dataInizioPeriodo() |
-          date:'dd/MM/yyyy' }}</span>
+        date:'dd/MM/yyyy' }}</span>
         <ion-icon name="calendar" color="primary"></ion-icon>
       </div>
     </div>
@@ -58,39 +58,41 @@
   <div class="student-list">
     <ion-list class="centered-list">
       @for (student of filteredStudents(); track student.key) {
-      <ion-item class="student-item" (click)="showActionSheet(student)">
-        <ion-card class="student-card">
-          <ion-card-header>
-            <ion-card-title>
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                <div>
-                  {{student.lastName}} {{student.firstName}}
-                  <ion-icon *ngIf="student.BES || student.DSA || student.ADHD" name="help-buoy-outline" color="warning"
-                    style="margin-left: 8px; vertical-align: middle;"></ion-icon>
-                </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; flex: 1;">
-                  @if (selectedSubjectKey() === 'all') {
-                    @for (subject of subjects(); track subject.key) {
-                      <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()" [subjectKey]="subject.key" [subjects]="subjects()"></app-student-scheduled-interrogation>
+        <ion-item class="student-item" (click)="showActionSheet(student)">
+          <ion-card class="student-card">
+            <ion-card-header>
+              <ion-card-title>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <div>
+                    {{student.lastName}} {{student.firstName}}
+                    @if (student.BES || student.DSA || student.ADHD) {
+                      <ion-icon name="help-buoy-outline" color="warning"
+                      style="margin-left: 8px; vertical-align: middle;"></ion-icon>
                     }
-                  } @else {
-                    <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()" [subjectKey]="selectedSubjectKey()" [subjects]="subjects()"></app-student-scheduled-interrogation>
-                  }
+                  </div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; flex: 1;">
+                    @if (selectedSubjectKey() === 'all') {
+                      @for (subject of subjects(); track subject.key) {
+                        <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()" [subjectKey]="subject.key" [subjects]="subjects()"></app-student-scheduled-interrogation>
+                      }
+                    } @else {
+                      <app-student-scheduled-interrogation [student]="student" [events]="agendaEvents()" [subjectKey]="selectedSubjectKey()" [subjects]="subjects()"></app-student-scheduled-interrogation>
+                    }
+                  </div>
                 </div>
-              </div>
-            </ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()"
-              [subjectKey]="selectedSubjectKey()" [startDate]="dataInizioPeriodo()" [classKey]="classkey">
-            </app-student-average-grade-display>
-          </ion-card-content>
-        </ion-card>
-      </ion-item>
-      } @empty {
-      <div class="empty-state">
-        <p>Nessuno studente presente</p>
-      </div>
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <app-student-average-grade-display [student]="student" [teacherkey]="teacherkey()"
+                [subjectKey]="selectedSubjectKey()" [startDate]="dataInizioPeriodo()" [classKey]="classkey">
+              </app-student-average-grade-display>
+            </ion-card-content>
+          </ion-card>
+        </ion-item>
+        } @empty {
+        <div class="empty-state">
+          <p>Nessuno studente presente</p>
+        </div>
       }
     </ion-list>
   </div>

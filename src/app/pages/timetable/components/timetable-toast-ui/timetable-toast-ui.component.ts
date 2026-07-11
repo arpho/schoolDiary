@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, signal, output, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import Calendar from '@toast-ui/calendar';
 import { TimetableModel } from '../../models/timetable.model';
 import { AgendaEvent } from '../../../agenda/models/agendaEvent';
@@ -18,7 +18,7 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
     styleUrls: ['./timetable-toast-ui.component.scss'],
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, IonButtons, IonButton, IonIcon, IonText, IonSegment, IonSegmentButton, IonLabel, FormsModule]
+    imports: [IonButtons, IonButton, IonIcon, IonText, IonSegment, IonSegmentButton, IonLabel, FormsModule]
 })
 export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
     @ViewChild('calendar') calendarContainer!: ElementRef;

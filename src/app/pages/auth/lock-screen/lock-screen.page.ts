@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   IonContent,
@@ -28,7 +28,6 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
   styleUrls: ['./lock-screen.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     IonContent,
@@ -43,7 +42,7 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonCardContent,
     IonIcon,
     IonText
-  ]
+]
 })
 export class LockScreenPage implements OnInit {
   private fb = inject(FormBuilder);
