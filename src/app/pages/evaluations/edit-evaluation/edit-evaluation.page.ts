@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, effect, computed } from '@angular/core';
 
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Evaluation } from '../models/evaluation';
 import { EvaluationService } from '../services/evaluation/evaluation.service';
@@ -57,7 +58,6 @@ import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    ReactiveFormsModule,
     IonContent,
     IonHeader,
     IonTitle,
@@ -78,7 +78,9 @@ import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
     IonNote,
     EvaluateGridComponent,
     IonItemDivider,
-    IonButtons
+    IonButtons,
+    FormField,
+    FormRoot
 ]
 })
 export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
@@ -97,7 +99,7 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
 
     const activity = signal<ActivityModel>(new ActivityModel({
       teacherKey: teacher?.key,
-      classKey: this.classKey,
+      classKey: this.classKey(),
       date: new Date().toISOString()
     }));
     const classi4Teacher = await Promise.all(teacher?.classesKey.map(classKey => this.$classes.fetchClasseOnCache(classKey)) || [])
@@ -117,18 +119,17 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
     if (result.data) {
       const newActivity = await this.$activites.addActivity(activity());
 
-      this.evaluationform.patchValue({
+      this.evaluationform().patchValue({
         activityKey: newActivity.key
       });
-      this.evaluationform.updateValueAndValidity();
     }
   }
   async updateEvaluation() {
     const evaluation = this.evaluation();
-    if (evaluation) {
+    if (evaluation && this.isFormValid()) {
       console.log("evaluation before ", evaluation);
-      console.log("evaluationform", this.evaluationform.value);
-      evaluation.build(this.evaluationform.value);
+      console.log("evaluationform", this.evaluationform().value());
+      evaluation.build(this.evaluationform().value());
       console.log("evaluation after ", evaluation);
       evaluation.grid = this.grid();
       console.log("evaluation grid ", evaluation.grid);
@@ -177,25 +178,28 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
     this.enclosedDocuments.update(docs => docs.filter((_, i) => i !== index));
   }
 
-  // Form group declaration
-  evaluationform: FormGroup;
+  // Model
+  evaluationModel = signal({
+    description: '',
+    note: '',
+    data: new Date().toISOString(),
+    gridKey: null as string | null,
+    subjectKey: '',
+    activityKey: '',
+    classKey: '',
+    studentKey: ''
+  });
 
-  constructor(private fb: FormBuilder,
-    private router: Router) {
+  // Form group declaration
+  evaluationform = form(this.evaluationModel, schema((s) => {
+    required(s.subjectKey);
+    required(s.activityKey);
+    // Note: grid validity is handled externally via isGridValid
+  }));
+
+  constructor(private router: Router) {
     console.log("EditEvaluationPage constructor chiamato");
     addIcons({ add, link, trash, save: saveOutline });
-
-    // Initialize form in constructor
-    this.evaluationform = this.fb.group({
-      description: [''],
-      note: [''],
-      data: [new Date()],
-      gridKey: [null],
-      subjectKey: ['', Validators.required],
-      activityKey: ['', Validators.required],
-      classKey: [''],
-      studentKey: ['']
-    }, { validators: [this.gridValidator()] });
   }
 
   async ngOnInit() {
@@ -273,26 +277,24 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
     });
 
     // Gestisci la data in base al tipo
-    let evaluationDate: Date = new Date();
+    let evaluationDateStr: string = new Date().toISOString();
     const data = evaluation?.data;
 
     if (!data) {
-      evaluationDate = new Date();
+      evaluationDateStr = new Date().toISOString();
     } else if (typeof data === 'string') {
-      evaluationDate = new Date(data);
+      evaluationDateStr = new Date(data).toISOString();
     } else if (Object.prototype.toString.call(data) === '[object Date]') {
-      evaluationDate = data as Date;
+      evaluationDateStr = (data as Date).toISOString();
     } else if (data && typeof (data as any).toDate === 'function') {
-      evaluationDate = (data as any).toDate();
+      evaluationDateStr = (data as any).toDate().toISOString();
     }
-
-    console.log('Data elaborata:', evaluationDate);
 
     try {
       const formValues = {
         description: evaluation?.description || '',
         note: evaluation?.note || '',
-        data: evaluationDate,
+        data: evaluationDateStr,
         gridKey: evaluation?.grid?.key || null,
         subjectKey: evaluation?.subjectKey || '',
         activityKey: evaluation?.activityKey || '',
@@ -309,14 +311,11 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
       console.log('Valori del form da inizializzare:', formValues);
 
       // Update the form with the new values
-      this.evaluationform.patchValue(formValues);
-      this.evaluationform.setValidators([this.gridValidator()]);
-      this.evaluationform.updateValueAndValidity();
+      this.evaluationform().patchValue(formValues);
 
       console.log('Form aggiornato con valori:', {
-        formValue: this.evaluationform.value,
-        formStatus: this.evaluationform.status,
-        formErrors: this.evaluationform.errors
+        formValue: this.evaluationform().value(),
+        formStatus: this.evaluationform().valid()
       });
     } catch (error) {
       console.error('Errore durante l\'inizializzazione del form:', error);
@@ -324,38 +323,28 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
     }
   }
 
-  // Validatore personalizzato per la griglia
-  private gridValidator() {
-    return (control: any) => {
-      if (!(control instanceof FormGroup)) return null;
-
-      const gridControl = control.get('grid');
-      if (gridControl?.value && !this.isGridValid()) {
-        return { gridInvalid: true };
-      }
-      return null;
-    };
-  }
+  isFormValid = computed(() => {
+    return this.evaluationform().valid() && (!this.evaluationModel().gridKey || this.isGridValid());
+  });
 
   onGridValidityChange(isValid: boolean) {
     this.isGridValid.set(isValid);
-    // Forza il ricalcolo della validità del form
-    this.evaluationform.updateValueAndValidity();
   }
 
   // Aggiungi questo metodo per ottenere la griglia selezionata
-  getSelectedGrid() {
-    if (this.grid()) { return this.grid() }
+  getSelectedGrid = computed(() => {
+    if (this.grid() && this.grid().key) { return this.grid() }
     else {
-      const gridKey = this.evaluationform.get('gridKey')?.value;
+      const gridKey = this.evaluationModel().gridKey;
       if (!gridKey) return null;
       return this.griglie().find(g => g.key === gridKey) || null;
     }
-  }
+  });
+
   /**
    * Verifica se ci sono modifiche non salvate nella valutazione.
    */
   hasUnsavedChanges(): boolean {
-    return this.evaluationform.dirty || this.enclosedDocuments().length > 0;
+    return this.evaluationform().dirty() || this.enclosedDocuments().length > 0;
   }
 }

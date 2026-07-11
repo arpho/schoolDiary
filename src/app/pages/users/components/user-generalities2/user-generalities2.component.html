@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true" class="ion-padding">
-  <form [formGroup]="userForm">
+  <form [formRoot]="userForm">
 
     <!-- ─── SEZIONE ANAGRAFICA ─────────────────────────────── -->
     <div class="section-title">
@@ -16,14 +16,9 @@
             fill="outline"
             labelPlacement="floating"
             label="Nome *"
-            formControlName="firstName"
-            type="text"
-            [class.ion-invalid]="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched"
-            [class.ion-touched]="userForm.get('firstName')?.touched">
+            [formField]="userForm.firstName"
+            type="text">
           </ion-input>
-          @if (userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched) {
-            <ion-note color="danger" class="field-error">{{ getErrorMessage('firstName') }}</ion-note>
-          }
         </ion-col>
 
         <!-- Cognome -->
@@ -33,13 +28,8 @@
             fill="outline"
             labelPlacement="floating"
             label="Cognome *"
-            formControlName="lastName"
-            [class.ion-invalid]="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched"
-            [class.ion-touched]="userForm.get('lastName')?.touched">
+            [formField]="userForm.lastName">
           </ion-input>
-          @if (userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched) {
-            <ion-note color="danger" class="field-error">{{ getErrorMessage('lastName') }}</ion-note>
-          }
         </ion-col>
 
         <!-- Nickname -->
@@ -49,7 +39,7 @@
             fill="outline"
             labelPlacement="floating"
             label="Nickname"
-            formControlName="userName">
+            [formField]="userForm.userName">
           </ion-input>
         </ion-col>
 
@@ -60,14 +50,9 @@
             fill="outline"
             labelPlacement="floating"
             label="Email *"
-            formControlName="email"
-            type="email"
-            [class.ion-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
-            [class.ion-touched]="userForm.get('email')?.touched">
+            [formField]="userForm.email"
+            type="email">
           </ion-input>
-          @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
-            <ion-note color="danger" class="field-error">{{ getErrorMessage('email') }}</ion-note>
-          }
         </ion-col>
 
         <!-- Telefono -->
@@ -77,7 +62,7 @@
             fill="outline"
             labelPlacement="floating"
             label="Telefono"
-            formControlName="phoneNumber"
+            [formField]="userForm.phoneNumber"
             type="tel">
           </ion-input>
         </ion-col>
@@ -89,7 +74,7 @@
             fill="outline"
             labelPlacement="floating"
             label="Data di nascita"
-            formControlName="birthDate"
+            [formField]="userForm.birthDate"
             type="date">
           </ion-input>
         </ion-col>
@@ -110,7 +95,7 @@
             fill="outline"
             labelPlacement="floating"
             label="Ruolo"
-            formControlName="role">
+            [formField]="userForm.role">
             @for (role of rolesValue; track $index) {
               <ion-select-option [value]="role">{{ $UsersRole[role] }}</ion-select-option>
             }
@@ -123,7 +108,7 @@
             fill="outline"
             labelPlacement="floating"
             label="Classe principale"
-            formControlName="classKey">
+            [formField]="userForm.classKey">
             @for (classe of elencoClassi(); track classe.key) {
               <ion-select-option [value]="classe.key">{{ classe.classe }}</ion-select-option>
             }
@@ -147,7 +132,7 @@
 
 <ion-footer>
   <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="save()" (keydown.enter)="save()" [disabled]="!userForm.valid">
+    <ion-fab-button (click)="save()" (keydown.enter)="save()" [disabled]="!userForm().valid">
       <ion-icon name="save"></ion-icon>
     </ion-fab-button>
   </ion-fab>

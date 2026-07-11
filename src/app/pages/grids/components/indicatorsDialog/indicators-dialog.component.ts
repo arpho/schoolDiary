@@ -12,14 +12,8 @@ import {
 import { IonTab, IonTabs, IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon, IonLabel, IonTabBar, IonTabButton, IonTextarea, IonItem, IonList, IonFab, IonFabButton, IonFabList } from '@ionic/angular/standalone';
 import { Criterio } from 'src/app/shared/models/criterio';
 import { Indicatore } from 'src/app/shared/models/indicatore';
-import {
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
 import {
     AlertController,
     ActionSheetController,
@@ -35,10 +29,9 @@ import {
     templateUrl: './indicators-dialog.component.html',
     styleUrls: ['./indicators-dialog.component.scss'],
     standalone: true,
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         FormsModule,
-        ReactiveFormsModule,
         IonTab,
         IonTabs,
         IonContent,
@@ -59,44 +52,33 @@ import {
         IonList,
         IonFab,
         IonFabButton,
-        IonFabList
+        IonFabList,
+        FormField,
+        FormRoot
     ],
 })
 export class IndicatorsDialogComponent implements OnInit {
-    onIndicatorValueChange($event: any) {
-        this.indicatorValue.set($event.target.value);
-        console.log("indicatorValue changed to ", this.indicatorValue());
-    }
     @Input() indicatore!: Indicatore;
-    descrizione = signal<string>('');
-    indicatorValue = signal<string>('');
-    criterioDescrizione = signal<string>('');
-    criterioValori = signal<string>('');
+
+    indicatorModel = signal({
+      descrizione: '',
+      valore: ''
+    });
+
+    indicatorForm = form(this.indicatorModel, schema((s) => {
+      required(s.descrizione);
+      required(s.valore);
+    }));
+
     criteri = signal<Criterio[]>([]);
-    criterio = computed(() => {
-        return {
-            descrizione: this.descrizione(),
-            valore: this.indicatorValue(),
-            criteri: this.criteri()
-        }
-    });
-    indicatorForm: FormGroup = new FormGroup({
-        descrizione: new FormControl(""),
-        valore: new FormControl(""),
-    });
+
     constructor(
-        private fb: FormBuilder,
         private alertController: AlertController,
         private modalController: ModalController
-    ) {
-        this.criterioForm = this.fb.group({
-            descrizione: new FormControl("", Validators.required),
-            valori: new FormControl("", Validators.required),
-        });
-    }
+    ) {}
+
     async selectCriterio(criterio: Criterio, index: number) {
         console.log("selectCriterio", criterio, index);
-
     }
     removeCriterio(index: number) {
         this.criteri.set([...this.criteri().slice(0, index), ...this.criteri().slice(index + 1)]);
@@ -108,12 +90,12 @@ export class IndicatorsDialogComponent implements OnInit {
             buttons: [{ text: 'Cancel', role: 'cancel' }, {
                 text: 'OK', role: 'ok', handler: (data) => {
                     console.log(data);
-                    const criterio = new Criterio({
+                    const nuovoCriterio = new Criterio({
                         descrizione: data.descrizione,
                         valori: data.valori,
                     });
-                    console.log("criterio", criterio);
-                    this.criteri.set([...this.criteri().slice(0, index), criterio, ...this.criteri().slice(index + 1)]);
+                    console.log("criterio", nuovoCriterio);
+                    this.criteri.set([...this.criteri().slice(0, index), nuovoCriterio, ...this.criteri().slice(index + 1)]);
                 }
             }],
             inputs: [
@@ -147,7 +129,6 @@ export class IndicatorsDialogComponent implements OnInit {
                         valori: data.valori,
                     });
                     console.log("criterio", criterio);
-                    //this.criteri.set([...this.criteri(), criterio]);
                     this.pushCriterio(criterio);
                 }
             }],
@@ -167,61 +148,37 @@ export class IndicatorsDialogComponent implements OnInit {
 
         await alert.present();
     }
-    valueCriterio = computed(() => {
-        return new Criterio({
-            descrizione: this.criterioDescrizione(),
-            valori: this.criterioValori()
-        })
-    });
+
     pushCriterio(criterio: Criterio) {
-        console.log("pushCriterio", this.valueCriterio());
         this.criteri.set([...this.criteri(), criterio]);
     }
-    onValoriCriterioChange($event: any) {
-        this.criterioValori.set($event.target.value);
-        console.log("valori changed to ", this.criterioValori());
-    }
-    onDescrizioneCriterioChange($event: any) {
-        this.criterioDescrizione.set($event.target.value);
-        console.log("descrizione changed to ", this.criterioDescrizione());
-    }
-    criterioForm: FormGroup = new FormGroup({
-        descrizione: new FormControl("", Validators.required),
-        valori: new FormControl("", Validators.required),
-    });
+
     title4criterio = computed(() => {
         return ` inserisci i criteri per
-    ${this.descrizione()}`;
+    ${this.indicatorModel().descrizione}`;
     });
+    
     @Output() indicatorpushed = new EventEmitter<Indicatore>();
+    
     pushIndicator() {
-
         console.log("pushIndicator");
         const indicatore = new Indicatore({
-            descrizione: this.descrizione(),
-            valore: this.indicatorValue(),
+            descrizione: this.indicatorModel().descrizione,
+            valore: this.indicatorModel().valore,
             criteri: this.criteri()
         });
         console.log("nuovo indicatore", indicatore);
         this.indicatorpushed.emit(indicatore);
         this.modalController.dismiss(indicatore);
-
-
     }
-    onDescrizioneChange($event: any) {
-        this.descrizione.set($event.target.value);
-        console.log("descrizione changed to ", this.descrizione());
-    }
-
 
     ngOnInit(): void {
         console.log("indicatorsDialog ngOnInit", this.indicatore);
-        this.criteri.set(this.indicatore?.criteri);
-        this.indicatorForm = this.fb.group({
-            descrizione: new FormControl(this.indicatore?.descrizione, Validators.required),
-            valore: new FormControl(this.indicatore?.valore, Validators.required),
+        this.criteri.set(this.indicatore?.criteri || []);
+        
+        this.indicatorForm().patchValue({
+          descrizione: this.indicatore?.descrizione || '',
+          valore: this.indicatore?.valore || ''
         });
-        this.descrizione.set(this.indicatore?.descrizione);
-        this.indicatorValue.set(this.indicatore?.valore);
     }
 }

@@ -19,41 +19,41 @@
       <ion-card-title>Dettagli Profilo</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <form [formRoot]="profileForm" (ngSubmit)="onSubmit()">
         <ion-item>
           <ion-label position="floating">Nome</ion-label>
-          <ion-input type="text" formControlName="firstName"></ion-input>
+          <ion-input type="text" [formField]="profileForm.firstName"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Cognome</ion-label>
-          <ion-input type="text" formControlName="lastName"></ion-input>
+          <ion-input type="text" [formField]="profileForm.lastName"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Email</ion-label>
-          <ion-input type="email" [readonly]="true" formControlName="email"></ion-input>
+          <ion-input type="email" [readonly]="true" [formField]="profileForm.email"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Data di nascita</ion-label>
-          <ion-datetime formControlName="birthDate" displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY"></ion-datetime>
+          <ion-datetime [formField]="profileForm.birthDate" displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY"></ion-datetime>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Numero di telefono</ion-label>
-          <ion-input formControlName="phoneNumber"></ion-input>
+          <ion-input [formField]="profileForm.phoneNumber"></ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Nome utente</ion-label>
-          <ion-input formControlName="userName"></ion-input>
+          <ion-input [formField]="profileForm.userName"></ion-input>
         </ion-item>
 
         @if (isClassSelectionEnabled()) {
           <ion-item>
             <ion-label position="floating">Classe</ion-label>
-            <ion-select formControlName="classKey">
+            <ion-select [formField]="profileForm.classKey">
               @for(classe of listaClassi(); track $index){  
                 <ion-select-option [value]="classe.key">
                   {{classe.classe}} {{classe.year}}
@@ -63,7 +63,7 @@
           </ion-item>
         }
 
-        <ion-button expand="block" type="submit" [disabled]="!profileForm.valid">
+        <ion-button expand="block" type="submit" [disabled]="!profileForm().valid()">
           Salva
         </ion-button>
       </form>

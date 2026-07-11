@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, effect, signal, ChangeDetectionStrategy } from '@angular/core';
 
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
 import { ModalController } from '@ionic/angular';
 import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonTextarea, IonFabButton, IonFab, IonFooter, IonToolbar, IonTitle, IonBackButton, IonButtons } from '@ionic/angular/standalone';
 
@@ -34,8 +35,9 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
   templateUrl: './gridsdialog.html',
   styleUrls: ['./gridsdialog.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormsModule,
     IonButton,
     IonContent,
     IonHeader,
@@ -49,11 +51,12 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonFab,
     IndicatorViewerComponent,
     IonFooter,
-    IonIcon,
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonBackButton
+    IonBackButton,
+    FormField,
+    FormRoot
   ]
 })
 export class GridsdialogPage implements OnInit {
@@ -62,7 +65,6 @@ export class GridsdialogPage implements OnInit {
 
   constructor(
     private modalController: ModalController,
-    private fb: FormBuilder,
     private router: Router,
     private $users: UsersService,
     private $grids: GridsService,
@@ -175,41 +177,36 @@ export class GridsdialogPage implements OnInit {
       }
     });
   }
-  onNomeChange($event: any) {
-    this.nome.set($event.target.value);
-    console.log("nome changed to ", this.nome());
-  }
-  onDescrizioneChange($event: any) {
-    this.descrizione.set($event.target.value);
-    console.log("descrizione changed to ", this.descrizione());
-  }
 
-  gridForm = new FormGroup({
-    nome: new FormControl('', Validators.required),
-    descrizione: new FormControl(''),
+  gridModel = signal({
+    nome: '',
+    descrizione: ''
   });
+
+  gridForm = form(this.gridModel, schema((s) => {
+    required(s.nome);
+  }));
+
   gridSignal = signal(new Grids());
   indicatorsList = signal(this.gridSignal().indicatori);
-  nome = signal("");
-  descrizione = signal("");
   valore = signal("");
+  
   formValue = computed(() => {
     return {
-      nome: this.nome(),
-      descrizione: this.descrizione(),
+      nome: this.gridModel().nome,
+      descrizione: this.gridModel().descrizione,
       indicatori: this.indicatorsList(),
       valore: this.valore()
     }
   });
 
   ngOnInit(): void {
-    this.nome.set(this.gridSignal().nome);
-    this.descrizione.set(this.gridSignal().descrizione);
-    this.indicatorsList.set(this.gridSignal().indicatori);
-    this.gridForm = this.fb.group({
-      nome: new FormControl(this.nome(), Validators.required),
-      descrizione: new FormControl(this.descrizione(), Validators.required),
+    this.gridForm().patchValue({
+      nome: this.gridSignal().nome,
+      descrizione: this.gridSignal().descrizione
     });
+    this.indicatorsList.set(this.gridSignal().indicatori);
+
     if (this.gridKey) {
       this.pageTitle = "Modifica Griglia";
       console.log("devo aprire la griglia con key", this.gridKey);
@@ -217,10 +214,8 @@ export class GridsdialogPage implements OnInit {
       this.$grids.fetchGrid(this.gridKey).then((grid) => {
         console.log("grid", grid);
         this.gridSignal.set(grid);
-        this.nome.set(grid.nome);
-        this.descrizione.set(grid.descrizione);
         this.indicatorsList.set(grid.indicatori);
-        this.gridForm.setValue({
+        this.gridForm().patchValue({
           nome: grid.nome,
           descrizione: grid.descrizione
         });

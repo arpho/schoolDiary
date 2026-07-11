@@ -23,7 +23,7 @@
     </div>
     }
 
-  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
+  <form [formRoot]="activityForm" (ngSubmit)="onSubmit()" #form="ngForm" class="form-container" novalidate>
     <ion-card class="form-card">
       <ion-card-header>
         <ion-card-title class="ion-text-center">
@@ -34,31 +34,32 @@
 
       <ion-card-content>
         <!-- Titolo -->
-        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(titleControl?.touched || isSubmitted) && titleControl?.invalid" [class.ion-valid]="titleControl?.valid && (titleControl?.touched || isSubmitted)">
+        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(titleControl().touched() || isSubmitted) && titleControl().invalid()" [class.ion-valid]="titleControl().valid() && (titleControl().touched() || isSubmitted)">
           <ion-label position="floating">Titolo <span class="required">*</span></ion-label>
           <ion-input 
-            formControlName="title"
+            [formField]="activityForm.title"
             type="text"
             required
-            [attr.aria-invalid]="(titleControl?.touched || isSubmitted) && titleControl?.invalid ? 'true' : 'false'"
-            aria-describedby="title-errors">
+            [attr.aria-invalid]="(titleControl().touched() || isSubmitted) && titleControl().invalid() ? 'true' : 'false'"
+            aria-describedby="title-errors"
+            (ionBlur)="updateErrorMessage()">
           </ion-input>
           
           <div id="title-errors" class="error-messages">
-            @if ((titleControl?.touched || isSubmitted) && titleControl?.errors) {
-              @if (titleControl?.errors?.['required']) {
+            @if ((titleControl().touched() || isSubmitted) && titleControl().invalid()) {
+              @if (titleControl().hasError('required')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   Il titolo è obbligatorio
                 </ion-note>
               }
-              @if (titleControl?.errors?.['minlength']) {
+              @if (titleControl().hasError('minLength')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   Il titolo deve essere di almeno 3 caratteri
                 </ion-note>
               }
-              @if (titleControl?.errors?.['maxlength']) {
+              @if (titleControl().hasError('maxLength')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   Il titolo non può superare i 100 caratteri
@@ -69,31 +70,32 @@
         </ion-item>
 
         <!-- Descrizione -->
-        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(descriptionControl?.touched || isSubmitted) &amp;&amp; descriptionControl?.invalid" [class.ion-valid]="descriptionControl?.valid &amp;&amp; (descriptionControl?.touched || isSubmitted)">
+        <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(descriptionControl().touched() || isSubmitted) && descriptionControl().invalid()" [class.ion-valid]="descriptionControl().valid() && (descriptionControl().touched() || isSubmitted)">
           <ion-label position="floating">Descrizione <span class="required">*</span></ion-label>
           <ion-textarea 
-            formControlName="description"
+            [formField]="activityForm.description"
             rows="4"
             required
-            [attr.aria-invalid]="(descriptionControl?.touched || isSubmitted) && descriptionControl?.invalid ? 'true' : 'false'"
-            aria-describedby="description-errors">
+            [attr.aria-invalid]="(descriptionControl().touched() || isSubmitted) && descriptionControl().invalid() ? 'true' : 'false'"
+            aria-describedby="description-errors"
+            (ionBlur)="updateErrorMessage()">
           </ion-textarea>
           
           <div id="description-errors" class="error-messages">
-            @if ((descriptionControl?.touched || isSubmitted) && descriptionControl?.invalid) {
-              @if (descriptionControl?.errors?.['required']) {
+            @if ((descriptionControl().touched() || isSubmitted) && descriptionControl().invalid()) {
+              @if (descriptionControl().hasError('required')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   La descrizione è obbligatoria
                 </ion-note>
               }
-              @if (descriptionControl?.errors?.['minlength']) {
+              @if (descriptionControl().hasError('minLength')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
-                  La descrizione deve essere di almeno 3 caratteri
+                  La descrizione deve essere di almeno 10 caratteri
                 </ion-note>
               }
-              @if (descriptionControl?.errors?.['maxlength']) {
+              @if (descriptionControl().hasError('maxLength')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   La descrizione non può superare i 500 caratteri
@@ -107,16 +109,17 @@
           <ion-row>
             <!-- Classe -->
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid" [class.ion-valid]="classKeyControl?.valid && (classKeyControl?.touched || isSubmitted)">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(classKeyControl().touched() || isSubmitted) && classKeyControl().invalid()" [class.ion-valid]="classKeyControl().valid() && (classKeyControl().touched() || isSubmitted)">
                 <ion-label position="stacked">Classe <span class="required">*</span></ion-label>
                 <ion-select 
-                  formControlName="classKey"
+                  [formField]="activityForm.classKey"
                   interface="action-sheet"
                   cancelText="Annulla"
                   okText="Seleziona"
                   required
-                  [attr.aria-invalid]="(classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid ? 'true' : 'false'"
-                  aria-describedby="class-errors">
+                  [attr.aria-invalid]="(classKeyControl().touched() || isSubmitted) && classKeyControl().invalid() ? 'true' : 'false'"
+                  aria-describedby="class-errors"
+                  (ionChange)="updateErrorMessage()">
                   <ion-select-option value="">Seleziona una classe</ion-select-option>
                   @for (classe of listaClassi; track classe.key) {
                     <ion-select-option [value]="classe.key">
@@ -126,8 +129,8 @@
                 </ion-select>
                 
                 <div id="class-errors" class="error-messages">
-                  @if ((classKeyControl?.touched || isSubmitted) && classKeyControl?.invalid) {
-                    @if (classKeyControl?.errors?.['required']) {
+                  @if ((classKeyControl().touched() || isSubmitted) && classKeyControl().invalid()) {
+                    @if (classKeyControl().hasError('required')) {
                       <ion-note color="danger">
                         <ion-icon name="warning" slot="start"></ion-icon>
                         Seleziona una classe
@@ -140,16 +143,17 @@
             
             <!-- Materia -->
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(subjectControl?.touched || isSubmitted) && subjectControl?.invalid" [class.ion-valid]="subjectControl?.valid && (subjectControl?.touched || isSubmitted)">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(subjectControl().touched() || isSubmitted) && subjectControl().invalid()" [class.ion-valid]="subjectControl().valid() && (subjectControl().touched() || isSubmitted)">
                 <ion-label position="stacked">Materia <span class="required">*</span></ion-label>
                 <ion-select 
-                  formControlName="subjectsKey"
+                  [formField]="activityForm.subjectsKey"
                   interface="action-sheet"
                   cancelText="Annulla"
                   okText="Seleziona"
                   required
-                  [attr.aria-invalid]="(subjectControl?.touched || isSubmitted) && subjectControl?.invalid ? 'true' : 'false'"
-                  aria-describedby="subject-errors">
+                  [attr.aria-invalid]="(subjectControl().touched() || isSubmitted) && subjectControl().invalid() ? 'true' : 'false'"
+                  aria-describedby="subject-errors"
+                  (ionChange)="updateErrorMessage()">
                   <ion-select-option value="">Seleziona una materia</ion-select-option>
                   @for (materia of listaMaterie; track materia.key) {
                     <ion-select-option [value]="materia.key">
@@ -159,8 +163,8 @@
                 </ion-select>
                 
                 <div id="subject-errors" class="error-messages">
-                  @if ((subjectControl?.touched || isSubmitted) && subjectControl?.invalid) {
-                    @if (subjectControl?.errors?.['required']) {
+                  @if ((subjectControl().touched() || isSubmitted) && subjectControl().invalid()) {
+                    @if (subjectControl().hasError('required')) {
                       <ion-note color="danger">
                         <ion-icon name="warning" slot="start"></ion-icon>
                         Seleziona una materia
@@ -173,7 +177,7 @@
 
             <!-- Data -->
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dateControl?.touched || isSubmitted) && dateControl?.invalid" [class.ion-valid]="dateControl?.valid && (dateControl?.touched || isSubmitted)">
+              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dateControl().touched() || isSubmitted) && dateControl().invalid()" [class.ion-valid]="dateControl().valid() && (dateControl().touched() || isSubmitted)">
                 <ion-label position="stacked">Data <span class="required">*</span></ion-label>
                 
                 <!-- Date Button -->
@@ -183,7 +187,7 @@
                   class="datetime-button"
                   (click)="openDatetimePicker('date')">
                   <ion-icon name="calendar" slot="start"></ion-icon>
-                  {{ formatDate($safeNavigationMigration(activityForm.get('date')?.value)) }}
+                  {{ formatDate($safeNavigationMigration(dateControl().value())) }}
                 </ion-button>
                 
                 <!-- Hidden Datetime Picker -->
@@ -191,8 +195,8 @@
                   <ion-datetime
                     class="datetime-picker"
                     presentation="date"
-                    [value]="$safeNavigationMigration(activityForm.get('date')?.value)"
-                    [max]="dueDateControl?.value || ''"
+                    [value]="$safeNavigationMigration(dateControl().value())"
+                    [max]="dueDateControl().value() || ''"
                     (ionChange)="onDatetimeChange($event, 'date')"
                     (ionCancel)="currentDatetimeField = null"
                     [showDefaultButtons]="true"
@@ -201,28 +205,6 @@
                   </ion-datetime>
                 }
                 
-                <div id="date-errors" class="error-messages">
-                  @if ((dateControl?.touched || isSubmitted) && dateControl?.invalid) {
-                    @if (dateControl?.errors?.['required']) {
-                      <ion-note color="danger">
-                        <ion-icon name="warning" slot="start"></ion-icon>
-                        Seleziona una data
-                      </ion-note>
-                    }
-                    @if (dateControl?.errors?.['matDatepickerMin']) {
-                      <ion-note color="danger">
-                        <ion-icon name="warning" slot="start"></ion-icon>
-                        La data non può essere precedente a oggi
-                      </ion-note>
-                    }
-                    @if (dateControl?.errors?.['matDatepickerMax']) {
-                      <ion-note color="danger">
-                        <ion-icon name="warning" slot="start"></ion-icon>
-                        La data non può essere successiva al termine attività
-                      </ion-note>
-                    }
-                  }
-                </div>
               </ion-item>
             </ion-col>
           </ion-row>
@@ -230,7 +212,7 @@
           <!-- Termine attività -->
           <ion-row>
             <ion-col size="12" size-md="6">
-              <ion-item lines="full" class="ion-margin-bottom" [class.ion-invalid]="(dueDateControl?.touched || isSubmitted) && dueDateControl?.invalid" [class.ion-valid]="dueDateControl?.valid && dueDateControl?.touched">
+              <ion-item lines="full" class="ion-margin-bottom">
                 <ion-label position="stacked">Termine attività (opzionale)</ion-label>
                 
                 <!-- Due Date Button -->
@@ -240,7 +222,7 @@
                   class="datetime-button"
                   (click)="openDatetimePicker('dueDate')">
                   <ion-icon name="calendar" slot="start"></ion-icon>
-                  {{ formatDate($safeNavigationMigration(activityForm.get('dueDate')?.value)) || 'Seleziona data' }}
+                  {{ formatDate($safeNavigationMigration(dueDateControl().value())) || 'Seleziona data' }}
                 </ion-button>
                 
                 <!-- Hidden Datetime Picker -->
@@ -248,26 +230,15 @@
                   <ion-datetime
                     class="datetime-picker"
                     presentation="date"
-                    [value]="$safeNavigationMigration(activityForm.get('dueDate')?.value)"
-                    [min]="dateControl?.value || minDate"
-                    (ionchange)="onDatetimeChange($event, 'dueDate')"
-                    (ioncancel)="currentDatetimeField = null"
-                    [showdefaultbuttons]="true"
-                    donetext="OK"
-                    canceltext="Annulla">
+                    [value]="$safeNavigationMigration(dueDateControl().value())"
+                    [min]="dateControl().value() || minDate"
+                    (ionChange)="onDatetimeChange($event, 'dueDate')"
+                    (ionCancel)="currentDatetimeField = null"
+                    [showDefaultButtons]="true"
+                    doneText="OK"
+                    cancelText="Annulla">
                   </ion-datetime>
                 }
-                
-                <div id="due-date-errors" class="error-messages">
-                  @if ((dueDateControl?.touched || isSubmitted) && dueDateControl?.errors) {
-                    @if (dueDateControl?.errors?.['matDatepickerMin']) {
-                      <ion-note color="danger">
-                        <ion-icon name="warning" slot="start"></ion-icon>
-                        Il termine attività non può essere precedente alla data di inizio
-                      </ion-note>
-                    }
-                  }
-                </div>
               </ion-item>
             </ion-col>
           </ion-row>
@@ -277,14 +248,14 @@
 
     <!-- Pulsanti Azione -->
     <div class="form-actions">
-      <ion-button type="submit" expand="block" [disabled]="isLoading || activityForm.invalid" class="ion-margin-top">
+      <ion-button type="submit" expand="block" [disabled]="isLoading || activityForm().invalid() || errorMessage !== ''" class="ion-margin-top">
         @if (!isLoading) {
           <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
         }
         @if (isLoading) {
           <ion-spinner name="crescent"></ion-spinner>
         }
-        {{ activity.key ? 'Aggiorna' : 'Crea' }} Attività
+        {{ activity?.key ? 'Aggiorna' : 'Crea' }} Attività
       </ion-button>
 
       <ion-button type="button" expand="block" fill="outline" (click)="onCancel()" [disabled]="isLoading">
@@ -303,7 +274,7 @@
         </ion-button>
       </ion-buttons>
       <ion-buttons slot="end">
-        <ion-button (click)="onSubmit()" [disabled]="activityForm?.invalid || isLoading" [strong]="true" color="primary">
+        <ion-button (click)="onSubmit()" [disabled]="activityForm().invalid() || isLoading || errorMessage !== ''" [strong]="true" color="primary">
           @if (isLoading) {
             <ion-spinner name="crescent" color="light"></ion-spinner>
           } @else {

@@ -16,21 +16,21 @@
           <p>Please sign in to continue</p>
         </div>
 
-        <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <form [formRoot]="loginForm" (ngSubmit)="login()">
           <ion-item lines="none" class="custom-input">
             <ion-input
               label="Email"
               labelPlacement="floating"
               fill="outline"
               type="email"
-              formControlName="email"
+              [formField]="loginForm.email"
               placeholder="Enter your email"
               errorText="Valid email is required">
               <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
             </ion-input>
           </ion-item>
           
-          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          @if (loginForm.email().invalid() && loginForm.email().touched()) {
             <div class="error-message">
               <ion-text color="danger">
                 <small>Please enter a valid email address</small>
@@ -44,14 +44,14 @@
               labelPlacement="floating"
               fill="outline"
               type="password"
-              formControlName="password"
+              [formField]="loginForm.password"
               placeholder="Enter your password">
               <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
               <ion-input-password-toggle slot="end"></ion-input-password-toggle>
             </ion-input>
           </ion-item>
 
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          @if (loginForm.password().invalid() && loginForm.password().touched()) {
             <div class="error-message">
               <ion-text color="danger">
                 <small>Password must be at least 8 characters</small>
@@ -63,7 +63,7 @@
             <a [routerLink]="['/recover-password']">Forgot Password?</a>
           </div>
 
-          <ion-button expand="block" type="submit" [disabled]="!loginForm.valid" class="login-button">
+          <ion-button expand="block" type="submit" [disabled]="!loginForm().valid()" class="login-button">
             Login
           </ion-button>
 

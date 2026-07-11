@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, inject, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, inject, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy, signal, effect } from '@angular/core';
 import { ModalController, IonDatetime, IonDatetimeButton } from '@ionic/angular/standalone';
 
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
 import { IonicModule } from '@ionic/angular';
 
 import { AgendaEvent, IAgendaEvent, EventType } from '../../models/agendaEvent';
@@ -14,11 +15,6 @@ import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 
-// Estendi il tipo AgendaEvent per gestire i targetClasses come stringhe o oggetti ClasseModel
-type ExtendedAgendaEvent = Omit<IAgendaEvent, 'targetClasses'> & {
-  targetClasses?: (string | IClasseModel)[];
-};
-
 /**
  * Dialog per la creazione e modifica di eventi agenda.
  * Permette di impostare titolo, descrizione, date, tipo e classe di destinazione.
@@ -28,24 +24,25 @@ type ExtendedAgendaEvent = Omit<IAgendaEvent, 'targetClasses'> & {
   templateUrl: './event-dialog.component.html',
   styleUrls: ['./event-dialog.component.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [FormsModule, IonicModule]
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormsModule, IonicModule, FormField, FormRoot]
 })
 export class EventDialogComponent implements OnInit {
   /**
    * Gets the class key from a class info object
-   * @param classInfo The class info object or string
-   * @returns The class key as string
    */
   getClassKey(classInfo: IClasseModel | string): string {
     if (!classInfo) return '';
     if (typeof classInfo === 'string') return classInfo;
     return (classInfo as IClasseModel).key || (classInfo as IClasseModel).id || '';
   }
+
   private modalCtrl = inject(ModalController);
   private usersService = inject(UsersService);
   private subjectService = inject(SubjectService);
   private cdr = inject(ChangeDetectorRef);
+  private $agenda = inject(AgendaService);
+  private toaster = inject(ToasterService);
 
   loggedUser: UserModel | null = null;
   subjects: SubjectModel[] = [];
@@ -58,29 +55,33 @@ export class EventDialogComponent implements OnInit {
   startDatetimeId = `start_${this.uniqueId}`;
   endDatetimeId = `end_${this.uniqueId}`;
 
-  // Input properties
-  @ViewChild('eventForm') eventForm?: NgForm;
   @ViewChild('startDatetime') startDatetime?: IonDatetime;
   @ViewChild('endDatetime') endDatetime?: IonDatetime;
-
 
   @Input() event: AgendaEvent | null = null;
   @Input() targetedClasses: IClasseModel[] = [];
   @Input() classId: string = '';
   @Input() teacherKey: string = '';
 
-  // Form model
-  eventData: Partial<ExtendedAgendaEvent> = {
+  eventModel = signal({
     title: '',
     description: '',
     dataInizio: new Date(Date.now()).toISOString(),
-    dataFine: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 ora dopo
+    dataFine: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     type: 'other',
-    classKey: this.classId ? [this.classId] : [],
-    targetStudents: [],
-    teacherKey: this.teacherKey,
+    link: '',
+    classKey: [] as string[],
+    targetStudents: [] as string[],
+    subjectKey: '',
     allDay: false
-  };
+  });
+
+  eventForm = form(this.eventModel, schema((s) => {
+    required(s.title);
+    required(s.dataInizio);
+    required(s.dataFine);
+    required(s.classKey);
+  }));
 
   // Available event types
   eventTypes = [
@@ -94,14 +95,11 @@ export class EventDialogComponent implements OnInit {
     { value: 'other', label: 'Altro' }
   ];
 
-  // Date constraints - using ISO strings for min/max dates
+  // Date constraints
   minDate: string = new Date().toISOString();
   maxDate: string = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
 
-  constructor(
-    private $agenda: AgendaService,
-    private toaster: ToasterService
-  ) { }
+  constructor() {}
 
   async ionViewWillEnter() {
     console.log('EventDialogComponent - ionViewWillEnter');
@@ -109,26 +107,35 @@ export class EventDialogComponent implements OnInit {
 
     if (this.event) {
       console.log('Editing existing event:', this.event);
-      // Populate form with existing event data
-      this.eventData = { ...this.event };
-      // Handle classKey migration if needed
+      let classes: string[] = [];
       if (this.event.classKey) {
-        this.eventData.classKey = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
+        classes = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
       } else if (this.event.targetClasses && this.event.targetClasses.length > 0) {
-        this.eventData.classKey = this.event.targetClasses.map(c => typeof c === 'string' ? c : (c as any).key);
+        classes = this.event.targetClasses.map((c: any) => typeof c === 'string' ? c : c.key);
       }
+
+      this.eventForm().patchValue({
+        title: this.event.title || '',
+        description: this.event.description || '',
+        dataInizio: this.event.dataInizio || new Date().toISOString(),
+        dataFine: this.event.dataFine || new Date().toISOString(),
+        type: this.event.type || 'other',
+        link: this.event.link || '',
+        classKey: classes,
+        targetStudents: this.event.targetStudents || [],
+        subjectKey: this.event.subjectKey || '',
+        allDay: this.event.allDay || false
+      });
     } else {
       // New event defaults
       if (this.classId) {
-        this.eventData.classKey = [this.classId];
-      }
-      if (this.teacherKey) {
-        this.eventData.teacherKey = this.teacherKey;
+        this.eventForm().patchValue({ classKey: [this.classId] });
       }
     }
     
     this.loadStudents();
     await this.loadSubjects();
+    this.cdr.markForCheck();
   }
 
   private loadStudents() {
@@ -137,36 +144,36 @@ export class EventDialogComponent implements OnInit {
       this.studentsUnsubscribe = undefined;
     }
 
-    const classKeys = this.eventData.classKey;
+    const classKeys = this.eventModel().classKey;
     if (classKeys && Array.isArray(classKeys) && classKeys.length > 0) {
       this.studentsUnsubscribe = this.usersService.getUsersOnRealTime((users) => {
         this.students = users.sort((a, b) => (a.lastName || '').localeCompare(b.lastName || ''));
         
         const availableKeys = new Set(this.students.map(s => s.key));
-        if (this.eventData.targetStudents) {
-          this.eventData.targetStudents = this.eventData.targetStudents.filter(key => availableKeys.has(key));
-        } else {
-          this.eventData.targetStudents = [];
+        let targetStudents = this.eventModel().targetStudents || [];
+        if (targetStudents.length > 0) {
+          targetStudents = targetStudents.filter(key => availableKeys.has(key));
+          this.eventForm().patchValue({ targetStudents });
         }
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       }, [new QueryCondition('classKey', 'in', classKeys)]);
     } else {
       this.students = [];
-      this.eventData.targetStudents = [];
+      this.eventForm().patchValue({ targetStudents: [] });
     }
   }
 
   private async loadSubjects() {
-    if (!this.loggedUser || !this.loggedUser.assignedClasses || !this.eventData.classKey || this.eventData.classKey.length === 0) {
+    const classKeys = this.eventModel().classKey;
+    if (!this.loggedUser || !this.loggedUser.assignedClasses || !classKeys || classKeys.length === 0) {
       this.subjects = [];
-      if (this.eventData.subjectKey && !this.subjects.find(s => s.key === this.eventData.subjectKey)) {
-          this.eventData.subjectKey = '';
+      if (this.eventModel().subjectKey && !this.subjects.find(s => s.key === this.eventModel().subjectKey)) {
+          this.eventForm().patchValue({ subjectKey: '' });
       }
       return;
     }
 
     const availableSubjectKeys = new Set<string>();
-    const classKeys = Array.isArray(this.eventData.classKey) ? this.eventData.classKey : [this.eventData.classKey];
     
     for (const classKey of classKeys) {
       const assignedClass = this.loggedUser.assignedClasses.find((c: any) => c.key === classKey);
@@ -181,71 +188,57 @@ export class EventDialogComponent implements OnInit {
       this.subjects = [];
     }
 
-    // Se la materia selezionata non è più disponibile, resettala
-    if (this.eventData.subjectKey && !this.subjects.find(s => s.key === this.eventData.subjectKey)) {
-      this.eventData.subjectKey = '';
+    if (this.eventModel().subjectKey && !this.subjects.find(s => s.key === this.eventModel().subjectKey)) {
+      this.eventForm().patchValue({ subjectKey: '' });
     }
+    this.cdr.markForCheck();
   }
 
-  /**
-   * Seleziona tutte le classi disponibili nella lista targetedClasses.
-   */
   selectAllClasses() {
     if (this.targetedClasses && this.targetedClasses.length > 0) {
-      this.eventData.classKey = this.targetedClasses.map(c => this.getClassKey(c));
+      this.eventForm().patchValue({ classKey: this.targetedClasses.map(c => this.getClassKey(c)) });
       this.onFieldChange('classKey');
     }
   }
 
-  /**
-   * Deseleziona tutte le classi.
-   */
   deselectAllClasses() {
-    this.eventData.classKey = [];
+    this.eventForm().patchValue({ classKey: [] });
     this.onFieldChange('classKey');
   }
 
-  // Manteniamo ngOnInit per compatibilità
   ngOnInit() {
     this.ionViewWillEnter();
   }
 
-  // Dismiss the modal without saving
   dismiss() {
     this.modalCtrl.dismiss({ saved: false });
   }
 
-  // Save the event and close the modal
-  /**
-   * Salva l'evento (creazione o aggiornamento) se il form è valido.
-   * Chiude il modale restituendo l'evento salvato.
-   */
   save() {
     if (this.isFormValid()) {
-      // Create targetClasses array from the selected classKey
-      const targetClasses = Array.isArray(this.eventData.classKey) ? this.eventData.classKey : (this.eventData.classKey ? [this.eventData.classKey] : []);
+      const val = this.eventForm().value();
+      const targetClasses = val.classKey || [];
 
-      // Create the event data with proper types
       const formEventData: Partial<IAgendaEvent> = {
-        ...this.eventData,
-        title: this.eventData.title?.trim() || '',
-        description: this.eventData.description?.trim() || '',
-        dataInizio: this.eventData.dataInizio || new Date().toISOString(),
-        dataFine: this.eventData.dataFine || new Date().toISOString(),
-        type: this.eventData.type || 'other',
-        allDay: this.eventData.allDay || false,
+        title: val.title?.trim() || '',
+        description: val.description?.trim() || '',
+        dataInizio: val.dataInizio || new Date().toISOString(),
+        dataFine: val.dataFine || new Date().toISOString(),
+        type: (val.type as any) || 'other',
+        link: val.link || '',
+        allDay: val.allDay || false,
+        classKey: targetClasses,
         targetClasses,
-        targetStudents: this.eventData.targetStudents || [],
-        subjectKey: this.eventData.subjectKey || '',
-        creationDate: this.eventData.creationDate || Date.now()
+        targetStudents: val.targetStudents || [],
+        subjectKey: val.subjectKey || '',
+        creationDate: this.event ? this.event.creationDate : Date.now(),
+        teacherKey: this.teacherKey || (this.event ? this.event.teacherKey : '')
       };
 
       const eventToSave = new AgendaEvent(formEventData);
 
       try {
         if (this.event && (this.event.key || this.event.id)) {
-          // UPDATE
-          // Ensure ID/Key is preserved
           eventToSave.key = this.event.key;
           eventToSave.id = this.event.id;
           console.log("Updating event", eventToSave);
@@ -253,7 +246,6 @@ export class EventDialogComponent implements OnInit {
           this.$agenda.updateEvent(eventToSave);
           this.toaster.showToast({ message: "Evento aggiornato con successo", duration: 2000, position: "top" }, "success");
         } else {
-          // CREATE
           console.log("Creating new event", eventToSave);
           this.$agenda.addEvent(eventToSave);
           this.toaster.showToast({ message: "Evento aggiunto con successo", duration: 2000, position: "top" }, "success");
@@ -263,153 +255,124 @@ export class EventDialogComponent implements OnInit {
         this.toaster.showToast({ message: "Errore durante il salvataggio", duration: 2000, position: "top" }, "danger");
       }
 
-      // Dismiss the modal with the saved event
       this.modalCtrl.dismiss({
         saved: true,
         event: eventToSave
       });
     } else {
-      // Mark all fields as touched to show validation messages
-      this.markFormGroupTouched();
+      this.toaster.showToast({ message: "Compila tutti i campi obbligatori", duration: 2000, position: "top" }, "warning");
     }
   }
 
-  // Mark all form controls as touched to show validation messages
-  private markFormGroupTouched() {
-    if (this.eventForm) {
-      Object.keys(this.eventForm.controls).forEach(field => {
-        const control = this.eventForm?.controls[field];
-        control?.markAsTouched();
-        control?.updateValueAndValidity();
-      });
-    }
-  }
-
-  // Close the modal without saving
   cancel() {
     this.modalCtrl.dismiss({ saved: false });
   }
 
-  // Handle all day toggle
   onAllDayChange(event: any) {
-    this.eventData.allDay = event.detail.checked;
-    if (this.eventData.allDay && this.eventData.dataInizio) {
-      // Se è un evento di un giorno intero, imposta l'orario a inizio/fine giornata
-      const start = new Date(this.eventData.dataInizio);
+    this.eventForm().patchValue({ allDay: event.detail.checked });
+    const val = this.eventModel();
+    if (val.allDay && val.dataInizio) {
+      const start = new Date(val.dataInizio);
       start.setHours(0, 0, 0, 0);
-      this.eventData.dataInizio = start.toISOString();
-
-      const end = new Date(this.eventData.dataInizio);
+      
+      const end = new Date(start);
       end.setHours(23, 59, 59, 999);
-      this.eventData.dataFine = end.toISOString();
-    } else if (!this.eventData.allDay && this.eventData.dataInizio) {
-      // Se non è più un evento di un giorno intero, imposta un orario ragionevole
-      const start = new Date(this.eventData.dataInizio);
+      
+      this.eventForm().patchValue({
+        dataInizio: start.toISOString(),
+        dataFine: end.toISOString()
+      });
+    } else if (!val.allDay && val.dataInizio) {
+      const start = new Date(val.dataInizio);
       start.setHours(12, 0, 0, 0);
-      this.eventData.dataInizio = start.toISOString();
 
       const end = new Date(start);
       end.setHours(13, 0, 0, 0);
-      this.eventData.dataFine = end.toISOString();
+      
+      this.eventForm().patchValue({
+        dataInizio: start.toISOString(),
+        dataFine: end.toISOString()
+      });
     }
   }
 
-  // Update end date when start date changes
   onStartDateChange() {
-    if (!this.eventData.dataInizio) return;
+    const val = this.eventModel();
+    if (!val.dataInizio) return;
 
-    const startDate = new Date(this.eventData.dataInizio);
-    const endDate = this.eventData.dataFine ? new Date(this.eventData.dataFine) : new Date(startDate);
+    const startDate = new Date(val.dataInizio);
+    const endDate = val.dataFine ? new Date(val.dataFine) : new Date(startDate);
 
-    // Se la data di fine è precedente alla data di inizio, aggiorna la data di fine
     if (endDate < startDate) {
-      if (this.eventData.allDay) {
-        // Per eventi di un giorno intero, imposta la fine alla mezzanotte del giorno successivo
+      if (val.allDay) {
         const newEndDate = new Date(startDate);
         newEndDate.setDate(newEndDate.getDate() + 1);
         newEndDate.setHours(0, 0, 0, 0);
-        this.eventData.dataFine = newEndDate.toISOString();
+        this.eventForm().patchValue({ dataFine: newEndDate.toISOString() });
       } else {
-        // Per eventi con orario, aggiungi 1 ora
         endDate.setTime(startDate.getTime() + 60 * 60 * 1000);
-        this.eventData.dataFine = endDate.toISOString();
+        this.eventForm().patchValue({ dataFine: endDate.toISOString() });
       }
     }
   }
 
-  // Handle end date changes
   onEndDateChange() {
-    // Verifica che la data di fine sia successiva a quella di inizio
-    if (this.eventData.dataInizio && this.eventData.dataFine) {
-      const startDate = new Date(this.eventData.dataInizio);
-      const endDate = new Date(this.eventData.dataFine);
+    const val = this.eventModel();
+    if (val.dataInizio && val.dataFine) {
+      const startDate = new Date(val.dataInizio);
+      const endDate = new Date(val.dataFine);
 
       if (endDate < startDate) {
-        // Se la data di fine è precedente a quella di inizio, ripristina il valore precedente
-        this.eventData.dataFine = this.eventData.dataInizio;
+        this.eventForm().patchValue({ dataFine: val.dataInizio });
       }
     }
   }
 
-  // Check if there's a date error (end date before start date)
   hasDateError(): boolean {
-    if (!this.eventData.dataInizio || !this.eventData.dataFine) return false;
+    const val = this.eventModel();
+    if (!val.dataInizio || !val.dataFine) return false;
     let out = false;
 
-    const startDate = new Date(this.eventData.dataInizio).getTime();
-    const endDate = new Date(this.eventData.dataFine).getTime();
+    const startDate = new Date(val.dataInizio).getTime();
+    const endDate = new Date(val.dataFine).getTime();
 
     if (endDate < startDate) {
-      // Se la data di fine è precedente a quella di inizio, ripristina il valore precedente
-      this.eventData.dataFine = this.eventData.dataInizio;
+      this.eventForm().patchValue({ dataFine: val.dataInizio });
       out = true;
     }
     return out;
   }
 
-  // Handle field changes for validation
   onFieldChange(field: string): void {
     if (field === 'classKey') {
       this.loadStudents();
       this.loadSubjects();
     }
-    if (this.eventForm) {
-      const control = this.eventForm.controls[field];
-      if (control) {
-        control.markAsTouched();
-        control.updateValueAndValidity();
-      }
-    }
   }
 
-  // Validate form
-  /**
-   * Valida programmaticamente i campi del form.
-   * @returns True se i dati sono validi.
-   */
   isFormValid(): boolean {
-    // Check required fields
-    if (!this.eventData.title?.trim()) return false;
-    if (!this.eventData.dataInizio) return false;
-    if (!this.eventData.dataFine) return false;
+    if (!this.eventForm().valid()) return false;
+    
+    const val = this.eventModel();
 
-    // Check if end date is after or equal to start date
-    const start = new Date(this.eventData.dataInizio).getTime();
-    const end = new Date(this.eventData.dataFine).getTime();
+    if (!val.title?.trim()) return false;
+    if (!val.dataInizio) return false;
+    if (!val.dataFine) return false;
+
+    const start = new Date(val.dataInizio).getTime();
+    const end = new Date(val.dataFine).getTime();
 
     if (end < start) return false;
 
-    // Check if at least one class is selected
-    if (!this.eventData.classKey || (Array.isArray(this.eventData.classKey) && this.eventData.classKey.length === 0)) {
+    if (!val.classKey || val.classKey.length === 0) {
       return false;
     }
 
-    // Check if targetStudents is selected when type is interrogation
-    if (this.eventData.type === 'interrogation') {
-      if (!this.eventData.targetStudents || this.eventData.targetStudents.length === 0) {
+    if (val.type === 'interrogation') {
+      if (!val.targetStudents || val.targetStudents.length === 0) {
         return false;
       }
-      if (!this.eventData.subjectKey) {
+      if (!val.subjectKey) {
         return false;
       }
     }

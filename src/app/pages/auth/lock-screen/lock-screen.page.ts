@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form, schema, required, FormField, FormRoot } from '@angular/forms/signals';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
@@ -29,8 +30,6 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
     IonContent,
     IonHeader,
     IonTitle,
@@ -42,25 +41,27 @@ import { ToasterService } from 'src/app/shared/services/toaster.service';
     IonCard,
     IonCardContent,
     IonIcon,
-    IonText
+    IonText,
+    FormField,
+    FormRoot
 ]
 })
 export class LockScreenPage implements OnInit {
-  private fb = inject(FormBuilder);
   private router = inject(Router);
   private localLockService = inject(LocalLockService);
   private usersService = inject(UsersService);
   private toaster = inject(ToasterService);
 
-  lockForm: FormGroup;
+  lockModel = signal({ password: '' });
+  lockForm = form(this.lockModel, schema((s) => {
+    required(s.password);
+  }));
+
   isSubmitting = signal<boolean>(false);
   userEmail = signal<string>('');
 
   constructor() {
     addIcons({ lockClosedOutline, lockOpenOutline, logOutOutline });
-    this.lockForm = this.fb.group({
-      password: ['', [Validators.required]]
-    });
   }
 
   async ngOnInit() {
@@ -71,8 +72,8 @@ export class LockScreenPage implements OnInit {
   }
 
   unlock() {
-    if (this.lockForm.valid) {
-      const { password } = this.lockForm.value;
+    if (this.lockForm().valid()) {
+      const { password } = this.lockForm().value();
       const success = this.localLockService.unlock(password);
 
       if (success) {

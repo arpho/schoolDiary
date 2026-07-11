@@ -10,63 +10,65 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-list>
-    <!-- Tipo di Slot -->
-    <ion-item>
-      <ion-select label="Tipo di Slot" label-placement="floating" [ngModel]="slotType()" (ngModelChange)="slotType.set($event)">
-        <ion-select-option value="lezione">Lezione</ion-select-option>
-        <ion-select-option value="ora_buca">Ora Buca</ion-select-option>
-        <ion-select-option value="intervallo">Intervallo</ion-select-option>
-        <ion-select-option value="ricevimento">Ricevimento</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <!-- Giorno della settimana -->
-    <ion-item>
-      <ion-select label="Giorno" label-placement="floating" [ngModel]="day()" (ngModelChange)="day.set($event)">
-        <ion-select-option value="Monday">Lunedì</ion-select-option>
-        <ion-select-option value="Tuesday">Martedì</ion-select-option>
-        <ion-select-option value="Wednesday">Mercoledì</ion-select-option>
-        <ion-select-option value="Thursday">Giovedì</ion-select-option>
-        <ion-select-option value="Friday">Venerdì</ion-select-option>
-        <ion-select-option value="Saturday">Sabato</ion-select-option>
-        <ion-select-option value="Sunday">Domenica</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <!-- Orari -->
-    <ion-item>
-      <ion-input type="time" label="Ora di Inizio" labelPlacement="floating" [ngModel]="startTime()" (ngModelChange)="startTime.set($event)"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-input type="time" label="Ora di Fine" labelPlacement="floating" [ngModel]="endTime()" (ngModelChange)="endTime.set($event)"></ion-input>
-    </ion-item>
-
-    <!-- Selezione Classe (solo se Lezione) -->
-    @if(slotType() === 'lezione') {
+  <form [formRoot]="slotForm">
+    <ion-list>
+      <!-- Tipo di Slot -->
       <ion-item>
-        <ion-select label="Classe" label-placement="floating" [ngModel]="classKey()" (ngModelChange)="classKey.set($event); subjectKey.set('')">
-          @for(classe of assignedClasses(); track classe.key) {
-            <ion-select-option [value]="classe.key">{{ classe.year }} {{ classe.classe }}</ion-select-option>
-          }
+        <ion-select label="Tipo di Slot" label-placement="floating" [formField]="slotForm.slotType">
+          <ion-select-option value="lezione">Lezione</ion-select-option>
+          <ion-select-option value="ora_buca">Ora Buca</ion-select-option>
+          <ion-select-option value="intervallo">Intervallo</ion-select-option>
+          <ion-select-option value="ricevimento">Ricevimento</ion-select-option>
         </ion-select>
       </ion-item>
-      
-      <!-- Selezione Materia -->
+
+      <!-- Giorno della settimana -->
       <ion-item>
-        <ion-select label="Materia" label-placement="floating" [disabled]="!classKey()" [ngModel]="subjectKey()" (ngModelChange)="subjectKey.set($event)">
-          @for(subject of availableSubjects(); track subject?.key) {
-            <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
-          }
+        <ion-select label="Giorno" label-placement="floating" [formField]="slotForm.day">
+          <ion-select-option value="Monday">Lunedì</ion-select-option>
+          <ion-select-option value="Tuesday">Martedì</ion-select-option>
+          <ion-select-option value="Wednesday">Mercoledì</ion-select-option>
+          <ion-select-option value="Thursday">Giovedì</ion-select-option>
+          <ion-select-option value="Friday">Venerdì</ion-select-option>
+          <ion-select-option value="Saturday">Sabato</ion-select-option>
+          <ion-select-option value="Sunday">Domenica</ion-select-option>
         </ion-select>
       </ion-item>
-      
-      <!-- Aula -->
+
+      <!-- Orari -->
       <ion-item>
-        <ion-input type="text" label="Aula/Laboratorio" labelPlacement="floating" [ngModel]="location()" (ngModelChange)="location.set($event)"></ion-input>
+        <ion-input type="time" label="Ora di Inizio" labelPlacement="floating" [formField]="slotForm.startTime"></ion-input>
       </ion-item>
-    }
-  </ion-list>
+      <ion-item>
+        <ion-input type="time" label="Ora di Fine" labelPlacement="floating" [formField]="slotForm.endTime"></ion-input>
+      </ion-item>
+
+      <!-- Selezione Classe (solo se Lezione) -->
+      @if(slotModel().slotType === 'lezione') {
+        <ion-item>
+          <ion-select label="Classe" label-placement="floating" [formField]="slotForm.classKey">
+            @for(classe of assignedClasses(); track classe.key) {
+              <ion-select-option [value]="classe.key">{{ classe.year }} {{ classe.classe }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        
+        <!-- Selezione Materia -->
+        <ion-item>
+          <ion-select label="Materia" label-placement="floating" [disabled]="!slotModel().classKey" [formField]="slotForm.subjectKey">
+            @for(subject of availableSubjects(); track subject?.key) {
+              <ion-select-option [value]="subject.key">{{ subject.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        
+        <!-- Aula -->
+        <ion-item>
+          <ion-input type="text" label="Aula/Laboratorio" labelPlacement="floating" [formField]="slotForm.location"></ion-input>
+        </ion-item>
+      }
+    </ion-list>
+  </form>
 </ion-content>
 
 <!-- Footer -->

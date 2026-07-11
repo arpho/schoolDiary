@@ -14,7 +14,7 @@ import {
   IonButtons
 } from '@ionic/angular/standalone';
 
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
@@ -46,7 +46,6 @@ type TabType = 'generalita' | 'disabilita' | 'note' | 'valutazioni';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
-    ReactiveFormsModule,
     FormsModule,
     IonBackButton,
     IonContent,

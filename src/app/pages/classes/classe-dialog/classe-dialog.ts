@@ -36,12 +36,9 @@ import {
   IonItemDivider
 } from '@ionic/angular/standalone';
 
-import {
-  FormsModule,
-} from '@angular/forms';
-import {
-  ClassiService,
-} from '../services/classi.service';
+import { form, schema, FormField, FormRoot } from '@angular/forms/signals';
+import { FormsModule } from '@angular/forms';
+import { ClassiService } from '../services/classi.service';
 import { ClasseModel } from '../models/classModel';
 import { DocumentModel } from '../models/documentModel';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -76,6 +73,7 @@ import {
   grid
 } from 'ionicons/icons';
 import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
+
 /**
  * Pagina di dettaglio e modifica di una classe.
  * Gestisce diverse schede (generalità, attività, PDP, studenti, note, ecc.).
@@ -112,7 +110,9 @@ import { HasUnsavedChanges } from 'src/app/shared/guards/pending-changes.guard';
     IonGrid,
     IonRow,
     IonCol,
-    IonItemDivider
+    IonItemDivider,
+    FormField,
+    FormRoot
 ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -124,20 +124,14 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
   sidebarOpen = signal<boolean>(false);
 
   // Metodo per cambiare scheda e chiudere il menu
-  /**
-   * Seleziona un tab e chiude la sidebar laterale.
-   * @param tab Il tab da selezionare.
-   */
   selectTab(tab: TabType) {
     this.selectedTab.set(tab);
-    this.sidebarOpen.set(false);  // Chiude il menu
+    this.sidebarOpen.set(false);
   }
 
   // Metodo per aprire/chiudere la sidebar
   toggleSidebar() {
-    console.log('toggleSidebar called! Current state:', this.sidebarOpen());
     this.sidebarOpen.update(value => !value);
-    console.log('Sidebar toggled, new sidebarOpen value:', this.sidebarOpen());
   }
 
   classkey = signal<string>('');
@@ -145,21 +139,16 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
   teacherkey = signal<string>('');
   verbaliList = signal<DocumentModel[]>([]);
 
-  // Pure Signals for Form Fields
-  classeName = signal('');
-  year = signal('');
-  coordinatore = signal('');
-  segretario = signal('');
-  descrizione = signal('');
-  note = signal('');
+  classeModel = signal({
+    classeName: '',
+    year: '',
+    coordinatore: '',
+    segretario: '',
+    descrizione: '',
+    note: ''
+  });
 
-  // Touched state signals for validation UX
-  classeNameTouched = signal(false);
-  yearTouched = signal(false);
-  coordinatoreTouched = signal(false);
-  segretarioTouched = signal(false);
-  descrizioneTouched = signal(false);
-  noteTouched = signal(false);
+  classeForm = form(this.classeModel, schema((s) => {}));
 
   // Initial values for dirty checking
   private initialValues = {
@@ -174,25 +163,16 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
   isEditMode: boolean = false;
   initialVerbali: string = '[]';
 
-  // Computed Validation
-  // Computed Validation
-  classeNameError = computed(() => null);
-  yearError = computed(() => null);
-  coordinatoreError = computed(() => null);
-  segretarioError = computed(() => null);
-  // descrizioneError = computed(() => !this.descrizione() ? 'Il campo "Descrizione" è obbligatorio.' : null); // Removed as per request
-  descrizioneError = computed(() => null);
-  noteError = computed(() => null);
-
-  isValid = computed(() => true);
+  isValid = computed(() => this.classeForm().valid());
 
   isDirty = computed(() => {
-    return this.classeName() !== this.initialValues.classeName ||
-      this.year() !== this.initialValues.year ||
-      this.coordinatore() !== this.initialValues.coordinatore ||
-      this.segretario() !== this.initialValues.segretario ||
-      this.descrizione() !== this.initialValues.descrizione ||
-      this.note() !== this.initialValues.note;
+    const vals = this.classeForm().value();
+    return vals.classeName !== this.initialValues.classeName ||
+      vals.year !== this.initialValues.year ||
+      vals.coordinatore !== this.initialValues.coordinatore ||
+      vals.segretario !== this.initialValues.segretario ||
+      vals.descrizione !== this.initialValues.descrizione ||
+      vals.note !== this.initialValues.note;
   });
 
   constructor(
@@ -204,10 +184,8 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
     private $users: UsersService,
     private alertCtrl: AlertController
   ) {
-    // Register icons
     addIcons({ menu, close, informationCircle, people, chatbox, list, add, peopleCircle, calendar, school, trash, alertCircle, link, copyOutline, openOutline, grid });
 
-    // Initialize with empty model
     this.classe.set(new ClasseModel({
       year: '',
       classe: '',
@@ -219,21 +197,20 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
     effect(() => {
       const key = this.classkey();
       if (key) {
-        // We can run this without untracked as we don't read signals inside the async block that we write to
         (async () => {
           this.isEditMode = true;
           try {
             const editingClasse = await this.service.fetchClasse(key);
 
-            // Set signal values individually
-            this.classeName.set(editingClasse.classe || '');
-            this.year.set(editingClasse.year || '');
-            this.coordinatore.set(editingClasse.coordinatore || '');
-            this.segretario.set(editingClasse.segretario || '');
-            this.descrizione.set(editingClasse.descrizione || '');
-            this.note.set(editingClasse.note || '');
+            this.classeForm().patchValue({
+              classeName: editingClasse.classe || '',
+              year: editingClasse.year || '',
+              coordinatore: editingClasse.coordinatore || '',
+              segretario: editingClasse.segretario || '',
+              descrizione: editingClasse.descrizione || '',
+              note: editingClasse.note || ''
+            });
 
-            // Store initial values for dirty check
             this.initialValues = {
               classeName: editingClasse.classe || '',
               year: editingClasse.year || '',
@@ -246,7 +223,6 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
             this.verbaliList.set(editingClasse.verbali || []);
             this.initialVerbali = JSON.stringify(this.verbaliList());
 
-            // Set signal LAST to trigger change detection
             this.classe.set(editingClasse);
 
           } catch (error) {
@@ -259,9 +235,6 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
 
   }
 
-  /**
-   * Inizializza il componente recuperando i dettagli della classe se presente.
-   */
   async ngOnInit(): Promise<void> {
     const user = await this.$users.getLoggedUser();
     if (user && typeof user === 'object' && 'key' in user) {
@@ -281,61 +254,44 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
     this.verbaliList.update(list => list.filter((_, i) => i !== index));
   }
 
-  /** Apre il link in una nuova scheda */
   openLink(url: string): void {
     if (url) {
       window.open(url, '_blank');
     }
   }
 
-  /** Copia il link negli appunti */
   copyLink(url: string): void {
     if (url) {
       navigator.clipboard.writeText(url).then(() => {
-        this.toaster.presentToast({
-          message: 'Link copiato negli appunti',
-          duration: 1500,
-          position: 'bottom'
-        });
+        this.toaster.presentToast({ message: 'Link copiato negli appunti', duration: 1500, position: 'bottom' });
       }).catch(() => {
-        this.toaster.presentToast({
-          message: 'Impossibile copiare il link',
-          duration: 1500,
-          position: 'bottom'
-        });
+        this.toaster.presentToast({ message: 'Impossibile copiare il link', duration: 1500, position: 'bottom' });
       });
     }
   }
 
-  /**
-   * Salva le modifiche alla classe.
-   */
   async save() {
     if (!this.isValid()) {
       this.toaster.presentToast({ message: "Compila tutti i campi obbligatori", duration: 2000, position: "bottom" });
-      this.markAllAsTouched();
       return;
     }
 
-    const formValues = {
-      year: this.year(),
-      classe: this.classeName(),
-      descrizione: this.descrizione(),
-      note: this.note(),
-      coordinatore: this.coordinatore(),
-      segretario: this.segretario(),
+    const formValues = this.classeForm().value();
+    const classeObjData = {
+      year: formValues.year,
+      classe: formValues.classeName,
+      descrizione: formValues.descrizione,
+      note: formValues.note,
+      coordinatore: formValues.coordinatore,
+      segretario: formValues.segretario,
       verbali: this.verbaliList()
     };
 
-    // Create a new instance with the form values
-    const classeObj = new ClasseModel(formValues);
+    const classeObj = new ClasseModel(classeObjData);
 
-    // Set the key if it exists
     if (this.classkey()) {
       classeObj.setKey(this.classkey()!);
     }
-
-    console.log("saving classeObj", classeObj);
 
     try {
       if (this.classkey()) {
@@ -344,14 +300,13 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
         await this.service.addClasse(classeObj);
       }
 
-      // Update initial values to current values (reset dirty state)
       this.initialValues = {
-        classeName: this.classeName(),
-        year: this.year(),
-        coordinatore: this.coordinatore(),
-        segretario: this.segretario(),
-        descrizione: this.descrizione(),
-        note: this.note()
+        classeName: formValues.classeName,
+        year: formValues.year,
+        coordinatore: formValues.coordinatore,
+        segretario: formValues.segretario,
+        descrizione: formValues.descrizione,
+        note: formValues.note
       };
 
       this.initialVerbali = JSON.stringify(this.verbaliList());
@@ -360,25 +315,12 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
         ? "Classe aggiornata con successo"
         : "Classe aggiunta con successo";
 
-      this.toaster.presentToast({
-        message: toastMessage,
-        duration: 2000,
-        position: "bottom"
-      });
+      this.toaster.presentToast({ message: toastMessage, duration: 2000, position: "bottom" });
 
     } catch (error) {
       console.error('Error saving class:', error);
       this.toaster.presentToast({ message: "Errore durante l'aggiornamento della classe", duration: 2000, position: "bottom" });
     }
-  }
-
-  markAllAsTouched() {
-    this.classeNameTouched.set(true);
-    this.yearTouched.set(true);
-    this.coordinatoreTouched.set(true);
-    this.segretarioTouched.set(true);
-    this.descrizioneTouched.set(true);
-    this.noteTouched.set(true);
   }
 
   hasUnsavedChanges(): boolean {
@@ -391,8 +333,6 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
   }
 
   async openAddActivityDialog() {
-    // Implementazione del metodo per aprire il dialog di aggiunta attività
-    // Questo è un placeholder - implementa la logica effettiva qui
     console.log('Apertura dialog aggiunta attività');
   }
 
@@ -402,7 +342,7 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
         component: EventDialogComponent,
         componentProps: {
           classId: this.classe()?.key,
-          teacherKey: 'teacher123', // TODO: Sostituisci con la chiave effettiva dell'insegnante
+          teacherKey: 'teacher123',
           targetedClasses: this.classe()?.key ? [this.classe()?.key] : []
         },
         breakpoints: [0, 0.8, 1],
@@ -412,22 +352,12 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
       });
 
       await modal.present();
-
       const { data } = await modal.onDidDismiss();
 
       if (data?.saved && data.event) {
         const event = new AgendaEvent(data.event);
         console.log('Evento salvato con successo:', event);
-
-        // Qui puoi salvare l'evento nel database o fare altre operazioni necessarie
-        // Esempio: await this.eventService.saveEvent(event);
-
-        // Mostra un messaggio di conferma all'utente
-        this.toaster.presentToast({
-          message: 'Evento salvato con successo',
-          duration: 2000,
-          position: 'bottom'
-        });
+        this.toaster.presentToast({ message: 'Evento salvato con successo', duration: 2000, position: 'bottom' });
       }
     } catch (error) {
       console.error('Errore nell\'apertura del form evento:', error);

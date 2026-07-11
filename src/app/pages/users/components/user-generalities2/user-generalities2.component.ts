@@ -1,6 +1,7 @@
 
-import { ChangeDetectorRef, Component, effect, input, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectorRef, Component, effect, input, OnInit, signal, ChangeDetectionStrategy, computed } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot } from '@angular/forms/signals';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { addIcons } from 'ionicons';
 import {
@@ -46,10 +47,9 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
   templateUrl: './user-generalities2.component.html',
   styleUrls: ['./user-generalities2.component.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    ReactiveFormsModule,
     IonContent,
     IonIcon,
     IonLabel,
@@ -67,12 +67,13 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
     IonGrid,
     IonRow,
     IonCol,
-    IonList
+    IonList,
+    FormField,
+    FormRoot
 ]
 })
 export class UserGeneralities2Component implements OnInit {
   user = input.required<UserModel>();
-  userForm: FormGroup
 
   rolesValue: any[] = [];
   rolesName: string[] = [];
@@ -81,7 +82,25 @@ export class UserGeneralities2Component implements OnInit {
   usersClasses = signal<AssignedClass[]>([]);
   $UsersRole = UsersRole;
 
+  userModel = signal({
+    firstName: '',
+    lastName: '',
+    userName: '',
+    email: '',
+    role: UsersRole.STUDENT,
+    DVA: false,
+    DSA: false,
+    BES: false,
+    ADHD: false,
+    noteDisabilita: '',
+    pdpUrl: '',
+    phoneNumber: '',
+    birthDate: '',
+    classKey: '',
+    classes: [] as string[]
+  });
 
+  userForm = form(this.userModel, schema((s) => ({})));
 
   /** Lista locale dei documenti PDP per lo studente */
   pdpList = signal<DocumentModel[]>([]);
@@ -89,7 +108,6 @@ export class UserGeneralities2Component implements OnInit {
     private $users: UsersService,
     private $classes: ClassiService,
     private toaster: ToasterService,
-    private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ) {
     addIcons({
@@ -105,26 +123,6 @@ export class UserGeneralities2Component implements OnInit {
       'document-text-outline': documentTextOutline
     });
 
-
-    // Inizializza la form
-    this.userForm = this.fb.group({
-      firstName: [''],
-      lastName: [''],
-      userName: [''],
-      email: [''],
-      role: [UsersRole.STUDENT],
-      DVA: [false],
-      DSA: [false],
-      BES: [false],
-      ADHD: [false],
-      noteDisabilita: [''],
-      pdpUrl: [''],
-      phoneNumber: [''],
-      birthDate: [''],
-      classKey: [''],
-      classes: [[]]
-    });
-
     effect(() => {
       const user = this.user();
       if (user.key) {
@@ -134,16 +132,13 @@ export class UserGeneralities2Component implements OnInit {
   }
 
   onClassesChange(classes: AssignedClass[]) {
-
     this.usersClasses.set(classes);
-    this.userForm.get('classes')?.setValue(classes.map(c => c.key));
+    this.userForm().patchValue({ classes: classes.map(c => c.key) });
   }
 
   onNoteDisabilitaChange($event: IonTextareaCustomEvent<TextareaChangeEventDetail>) {
-
-    const value = $event.detail.value;
-    this.userForm.get('noteDisabilita')?.setValue(value);
-    this.userForm.updateValueAndValidity();
+    const value = $event.detail.value || '';
+    this.userForm().patchValue({ noteDisabilita: value });
   }
 
   private readonly userEffect = effect(async () => {
@@ -161,31 +156,17 @@ export class UserGeneralities2Component implements OnInit {
       this.syncFormWithUser(user);
     }
   });
+
   ngOnInit() {
     this.cdr.detectChanges();
     const rolesKey = Object.keys(UsersRole);
     this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
-    this.userForm = this.fb.group({
-      firstName: [''],
-      lastName: [''],
-      userName: [''],
-      email: [''],
-      role: [UsersRole.STUDENT],
-      DVA: [false],
-      DSA: [false],
-      BES: [false],
-      ADHD: [false],
-      noteDisabilita: [''],
-      pdpUrl: [''],
-      phoneNumber: [''],
-      birthDate: [''],
-      classKey: [''],
-      classes: [[]]
-    });
   }
+
   ngAfterViewInit() {
     setTimeout(() => this.cdr.detectChanges());
   }
+
   generatePassword(): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let password = '';
@@ -196,7 +177,7 @@ export class UserGeneralities2Component implements OnInit {
   }
 
   save() {
-    const formValue = this.userForm.value;
+    const formValue = this.userForm().value();
     // Escludiamo pdpUrl dal formValue: il campo del form è una stringa ausiliaria,
     // mentre il vero pdpUrl è un DocumentModel[] gestito separatamente tramite pdpList signal.
     const { pdpUrl: _ignoredPdpUrl, ...formValueWithoutPdp } = formValue;
@@ -222,9 +203,9 @@ export class UserGeneralities2Component implements OnInit {
 
   /** Attiva/disattiva un chip di disabilità */
   toggleChip(field: 'DVA' | 'DSA' | 'BES' | 'ADHD'): void {
-    const current = this.userForm.get(field)?.value;
-    this.userForm.get(field)?.setValue(!current);
-    this.userForm.get(field)?.markAsDirty();
+    const current = this.userForm().value()[field];
+    this.userForm().patchValue({ [field]: !current });
+    this.userForm().markAsDirty();
   }
 
   /** Aggiunge un documento PDP vuoto alla lista */
@@ -271,6 +252,7 @@ export class UserGeneralities2Component implements OnInit {
           duration: 2000,
           position: "bottom"
         });
+        this.userForm().markAsPristine();
         return this.updateUserClaims(user.key, claims);
       })
       .catch(error => {
@@ -292,6 +274,7 @@ export class UserGeneralities2Component implements OnInit {
           duration: 2000,
           position: "bottom"
         });
+        this.userForm().markAsPristine();
         return this.updateUserClaims(user.key, claims);
       })
       .catch(error => {
@@ -324,40 +307,18 @@ export class UserGeneralities2Component implements OnInit {
       });
   }
 
-
-
-  getErrorMessage(controlName: string): string {
-    const control = this.userForm.get(controlName);
-
-    if (!control || !control.errors) return '';
-
-    if (control.hasError('required')) {
-      return 'Campo obbligatorio';
-    }
-
-    if (control.hasError('email')) {
-      return 'Inserisci un indirizzo email valido';
-    }
-
-    if (control.hasError('minlength')) {
-      return `Minimo ${control.getError('minlength').requiredLength} caratteri richiesti`;
-    }
-
+  getErrorMessage(controlName: any): string {
     return 'Campo non valido';
   }
 
   isFieldInvalid(controlName: string): boolean {
-    const control = this.userForm.get(controlName);
-    return control ? control.invalid && (control.dirty || control.touched) : false;
+    return false;
   }
 
-  /** Logga lo stato del form (rimosso per produzione) */
-  private logFormState(): void { /* no-op */ }
   syncFormWithUser(user: UserModel) {
-    if (!this.userForm) return;
     if (user.key) {
       try {
-        this.userForm.patchValue({
+        this.userForm().patchValue({
           firstName: user.firstName || '',
           lastName: user.lastName || '',
           userName: user.userName || '',
@@ -373,7 +334,7 @@ export class UserGeneralities2Component implements OnInit {
           birthDate: user.birthDate || '',
           classKey: user.classKey || '',
           classes: user.classesKey || []
-        }, { emitEvent: false });
+        });
 
         if (user.pdpUrl && Array.isArray(user.pdpUrl)) {
           this.pdpList.set(user.pdpUrl.map(doc => new DocumentModel({ ...doc })));
@@ -383,7 +344,6 @@ export class UserGeneralities2Component implements OnInit {
 
         this.usersClasses.set(user.assignedClasses || []);
         this.cdr.detectChanges();
-        this.userForm.updateValueAndValidity();
       } catch (error) {
         console.error("Errore sincronizzazione form:", error);
       }
@@ -394,6 +354,7 @@ export class UserGeneralities2Component implements OnInit {
    * Verifica se ci sono modifiche non salvate nel form.
    */
   hasUnsavedChanges(): boolean {
-    return this.userForm.dirty;
+    return this.userForm().dirty();
   }
 }
+

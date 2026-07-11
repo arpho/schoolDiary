@@ -1,12 +1,7 @@
-import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef, input, inject, model, computed, ChangeDetectionStrategy, effect } from '@angular/core';
 
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  FormControl
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
 import {
   IonButtons,
   IonContent,
@@ -54,10 +49,9 @@ import { ClassiService } from '../../classes/services/classi.service';
   templateUrl: './evaluation-dialog.page.html',
   styleUrls: ['./evaluation-dialog.page.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    ReactiveFormsModule,
     IonButtons,
     IonContent,
     IonHeader,
@@ -74,7 +68,9 @@ import { ClassiService } from '../../classes/services/classi.service';
     IonTextarea,
     EvaluateGridComponent,
     IonIcon,
-    IonItemDivider
+    IonItemDivider,
+    FormField,
+    FormRoot
 ]
 })
 export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
@@ -82,7 +78,7 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
    * Verifica se ci sono modifiche non salvate nella valutazione.
    */
   hasUnsavedChanges(): boolean {
-    return this.evaluationform.dirty || this.enclosedDocuments().length > 0;
+    return this.evaluationform().dirty() || this.enclosedDocuments().length > 0;
   }
   sortedActivities = computed(() =>
     [...this.activities()].sort((a, b) => {
@@ -92,6 +88,21 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
     })
   );
   classesList = signal<ClasseModel[]>([]);
+
+  evaluationModel = signal({
+    description: '',
+    note: '',
+    data: new Date().toISOString(),
+    grid: '',
+    activityKey: '',
+    classKey: '',
+    studentKey: ''
+  });
+
+  evaluationform = form(this.evaluationModel, schema((s) => {
+    // Add required validations if any
+  }));
+
   async openActivityDialog() {
     const user = await this.$users.getLoggedUser()
     let classi: ClasseModel[] = [];
@@ -123,7 +134,7 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
       console.log("dismissed activity", result.data);
       this.activitiesService.addActivity(activity()).then((res: any) => {
         console.log("activity added", res);
-        this.evaluationform.patchValue({
+        this.evaluationform().patchValue({
           activityKey: res.key
         })
       }).catch((error: any) => {
@@ -137,8 +148,8 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
   }
 
   async saveEvaluation() {
-    if (this.evaluationform.valid) {
-      const evaluationData = this.evaluationform.value;
+    if (this.evaluationform().valid()) {
+      const evaluationData = this.evaluationform().value();
       try {
         const evaluation = new Evaluation(evaluationData);
         const loggedUser = await this.$users.getLoggedUser();
@@ -196,15 +207,7 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
   evaluationSignal = signal<Evaluation>(new Evaluation());
   enclosedDocuments = signal<DocumentModel[]>([]);
   activities = signal<ActivityModel[]>([]);
-  evaluationform: FormGroup = new FormGroup({
-    description: new FormControl(''),
-    note: new FormControl(''),
-    data: new FormControl(new Date().toISOString()),
-    grid: new FormControl(''),
-    activityKey: new FormControl(''),
-    classKey: new FormControl(''),
-    studentKey: new FormControl('')
-  });
+
   title = signal('');
   valutazione: Evaluation | null = null;
   classKey: string = '';
@@ -227,7 +230,6 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
     private route: ActivatedRoute,
     private toaster: ToasterService,
     private activitiesService: ActivitiesService,
-    private fb: FormBuilder,
     private $users: UsersService,
     private gridsService: GridsService,
     private evaluationService: EvaluationService,
@@ -236,6 +238,21 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
   ) {
     console.log("EvaluationDialogPage constructor");
     addIcons({ add, trash, link, close, print });
+    
+    // Watch for activityKey changes
+    effect(() => {
+      const activityKey = this.evaluationModel().activityKey;
+      if (activityKey) {
+        const activity = this.activities().find((a: ActivityModel) => a.key === activityKey);
+        console.log("Selected   activity", activityKey);
+        if (activity) {
+          // You might want to update title here if your model had a title
+          this.evaluationform().patchValue({
+            activityKey: activityKey,
+          });
+        }
+      }
+    });
   }
 
   async ngOnInit() {
@@ -250,7 +267,7 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
     console.log("evaluationKey", this.evaluationKey);
     const user = await this.$users.getLoggedUser();
 
-    this.evaluationSignal.set(new Evaluation(this.evaluation))
+    this.evaluationSignal.set(new Evaluation(this.evaluation()))
     if (user) {
       console.log(" teacherKey*", user.key)
       this.activitiesService.getActivities4teacherOnRealtime(user.key, (activities: ActivityModel[]) => {
@@ -261,22 +278,19 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
     }
     console.log("init evaluation-dialog");
     console.log("evaluation", this.evaluationSignal())
-    this.evaluationform = new FormGroup({
-      description: new FormControl(''),
-      note: new FormControl(''),
-      data: new FormControl(new Date().toISOString()),
-      grid: new FormControl(''),
-      activityKey: new FormControl(''),
-      classKey: new FormControl(this.classKey),
-      studentKey: new FormControl(this.studentKey)
+    
+    this.evaluationform().patchValue({
+      classKey: this.classKey,
+      studentKey: this.studentKey
     });
+
     if (this.evaluationSignal().key) {
       this.evaluationKey = this.evaluationSignal().key;
       this.title.set("rivedi valutazione");
       this.classKey = this.evaluationSignal().classKey;
       this.studentKey = this.evaluationSignal().studentKey;
       this.activityKey = this.evaluationSignal().activityKey;
-      this.evaluationform.patchValue({
+      this.evaluationform().patchValue({
         description: this.evaluationSignal().description,
         note: this.evaluationSignal().note,
         data: this.evaluationSignal().data,
@@ -287,22 +301,7 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
       this.grid.set(this.evaluationSignal().grid);
     } else {
       this.title.set("Nuova valutazione");
-
-
     }
-    this.evaluationform.controls['activityKey'].valueChanges.subscribe((activityKey: string | null) => {
-      if (activityKey) {
-        const activity = this.activities().find((a: ActivityModel) => a.key === activityKey);
-        console.log("Selected   activity", activityKey);
-        if (activity) {
-
-          this.evaluationform.patchValue({
-            title: activity.title,
-            activityKey: activityKey,
-          });
-        }
-      }
-    });
 
     this.gridsService.getGridsOnRealtime((grids: Grids[]) => {
       this.griglie.set(grids);
@@ -312,12 +311,12 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
       this.title.set("rivedi valutazione");
       this.evaluationService.fetchEvaluation(this.evaluationKey).then((evaluation: Evaluation) => {
         this.valutazione = evaluation;
-        this.evaluationform.patchValue({
+        this.evaluationform().patchValue({
           description: evaluation.description,
           note: evaluation.note,
           data: evaluation.data,
           grid: evaluation.grid.key,
-          classeKey: evaluation.classKey,
+          classKey: evaluation.classKey,
           studentKey: evaluation.studentKey
         });
         this.enclosedDocuments.set(evaluation.enclosedDocuments || []);

@@ -1,15 +1,15 @@
-import { ChangeDetectorRef, Component, computed, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form, schema, required, email, minLength, FormField, FormRoot } from '@angular/forms/signals';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton, IonInputPasswordToggle, IonCard, IonCardContent, IonIcon, IonText } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { mailOutline, lockClosedOutline, logInOutline, personAddOutline, helpCircleOutline } from 'ionicons/icons';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { Auth, authState, signInAnonymously, signOut, User, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
 import { Router, RouterModule } from '@angular/router';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { LocalLockService } from 'src/app/shared/services/local-lock.service';
+
 /**
  * Pagina di login.
  * Gestisce l'autenticazione tramite email e password utilizzando Firebase Auth.
@@ -28,35 +28,37 @@ import { LocalLockService } from 'src/app/shared/services/local-lock.service';
     IonHeader,
     IonTitle,
     IonToolbar,
-    FormsModule,
-    ReactiveFormsModule,
     RouterModule,
     IonInputPasswordToggle,
     IonCard,
     IonCardContent,
     IonIcon,
-    IonText
+    IonText,
+    FormField,
+    FormRoot
 ]
 })
 export class LoginPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
-  private fb = inject(FormBuilder);
   private router = inject(Router);
   private $toaster = inject(ToasterService);
   private localLockService = inject(LocalLockService);
+  public afAuth = inject(AngularFireAuth);
 
-  loginForm: FormGroup;
+  loginModel = signal({ email: '', password: '' });
+  
+  loginForm = form(this.loginModel, schema((s) => {
+    required(s.email);
+    email(s.email);
+    required(s.password);
+    minLength(s.password, 8);
+  }));
+
   error: boolean = false;
   errorMessage: any;
-  afAuth: AngularFireAuth;
 
   constructor() {
     addIcons({ mailOutline, lockClosedOutline, logInOutline, personAddOutline, helpCircleOutline });
-    this.afAuth = inject(AngularFireAuth);
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
-    });
   }
 
   ngOnInit() {
@@ -64,9 +66,9 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-      console.log('Login form submitted:', this.loginForm.value);
+    if (this.loginForm().valid()) {
+      const { email, password } = this.loginForm().value();
+      console.log('Login form submitted:', this.loginForm().value());
 
       this.afAuth
         .signInWithEmailAndPassword(email, password)

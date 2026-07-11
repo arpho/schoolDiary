@@ -7,7 +7,7 @@
     </ion-buttons>
     <ion-title>{{ isEditMode ? 'Modifica' : 'Nuova' }} Materia</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="save()" [strong]="true" [disabled]="!name.trim()">
+      <ion-button (click)="save()" [strong]="true" [disabled]="!subjectForm().valid()">
         Salva
       </ion-button>
     </ion-buttons>
@@ -15,48 +15,48 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-list>
-    <ion-item>
-      <ion-label position="stacked">Nome Materia <span class="required">*</span></ion-label>
-      <ion-input
-        [ngModel]="name"
-        (ngModelChange)="onNameChange($event)"
-        type="text"
-        placeholder="Inserisci il nome della materia"
-        clearinput="true"
-        required
-        aria-required="true">
-      </ion-input>
-    </ion-item>
+  <form [formRoot]="subjectForm">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Nome Materia <span class="required">*</span></ion-label>
+        <ion-input
+          [formField]="subjectForm.name"
+          type="text"
+          placeholder="Inserisci il nome della materia"
+          clearinput="true"
+          required
+          aria-required="true">
+        </ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Classe di Concorso (opzionale)</ion-label>
-      <ion-input
-        [ngModel]="classeDiConcorso"
-        (ngModelChange)="onClasseDiConcorsoChange($event)"
-        type="text"
-        placeholder="Inserisci la classe di concorso"
-        clearinput="true">
-      </ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Classe di Concorso (opzionale)</ion-label>
+        <ion-input
+          [formField]="subjectForm.classeDiConcorso"
+          type="text"
+          placeholder="Inserisci la classe di concorso"
+          clearinput="true">
+        </ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label>Colore</ion-label>
-      <div class="color-palette">
-        @for (color of colorPalette; track color) {
-          <button
-            [style.background]="color"
-            [class.selected]="selectedColor === color"
-            (click)="selectColor(color)"
-            type="button"
-            [attr.aria-label]="'Seleziona colore ' + color"
-            [attr.aria-pressed]="selectedColor === color">
-            <span class="visually-hidden">Colore {{ color }}</span>
-          </button>
-        }
-      </div>
-    </ion-item>
-  </ion-list>
+      <ion-item>
+        <ion-label>Colore</ion-label>
+        <div class="color-palette">
+          @for (color of colorPalette; track color) {
+            <button
+              [style.background]="color"
+              [class.selected]="subjectModel().color === color"
+              (click)="selectColor(color)"
+              type="button"
+              [attr.aria-label]="'Seleziona colore ' + color"
+              [attr.aria-pressed]="subjectModel().color === color">
+              <span class="visually-hidden">Colore {{ color }}</span>
+            </button>
+          }
+        </div>
+      </ion-item>
+    </ion-list>
+  </form>
 </ion-content>
 
 <style>

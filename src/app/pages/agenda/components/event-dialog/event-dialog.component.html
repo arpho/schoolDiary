@@ -10,19 +10,18 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form #eventForm="ngForm" (ngSubmit)="save()">
+  <form [formRoot]="eventForm" (ngSubmit)="save()">
     <!-- Titolo -->
     <ion-item>
       <ion-label position="floating">Titolo <span class="required">*</span></ion-label>
       <ion-input
         type="text"
-        name="title"
-        [(ngModel)]="eventData.title"
+        [formField]="eventForm.title"
         required
         (ionChange)="onFieldChange('title')">
       </ion-input>
     </ion-item>
-    @if (eventForm.controls['title']?.touched && eventForm.controls['title']?.errors?.['required']) {
+    @if (eventForm.title().touched() && eventForm.title().hasError('required')) {
     <ion-note color="danger">
       Il titolo è obbligatorio
     </ion-note>
@@ -32,8 +31,7 @@
     <ion-item>
       <ion-label>Tipo evento</ion-label>
       <ion-select
-        name="type"
-        [(ngModel)]="eventData.type"
+        [formField]="eventForm.type"
         (ionChange)="onFieldChange('type')"
         interface="popover">
         <ion-select-option value="homework">Compito</ion-select-option>
@@ -48,13 +46,12 @@
     </ion-item>
 
     <!-- Link Riunione On-line -->
-    @if (eventData.type === 'online_meeting') {
+    @if (eventModel().type === 'online_meeting') {
       <ion-item>
         <ion-label position="floating">Link Riunione</ion-label>
         <ion-input
           type="url"
-          name="link"
-          [(ngModel)]="eventData.link"
+          [formField]="eventForm.link"
           placeholder="https://meet.google.com/..."
           (ionChange)="onFieldChange('link')">
         </ion-input>
@@ -66,9 +63,8 @@
       <ion-label>Tutto il giorno</ion-label>
       <ion-toggle
         slot="end"
-        [(ngModel)]="eventData.allDay"
-        (ionChange)="onAllDayChange($event)"
-        name="allDay">
+        [formField]="eventForm.allDay"
+        (ionChange)="onAllDayChange($event)">
       </ion-toggle>
     </ion-item>
 
@@ -81,10 +77,9 @@
           <ion-datetime
             [id]="startDatetimeId"
             #startDatetime
-            name="dataInizio"
-            [(ngModel)]="eventData.dataInizio"
+            [formField]="eventForm.dataInizio"
             (ionChange)="onStartDateChange()"
-            [presentation]="eventData.allDay ? 'date' : 'date-time'"
+            [presentation]="eventModel().allDay ? 'date' : 'date-time'"
             [min]="minDate"
             [max]="maxDate"
             [showDefaultButtons]="true"
@@ -99,21 +94,20 @@
       <ion-label>Fine <span class="required">*</span></ion-label>
       <ion-datetime-button 
         [datetime]="endDatetimeId" 
-        [disabled]="!eventData.dataInizio">
+        [disabled]="!eventModel().dataInizio">
       </ion-datetime-button>
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime
             [id]="endDatetimeId"
             #endDatetime
-            name="dataFine"
-            [(ngModel)]="eventData.dataFine"
+            [formField]="eventForm.dataFine"
             (ionChange)="onEndDateChange()"
-            [presentation]="eventData.allDay ? 'date' : 'date-time'"
-            [min]="eventData.dataInizio || minDate"
+            [presentation]="eventModel().allDay ? 'date' : 'date-time'"
+            [min]="eventModel().dataInizio || minDate"
             [max]="maxDate"
             [showDefaultButtons]="true"
-            [disabled]="!eventData.dataInizio"
+            [disabled]="!eventModel().dataInizio"
             required>
           </ion-datetime>
         </ng-template>
@@ -133,14 +127,13 @@
     <ion-item>
       <ion-label position="stacked">Descrizione</ion-label>
       <ion-textarea 
-        [(ngModel)]="eventData.description" 
-        name="description" 
+        [formField]="eventForm.description" 
         rows="4" 
         maxlength="500"
         placeholder="Aggiungi una descrizione (opzionale)"
         (ionChange)="onFieldChange('description')">
       </ion-textarea>
-      <ion-note slot="helper">{{ eventData.description?.length || 0 }}/500 caratteri</ion-note>
+      <ion-note slot="helper">{{ eventModel().description?.length || 0 }}/500 caratteri</ion-note>
     </ion-item>
 
     <!-- Selezione Classi -->
@@ -159,8 +152,7 @@
       
       <ion-item>
         <ion-select
-          name="classKey"
-          [(ngModel)]="eventData.classKey"
+          [formField]="eventForm.classKey"
           (ionChange)="onFieldChange('classKey')"
           interface="alert"
           placeholder="Seleziona classi"
@@ -176,12 +168,11 @@
     }
 
     <!-- Studenti e Materia per Interrogazione -->
-    @if (eventData.type === 'interrogation') {
+    @if (eventModel().type === 'interrogation') {
       <ion-item>
         <ion-label>Materia <span class="required">*</span></ion-label>
         <ion-select
-          name="subjectKey"
-          [(ngModel)]="eventData.subjectKey"
+          [formField]="eventForm.subjectKey"
           interface="alert"
           placeholder="Seleziona materia"
           (ionChange)="onFieldChange('subjectKey')"
@@ -193,7 +184,7 @@
           }
         </ion-select>
       </ion-item>
-      @if (eventForm.controls['subjectKey']?.touched && eventForm.controls['subjectKey']?.errors?.['required']) {
+      @if (eventForm.subjectKey().touched() && eventForm.subjectKey().hasError('required')) {
         <ion-item lines="none">
           <ion-note color="danger" class="ion-text-center">
             La materia è obbligatoria per le interrogazioni
@@ -204,8 +195,7 @@
       <ion-item>
         <ion-label>Studenti da interrogare <span class="required">*</span></ion-label>
         <ion-select
-          name="targetStudents"
-          [(ngModel)]="eventData.targetStudents"
+          [formField]="eventForm.targetStudents"
           interface="alert"
           placeholder="Seleziona studenti"
           [multiple]="true"
@@ -218,7 +208,7 @@
           }
         </ion-select>
       </ion-item>
-      @if (eventForm.controls['targetStudents']?.touched && eventForm.controls['targetStudents']?.errors?.['required']) {
+      @if (eventForm.targetStudents().touched() && eventForm.targetStudents().hasError('required')) {
         <ion-item lines="none">
           <ion-note color="danger" class="ion-text-center">
             Selezionare almeno uno studente
@@ -236,7 +226,7 @@
       [disabled]="!isFormValid()"
       (click)="save()">
       <ion-icon slot="start" name="save"></ion-icon>
-      {{ eventData.key ? 'Aggiorna' : 'Salva' }}
+      {{ event ? 'Aggiorna' : 'Salva' }}
     </ion-button>
   </form>
 </ion-content>

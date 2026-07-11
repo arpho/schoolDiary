@@ -1,6 +1,7 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { form, schema, required, email, pattern, FormField, FormRoot } from '@angular/forms/signals';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonItem, IonLabel, IonInput, IonDatetime, IonButton, IonBackButton, IonButtons, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
 import { ActivatedRoute } from '@angular/router';
@@ -35,37 +36,43 @@ import { ClasseModel } from 'src/app/pages/classes/models/classModel';
     IonDatetime,
     IonButton,
     IonBackButton,
-    FormsModule,
-    ReactiveFormsModule,
     IonButtons,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    FormField,
+    FormRoot
 ]
 })
 export class ProfilePage implements OnInit {
+  private route = inject(ActivatedRoute);
+  private $user = inject(UsersService);
+  private toasterService = inject(ToasterService);
+  private classiService = inject(ClassiService);
+
   private userKey = signal<string>('');
   private user = signal<UserModel | null>(null);
   listaClassi = signal<ClasseModel[]>([]);
   isClassSelectionEnabled = signal<boolean>(false);
-  profileForm: FormGroup;
 
-  constructor(
-    private route: ActivatedRoute,
-    private $user: UsersService,
-    private fb: FormBuilder,
-    private toasterService: ToasterService,
-    private classiService: ClassiService
-  ) {
-    this.profileForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      birthDate: ['', []],
-      phoneNumber: ['', [Validators.pattern('^[0-9]*$')]],
-      userName: ['', []],
-      classKey: ['', []]
-    });
-  }
+  profileModel = signal({
+    firstName: '',
+    lastName: '',
+    email: '',
+    birthDate: '',
+    phoneNumber: '',
+    userName: '',
+    classKey: ''
+  });
+
+  profileForm = form(this.profileModel, schema((s) => {
+    required(s.firstName);
+    required(s.lastName);
+    required(s.email);
+    email(s.email);
+    pattern(s.phoneNumber, '^[0-9]*$');
+  }));
+
+  constructor() { }
 
   ngOnInit() {
     this.userKey.set(this.route.snapshot.paramMap.get('userKey')!);
@@ -82,14 +89,14 @@ export class ProfilePage implements OnInit {
       if (user) {
         this.user.set(user);
         this.isClassSelectionEnabled.set(user.role === UsersRole.ADMIN);
-        this.profileForm.patchValue({
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          birthDate: user.birthDate,
-          phoneNumber: user.phoneNumber,
-          userName: user.userName,
-          classKey: user.classKey
+        this.profileForm().patchValue({
+          firstName: user.firstName ?? '',
+          lastName: user.lastName ?? '',
+          email: user.email ?? '',
+          birthDate: user.birthDate ?? '',
+          phoneNumber: user.phoneNumber ?? '',
+          userName: user.userName ?? '',
+          classKey: user.classKey ?? ''
         });
       }
       console.log("user", this.user());
@@ -97,9 +104,9 @@ export class ProfilePage implements OnInit {
   }
 
   async onSubmit() {
-    if (this.profileForm.valid) {
+    if (this.profileForm().valid()) {
       const updatedUser = new UserModel();
-      Object.assign(updatedUser, this.profileForm.value);
+      Object.assign(updatedUser, this.profileForm().value());
 
       try {
         await this.$user.updateUser(this.userKey(), updatedUser);

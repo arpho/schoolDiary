@@ -1,8 +1,7 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 
+import { form, schema, required, email, FormField, FormRoot } from '@angular/forms/signals';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from '../../../shared/services/users.service';
 import { ToasterService } from '../../../shared/services/toaster.service';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton, IonCard, IonCardContent, IonIcon, IonText } from '@ionic/angular/standalone';
@@ -20,8 +19,6 @@ import { mailOutline, personOutline } from 'ionicons/icons';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
-    ReactiveFormsModule,
-    FormsModule,
     IonContent,
     IonHeader,
     IonTitle,
@@ -32,29 +29,32 @@ import { mailOutline, personOutline } from 'ionicons/icons';
     IonCard,
     IonCardContent,
     IonIcon,
-    IonText
+    IonText,
+    FormField,
+    FormRoot
 ]
 })
 export class RecoverPasswordPage implements OnInit {
-  recoverForm: FormGroup;
-
-  private fb = inject(FormBuilder);
   private usersService = inject(UsersService);
   private toaster = inject(ToasterService);
 
+  recoverModel = signal({ email: '' });
+  
+  recoverForm = form(this.recoverModel, schema((s) => {
+    required(s.email);
+    email(s.email);
+  }));
+
   constructor() {
     addIcons({ mailOutline, personOutline });
-    this.recoverForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
-    });
   }
 
   ngOnInit() {
   }
 
   async onSubmit() {
-    if (this.recoverForm.valid) {
-      const email = this.recoverForm.get('email')?.value;
+    if (this.recoverForm().valid()) {
+      const email = this.recoverForm().value().email;
       try {
         const success = await this.usersService.sendPasswordRecoverEmail(email);
         if (success) {
@@ -63,7 +63,7 @@ export class RecoverPasswordPage implements OnInit {
             duration: 3000,
             position: 'bottom'
           });
-          this.recoverForm.reset();
+          this.recoverForm().reset();
         } else {
           this.toaster.showToast({
             message: "Errore durante l'invio dell'email di recupero.",

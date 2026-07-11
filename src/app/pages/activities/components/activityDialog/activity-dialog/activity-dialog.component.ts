@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot, required, minLength, maxLength } from '@angular/forms/signals';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivityModel } from '../../../models/activityModel';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
@@ -67,7 +68,6 @@ import { UsersService } from 'src/app/shared/services/users.service';
   },
   standalone: true,
   imports: [
-    ReactiveFormsModule,
     FormsModule,
     IonDatetime,
     IonItem,
@@ -92,9 +92,11 @@ import { UsersService } from 'src/app/shared/services/users.service';
     IonCol,
     IonGrid,
     IonSpinner,
-    DatePipe
+    DatePipe,
+    FormField,
+    FormRoot
 ],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ActivityDialogComponent implements OnInit {
@@ -104,7 +106,6 @@ export class ActivityDialogComponent implements OnInit {
   @Input() selectedClass = '';
   @Input() activity: ActivityModel = new ActivityModel();
 
-  activityForm!: FormGroup;
   isSubmitted = false;
   minDate = new Date().toISOString();
   isLoading = false;
@@ -115,61 +116,84 @@ export class ActivityDialogComponent implements OnInit {
   // Current datetime being edited
   currentDatetimeField: 'date' | 'dueDate' | null = null;
 
-  // Form controls for easier access
-  get titleControl() { return this.activityForm.get('title'); }
-  get descriptionControl() { return this.activityForm.get('description'); }
-  get classKeyControl() { return this.activityForm.get('classKey'); }
-  get subjectControl() { return this.activityForm.get('subjectsKey'); }
-  get dateControl() { return this.activityForm.get('date'); }
-  get dueDateControl() { return this.activityForm.get('dueDate'); }
+  activityModel = signal({
+    title: '',
+    description: '',
+    classKey: '',
+    subjectsKey: '',
+    date: '',
+    dueDate: null as string | null
+  });
+
+  activityForm = form(this.activityModel, schema((s) => {
+    required(s.title);
+    minLength(s.title, 3);
+    maxLength(s.title, 100);
+    required(s.description);
+    minLength(s.description, 10);
+    maxLength(s.description, 500);
+    required(s.classKey);
+    required(s.subjectsKey);
+    required(s.date);
+  }));
+
+  // Helper properties to access form control properties for template
+  get titleControl() { return this.activityForm.title; }
+  get descriptionControl() { return this.activityForm.description; }
+  get classKeyControl() { return this.activityForm.classKey; }
+  get subjectControl() { return this.activityForm.subjectsKey; }
+  get dateControl() { return this.activityForm.date; }
+  get dueDateControl() { return this.activityForm.dueDate; }
 
   // Update error message based on form state
-  /**
-   * Aggiorna il messaggio di errore in base allo stato di validazione del form.
-   */
   private updateErrorMessage(): void {
     const errors: string[] = [];
 
-    if (this.titleControl?.errors?.['required']) {
-      errors.push('Il titolo è obbligatorio');
-    } else if (this.titleControl?.errors?.['minlength']) {
-      errors.push('Il titolo deve essere di almeno 3 caratteri');
-    } else if (this.titleControl?.errors?.['maxlength']) {
-      errors.push('Il titolo non può superare i 100 caratteri');
+    if (this.titleControl().invalid()) {
+      if (this.titleControl().hasError('required')) errors.push('Il titolo è obbligatorio');
+      else if (this.titleControl().hasError('minLength')) errors.push('Il titolo deve essere di almeno 3 caratteri');
+      else if (this.titleControl().hasError('maxLength')) errors.push('Il titolo non può superare i 100 caratteri');
     }
 
-    if (this.descriptionControl?.errors?.['required']) {
-      errors.push('La descrizione è obbligatoria');
-    } else if (this.descriptionControl?.errors?.['minlength']) {
-      errors.push('La descrizione deve essere di almeno 10 caratteri');
-    } else if (this.descriptionControl?.errors?.['maxlength']) {
-      errors.push('La descrizione non può superare i 500 caratteri');
+    if (this.descriptionControl().invalid()) {
+      if (this.descriptionControl().hasError('required')) errors.push('La descrizione è obbligatoria');
+      else if (this.descriptionControl().hasError('minLength')) errors.push('La descrizione deve essere di almeno 10 caratteri');
+      else if (this.descriptionControl().hasError('maxLength')) errors.push('La descrizione non può superare i 500 caratteri');
     }
 
-    if (this.classKeyControl?.errors?.['required']) {
+    if (this.classKeyControl().invalid()) {
       errors.push('La classe è obbligatoria');
     }
 
-    if (this.subjectControl?.errors?.['required']) {
+    if (this.subjectControl().invalid()) {
       errors.push('La materia è obbligatoria');
     }
 
-    if (this.dateControl?.errors?.['required']) {
-      errors.push('La data è obbligatoria');
-    } else if (this.dateControl?.errors?.['matDatepickerMin']) {
-      errors.push('La data non può essere precedente a oggi');
-    } else if (this.dateControl?.errors?.['matDatepickerMax']) {
-      errors.push('La data non può essere successiva alla data di scadenza');
+    if (this.dateControl().invalid()) {
+      if (this.dateControl().hasError('required')) errors.push('La data è obbligatoria');
     }
-
-    if (this.dueDateControl?.errors?.['matDatepickerMin']) {
+    
+    // Custom date validations
+    const dateVal = this.dateControl().value();
+    const dueDateVal = this.dueDateControl().value();
+    
+    if (dateVal) {
+      if (new Date(dateVal) < new Date(new Date().setHours(0,0,0,0))) {
+        errors.push('La data non può essere precedente a oggi');
+      }
+      if (dueDateVal && new Date(dateVal) > new Date(dueDateVal)) {
+        errors.push('La data non può essere successiva alla data di scadenza');
+      }
+    }
+    
+    if (dueDateVal && dateVal && new Date(dueDateVal) < new Date(dateVal)) {
       errors.push('La data di scadenza non può essere precedente alla data di inizio');
     }
+
     this.errorMessage = errors.length > 0 ? errors.join('. ') + '.' : '';
   }
 
   constructor(
-    private fb: FormBuilder,
     private modalController: ModalController,
     private datePipe: DatePipe
   ) {
@@ -178,43 +202,16 @@ export class ActivityDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
-
-    // Subscribe to form value changes to update error message
-    this.activityForm.valueChanges.subscribe(() => {
-      this.updateErrorMessage();
-    });
-
-    // Subscribe to date changes to update min/max dates
-    this.dateControl?.valueChanges.subscribe(() => {
-      if (this.dateControl?.value && this.dueDateControl?.value &&
-        new Date(this.dateControl.value) > new Date(this.dueDateControl.value)) {
-        this.dueDateControl?.setValue(null);
-      }
-    });
   }
 
   private initializeForm(): void {
-    this.activityForm = this.fb.group({
-      title: [this.activity?.title || '', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(100)
-      ]],
-      description: [this.activity?.description || '', [
-        Validators.required,
-        Validators.minLength(10),
-        Validators.maxLength(500)
-      ]],
-      classKey: [this.activity?.classKey || this.selectedClass || '', [
-        Validators.required
-      ]],
-      subjectsKey: [this.activity?.subjectsKey || '', [
-        Validators.required
-      ]],
-      date: [this.activity?.date || this.minDate, [
-        Validators.required
-      ]],
-      dueDate: [this.activity?.dueDate || null]
+    this.activityForm().patchValue({
+      title: this.activity?.title || '',
+      description: this.activity?.description || '',
+      classKey: this.activity?.classKey || this.selectedClass || '',
+      subjectsKey: this.activity?.subjectsKey || '',
+      date: this.activity?.date || this.minDate,
+      dueDate: this.activity?.dueDate || null
     });
   }
 
@@ -225,7 +222,7 @@ export class ActivityDialogComponent implements OnInit {
     this.isSubmitted = true;
     this.updateErrorMessage();
 
-    if (this.activityForm.invalid) {
+    if (this.activityForm().invalid() || this.errorMessage !== '') {
       return;
     }
 
@@ -233,7 +230,7 @@ export class ActivityDialogComponent implements OnInit {
 
     try {
       // Create activity object from form values
-      const formValue = this.activityForm.value;
+      const formValue = this.activityForm().value();
       const teacher = await this.$users.getLoggedUser()
       console.log("formValue", formValue);
       const activity: ActivityModel = {
@@ -266,31 +263,26 @@ export class ActivityDialogComponent implements OnInit {
     const customEvent = event as IonDatetimeCustomEvent<DatetimeChangeEventDetail>;
     const value = customEvent.detail.value;
     if (value) {
-      this.activityForm.get(field)?.setValue(value);
-      this.activityForm.get(field)?.markAsTouched();
+      this.activityForm().patchValue({ [field]: value });
+      // update min/max dynamically
+      if (field === 'date' && this.dueDateControl().value()) {
+        if (new Date(value as string) > new Date(this.dueDateControl().value()!)) {
+          this.activityForm().patchValue({ dueDate: null });
+        }
+      }
     }
     this.currentDatetimeField = null;
+    this.updateErrorMessage();
   }
 
   // Format date for display
-  formatDate(dateString: string): string {
+  formatDate(dateString: string | null | undefined): string {
     if (!dateString) return 'Seleziona data';
     return this.datePipe.transform(dateString, 'dd/MM/yyyy') || 'Seleziona data';
-  }
-
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.values(formGroup.controls).forEach(control => {
-      control.markAsTouched();
-      if (control instanceof FormGroup) {
-        this.markFormGroupTouched(control);
-      }
-    });
   }
 
   onCancel(): void {
     this.modalController.dismiss(null, 'cancel');
   }
-
-
 
 }

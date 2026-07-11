@@ -6,6 +6,46 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
+    <!-- Version 3.0.0 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v3.0.0</ion-badge>
+          <span class="version-date">11 Luglio 2026</span>
+        </div>
+        <ion-card-title>Aggiornamento Architetturale (Angular 22 &amp; Signal Forms)</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Un enorme passo avanti per le prestazioni e la pulizia del codice dell'applicazione grazie alla migrazione completa verso le più recenti tecnologie Angular.</p>
+
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="rocket-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Angular 22 Zoneless</h3>
+              <p>L'intera applicazione è stata aggiornata ad Angular 22, rimuovendo completely <code>zone.js</code>. Questo porta a performance nettamente superiori e a un ciclo di change detection manuale e molto più efficiente, completamente basato sui Signals e <code>ChangeDetectionStrategy.OnPush</code>.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="hardware-chip-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Signal Forms API</h3>
+              <p>Rimosso <code>ReactiveFormsModule</code> e completata la migrazione chirurgica alla nuova Signal Forms API (<code>@angular/forms/signals</code>) per tutti i form e le finestre di dialogo dell'app, incluse la gestione Valutazioni, Attività ed Eventi, migliorandone la leggibilità e reattività.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="contrast-outline" slot="start" color="tertiary"></ion-icon>
+            <ion-label>
+              <h3>Miglioramenti UI e Tema Scuro</h3>
+              <p>Corretto un problema estetico che rendeva invisibili o difficilmente leggibili le voci del menu di navigazione (sidebar) per le interfacce Utente e Classe quando veniva attivato il Tema Scuro.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Version 2.5.4 -->
     <ion-card>
       <ion-card-header>

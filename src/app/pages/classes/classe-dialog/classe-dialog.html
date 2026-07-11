@@ -69,45 +69,39 @@
 
     <!-- Contenuto principale -->
     <div class="main-content">
-      <form (ngSubmit)="save()" class="black-form">
+      <form [formRoot]="classeForm" (ngSubmit)="save()" class="black-form">
 
         <!-- Contenuto Generale -->
         @if (selectedTab() === 'generalita' && classe()) {
         <ion-card>
           <ion-card-content>
-            <ion-input class="custom-input" label="Nome Classe" [value]="classeName()"
-              (ionInput)="classeName.set($any($event).detail.value); classeNameTouched.set(true)" fill="outline"
+            <ion-input class="custom-input" label="Nome Classe" [formField]="classeForm.classeName" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Classe &amp; Sezione</ion-label>
             </ion-input>
 
-            <ion-input class="custom-input" label="Anno" [value]="year()"
-              (ionInput)="year.set($any($event).detail.value); yearTouched.set(true)" fill="outline"
+            <ion-input class="custom-input" label="Anno" [formField]="classeForm.year" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Anno Scolastico</ion-label>
             </ion-input>
 
-            <ion-textarea class="custom-input" label="Descrizione" rows="4" [value]="descrizione()"
-              (ionInput)="descrizione.set($any($event).detail.value); descrizioneTouched.set(true)" fill="outline"
+            <ion-textarea class="custom-input" label="Descrizione" rows="4" [formField]="classeForm.descrizione" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Descrizione</ion-label>
             </ion-textarea>
 
             <ion-label>Coordinatore</ion-label>
-            <ion-input class="custom-input" label="Coordinatore" [value]="coordinatore()"
-              (ionInput)="coordinatore.set($any($event).detail.value); coordinatoreTouched.set(true)" fill="outline"
+            <ion-input class="custom-input" label="Coordinatore" [formField]="classeForm.coordinatore" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Coordinatore</ion-label>
             </ion-input>
 
-            <ion-input class="custom-input" label="Segretario" [value]="segretario()"
-              (ionInput)="segretario.set($any($event).detail.value); segretarioTouched.set(true)" fill="outline"
+            <ion-input class="custom-input" label="Segretario" [formField]="classeForm.segretario" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Segretario</ion-label>
             </ion-input>
 
-            <ion-textarea class="custom-input" label="Note" rows="4" [value]="note()"
-              (ionInput)="note.set($any($event).detail.value); noteTouched.set(true)" fill="outline"
+            <ion-textarea class="custom-input" label="Note" rows="4" [formField]="classeForm.note" fill="outline"
               labelplacement="floating">
               <ion-label slot="floating" class="custom-label">Note</ion-label>
             </ion-textarea>
@@ -139,29 +133,6 @@
               }
             </ion-list>
           </ion-card-content>
-
-
-          <!-- Error Container -->
-          <!-- Error Container -->
-          @if (!isValid() && (
-          classeNameTouched() || yearTouched() || coordinatoreTouched() || segretarioTouched() || descrizioneTouched()
-          || noteTouched()
-          )) {
-          <div class="error-container">
-            <h4>
-              <ion-icon name="alert-circle"></ion-icon>
-              Attenzione: controlla i seguenti errori
-            </h4>
-            <ul>
-              @if (classeNameError()) { <li>{{classeNameError()}}</li> }
-              @if (yearError()) { <li>{{yearError()}}</li> }
-              @if (coordinatoreError()) { <li>{{coordinatoreError()}}</li> }
-              @if (segretarioError()) { <li>{{segretarioError()}}</li> }
-              @if (descrizioneError()) { <li>{{descrizioneError()}}</li> }
-              @if (noteError()) { <li>{{noteError()}}</li> }
-            </ul>
-          </div>
-          }
 
           <div class="ion-padding">
             <ion-grid>

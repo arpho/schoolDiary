@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form, schema, required, minLength, FormField, FormRoot } from '@angular/forms/signals';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonButtons, IonBackButton } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { Auth, reauthenticateWithCredential, EmailAuthProvider } from '@angular/fire/auth';
@@ -28,89 +29,70 @@ import { UsersService } from 'src/app/shared/services/users.service';
     IonButton,
     IonButtons,
     IonBackButton,
-    FormsModule,
-    ReactiveFormsModule
+    FormField,
+    FormRoot
 ]
 })
 export class ResetPasswordPage implements OnInit {
-  resetPasswordForm!: FormGroup;
   private auth = inject(Auth);
+  private router = inject(Router);
+  private $toaster = inject(ToasterService);
+  private $users = inject(UsersService);
 
-  constructor(
-    private router: Router,
-    private fb: FormBuilder,
-    private $toaster: ToasterService,
-    private $users: UsersService
-  ) { }
+  resetPasswordModel = signal({
+    oldPassword: '',
+    newPassword: '',
+    retypePassword: ''
+  });
+
+  resetPasswordForm = form(this.resetPasswordModel, schema((s) => {
+    required(s.oldPassword);
+    required(s.newPassword);
+    minLength(s.newPassword, 6);
+    required(s.retypePassword);
+  }));
+
+  invalidOldPassword = signal(false);
+
+  isFormValid = computed(() => {
+    const vals = this.resetPasswordForm().value();
+    return this.resetPasswordForm().valid() && vals.newPassword === vals.retypePassword;
+  });
+
+  constructor() { }
 
   ngOnInit() {
-    this.initializeForm();
   }
 
-  private initializeForm() {
-    this.resetPasswordForm = this.fb.group({
-      oldPassword: ['', [Validators.required, this.validateOldPassword.bind(this)]],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
-      retypePassword: ['', Validators.required]
-    }, {
-      validators: this.matchPassword
-    });
-  }
+  async onSubmit(): Promise<void> {
+    this.invalidOldPassword.set(false);
 
-  private validateOldPassword(control: FormControl): Promise<{ [key: string]: any } | null> {
-    return new Promise((resolve) => {
-      const user = this.auth.currentUser;
-
-      if (!user || !control.value) {
-        resolve(null);
-        return;
-      }
-
-      const credential = EmailAuthProvider.credential(
-        user.email!,
-        control.value
-      );
-
-      reauthenticateWithCredential(user, credential)
-        .then(() => {
-          resolve(null);
-        })
-        .catch(() => {
-          resolve({ invalidOldPassword: true });
-        });
-    });
-  }
-
-  private matchPassword(control: FormGroup): { mismatch: boolean } | null {
-    const password = control.get('newPassword')?.value;
-    const confirmPassword = control.get('retypePassword')?.value;
-
-    if (!password || !confirmPassword) {
-      return null;
+    if (!this.isFormValid()) {
+      return;
     }
 
-    return password === confirmPassword ? null : { mismatch: true };
-  }
+    const { oldPassword, newPassword } = this.resetPasswordForm().value();
+    const user = this.auth.currentUser;
 
-  get formControls() {
-    return this.resetPasswordForm.controls;
-  }
-
-
-  onSubmit(): void {
-    if (this.resetPasswordForm.valid) {
-      const user = this.auth.currentUser;
-
-      if (user) {
-        this.$users.updatePassword(user, this.resetPasswordForm.get('newPassword')?.value)
-          .then(() => {
-            console.log('Password updated successfully');
-            this.router.navigate(['/dashboard']);
-          })
-          .catch((error: Error) => {
-            console.error('Error updating password:', error);
-          });
-      }
+    if (!user) {
+      return;
     }
+
+    try {
+      const credential = EmailAuthProvider.credential(user.email!, oldPassword);
+      await reauthenticateWithCredential(user, credential);
+    } catch {
+      this.invalidOldPassword.set(true);
+      return;
+    }
+
+    this.$users.updatePassword(user, newPassword)
+      .then(() => {
+        console.log('Password updated successfully');
+        this.router.navigate(['/dashboard']);
+      })
+      .catch((error: Error) => {
+        console.error('Error updating password:', error);
+      });
   }
 }

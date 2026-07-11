@@ -1,6 +1,7 @@
-import { Component, inject, model, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, model, OnInit, ChangeDetectionStrategy, effect } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
 import {
   IonContent,
   IonHeader,
@@ -46,7 +47,7 @@ const COLOR_PALETTE = [
   templateUrl: './create-subject.page.html',
   styleUrls: ['./create-subject.page.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonHeader,
     IonContent,
@@ -59,7 +60,9 @@ const COLOR_PALETTE = [
     IonItem,
     IonLabel,
     IonList,
-    FormsModule
+    FormsModule,
+    FormField,
+    FormRoot
 ]
 })
 export class CreateSubjectPage implements OnInit {
@@ -72,11 +75,17 @@ export class CreateSubjectPage implements OnInit {
     icon?: string;
   } | null>(null);
 
-  name: string = '';
-  color: string = '#3880ff';
-  classeDiConcorso: string = '';
+  subjectModel = model({
+    name: '',
+    color: '#3880ff',
+    classeDiConcorso: ''
+  });
+
+  subjectForm = form(this.subjectModel, schema((s) => {
+    required(s.name);
+  }));
+
   isEditMode = false;
-  selectedColor = '#3880ff';
   colorPalette = COLOR_PALETTE;
 
   private modalCtrl = inject(ModalController);
@@ -89,10 +98,11 @@ export class CreateSubjectPage implements OnInit {
     const subjectValue = this.subject();
     if (subjectValue) {
       this.isEditMode = true;
-      this.name = subjectValue.name || '';
-      this.color = subjectValue.color || '#3880ff';
-      this.selectedColor = subjectValue.color || '#3880ff';
-      this.classeDiConcorso = subjectValue.classeDiConcorso || '';
+      this.subjectForm().patchValue({
+        name: subjectValue.name || '',
+        color: subjectValue.color || '#3880ff',
+        classeDiConcorso: subjectValue.classeDiConcorso || ''
+      });
     }
     else {
       console.log("nessuna materia passata")
@@ -100,17 +110,19 @@ export class CreateSubjectPage implements OnInit {
   }
 
   selectColor(color: string) {
-    this.selectedColor = color;
+    this.subjectForm().patchValue({ color });
   }
 
   save() {
-    if (this.name.trim()) {
+    if (this.subjectForm().valid()) {
+      const formValue = this.subjectForm().value();
+      
       // Aggiorna il model con i nuovi valori
       this.subject.set(new SubjectModel({
         ...this.subject(),
-        name: this.name.trim(),
-        color: this.selectedColor,
-        classeDiConcorso: this.classeDiConcorso?.trim()
+        name: formValue.name.trim(),
+        color: formValue.color,
+        classeDiConcorso: formValue.classeDiConcorso?.trim()
       }));
 
       // Chiudi il modale con conferma
@@ -122,11 +134,4 @@ export class CreateSubjectPage implements OnInit {
     this.modalCtrl.dismiss(null, 'cancel');
   }
 
-  onNameChange(value: string) {
-    this.name = value?.trim() || '';
-  }
-
-  onClasseDiConcorsoChange(value: string) {
-    this.classeDiConcorso = value?.trim() || '';
-  }
 }

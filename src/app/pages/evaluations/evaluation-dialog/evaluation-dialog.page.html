@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-button (click)="close()"><ion-icon name="close"></ion-icon></ion-button>
       @if(evaluationSignal().key){
-      <ion-button (click)="printEvaluation()" [disabled]="!evaluationform.valid">
+      <ion-button (click)="printEvaluation()" [disabled]="!evaluationform().valid()">
         <ion-icon name="print"></ion-icon>
       </ion-button>
     }
@@ -15,25 +15,25 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <form [formGroup]="evaluationform" class="ion-padding">
+    <form [formRoot]="evaluationform" class="ion-padding">
       <ion-item>
         <ion-label position="floating">Descrizione</ion-label>
-        <ion-input type="text" formControlName="description"></ion-input>
+        <ion-input type="text" [formField]="evaluationform.description"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Note</ion-label>
-        <ion-textarea rows="3" formControlName="note"></ion-textarea>
+        <ion-textarea rows="3" [formField]="evaluationform.note"></ion-textarea>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Data Valutazione</ion-label>
-        <ion-datetime formControlName="data" presentation="date"></ion-datetime>
+        <ion-datetime [formField]="evaluationform.data" presentation="date"></ion-datetime>
       </ion-item>
       <ion-item>
 
         <ion-label position="floating">Attività</ion-label>
-        <ion-select formControlName="activityKey" placeholder="Seleziona attività">
+        <ion-select [formField]="evaluationform.activityKey" placeholder="Seleziona attività">
           @for(activity of sortedActivities(); track activity.key){
           <ion-select-option [value]="activity.key">
             {{activity.title}}
@@ -69,7 +69,7 @@
 
       <ion-item>
         <ion-label position="floating">Griglia</ion-label>
-        <ion-select formControlName="grid" placeholder="Seleziona griglia">
+        <ion-select [formField]="evaluationform.grid" placeholder="Seleziona griglia">
           @for(grid of griglie(); track $index){
           <ion-select-option [value]="grid.key">
             {{grid.nome}}
@@ -81,7 +81,7 @@
 
         <app-evaluate-grid [grid]="grid()"></app-evaluate-grid>
 
-      <ion-button expand="block" (click)="saveEvaluation()" [disabled]="!evaluationform.valid">
+      <ion-button expand="block" (click)="saveEvaluation()" [disabled]="!evaluationform().valid()">
         Salva Valutazione
       </ion-button>
     </form>

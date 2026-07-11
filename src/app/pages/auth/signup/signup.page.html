@@ -15,7 +15,7 @@
           <p>Join us today!</p>
         </div>
 
-        <form [formGroup]="signupForm" (ngSubmit)="signup()">
+        <form [formRoot]="signupForm" (ngSubmit)="signup()">
           <!-- Name & Surname -->
           <ion-item lines="none" class="custom-input">
             <ion-input
@@ -23,7 +23,7 @@
               labelPlacement="floating"
               fill="outline"
               type="text"
-              formControlName="name"
+              [formField]="signupForm.name"
               placeholder="Your name">
               <ion-icon slot="start" name="person-outline" aria-hidden="true"></ion-icon>
             </ion-input>
@@ -35,7 +35,7 @@
               labelPlacement="floating"
               fill="outline"
               type="text"
-              formControlName="surname"
+              [formField]="signupForm.surname"
               placeholder="Your surname">
               <ion-icon slot="start" name="person-outline" aria-hidden="true"></ion-icon>
             </ion-input>
@@ -48,14 +48,14 @@
               labelPlacement="floating"
               fill="outline"
               type="email"
-              formControlName="email"
+              [formField]="signupForm.email"
               placeholder="Your email address"
               errorText="Valid email is required">
               <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
             </ion-input>
           </ion-item>
           
-          @if (signupForm.get('email')?.invalid && signupForm.get('email')?.touched) {
+          @if (signupForm.email().invalid() && signupForm.email().touched()) {
             <div class="error-message">
               <ion-text color="danger">
                 <small>Please enter a valid email</small>
@@ -70,14 +70,14 @@
               labelPlacement="floating"
               fill="outline"
               type="password"
-              formControlName="password"
+              [formField]="signupForm.password"
               placeholder="Create a password">
               <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
               <ion-input-password-toggle slot="end"></ion-input-password-toggle>
             </ion-input>
           </ion-item>
           
-          @if (signupForm.get('password')?.invalid && signupForm.get('password')?.touched) {
+          @if (signupForm.password().invalid() && signupForm.password().touched()) {
             <div class="error-message">
               <ion-text color="danger">
                 <small>Min 8 characters required</small>
@@ -92,14 +92,14 @@
               labelPlacement="floating"
               fill="outline"
               type="password"
-              formControlName="passwordConfirm"
+              [formField]="signupForm.passwordConfirm"
               placeholder="Confirm your password">
               <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
               <ion-input-password-toggle slot="end"></ion-input-password-toggle>
             </ion-input>
           </ion-item>
 
-           @if (signupForm.get('passwordConfirm')?.touched && signupForm.get('password')?.value !== signupForm.get('passwordConfirm')?.value) {
+           @if (signupForm.passwordConfirm().touched() && signupForm().value().password !== signupForm().value().passwordConfirm) {
             <div class="error-message">
               <ion-text color="danger">
                 <small>Passwords do not match</small>
@@ -107,7 +107,7 @@
             </div>
           }
 
-          <ion-button expand="block" type="submit" [disabled]="!signupForm.valid" class="login-button">
+          <ion-button expand="block" type="submit" [disabled]="!isFormValid()" class="login-button">
             Sign Up
           </ion-button>
 

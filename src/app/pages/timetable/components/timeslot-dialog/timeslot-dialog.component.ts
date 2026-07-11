@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed, effect, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
+import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonItem, IonSelect, IonSelectOption, IonInput, IonList, ModalController, IonFooter } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
@@ -15,7 +16,7 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
   templateUrl: './timeslot-dialog.component.html',
   styleUrls: ['./timeslot-dialog.component.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     IonHeader,
@@ -30,7 +31,9 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
     IonSelectOption,
     IonInput,
     IonList,
-    IonFooter
+    IonFooter,
+    FormField,
+    FormRoot
 ]
 })
 export class TimeslotDialogComponent implements OnInit {
@@ -41,13 +44,22 @@ export class TimeslotDialogComponent implements OnInit {
   private modalController = inject(ModalController);
 
   // Form State
-  slotType = signal<'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento'>('lezione');
-  day = signal<string>('');
-  startTime = signal<string>('');
-  endTime = signal<string>('');
-  classKey = signal<string>('');
-  subjectKey = signal<string>('');
-  location = signal<string>('');
+  slotModel = signal({
+    slotType: 'lezione' as 'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento',
+    day: '',
+    startTime: '',
+    endTime: '',
+    classKey: '',
+    subjectKey: '',
+    location: ''
+  });
+
+  slotForm = form(this.slotModel, schema((s) => {
+    required(s.slotType);
+    required(s.day);
+    required(s.startTime);
+    required(s.endTime);
+  }));
 
   // Async Data State
   assignedClasses = signal<AssignedClass[]>([]); 
@@ -55,7 +67,7 @@ export class TimeslotDialogComponent implements OnInit {
 
   // Computed list of subjects based on the selected class
   availableSubjects = computed(() => {
-    const selectedClass = this.classKey();
+    const selectedClass = this.slotModel().classKey;
     if (!selectedClass) return [];
     
     const cls = this.assignedClasses().find(c => c.key === selectedClass);
@@ -66,36 +78,57 @@ export class TimeslotDialogComponent implements OnInit {
   });
 
   isFormValid = computed(() => {
-    if (!this.day() || !this.startTime() || !this.endTime()) return false;
-    if (this.slotType() === 'lezione') {
-      if (!this.classKey() || !this.subjectKey()) return false;
+    if (!this.slotForm().valid()) return false;
+    if (this.slotModel().slotType === 'lezione') {
+      if (!this.slotModel().classKey || !this.slotModel().subjectKey) return false;
     }
     return true;
   });
 
   constructor() {
     addIcons({ close });
+
+    // Effect to reset classKey and subjectKey when type changes
+    effect(() => {
+      const type = this.slotModel().slotType;
+      if (type !== 'lezione') {
+        this.slotForm().patchValue({
+          classKey: '',
+          subjectKey: ''
+        });
+      }
+    }, { allowSignalWrites: true });
+
+    // Effect to reset subject when class changes
+    effect(() => {
+      const classKey = this.slotModel().classKey;
+      if (classKey) {
+        this.slotForm().patchValue({ subjectKey: '' });
+      }
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit() {
     this.fetchUserClasses();
     if (this.item) {
+      let type: 'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento' = 'lezione';
       if (this.item.description === 'Ora Buca') {
-        this.slotType.set('ora_buca');
+        type = 'ora_buca';
       } else if (this.item.description === 'Intervallo') {
-        this.slotType.set('intervallo');
+        type = 'intervallo';
       } else if (this.item.description === 'Ricevimento') {
-        this.slotType.set('ricevimento');
-      } else {
-        this.slotType.set('lezione');
+        type = 'ricevimento';
       }
 
-      this.day.set(this.item.day || '');
-      this.startTime.set(this.item.startTime || '');
-      this.endTime.set(this.item.endTime || '');
-      this.classKey.set(this.item.classKey || '');
-      this.subjectKey.set(this.item.subjectKey || '');
-      this.location.set(this.item.location || '');
+      this.slotForm().patchValue({
+        slotType: type,
+        day: this.item.day || '',
+        startTime: this.item.startTime || '',
+        endTime: this.item.endTime || '',
+        classKey: this.item.classKey || '',
+        subjectKey: this.item.subjectKey || '',
+        location: this.item.location || ''
+      });
     }
   }
 
@@ -128,23 +161,25 @@ export class TimeslotDialogComponent implements OnInit {
 
   save() {
     if (!this.isFormValid()) return;
+    
+    const val = this.slotModel();
 
     const newSlot = new TimetableModel({
-      day: this.day(),
-      startTime: this.startTime(),
-      endTime: this.endTime(),
-      location: this.location(),
+      day: val.day,
+      startTime: val.startTime,
+      endTime: val.endTime,
+      location: val.location,
       description: '',
-      classKey: this.slotType() === 'lezione' ? this.classKey() : '',
-      subjectKey: this.slotType() === 'lezione' ? this.subjectKey() : '',
-      type: this.slotType()
+      classKey: val.slotType === 'lezione' ? val.classKey : '',
+      subjectKey: val.slotType === 'lezione' ? val.subjectKey : '',
+      type: val.slotType
     });
 
-    if (this.slotType() === 'ora_buca') {
+    if (val.slotType === 'ora_buca') {
       newSlot.description = 'Ora Buca';
-    } else if (this.slotType() === 'intervallo') {
+    } else if (val.slotType === 'intervallo') {
       newSlot.description = 'Intervallo';
-    } else if (this.slotType() === 'ricevimento') {
+    } else if (val.slotType === 'ricevimento') {
       newSlot.description = 'Ricevimento';
     }
 
