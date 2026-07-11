@@ -202,14 +202,14 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
           try {
             const editingClasse = await this.service.fetchClasse(key);
 
-            this.classeForm().patchValue({
+            this.classeForm().value.update(v => ({...v, ...({
               classeName: editingClasse.classe || '',
               year: editingClasse.year || '',
               coordinatore: editingClasse.coordinatore || '',
               segretario: editingClasse.segretario || '',
               descrizione: editingClasse.descrizione || '',
               note: editingClasse.note || ''
-            });
+            })}));
 
             this.initialValues = {
               classeName: editingClasse.classe || '',

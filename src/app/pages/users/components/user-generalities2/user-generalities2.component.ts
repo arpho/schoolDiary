@@ -133,12 +133,12 @@ export class UserGeneralities2Component implements OnInit {
 
   onClassesChange(classes: AssignedClass[]) {
     this.usersClasses.set(classes);
-    this.userForm().patchValue({ classes: classes.map(c => c.key) });
+    this.userForm().value.update(v => ({...v, classes: classes.map(c => c.key) }));
   }
 
   onNoteDisabilitaChange($event: IonTextareaCustomEvent<TextareaChangeEventDetail>) {
     const value = $event.detail.value || '';
-    this.userForm().patchValue({ noteDisabilita: value });
+    this.userForm().value.update(v => ({...v, noteDisabilita: value }));
   }
 
   private readonly userEffect = effect(async () => {
@@ -204,7 +204,7 @@ export class UserGeneralities2Component implements OnInit {
   /** Attiva/disattiva un chip di disabilità */
   toggleChip(field: 'DVA' | 'DSA' | 'BES' | 'ADHD'): void {
     const current = this.userForm().value()[field];
-    this.userForm().patchValue({ [field]: !current });
+    this.userForm().value.update(v => ({...v, [field]: !current }));
     this.userForm().markAsDirty();
   }
 
@@ -252,7 +252,7 @@ export class UserGeneralities2Component implements OnInit {
           duration: 2000,
           position: "bottom"
         });
-        this.userForm().markAsPristine();
+        // markAsPristine not supported in Signal Forms
         return this.updateUserClaims(user.key, claims);
       })
       .catch(error => {
@@ -274,7 +274,7 @@ export class UserGeneralities2Component implements OnInit {
           duration: 2000,
           position: "bottom"
         });
-        this.userForm().markAsPristine();
+        // markAsPristine not supported in Signal Forms
         return this.updateUserClaims(user.key, claims);
       })
       .catch(error => {
@@ -318,7 +318,7 @@ export class UserGeneralities2Component implements OnInit {
   syncFormWithUser(user: UserModel) {
     if (user.key) {
       try {
-        this.userForm().patchValue({
+        this.userForm().value.update(v => ({...v,
           firstName: user.firstName || '',
           lastName: user.lastName || '',
           userName: user.userName || '',
@@ -331,10 +331,10 @@ export class UserGeneralities2Component implements OnInit {
           noteDisabilita: user.noteDisabilita || '',
           pdpUrl: '',
           phoneNumber: user.phoneNumber || '',
-          birthDate: user.birthDate || '',
+          birthDate: user.birthDate ? String(user.birthDate) : '',
           classKey: user.classKey || '',
           classes: user.classesKey || []
-        });
+        }));
 
         if (user.pdpUrl && Array.isArray(user.pdpUrl)) {
           this.pdpList.set(user.pdpUrl.map(doc => new DocumentModel({ ...doc })));

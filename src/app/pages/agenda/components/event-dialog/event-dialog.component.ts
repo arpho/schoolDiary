@@ -108,28 +108,28 @@ export class EventDialogComponent implements OnInit {
     if (this.event) {
       console.log('Editing existing event:', this.event);
       let classes: string[] = [];
-      if (this.event.classKey) {
-        classes = Array.isArray(this.event.classKey) ? this.event.classKey : [this.event.classKey];
-      } else if (this.event.targetClasses && this.event.targetClasses.length > 0) {
-        classes = this.event.targetClasses.map((c: any) => typeof c === 'string' ? c : c.key);
+      if (this.event?.classKey) {
+        classes = Array.isArray(this.event?.classKey) ? this.event?.classKey : [this.event?.classKey];
+      } else if (this.event?.targetClasses && this.event?.targetClasses.length > 0) {
+        classes = this.event?.targetClasses.map((c: any) => typeof c === 'string' ? c : c.key);
       }
 
-      this.eventForm().patchValue({
-        title: this.event.title || '',
-        description: this.event.description || '',
-        dataInizio: this.event.dataInizio || new Date().toISOString(),
-        dataFine: this.event.dataFine || new Date().toISOString(),
-        type: this.event.type || 'other',
-        link: this.event.link || '',
+      this.eventForm().value.update(v => ({...v, ...({
+        title: this.event?.title || '',
+        description: this.event?.description || '',
+        dataInizio: this.event?.dataInizio || new Date().toISOString(),
+        dataFine: this.event?.dataFine || new Date().toISOString(),
+        type: this.event?.type || 'other',
+        link: this.event?.link || '',
         classKey: classes,
-        targetStudents: this.event.targetStudents || [],
-        subjectKey: this.event.subjectKey || '',
-        allDay: this.event.allDay || false
-      });
+        targetStudents: this.event?.targetStudents || [],
+        subjectKey: this.event?.subjectKey || '',
+        allDay: this.event?.allDay || false
+      })}));
     } else {
       // New event defaults
       if (this.classId) {
-        this.eventForm().patchValue({ classKey: [this.classId] });
+        this.eventForm().value.update(v => ({...v, ...({ classKey: [this.classId] })}));
       }
     }
     
@@ -153,13 +153,13 @@ export class EventDialogComponent implements OnInit {
         let targetStudents = this.eventModel().targetStudents || [];
         if (targetStudents.length > 0) {
           targetStudents = targetStudents.filter(key => availableKeys.has(key));
-          this.eventForm().patchValue({ targetStudents });
+          this.eventForm().value.update(v => ({...v, ...({ targetStudents })}));
         }
         this.cdr.markForCheck();
       }, [new QueryCondition('classKey', 'in', classKeys)]);
     } else {
       this.students = [];
-      this.eventForm().patchValue({ targetStudents: [] });
+      this.eventForm().value.update(v => ({...v, ...({ targetStudents: [] })}));
     }
   }
 
@@ -168,7 +168,7 @@ export class EventDialogComponent implements OnInit {
     if (!this.loggedUser || !this.loggedUser.assignedClasses || !classKeys || classKeys.length === 0) {
       this.subjects = [];
       if (this.eventModel().subjectKey && !this.subjects.find(s => s.key === this.eventModel().subjectKey)) {
-          this.eventForm().patchValue({ subjectKey: '' });
+          this.eventForm().value.update(v => ({...v, ...({ subjectKey: '' })}));
       }
       return;
     }
@@ -189,20 +189,20 @@ export class EventDialogComponent implements OnInit {
     }
 
     if (this.eventModel().subjectKey && !this.subjects.find(s => s.key === this.eventModel().subjectKey)) {
-      this.eventForm().patchValue({ subjectKey: '' });
+      this.eventForm().value.update(v => ({...v, ...({ subjectKey: '' })}));
     }
     this.cdr.markForCheck();
   }
 
   selectAllClasses() {
     if (this.targetedClasses && this.targetedClasses.length > 0) {
-      this.eventForm().patchValue({ classKey: this.targetedClasses.map(c => this.getClassKey(c)) });
+      this.eventForm().value.update(v => ({...v, ...({ classKey: this.targetedClasses.map(c => this.getClassKey(c)) })}));
       this.onFieldChange('classKey');
     }
   }
 
   deselectAllClasses() {
-    this.eventForm().patchValue({ classKey: [] });
+    this.eventForm().value.update(v => ({...v, ...({ classKey: [] })}));
     this.onFieldChange('classKey');
   }
 
@@ -269,7 +269,7 @@ export class EventDialogComponent implements OnInit {
   }
 
   onAllDayChange(event: any) {
-    this.eventForm().patchValue({ allDay: event.detail.checked });
+    this.eventForm().value.update(v => ({...v, ...({ allDay: event.detail.checked })}));
     const val = this.eventModel();
     if (val.allDay && val.dataInizio) {
       const start = new Date(val.dataInizio);
@@ -278,10 +278,10 @@ export class EventDialogComponent implements OnInit {
       const end = new Date(start);
       end.setHours(23, 59, 59, 999);
       
-      this.eventForm().patchValue({
+      this.eventForm().value.update(v => ({...v, ...({
         dataInizio: start.toISOString(),
         dataFine: end.toISOString()
-      });
+      })}));
     } else if (!val.allDay && val.dataInizio) {
       const start = new Date(val.dataInizio);
       start.setHours(12, 0, 0, 0);
@@ -289,10 +289,10 @@ export class EventDialogComponent implements OnInit {
       const end = new Date(start);
       end.setHours(13, 0, 0, 0);
       
-      this.eventForm().patchValue({
+      this.eventForm().value.update(v => ({...v, ...({
         dataInizio: start.toISOString(),
         dataFine: end.toISOString()
-      });
+      })}));
     }
   }
 
@@ -308,10 +308,10 @@ export class EventDialogComponent implements OnInit {
         const newEndDate = new Date(startDate);
         newEndDate.setDate(newEndDate.getDate() + 1);
         newEndDate.setHours(0, 0, 0, 0);
-        this.eventForm().patchValue({ dataFine: newEndDate.toISOString() });
+        this.eventForm().value.update(v => ({...v, ...({ dataFine: newEndDate.toISOString() })}));
       } else {
         endDate.setTime(startDate.getTime() + 60 * 60 * 1000);
-        this.eventForm().patchValue({ dataFine: endDate.toISOString() });
+        this.eventForm().value.update(v => ({...v, ...({ dataFine: endDate.toISOString() })}));
       }
     }
   }
@@ -323,7 +323,7 @@ export class EventDialogComponent implements OnInit {
       const endDate = new Date(val.dataFine);
 
       if (endDate < startDate) {
-        this.eventForm().patchValue({ dataFine: val.dataInizio });
+        this.eventForm().value.update(v => ({...v, ...({ dataFine: val.dataInizio })}));
       }
     }
   }
@@ -337,7 +337,7 @@ export class EventDialogComponent implements OnInit {
     const endDate = new Date(val.dataFine).getTime();
 
     if (endDate < startDate) {
-      this.eventForm().patchValue({ dataFine: val.dataInizio });
+      this.eventForm().value.update(v => ({...v, ...({ dataFine: val.dataInizio })}));
       out = true;
     }
     return out;

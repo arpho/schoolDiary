@@ -21,7 +21,7 @@
         (ionChange)="onFieldChange('title')">
       </ion-input>
     </ion-item>
-    @if (eventForm.title().touched() && eventForm.title().hasError('required')) {
+    @if (eventForm.title().touched() && eventForm.title().getError('required')) {
     <ion-note color="danger">
       Il titolo è obbligatorio
     </ion-note>
@@ -184,7 +184,7 @@
           }
         </ion-select>
       </ion-item>
-      @if (eventForm.subjectKey().touched() && eventForm.subjectKey().hasError('required')) {
+      @if (eventForm.subjectKey().touched() && eventForm.subjectKey().getError('required')) {
         <ion-item lines="none">
           <ion-note color="danger" class="ion-text-center">
             La materia è obbligatoria per le interrogazioni
@@ -208,7 +208,7 @@
           }
         </ion-select>
       </ion-item>
-      @if (eventForm.targetStudents().touched() && eventForm.targetStudents().hasError('required')) {
+      @if (eventForm.targetStudents().touched() && eventForm.targetStudents().getError('required')) {
         <ion-item lines="none">
           <ion-note color="danger" class="ion-text-center">
             Selezionare almeno uno studente

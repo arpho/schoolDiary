@@ -134,9 +134,9 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
       console.log("dismissed activity", result.data);
       this.activitiesService.addActivity(activity()).then((res: any) => {
         console.log("activity added", res);
-        this.evaluationform().patchValue({
+        this.evaluationform().value.update(v => ({...v,
           activityKey: res.key
-        })
+        }));
       }).catch((error: any) => {
         console.error("Error adding activity", error);
       });
@@ -247,9 +247,9 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
         console.log("Selected   activity", activityKey);
         if (activity) {
           // You might want to update title here if your model had a title
-          this.evaluationform().patchValue({
+          this.evaluationform().value.update(v => ({...v,
             activityKey: activityKey,
-          });
+          }));
         }
       }
     });
@@ -279,10 +279,10 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
     console.log("init evaluation-dialog");
     console.log("evaluation", this.evaluationSignal())
     
-    this.evaluationform().patchValue({
+    this.evaluationform().value.update(v => ({...v,
       classKey: this.classKey,
       studentKey: this.studentKey
-    });
+    }));
 
     if (this.evaluationSignal().key) {
       this.evaluationKey = this.evaluationSignal().key;
@@ -290,13 +290,13 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
       this.classKey = this.evaluationSignal().classKey;
       this.studentKey = this.evaluationSignal().studentKey;
       this.activityKey = this.evaluationSignal().activityKey;
-      this.evaluationform().patchValue({
+      this.evaluationform().value.update(v => ({...v,
         description: this.evaluationSignal().description,
         note: this.evaluationSignal().note,
         data: this.evaluationSignal().data,
         classKey: this.evaluationSignal().classKey,
         studentKey: this.evaluationSignal().studentKey
-      });
+      }));
       this.enclosedDocuments.set(this.evaluationSignal().enclosedDocuments || []);
       this.grid.set(this.evaluationSignal().grid);
     } else {
@@ -311,14 +311,14 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
       this.title.set("rivedi valutazione");
       this.evaluationService.fetchEvaluation(this.evaluationKey).then((evaluation: Evaluation) => {
         this.valutazione = evaluation;
-        this.evaluationform().patchValue({
+        this.evaluationform().value.update(v => ({...v,
           description: evaluation.description,
           note: evaluation.note,
           data: evaluation.data,
           grid: evaluation.grid.key,
           classKey: evaluation.classKey,
           studentKey: evaluation.studentKey
-        });
+        }));
         this.enclosedDocuments.set(evaluation.enclosedDocuments || []);
       });
     } else {

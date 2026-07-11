@@ -92,10 +92,10 @@ export class TimeslotDialogComponent implements OnInit {
     effect(() => {
       const type = this.slotModel().slotType;
       if (type !== 'lezione') {
-        this.slotForm().patchValue({
+        this.slotForm().value.update(v => ({...v,
           classKey: '',
           subjectKey: ''
-        });
+        }));
       }
     }, { allowSignalWrites: true });
 
@@ -103,7 +103,7 @@ export class TimeslotDialogComponent implements OnInit {
     effect(() => {
       const classKey = this.slotModel().classKey;
       if (classKey) {
-        this.slotForm().patchValue({ subjectKey: '' });
+        this.slotForm().value.update(v => ({...v, subjectKey: '' }));
       }
     }, { allowSignalWrites: true });
   }
@@ -120,15 +120,15 @@ export class TimeslotDialogComponent implements OnInit {
         type = 'ricevimento';
       }
 
-      this.slotForm().patchValue({
+      this.slotForm().value.update(v => ({...v,
         slotType: type,
-        day: this.item.day || '',
-        startTime: this.item.startTime || '',
-        endTime: this.item.endTime || '',
-        classKey: this.item.classKey || '',
-        subjectKey: this.item.subjectKey || '',
-        location: this.item.location || ''
-      });
+        day: this.item?.day || '',
+        startTime: this.item?.startTime || '',
+        endTime: this.item?.endTime || '',
+        classKey: this.item?.classKey || '',
+        subjectKey: this.item?.subjectKey || '',
+        location: this.item?.location || ''
+      }));
     }
   }
 

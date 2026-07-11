@@ -47,19 +47,19 @@
           
           <div id="title-errors" class="error-messages">
             @if ((titleControl().touched() || isSubmitted) && titleControl().invalid()) {
-              @if (titleControl().hasError('required')) {
+              @if (titleControl().getError('required')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   Il titolo è obbligatorio
                 </ion-note>
               }
-              @if (titleControl().hasError('minLength')) {
+              @if (titleControl().getError('minLength')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   Il titolo deve essere di almeno 3 caratteri
                 </ion-note>
               }
-              @if (titleControl().hasError('maxLength')) {
+              @if (titleControl().getError('maxLength')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   Il titolo non può superare i 100 caratteri
@@ -83,19 +83,19 @@
           
           <div id="description-errors" class="error-messages">
             @if ((descriptionControl().touched() || isSubmitted) && descriptionControl().invalid()) {
-              @if (descriptionControl().hasError('required')) {
+              @if (descriptionControl().getError('required')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   La descrizione è obbligatoria
                 </ion-note>
               }
-              @if (descriptionControl().hasError('minLength')) {
+              @if (descriptionControl().getError('minLength')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   La descrizione deve essere di almeno 10 caratteri
                 </ion-note>
               }
-              @if (descriptionControl().hasError('maxLength')) {
+              @if (descriptionControl().getError('maxLength')) {
                 <ion-note color="danger">
                   <ion-icon name="warning" slot="start"></ion-icon>
                   La descrizione non può superare i 500 caratteri
@@ -130,7 +130,7 @@
                 
                 <div id="class-errors" class="error-messages">
                   @if ((classKeyControl().touched() || isSubmitted) && classKeyControl().invalid()) {
-                    @if (classKeyControl().hasError('required')) {
+                    @if (classKeyControl().getError('required')) {
                       <ion-note color="danger">
                         <ion-icon name="warning" slot="start"></ion-icon>
                         Seleziona una classe
@@ -164,7 +164,7 @@
                 
                 <div id="subject-errors" class="error-messages">
                   @if ((subjectControl().touched() || isSubmitted) && subjectControl().invalid()) {
-                    @if (subjectControl().hasError('required')) {
+                    @if (subjectControl().getError('required')) {
                       <ion-note color="danger">
                         <ion-icon name="warning" slot="start"></ion-icon>
                         Seleziona una materia

@@ -98,11 +98,11 @@ export class CreateSubjectPage implements OnInit {
     const subjectValue = this.subject();
     if (subjectValue) {
       this.isEditMode = true;
-      this.subjectForm().patchValue({
+      this.subjectForm().value.update(v => ({...v, ...({
         name: subjectValue.name || '',
         color: subjectValue.color || '#3880ff',
         classeDiConcorso: subjectValue.classeDiConcorso || ''
-      });
+      })}));
     }
     else {
       console.log("nessuna materia passata")
@@ -110,7 +110,7 @@ export class CreateSubjectPage implements OnInit {
   }
 
   selectColor(color: string) {
-    this.subjectForm().patchValue({ color });
+    this.subjectForm().value.update(v => ({...v, ...({ color })}));
   }
 
   save() {

@@ -119,9 +119,9 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
     if (result.data) {
       const newActivity = await this.$activites.addActivity(activity());
 
-      this.evaluationform().patchValue({
+      this.evaluationform().value.update(v => ({...v, ...({
         activityKey: newActivity.key
-      });
+      })}));
     }
   }
   async updateEvaluation() {
@@ -311,7 +311,7 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
       console.log('Valori del form da inizializzare:', formValues);
 
       // Update the form with the new values
-      this.evaluationform().patchValue(formValues);
+      this.evaluationform().value.update(v => ({...v, ...(formValues)}));
 
       console.log('Form aggiornato con valori:', {
         formValue: this.evaluationform().value(),

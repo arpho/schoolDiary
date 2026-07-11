@@ -34,7 +34,7 @@
           </ion-select-option>
           }
         </ion-select>
-        @if (evaluationform.subjectKey().hasError('required') && evaluationform.subjectKey().touched()) {
+        @if (evaluationform.subjectKey().getError('required') && evaluationform.subjectKey().touched()) {
           <ion-note slot="error">Campo obbligatorio</ion-note>
         }
       </ion-item>
@@ -49,7 +49,7 @@
           </ion-select-option>
           }
         </ion-select>
-        @if (evaluationform.activityKey().hasError('required') && evaluationform.activityKey().touched()) {
+        @if (evaluationform.activityKey().getError('required') && evaluationform.activityKey().touched()) {
           <ion-note slot="error">Campo obbligatorio</ion-note>
         }
         <ion-button (click)="openActivityDialog()">Aggiungi attività</ion-button>

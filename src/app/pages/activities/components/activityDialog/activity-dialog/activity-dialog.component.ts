@@ -146,19 +146,19 @@ export class ActivityDialogComponent implements OnInit {
   get dueDateControl() { return this.activityForm.dueDate; }
 
   // Update error message based on form state
-  private updateErrorMessage(): void {
+  protected updateErrorMessage(): void {
     const errors: string[] = [];
 
     if (this.titleControl().invalid()) {
-      if (this.titleControl().hasError('required')) errors.push('Il titolo è obbligatorio');
-      else if (this.titleControl().hasError('minLength')) errors.push('Il titolo deve essere di almeno 3 caratteri');
-      else if (this.titleControl().hasError('maxLength')) errors.push('Il titolo non può superare i 100 caratteri');
+      if (this.titleControl().getError('required')) errors.push('Il titolo è obbligatorio');
+      else if (this.titleControl().getError('minLength')) errors.push('Il titolo deve essere di almeno 3 caratteri');
+      else if (this.titleControl().getError('maxLength')) errors.push('Il titolo non può superare i 100 caratteri');
     }
 
     if (this.descriptionControl().invalid()) {
-      if (this.descriptionControl().hasError('required')) errors.push('La descrizione è obbligatoria');
-      else if (this.descriptionControl().hasError('minLength')) errors.push('La descrizione deve essere di almeno 10 caratteri');
-      else if (this.descriptionControl().hasError('maxLength')) errors.push('La descrizione non può superare i 500 caratteri');
+      if (this.descriptionControl().getError('required')) errors.push('La descrizione è obbligatoria');
+      else if (this.descriptionControl().getError('minLength')) errors.push('La descrizione deve essere di almeno 10 caratteri');
+      else if (this.descriptionControl().getError('maxLength')) errors.push('La descrizione non può superare i 500 caratteri');
     }
 
     if (this.classKeyControl().invalid()) {
@@ -170,7 +170,7 @@ export class ActivityDialogComponent implements OnInit {
     }
 
     if (this.dateControl().invalid()) {
-      if (this.dateControl().hasError('required')) errors.push('La data è obbligatoria');
+      if (this.dateControl().getError('required')) errors.push('La data è obbligatoria');
     }
     
     // Custom date validations
@@ -205,14 +205,14 @@ export class ActivityDialogComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    this.activityForm().patchValue({
+    this.activityForm().value.update(v => ({...v, ...({
       title: this.activity?.title || '',
       description: this.activity?.description || '',
       classKey: this.activity?.classKey || this.selectedClass || '',
       subjectsKey: this.activity?.subjectsKey || '',
       date: this.activity?.date || this.minDate,
       dueDate: this.activity?.dueDate || null
-    });
+    })}));
   }
 
   /**
@@ -233,11 +233,9 @@ export class ActivityDialogComponent implements OnInit {
       const formValue = this.activityForm().value();
       const teacher = await this.$users.getLoggedUser()
       console.log("formValue", formValue);
-      const activity: ActivityModel = {
-        ...this.activity, // Preserve existing properties if editing
-        ...formValue,
+      const activity = Object.assign(new ActivityModel(), this.activity, formValue, {
         teacherKey: teacher ? teacher.key : ""
-      };
+      });
       console.log("activity", activity);
 
       await this.modalController.dismiss(activity);
@@ -263,11 +261,11 @@ export class ActivityDialogComponent implements OnInit {
     const customEvent = event as IonDatetimeCustomEvent<DatetimeChangeEventDetail>;
     const value = customEvent.detail.value;
     if (value) {
-      this.activityForm().patchValue({ [field]: value });
+      this.activityForm().value.update(v => ({...v, ...({ [field]: value })}));
       // update min/max dynamically
       if (field === 'date' && this.dueDateControl().value()) {
         if (new Date(value as string) > new Date(this.dueDateControl().value()!)) {
-          this.activityForm().patchValue({ dueDate: null });
+          this.activityForm().value.update(v => ({...v, ...({ dueDate: null })}));
         }
       }
     }

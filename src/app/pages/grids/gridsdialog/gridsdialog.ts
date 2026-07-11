@@ -201,10 +201,10 @@ export class GridsdialogPage implements OnInit {
   });
 
   ngOnInit(): void {
-    this.gridForm().patchValue({
+    this.gridForm().value.update(v => ({...v, ...({
       nome: this.gridSignal().nome,
       descrizione: this.gridSignal().descrizione
-    });
+    })}));
     this.indicatorsList.set(this.gridSignal().indicatori);
 
     if (this.gridKey) {
@@ -215,10 +215,10 @@ export class GridsdialogPage implements OnInit {
         console.log("grid", grid);
         this.gridSignal.set(grid);
         this.indicatorsList.set(grid.indicatori);
-        this.gridForm().patchValue({
+        this.gridForm().value.update(v => ({...v, ...({
           nome: grid.nome,
           descrizione: grid.descrizione
-        });
+        })}));
       });
     }
     else {

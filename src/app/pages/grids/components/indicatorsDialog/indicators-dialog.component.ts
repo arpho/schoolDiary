@@ -176,9 +176,9 @@ export class IndicatorsDialogComponent implements OnInit {
         console.log("indicatorsDialog ngOnInit", this.indicatore);
         this.criteri.set(this.indicatore?.criteri || []);
         
-        this.indicatorForm().patchValue({
+        this.indicatorForm().value.update(v => ({...v, ...({
           descrizione: this.indicatore?.descrizione || '',
           valore: this.indicatore?.valore || ''
-        });
+        })}));
     }
 }

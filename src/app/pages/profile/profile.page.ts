@@ -69,7 +69,7 @@ export class ProfilePage implements OnInit {
     required(s.lastName);
     required(s.email);
     email(s.email);
-    pattern(s.phoneNumber, '^[0-9]*$');
+    pattern(s.phoneNumber, /^[0-9]*$/);
   }));
 
   constructor() { }
@@ -89,15 +89,15 @@ export class ProfilePage implements OnInit {
       if (user) {
         this.user.set(user);
         this.isClassSelectionEnabled.set(user.role === UsersRole.ADMIN);
-        this.profileForm().patchValue({
+        this.profileForm().value.update(v => ({...v,
           firstName: user.firstName ?? '',
           lastName: user.lastName ?? '',
           email: user.email ?? '',
-          birthDate: user.birthDate ?? '',
+          birthDate: user.birthDate ? String(user.birthDate) : '',
           phoneNumber: user.phoneNumber ?? '',
           userName: user.userName ?? '',
           classKey: user.classKey ?? ''
-        });
+        }));
       }
       console.log("user", this.user());
     });

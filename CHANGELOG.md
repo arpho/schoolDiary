@@ -2,9 +2,14 @@
 
 Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in questo file.
 
-## [Unreleased] - 2026-06-10
+## [Unreleased] - 2026-07-11
 
 ### Aggiunto
+- **Angular 22 Zoneless**: L'intera applicazione è stata aggiornata ad Angular 22, rimuovendo completamente `zone.js`.
+- **Signal Forms API**: Rimosso `ReactiveFormsModule` e completata la migrazione chirurgica alla nuova Signal Forms API (`@angular/forms/signals`) per tutti i form e le finestre di dialogo dell'app, incluse la gestione Valutazioni, Attività ed Eventi.
+- **Miglioramenti UI e Tema Scuro**: Corretto un problema estetico che rendeva invisibili o difficilmente leggibili le voci del menu di navigazione (sidebar) per le interfacce Utente e Classe quando veniva attivato il Tema Scuro.
+
+## [Precedente] - 2026-06-10
 - **Navigazione Rapida Studenti**: Aggiunti i pulsanti "Precedente" e "Successivo" in `evaluations4student` per scorrere rapidamente gli studenti di una classe, migliorando notevolmente il workflow di valutazione continua.
 - **Scorciatoia Navigazione**: Introdotto un pulsante per tornare direttamente al pannello classe dalla vista delle valutazioni studente, ottimizzando il flusso di lavoro.
 - **Panoramica Globale (Tabellone Voti)**: Creata una nuova schermata a griglia (`class-evaluations-overview`) accessibile dalla lista studenti. Permette di visualizzare le medie della classe a colpo d'occhio e inserire in modo massivo le "proposte di voto finale", con salvataggio diretto nel profilo studente (`UserModel`).
