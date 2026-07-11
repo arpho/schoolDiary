@@ -24,6 +24,7 @@
               fill="outline"
               type="text"
               [formField]="signupForm.name"
+              (ionInput)="signupModel.update(v => ({...v, name: String($event.detail.value)}))"
               placeholder="Your name">
               <ion-icon slot="start" name="person-outline" aria-hidden="true"></ion-icon>
             </ion-input>
@@ -36,6 +37,7 @@
               fill="outline"
               type="text"
               [formField]="signupForm.surname"
+              (ionInput)="signupModel.update(v => ({...v, surname: String($event.detail.value)}))"
               placeholder="Your surname">
               <ion-icon slot="start" name="person-outline" aria-hidden="true"></ion-icon>
             </ion-input>
@@ -49,6 +51,7 @@
               fill="outline"
               type="email"
               [formField]="signupForm.email"
+              (ionInput)="signupModel.update(v => ({...v, email: String($event.detail.value)}))"
               placeholder="Your email address"
               errorText="Valid email is required">
               <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
@@ -71,6 +74,7 @@
               fill="outline"
               type="password"
               [formField]="signupForm.password"
+              (ionInput)="signupModel.update(v => ({...v, password: String($event.detail.value)}))"
               placeholder="Create a password">
               <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
               <ion-input-password-toggle slot="end"></ion-input-password-toggle>
@@ -93,6 +97,7 @@
               fill="outline"
               type="password"
               [formField]="signupForm.passwordConfirm"
+              (ionInput)="signupModel.update(v => ({...v, passwordConfirm: String($event.detail.value)}))"
               placeholder="Confirm your password">
               <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
               <ion-input-password-toggle slot="end"></ion-input-password-toggle>

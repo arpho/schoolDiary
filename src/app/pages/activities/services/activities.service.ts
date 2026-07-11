@@ -66,10 +66,6 @@ export class ActivitiesService {
   private $users = inject(UsersService);
 
   constructor() {
-    // Initialize real-time listener with empty parameters
-    this.getActivities4teacherOnRealtime('', (activities: ActivityModel[]) => {
-      this.activitiesOnCache.set(activities);
-    });
   }
 
   async ngOnInit(): Promise<void> {

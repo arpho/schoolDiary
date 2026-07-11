@@ -24,6 +24,7 @@
               fill="outline"
               type="email"
               [formField]="loginForm.email"
+              (ionInput)="loginModel.update(v => ({...v, email: String($event.detail.value)}))"
               placeholder="Enter your email"
               errorText="Valid email is required">
               <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
@@ -45,6 +46,7 @@
               fill="outline"
               type="password"
               [formField]="loginForm.password"
+              (ionInput)="loginModel.update(v => ({...v, password: String($event.detail.value)}))"
               placeholder="Enter your password">
               <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
               <ion-input-password-toggle slot="end"></ion-input-password-toggle>
