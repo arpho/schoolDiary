@@ -28,7 +28,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
     eventClick = output<TimetableModel | AgendaEvent>();
     dateRangeChanged = output<{start: Date, end: Date}>();
 
-    private calendarInstance: Calendar | null = null;
+    private calendarInstance: any | null = null;
     currentDateDisplay = signal<string>('');
     currentView = signal<'day' | 'week' | 'month'>('week'); // Default to week view for timetable
 

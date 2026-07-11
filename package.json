@@ -16,7 +16,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^22.0.6",
-    "@angular/cdk": "^20.2.1",
+    "@angular/cdk": "^22.0.4",
     "@angular/common": "^22.0.6",
     "@angular/compiler": "^22.0.6",
     "@angular/core": "^22.0.6",
@@ -48,8 +48,7 @@
     "ts-essentials": "^10.1.1",
     "ts-md5": "^2.0.1",
     "tslib": "^2.3.0",
-    "xlsx": "^0.18.5",
-    "zone.js": "~0.15.0"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@angular-eslint/builder": "^20.0.0",

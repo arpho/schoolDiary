@@ -32,7 +32,7 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
   events = input.required<AgendaEvent[]>();
   eventClick = output<AgendaEvent>();
 
-  private calendarInstance: Calendar | null = null;
+  private calendarInstance: any | null = null;
   currentDateDisplay = signal<string>('');
   currentView = signal<'day' | 'week' | 'month'>('day');
 
@@ -93,20 +93,18 @@ export class AgendaSchedulerToastUiComponent implements AfterViewInit, OnDestroy
         }
       ],
       template: {
-        time(event) {
-          return `<span style="color: white; padding-left: 2px;">${event.title}</span>`;
+        time(event: any) {
+          return `<span style="color: white; font-weight: 500;">${event.start.getHours()}:${event.start.getMinutes().toString().padStart(2, '0')}</span> ${event.title}`;
         },
-        allday(event) {
-             return `<span style="color: white; padding-left: 2px;">${event.title}</span>`;
+        allday(event: any) {
+          return `<span style="color: gray;">${event.title}</span>`;
         },
-        popupDetailBody(event) {
-             return `<span style="color: white; padding-left: 2px;">${event.body}</span>`;
+        popupDetailBody(event: any) {
+          return `Oggetto: ${event.body}`;
         },
-         monthGridHeader(model) {
-            var date = new Date(model.date);
-            var template = '<span class="tui-full-calendar-weekday-grid-date">' + date.getDate() + '</span>';
-            return template;
-          },
+        monthGridHeader(model: any) {
+          return `<span class="tui-full-calendar-weekday-grid-date">${model.date}</span>`;
+        },
       },
       week: {
         taskView: true, // Enable task view for all-day events
