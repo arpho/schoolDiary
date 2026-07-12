@@ -3,3 +3,30 @@
 @import "tailwindcss/theme" layer(theme);
 /* Omit 'tailwindcss/preflight' to preserve Ionic styles */
 @import "tailwindcss/utilities" layer(utilities);
+
+@layer components {
+  /* Applichiamo le classi di utilità Tailwind ai componenti principali */
+  ion-card, 
+  .glass-panel {
+    @apply backdrop-blur-md border border-white/30 dark:border-white/10 shadow-xl;
+    /* Ionic richiede --background per colorare l'interno della card */
+    --background: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  /* Supporto per il tema scuro manuale di Ionic */
+  .ion-palette-dark ion-card,
+  .ion-palette-dark .glass-panel {
+    --background: rgba(0, 0, 0, 0.3) !important;
+  }
+
+  ion-modal::part(content),
+  ion-popover::part(content) {
+    @apply backdrop-blur-md border border-white/30 dark:border-white/10 shadow-xl;
+    background: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .ion-palette-dark ion-modal::part(content),
+  .ion-palette-dark ion-popover::part(content) {
+    background: rgba(0, 0, 0, 0.3) !important;
+  }
+}

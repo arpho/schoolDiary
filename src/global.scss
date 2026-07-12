@@ -178,28 +178,7 @@ ion-content {
   }
 }
 
-/* Restore solid backgrounds for modals and popovers so text remains readable */
-ion-popover,
-ion-modal,
-ion-popover ion-content,
-ion-modal ion-content {
-  --background: var(--ion-background-color, #ffffff) !important;
-  
-  &::part(background) {
-    background: var(--ion-background-color, #ffffff) !important;
-  }
-}
-
-.ion-palette-dark ion-popover,
-.ion-palette-dark ion-modal,
-.ion-palette-dark ion-popover ion-content,
-.ion-palette-dark ion-modal ion-content {
-  --background: var(--ion-background-color, #1e1e1e) !important;
-  
-  &::part(background) {
-    background: var(--ion-background-color, #1e1e1e) !important;
-  }
-}
+/* Gli sfondi di popover e modali ora sono gestiti da Tailwind v4 in src/tailwind.css (Glassmorphism) */
 
 /* Fix per var(--ion-color-light) nel tema scuro */
 .ion-palette-dark {
