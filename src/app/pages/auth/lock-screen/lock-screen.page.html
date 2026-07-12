@@ -25,7 +25,7 @@
               fill="outline"
               type="password"
               [formField]="lockForm.password"
-              (ionInput)="lockModel.update(v => ({...v, password: String($event.detail.value)}))"
+              (ionInput)="lockModel.update(v => ({...v, password: $event.detail.value + ''}))"
               placeholder="Inserisci password"
               autocomplete="new-password">
               <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>

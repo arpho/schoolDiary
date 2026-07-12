@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import {
   Firestore,
   collection,
@@ -65,16 +66,31 @@ export class ActivitiesService {
   private firestore = inject(Firestore);
   private $users = inject(UsersService);
 
-  constructor() {
-  }
+  private unsubscribeSnapshot?: () => void;
 
-  async ngOnInit(): Promise<void> {
-    const user = await this.$users.getLoggedUser();
-    if (user) {
-      this.getActivities4teacherOnRealtime(user.key, (activities: ActivityModel[]) => {
-        this.activitiesOnCache.set(activities);
-      });
-    }
+  constructor() {
+    const auth = inject(Auth);
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Clean up previous subscription if any
+        if (this.unsubscribeSnapshot) {
+          this.unsubscribeSnapshot();
+        }
+        
+        const loggedUser = await this.$users.getLoggedUser();
+        if (loggedUser) {
+          this.unsubscribeSnapshot = this.getActivities4teacherOnRealtime(loggedUser.key, (activities: ActivityModel[]) => {
+            this.activitiesOnCache.set(activities);
+          });
+        }
+      } else {
+        this.activitiesOnCache.set([]);
+        if (this.unsubscribeSnapshot) {
+          this.unsubscribeSnapshot();
+          this.unsubscribeSnapshot = undefined;
+        }
+      }
+    });
   }
 
   /**

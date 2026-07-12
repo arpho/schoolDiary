@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import {
   Firestore,
   collection,
@@ -53,7 +54,14 @@ export class ClassiService {
   private unsubscribeSnapshot?: Unsubscribe;
 
   constructor() {
-    this.subscribeToClassiUpdates();
+    const auth = inject(Auth);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.subscribeToClassiUpdates();
+      } else {
+        this.clearCache();
+      }
+    });
   }
 
   /**
