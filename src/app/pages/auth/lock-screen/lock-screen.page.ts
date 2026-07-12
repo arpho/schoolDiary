@@ -72,18 +72,27 @@ export class LockScreenPage implements OnInit {
   }
 
   unlock() {
-    if (this.lockForm().valid()) {
-      const { password } = this.lockForm().value();
-      const success = this.localLockService.unlock(password);
+    console.log('Form valid:', this.lockForm().valid());
+    console.log('Model values:', this.lockModel());
 
-      if (success) {
-        this.router.navigate(['/dashboard']);
-      } else {
-        this.toaster.presentToast({
-          message: 'Password incorretta',
-          position: 'bottom'
-        }, 'danger');
-      }
+    const { password } = this.lockModel();
+    if (!password) {
+      this.toaster.presentToast({
+        message: 'Inserisci la password',
+        position: 'bottom'
+      }, 'warning');
+      return;
+    }
+
+    const success = this.localLockService.unlock(password);
+
+    if (success) {
+      this.router.navigate(['/dashboard']);
+    } else {
+      this.toaster.presentToast({
+        message: 'Password incorretta',
+        position: 'bottom'
+      }, 'danger');
     }
   }
 

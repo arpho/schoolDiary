@@ -66,42 +66,48 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    if (this.loginForm().valid()) {
-      const { email, password } = this.loginForm().value();
-      console.log('Login form submitted:', this.loginForm().value());
+    console.log('Form valid:', this.loginForm().valid());
+    console.log('Model values:', this.loginModel());
+    console.log('Form values:', this.loginForm().value());
 
-      this.afAuth
-        .signInWithEmailAndPassword(email, password)
-        .catch((error: { message: any; }) => {
-          console.log(error.message);
-          this.$toaster.presentToast({ message: String(error.message), position: "bottom" });
-          this.error = true;
-          this.errorMessage = error.message;
-          this.cdr.detectChanges();
-        })
-        .then((data: any) => {
-          console.log("data", data)
-          if (data) {
-            this.error = false;
-            this.errorMessage = '';
-
-            console.log("login successfull");
-            
-            // Set up local lock with the used password
-            this.localLockService.setupPassword(password);
-            
-            // Reindirizza alla dashboard
-            this.router.navigate(['/dashboard']);
-
-          } else {
-            console.log('login failed');
-            this.$toaster.presentToast({ message: 'Login failed', position: "top" });
-          }
-        });
-    } else {
-      console.log('Login form is invalid');
-      this.$toaster.presentToast({ message: 'Login form is invalid', position: "top" });
+    const { email, password } = this.loginModel();
+    
+    if (!email || !password || password.length < 8) {
+      console.log('Login form is invalid manually');
+      this.$toaster.presentToast({ message: 'Credenziali non valide (password min 8)', position: "top" });
+      return;
     }
+
+    console.log('Login submitting with:', { email });
+
+    this.afAuth
+      .signInWithEmailAndPassword(email, password)
+      .catch((error: { message: any; }) => {
+        console.log(error.message);
+        this.$toaster.presentToast({ message: String(error.message), position: "bottom" });
+        this.error = true;
+        this.errorMessage = error.message;
+        this.cdr.detectChanges();
+      })
+      .then((data: any) => {
+        console.log("data", data)
+        if (data) {
+          this.error = false;
+          this.errorMessage = '';
+
+          console.log("login successfull");
+          
+          // Set up local lock with the used password
+          this.localLockService.setupPassword(password);
+          
+          // Reindirizza alla dashboard
+          this.router.navigate(['/dashboard']);
+
+        } else {
+          console.log('login failed');
+          this.$toaster.presentToast({ message: 'Login failed', position: "top" });
+        }
+      });
   }
 
 }

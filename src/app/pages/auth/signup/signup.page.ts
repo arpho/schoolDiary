@@ -71,33 +71,37 @@ export class SignupPage {
   });
 
   signup() {
-    if (this.isFormValid()) {
-      const { name, surname, email, password, passwordConfirm } = this.signupForm().value();
+    console.log('Form valid:', this.signupForm().valid());
+    console.log('Model values:', this.signupModel());
 
-      if (password !== passwordConfirm) {
-        this.toaster.presentToast({ message: 'Passwords do not match', position: 'top' });
-        return;
-      }
+    const { name, surname, email, password, passwordConfirm } = this.signupModel();
 
-      const formValueForModel = {
-        firstName: name,
-        lastName: surname,
-        email: email,
-        password: password
-      };
-
-      console.log('Signup form submitted:', formValueForModel);
-      const user = new UserModel(formValueForModel);
-      console.log("creating user", user);
-
-      this.service.signupUser(user).then(() => {
-        this.toaster.presentToast({ message: 'User created successfully', position: 'top' });
-      }).catch((error) => {
-        this.toaster.presentToast({ message: String(error.message), position: 'top' });
-      });
-    } else {
-      console.log('Signup form is invalid');
-      this.toaster.presentToast({ message: 'Please fill all required fields correctly', position: 'top' });
+    if (!name || !surname || !email || !password || password.length < 8) {
+      console.log('Signup form is invalid manually');
+      this.toaster.presentToast({ message: 'Compila tutti i campi correttamente', position: 'top' });
+      return;
     }
+
+    if (password !== passwordConfirm) {
+      this.toaster.presentToast({ message: 'Le password non coincidono', position: 'top' });
+      return;
+    }
+
+    const formValueForModel = {
+      firstName: name,
+      lastName: surname,
+      email: email,
+      password: password
+    };
+
+    console.log('Signup form submitted:', formValueForModel);
+    const user = new UserModel(formValueForModel);
+    console.log("creating user", user);
+
+    this.service.signupUser(user).then(() => {
+      this.toaster.presentToast({ message: 'User created successfully', position: 'top' });
+    }).catch((error) => {
+      this.toaster.presentToast({ message: String(error.message), position: 'top' });
+    });
   }
 }

@@ -33,7 +33,7 @@
             </ion-input>
           </ion-item>
 
-          <ion-button expand="block" type="submit" [disabled]="!lockForm().valid()" class="unlock-button">
+          <ion-button expand="block" type="submit" class="unlock-button" (click)="unlock()">
             <ion-icon name="lock-open-outline" slot="start"></ion-icon>
             Sblocca
           </ion-button>

@@ -65,7 +65,7 @@
             <a [routerLink]="['/recover-password']">Forgot Password?</a>
           </div>
 
-          <ion-button expand="block" type="submit" [disabled]="!loginForm().valid()" class="login-button">
+          <ion-button expand="block" type="submit" class="login-button" (click)="login()">
             Login
           </ion-button>
 
