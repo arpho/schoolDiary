@@ -37,6 +37,7 @@
               "src/manifest.webmanifest"
             ],
             "styles": [
+              "src/tailwind.css",
               "src/global.scss",
               "src/theme/variables.scss",
               "node_modules/@toast-ui/calendar/dist/toastui-calendar.min.css",
@@ -124,6 +125,7 @@
               }
             ],
             "styles": [
+              "src/tailwind.css",
               "src/global.scss",
               "src/theme/variables.scss"
             ],
