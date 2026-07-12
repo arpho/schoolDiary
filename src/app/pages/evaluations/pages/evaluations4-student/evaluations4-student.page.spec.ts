@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Evaluations4StudentPage } from './evaluations4-student.page';
 import { provideRouter } from '@angular/router';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -14,13 +14,13 @@ describe('Evaluations4StudentPage', () => {
   let fixture: ComponentFixture<Evaluations4StudentPage>;
   let usersServiceMock: any;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     usersServiceMock = {
       getUserByUid: jasmine.createSpy('getUserByUid').and.returnValue(Promise.resolve(new UserModel())),
       getLoggedUser: jasmine.createSpy('getLoggedUser').and.returnValue(Promise.resolve(new UserModel()))
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [Evaluations4StudentPage],
       providers: [
         provideRouter([]),
@@ -38,7 +38,7 @@ describe('Evaluations4StudentPage', () => {
     fixture = TestBed.createComponent(Evaluations4StudentPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

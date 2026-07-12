@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SubjectsListPage } from './subjects-list.page';
 import { IonicModule } from '@ionic/angular';
 import { SubjectService } from './services/subjects/subject.service';
@@ -29,8 +29,8 @@ describe('SubjectsListPage', () => {
     dismiss: jasmine.createSpy('dismiss').and.returnValue(Promise.resolve(true))
   };
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), SubjectsListPage],
       providers: [
         { provide: ModalController, useValue: modalControllerMock },
@@ -43,7 +43,7 @@ describe('SubjectsListPage', () => {
     fixture = TestBed.createComponent(SubjectsListPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

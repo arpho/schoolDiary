@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { UserDialogPage } from './user-dialog.page';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
@@ -18,7 +18,7 @@ describe('UserDialogPage', () => {
   let component: UserDialogPage;
   let fixture: ComponentFixture<UserDialogPage>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const activatedRouteSpy = {
       snapshot: { paramMap: { get: () => 'test-user-key' } }
     };
@@ -34,7 +34,7 @@ describe('UserDialogPage', () => {
     classiSpy.getClassiOnRealtime.and.returnValue(of([]));
     modalSpy.getTop.and.returnValue(Promise.resolve(undefined));
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [UserDialogPage],
       providers: [
         provideIonicAngular(),
@@ -56,7 +56,7 @@ describe('UserDialogPage', () => {
     fixture = TestBed.createComponent(UserDialogPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { IonicModule, ModalController, ActionSheetController } from '@ionic/angular';
 
@@ -11,8 +11,8 @@ describe('ListStudent4classComponent', () => {
   let component: ListStudent4classComponent;
   let fixture: ComponentFixture<ListStudent4classComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), ListStudent4classComponent],
       providers: [
         { provide: UsersService, useValue: { getLoggedUser: jasmine.createSpy('getLoggedUser'), getCustomClaims4LoggedUser: jasmine.createSpy('getCustomClaims4LoggedUser'), getUserByUid: jasmine.createSpy('getUserByUid') } },
@@ -27,7 +27,7 @@ describe('ListStudent4classComponent', () => {
     fixture = TestBed.createComponent(ListStudent4classComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { ActionSheetController, AlertController, ToastController, ModalController } from '@ionic/angular/standalone';
 import { Evaluation4StudentComponent } from './evaluation4-student.component';
@@ -14,7 +14,7 @@ describe('Evaluation4StudentComponent', () => {
   let component: Evaluation4StudentComponent;
   let fixture: ComponentFixture<Evaluation4StudentComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['getLoggedUser', 'getUser']);
     const evaluationSpy = jasmine.createSpyObj('EvaluationService', ['getEvaluation4studentAndTeacher', 'deleteEvaluation']);
     const activitiesSpy = jasmine.createSpyObj('ActivitiesService', ['fetchActivityOnCache']);
@@ -28,7 +28,7 @@ describe('Evaluation4StudentComponent', () => {
     usersSpy.getLoggedUser.and.returnValue(Promise.resolve(new UserModel()));
     evaluationSpy.getEvaluation4studentAndTeacher.and.callFake((s: string, t: string, cb: any) => cb([]));
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), Evaluation4StudentComponent],
       providers: [
         { provide: UsersService, useValue: usersSpy },
@@ -51,7 +51,7 @@ describe('Evaluation4StudentComponent', () => {
     fixture.componentRef.setInput('teacherkey', 't1');
 
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

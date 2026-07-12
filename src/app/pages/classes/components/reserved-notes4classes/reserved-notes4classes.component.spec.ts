@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { ReservedNotes4ClassesComponent } from './reserved-notes4classes.component';
@@ -9,8 +9,8 @@ describe('ReservedNotes4ClassesComponent', () => {
   let component: ReservedNotes4ClassesComponent;
   let fixture: ComponentFixture<ReservedNotes4ClassesComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), ReservedNotes4ClassesComponent],
       providers: [
         { provide: UsersService, useValue: { getLoggedUser: jasmine.createSpy('getLoggedUser') } },
@@ -22,7 +22,7 @@ describe('ReservedNotes4ClassesComponent', () => {
     component = fixture.componentInstance;
     fixture.componentRef.setInput('classe', { key: 'test-class' });
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

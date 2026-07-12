@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalController, AlertController } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import { GroupsService } from '../../services/groups/groups.service';
@@ -12,7 +12,7 @@ describe('GroupsManagerComponent', () => {
   let component: GroupsManagerComponent;
   let fixture: ComponentFixture<GroupsManagerComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const groupsServiceSpy = jasmine.createSpyObj('GroupsService', ['getGroups', 'fetchGroups4class']);
     const classiServiceSpy = jasmine.createSpyObj('ClassiService', ['fetchClasse']);
     const usersServiceSpy = jasmine.createSpyObj('UsersService', ['getUsersByClass']);
@@ -20,7 +20,7 @@ describe('GroupsManagerComponent', () => {
     const modalSpy = jasmine.createSpyObj('ModalController', ['create']);
     const toasterSpy = jasmine.createSpyObj('ToasterService', ['showToast']);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), GroupsManagerComponent],
       providers: [
         { provide: GroupsService, useValue: groupsServiceSpy },
@@ -35,7 +35,7 @@ describe('GroupsManagerComponent', () => {
     fixture = TestBed.createComponent(GroupsManagerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

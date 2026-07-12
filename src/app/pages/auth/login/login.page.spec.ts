@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginPage } from './login.page';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { ActivatedRoute, provideRouter } from '@angular/router';

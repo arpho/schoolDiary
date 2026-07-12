@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { StudentAverageGradeDisplayComponent } from './student-average-grade-display.component';
@@ -10,8 +10,8 @@ describe('StudentAverageGradeDisplayComponent', () => {
   let component: StudentAverageGradeDisplayComponent;
   let fixture: ComponentFixture<StudentAverageGradeDisplayComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), StudentAverageGradeDisplayComponent],
       providers: [
         { provide: EvaluationService, useValue: { 
@@ -26,7 +26,7 @@ describe('StudentAverageGradeDisplayComponent', () => {
     fixture.componentRef.setInput('student', { key: '123', name: 'Test', surname: 'Student' });
     fixture.componentRef.setInput('teacherkey', 'teacher123');
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

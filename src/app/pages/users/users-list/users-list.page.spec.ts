@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { provideIonicAngular, IonBackButton } from '@ionic/angular/standalone';
@@ -18,7 +18,7 @@ describe('UsersListPage', () => {
   let component: UsersListPage;
   let fixture: ComponentFixture<UsersListPage>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['getUsersOnRealTime']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const toasterSpy = jasmine.createSpyObj('ToasterService', ['presentToast']);
@@ -28,7 +28,7 @@ describe('UsersListPage', () => {
     classiSpy.getClassiOnRealtime.and.returnValue(of([]));
     usersSpy.getUsersOnRealTime.and.callFake((cb: any) => cb([])); // Execute callback immediately
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, UsersListPage],
       providers: [
         provideIonicAngular(),
@@ -42,7 +42,7 @@ describe('UsersListPage', () => {
       ]
     }).compileComponents();
 
-  }));
+  });
 
   it('should create', () => {
     TestBed.overrideComponent(UsersListPage, {

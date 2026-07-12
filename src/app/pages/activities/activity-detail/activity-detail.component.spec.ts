@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ActivityDetailComponent } from './activity-detail.component';
 import { ActivatedRoute } from '@angular/router';
@@ -11,8 +11,8 @@ describe('ActivityDetailComponent', () => {
   let component: ActivityDetailComponent;
   let fixture: ComponentFixture<ActivityDetailComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [ActivityDetailComponent],
       providers: [
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '1' } } } },
@@ -25,7 +25,7 @@ describe('ActivityDetailComponent', () => {
     fixture = TestBed.createComponent(ActivityDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

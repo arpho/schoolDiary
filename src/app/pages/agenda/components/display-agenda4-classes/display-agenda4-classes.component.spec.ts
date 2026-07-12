@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { ModalController } from '@ionic/angular/standalone';
 
@@ -26,8 +26,8 @@ describe('DisplayAgenda4ClassesComponent', () => {
     }))
   };
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), DisplayAgenda4ClassesComponent],
       providers: [
         { provide: ClassiService, useValue: classiServiceMock },
@@ -43,7 +43,7 @@ describe('DisplayAgenda4ClassesComponent', () => {
     fixture.componentRef.setInput('targetedClasses', ['class1']);
     
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

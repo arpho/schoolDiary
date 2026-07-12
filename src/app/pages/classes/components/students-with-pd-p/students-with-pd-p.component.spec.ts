@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { StudentsWithPdPComponent } from './students-with-pd-p.component';
@@ -7,7 +7,7 @@ describe('StudentsWithPdPComponent', () => {
   let component: StudentsWithPdPComponent;
   let fixture: ComponentFixture<StudentsWithPdPComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['getUsersOnRealTime', 'getLoggedUser', 'getSubjectsByTeacherAndClass']);
     usersSpy.getLoggedUser.and.returnValue(Promise.resolve({ key: 'test-teacher' }));
     usersSpy.getSubjectsByTeacherAndClass.and.returnValue(Promise.resolve([]));
@@ -22,7 +22,7 @@ describe('StudentsWithPdPComponent', () => {
     fixture = TestBed.createComponent(StudentsWithPdPComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

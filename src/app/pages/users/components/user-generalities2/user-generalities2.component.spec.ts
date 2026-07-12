@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { UserGeneralities2Component } from './user-generalities2.component';
@@ -45,12 +45,12 @@ describe('UserGeneralities2Component', () => {
   let classiServiceSpy: jasmine.SpyObj<ClassiService>;
   let toasterServiceSpy: jasmine.SpyObj<ToasterService>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['getLoggedUser', 'updateUser', 'createUser', 'setUserClaims2user', 'getCustomClaims4LoggedUser']);
     const classiSpy = jasmine.createSpyObj('ClassiService', ['fetchClasseOnCache']);
     const toasterSpy = jasmine.createSpyObj('ToasterService', ['presentToast']);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), UserGeneralities2Component, ClassesFieldStubComponent],
       providers: [
         { provide: UsersService, useValue: usersSpy },
@@ -80,7 +80,7 @@ describe('UserGeneralities2Component', () => {
     // Actually, `user` is `input.required<UserModel>()`. We must set it.
     fixture.componentRef.setInput('user', new UserModel());
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

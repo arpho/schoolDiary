@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { ModalController } from '@ionic/angular/standalone';
 
@@ -10,8 +10,8 @@ describe('ClassesFieldComponent', () => {
   let component: ClassesFieldComponent;
   let fixture: ComponentFixture<ClassesFieldComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [ClassesFieldComponent, IonicModule.forRoot()],
       providers: [
         { provide: ClassiService, useValue: { getClassiOnRealtime: jasmine.createSpy('getClassiOnRealtime').and.returnValue(of([])) } },
@@ -22,7 +22,7 @@ describe('ClassesFieldComponent', () => {
     fixture = TestBed.createComponent(ClassesFieldComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

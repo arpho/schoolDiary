@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResetPasswordPage } from './reset-password.page';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { Auth } from '@angular/fire/auth';
@@ -11,8 +11,8 @@ describe('ResetPasswordPage', () => {
   let component: ResetPasswordPage;
   let fixture: ComponentFixture<ResetPasswordPage>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [ResetPasswordPage],
       providers: [
         { provide: UsersService, useValue: { updatePassword: jasmine.createSpy('updatePassword').and.returnValue(Promise.resolve()) } },
@@ -26,7 +26,7 @@ describe('ResetPasswordPage', () => {
     fixture = TestBed.createComponent(ResetPasswordPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

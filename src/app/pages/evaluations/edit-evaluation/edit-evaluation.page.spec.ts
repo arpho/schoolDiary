@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditEvaluationPage } from './edit-evaluation.page';
 import { IonicModule } from '@ionic/angular';
 import { ModalController, AlertController, NavController } from '@ionic/angular/standalone';
@@ -29,7 +29,7 @@ describe('EditEvaluationPage', () => {
   const navSpy = jasmine.createSpyObj('NavController', ['navigateBack']);
   const subjectsSpy = jasmine.createSpyObj('SubjectService', ['fetchSubjectsByKeys']);
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     // Setup default returns
     evaluationSpy.fetchEvaluation.and.returnValue(Promise.resolve({}));
     usersSpy.fetchUserOnCache.and.returnValue(Promise.resolve({}));
@@ -65,7 +65,7 @@ describe('EditEvaluationPage', () => {
     fixture = TestBed.createComponent(EditEvaluationPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

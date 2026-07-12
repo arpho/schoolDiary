@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AgendaPage } from './agenda.page';
 import { UsersService } from '../../shared/services/users.service';
 import { AgendaService } from 'src/app/shared/services/agenda.service';
@@ -30,8 +30,8 @@ describe('AgendaPage', () => {
     create: jasmine.createSpy('create').and.returnValue(Promise.resolve({ present: jasmine.createSpy('present') }))
   };
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [AgendaPage, IonicModule], // AgendaPage is standalone
       providers: [
         { provide: UsersService, useValue: usersServiceMock },
@@ -46,7 +46,7 @@ describe('AgendaPage', () => {
     fixture = TestBed.createComponent(AgendaPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

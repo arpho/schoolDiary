@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GridsdialogPage } from './gridsdialog';
 
 import { ModalController, ActionSheetController } from '@ionic/angular';
@@ -13,12 +13,12 @@ describe('GridsdialogPage', () => {
   let fixture: ComponentFixture<GridsdialogPage>;
   let modalControllerMock: any;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     modalControllerMock = {
       dismiss: jasmine.createSpy('dismiss')
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [GridsdialogPage],
       providers: [
         { provide: ModalController, useValue: modalControllerMock },
@@ -33,7 +33,7 @@ describe('GridsdialogPage', () => {
     fixture = TestBed.createComponent(GridsdialogPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

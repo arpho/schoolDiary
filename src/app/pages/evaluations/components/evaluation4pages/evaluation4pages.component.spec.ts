@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { Evaluation4pagesComponent } from './evaluation4pages.component';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -17,7 +17,7 @@ describe('Evaluation4pagesComponent', () => {
   let component: Evaluation4pagesComponent;
   let fixture: ComponentFixture<Evaluation4pagesComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['getUser', 'getSubjectsByTeacherAndClass', 'fetchUserOnCache']);
     usersSpy.getSubjectsByTeacherAndClass.and.returnValue(Promise.resolve([]));
     const evaluationSpy = jasmine.createSpyObj('EvaluationService', ['addEvaluation']);
@@ -31,7 +31,7 @@ describe('Evaluation4pagesComponent', () => {
       snapshot: { paramMap: { get: () => 'test-id' } }
     };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), Evaluation4pagesComponent],
       providers: [
         { provide: UsersService, useValue: usersSpy },
@@ -51,7 +51,7 @@ describe('Evaluation4pagesComponent', () => {
     fixture = TestBed.createComponent(Evaluation4pagesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

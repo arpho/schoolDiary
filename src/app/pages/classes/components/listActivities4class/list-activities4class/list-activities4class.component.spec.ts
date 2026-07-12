@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListActivities4classComponent } from './list-activities4class.component';
 import { ActivitiesService } from 'src/app/pages/activities/services/activities.service';
@@ -11,8 +11,8 @@ describe('ListActivities4classComponent', () => {
   let component: ListActivities4classComponent;
   let fixture: ComponentFixture<ListActivities4classComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [ListActivities4classComponent],
       providers: [
         { provide: ActivitiesService, useValue: { getActivities4teacherOnRealtime: jasmine.createSpy('getActivities4teacherOnRealtime') } },
@@ -31,7 +31,7 @@ describe('ListActivities4classComponent', () => {
     fixture.componentRef.setInput('classkey', 'test-class');
     fixture.componentRef.setInput('teacherkey', 'test-teacher');
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

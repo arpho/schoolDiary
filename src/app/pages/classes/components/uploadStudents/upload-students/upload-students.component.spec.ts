@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { UsersService } from 'src/app/shared/services/users.service';
 
@@ -8,11 +8,11 @@ describe('UploadStudentsComponent', () => {
   let component: UploadStudentsComponent;
   let fixture: ComponentFixture<UploadStudentsComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['createUser']);
     const alertSpy = jasmine.createSpyObj('AlertController', ['create']);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), UploadStudentsComponent],
       providers: [
         { provide: UsersService, useValue: usersSpy },
@@ -23,7 +23,7 @@ describe('UploadStudentsComponent', () => {
     fixture = TestBed.createComponent(UploadStudentsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

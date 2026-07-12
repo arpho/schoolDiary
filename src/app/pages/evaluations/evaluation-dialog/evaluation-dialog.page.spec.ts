@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EvaluationDialogPage } from './evaluation-dialog.page';
 import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
@@ -25,7 +25,7 @@ describe('EvaluationDialogPage', () => {
   const modalSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
   const alertSpy = jasmine.createSpyObj('AlertController', ['create']);
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     // Setup default mock returns
     usersSpy.getLoggedUser.and.returnValue(Promise.resolve({ key: 'teacher1', classesKey: [] }));
     modalSpy.create.and.returnValue(Promise.resolve({ present: () => Promise.resolve(), onDidDismiss: () => Promise.resolve({ data: null }) }));
@@ -49,7 +49,7 @@ describe('EvaluationDialogPage', () => {
     fixture = TestBed.createComponent(EvaluationDialogPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

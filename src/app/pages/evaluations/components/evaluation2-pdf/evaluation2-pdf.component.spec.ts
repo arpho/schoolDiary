@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { Evaluation2PdfComponent } from './evaluation2-pdf.component';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -12,7 +12,7 @@ describe('Evaluation2PdfComponent', () => {
   let component: Evaluation2PdfComponent;
   let fixture: ComponentFixture<Evaluation2PdfComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['fetchUserOnCache']);
     const evaluationSpy = jasmine.createSpyObj('EvaluationService', ['fetchEvaluation']);
     const classiSpy = jasmine.createSpyObj('ClassiService', ['fetchClasseOnCache']);
@@ -24,7 +24,7 @@ describe('Evaluation2PdfComponent', () => {
 
     evaluationSpy.fetchEvaluation.and.returnValue(Promise.resolve(new Evaluation()));
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), Evaluation2PdfComponent],
       providers: [
         { provide: UsersService, useValue: usersSpy },
@@ -38,7 +38,7 @@ describe('Evaluation2PdfComponent', () => {
     fixture = TestBed.createComponent(Evaluation2PdfComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

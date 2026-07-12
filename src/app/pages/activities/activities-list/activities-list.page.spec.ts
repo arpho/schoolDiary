@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { ActivitiesListPage } from './activities-list.page';
 import { UsersService } from '../../../shared/services/users.service';
@@ -14,7 +14,7 @@ describe('ActivitiesListPage', () => {
   let component: ActivitiesListPage;
   let fixture: ComponentFixture<ActivitiesListPage>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['getLoggedUser']);
     const activitiesSpy = jasmine.createSpyObj('ActivitiesService', ['addActivity', 'getActivities4teacherOnRealtime']);
     const classiSpy = jasmine.createSpyObj('ClassiService', ['fetchClasseOnCache']);
@@ -28,7 +28,7 @@ describe('ActivitiesListPage', () => {
     // return a promise with a mock user
     usersSpy.getLoggedUser.and.returnValue(Promise.resolve(new UserModel()));
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), ActivitiesListPage],
       providers: [
         { provide: UsersService, useValue: usersSpy },
@@ -43,7 +43,7 @@ describe('ActivitiesListPage', () => {
     fixture = TestBed.createComponent(ActivitiesListPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

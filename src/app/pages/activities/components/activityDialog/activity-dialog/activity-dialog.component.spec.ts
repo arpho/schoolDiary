@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { ActivityDialogComponent } from './activity-dialog.component';
@@ -10,8 +10,8 @@ describe('ActivityDialogComponent', () => {
   let component: ActivityDialogComponent;
   let fixture: ComponentFixture<ActivityDialogComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), ActivityDialogComponent],
       providers: [
         { provide: UsersService, useValue: { getLoggedUser: jasmine.createSpy('getLoggedUser') } },
@@ -23,7 +23,7 @@ describe('ActivityDialogComponent', () => {
     fixture = TestBed.createComponent(ActivityDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

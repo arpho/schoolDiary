@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EvaluationsListPage } from './evaluations-list.page';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
 import { provideIonicAngular, PopoverController, ModalController, AlertController } from '@ionic/angular/standalone';
@@ -46,8 +46,8 @@ describe('EvaluationsListPage', () => {
   
   const alertSpy = jasmine.createSpyObj('AlertController', ['create']);
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [EvaluationsListPage],
       providers: [
         provideIonicAngular(),
@@ -71,7 +71,7 @@ describe('EvaluationsListPage', () => {
     fixture = TestBed.createComponent(EvaluationsListPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

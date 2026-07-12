@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ClassViewerComponent } from './class-viewer.component';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
@@ -10,7 +10,7 @@ describe('ClassViewerComponent', () => {
   let component: ClassViewerComponent;
   let fixture: ComponentFixture<ClassViewerComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const classiSpy = jasmine.createSpyObj('ClassiService', ['fetchClasseOnCache']);
     const subjectSpy = jasmine.createSpyObj('SubjectService', ['getSubjects', 'fetchSubjectListOnRealTime']);
     subjectSpy.getSubjects.and.returnValue(of([]));
@@ -21,7 +21,7 @@ describe('ClassViewerComponent', () => {
     // We provide a dummy Firestore mock.
     const firestoreMock = {};
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [ClassViewerComponent],
       providers: [
         provideIonicAngular(),
@@ -34,7 +34,7 @@ describe('ClassViewerComponent', () => {
     fixture = TestBed.createComponent(ClassViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
