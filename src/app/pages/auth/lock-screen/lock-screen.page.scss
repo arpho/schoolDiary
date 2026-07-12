@@ -1,5 +1,5 @@
 ion-content {
-  --background: #f0f2f5;
+  --background: var(--ion-color-light, #f4f5f8);
 }
 
 .lock-container {
