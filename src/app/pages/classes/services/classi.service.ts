@@ -20,6 +20,7 @@ import {
 } from '@angular/fire/firestore';
 import { ClasseModel } from '../models/classModel';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 /**
  * Servizio per la gestione delle Classi.
@@ -192,10 +193,16 @@ export class ClassiService {
 
   /**
    * Ottiene le classi in tempo reale come Observable
+   * @param includeArchived Se true, include anche le classi archiviate. Default: false.
    * @returns Observable che emette l'array delle classi ad ogni aggiornamento
    */
-  getClassiOnRealtime(): Observable<ClasseModel[]> {
-    return this.classes$;
+  getClassiOnRealtime(includeArchived: boolean = false): Observable<ClasseModel[]> {
+    if (includeArchived) {
+      return this.classes$;
+    }
+    return this.classes$.pipe(
+      map(classes => classes.filter(c => !c.archived))
+    );
   }
 
   /**

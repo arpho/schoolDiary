@@ -124,8 +124,20 @@ export class ClassesListComponent {
   }
 
   archives(key: string) {
-    // TODO: Implement archive functionality
-    console.log('Archiving class with key:', key);
+    this.service.archiviaClasse(key).then(() => {
+      this.toaster.presentToast({
+        message: 'Classe archiviata con successo',
+        duration: 2000,
+        position: 'bottom'
+      });
+    }).catch(err => {
+      console.error('Errore durante l\'archiviazione:', err);
+      this.toaster.presentToast({
+        message: 'Errore durante l\'archiviazione della classe',
+        duration: 2000,
+        position: 'bottom'
+      });
+    });
   }
 
   editClass(key: string) {
