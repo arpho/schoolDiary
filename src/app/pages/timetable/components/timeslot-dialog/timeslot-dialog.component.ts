@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal, computed, effect, Input, ChangeDetec
 
 import { FormsModule } from '@angular/forms';
 import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonItem, IonSelect, IonSelectOption, IonInput, IonList, ModalController, IonFooter } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonItem, IonSelect, IonSelectOption, IonInput, IonList, ModalController, IonFooter, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -10,7 +10,8 @@ import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/su
 import { TimetableModel } from '../../models/timetable.model';
 import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass';
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
-
+import { ClassiService } from 'src/app/pages/classes/services/classi.service';
+import { ClasseModel } from 'src/app/pages/classes/models/classModel';
 @Component({
   selector: 'app-timeslot-dialog',
   templateUrl: './timeslot-dialog.component.html',
@@ -32,6 +33,9 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
     IonInput,
     IonList,
     IonFooter,
+    IonGrid,
+    IonRow,
+    IonCol,
     FormField,
     FormRoot
 ]
@@ -42,10 +46,11 @@ export class TimeslotDialogComponent implements OnInit {
   private usersService = inject(UsersService);
   private subjectService = inject(SubjectService);
   private modalController = inject(ModalController);
+  private classiService = inject(ClassiService);
 
   // Form State
   slotModel = signal({
-    slotType: 'lezione' as 'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento',
+    slotType: 'lezione' as 'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento' | 'a_disposizione',
     day: '',
     startTime: '',
     endTime: '',
@@ -62,20 +67,8 @@ export class TimeslotDialogComponent implements OnInit {
   }));
 
   // Async Data State
-  assignedClasses = signal<AssignedClass[]>([]); 
-  subjectsMap = signal<Map<string, SubjectModel>>(new Map());
-
-  // Computed list of subjects based on the selected class
-  availableSubjects = computed(() => {
-    const selectedClass = this.slotModel().classKey;
-    if (!selectedClass) return [];
-    
-    const cls = this.assignedClasses().find(c => c.key === selectedClass);
-    if (!cls || !cls.subjectsKey) return [];
-    
-    const map = this.subjectsMap();
-    return cls.subjectsKey.map(key => map.get(key)).filter((s): s is SubjectModel => s !== undefined);
-  });
+  activeClasses = signal<ClasseModel[]>([]); 
+  classSubjects = signal<SubjectModel[]>([]);
 
   isFormValid = computed(() => {
     if (!this.slotForm().valid()) return false;
@@ -90,34 +83,57 @@ export class TimeslotDialogComponent implements OnInit {
 
     // Effect to reset classKey and subjectKey when type changes
     effect(() => {
-      const type = this.slotModel().slotType;
+      const model = this.slotModel();
+      const type = model.slotType;
+      
       if (type !== 'lezione') {
-        this.slotForm().value.update(v => ({...v,
-          classKey: '',
-          subjectKey: ''
-        }));
+        if (model.classKey !== '' || model.subjectKey !== '') {
+          this.slotForm().value.update(v => ({...v,
+            classKey: '',
+            subjectKey: ''
+          }));
+        }
       }
-    }, { allowSignalWrites: true });
+    });
 
-    // Effect to reset subject when class changes
+    let previousClassKey = '';
+    // Effect to reset subject when class changes and fetch subjects
     effect(() => {
-      const classKey = this.slotModel().classKey;
-      if (classKey) {
-        this.slotForm().value.update(v => ({...v, subjectKey: '' }));
+      const model = this.slotModel();
+      const classKey = model.classKey;
+      
+      if (classKey && classKey !== previousClassKey) {
+        if (previousClassKey !== '') {
+          // Only clear if the user changed the class (not on initial load/edit)
+          if (model.subjectKey !== '') {
+            this.slotForm().value.update(v => ({...v, subjectKey: '' }));
+          }
+        }
+        previousClassKey = classKey;
+        
+        // Fetch subjects for this class
+        this.usersService.getSubjectsForClass(classKey).then(subjects => {
+           this.classSubjects.set(subjects);
+        });
+      } else if (!classKey) {
+        previousClassKey = '';
+        this.classSubjects.set([]);
       }
-    }, { allowSignalWrites: true });
+    });
   }
 
   ngOnInit() {
     this.fetchUserClasses();
     if (this.item) {
-      let type: 'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento' = 'lezione';
+      let type: 'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento' | 'a_disposizione' = 'lezione';
       if (this.item.description === 'Ora Buca') {
         type = 'ora_buca';
       } else if (this.item.description === 'Intervallo') {
         type = 'intervallo';
       } else if (this.item.description === 'Ricevimento') {
         type = 'ricevimento';
+      } else if (this.item.description === 'A Disposizione') {
+        type = 'a_disposizione';
       }
 
       this.slotForm().value.update(v => ({...v,
@@ -133,26 +149,9 @@ export class TimeslotDialogComponent implements OnInit {
   }
 
   private async fetchUserClasses() {
-    const user = await this.usersService.getLoggedUser();
-    if (user && user.assignedClasses) {
-      this.assignedClasses.set(user.assignedClasses);
-      
-      // Fetch all subjects for all assigned classes
-      const allSubjectKeys = new Set<string>();
-      user.assignedClasses.forEach(c => {
-        if (c.subjectsKey) {
-          c.subjectsKey.forEach(key => allSubjectKeys.add(key));
-        }
-      });
-      
-      const keysArray = Array.from(allSubjectKeys);
-      if (keysArray.length > 0) {
-        const subjects = await this.subjectService.fetchSubjectsByKeys(keysArray);
-        const map = new Map<string, SubjectModel>();
-        subjects.forEach(s => map.set(s.key, s));
-        this.subjectsMap.set(map);
-      }
-    }
+    this.classiService.getClassiOnRealtime(false).subscribe(classes => {
+      this.activeClasses.set(classes);
+    });
   }
 
   cancel() {
@@ -181,6 +180,8 @@ export class TimeslotDialogComponent implements OnInit {
       newSlot.description = 'Intervallo';
     } else if (val.slotType === 'ricevimento') {
       newSlot.description = 'Ricevimento';
+    } else if (val.slotType === 'a_disposizione') {
+      newSlot.description = 'A Disposizione';
     }
 
     this.modalController.dismiss(newSlot, 'confirm');

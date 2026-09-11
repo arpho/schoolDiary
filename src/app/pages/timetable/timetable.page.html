@@ -4,6 +4,11 @@
       <ion-back-button defaultHref="/dashboard"></ion-back-button>
     </ion-buttons>
     <ion-title class="ion-text-center">Orario Settimanale</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="clearTimetable()" color="danger" [disabled]="timetable().length === 0">
+        <ion-icon slot="icon-only" name="trash"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

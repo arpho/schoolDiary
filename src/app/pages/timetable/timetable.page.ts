@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonSpinner, IonText, IonIcon, ModalController, IonFab, IonFabButton, IonButtons, IonBackButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonSpinner, IonText, IonIcon, ModalController, AlertController, IonFab, IonFabButton, IonButtons, IonButton, IonBackButton } from '@ionic/angular/standalone';
 import { TimetableService } from './services/timetable.service';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { TimetableModel } from './models/timetable.model';
@@ -11,7 +11,7 @@ import { TimeslotDialogComponent } from './components/timeslot-dialog/timeslot-d
 import { AgendaService } from 'src/app/shared/services/agenda.service';
 import { AgendaEvent } from '../agenda/models/agendaEvent';
 import { addIcons } from 'ionicons';
-import { add } from 'ionicons/icons';
+import { add, trash } from 'ionicons/icons';
 
 @Component({
   selector: 'app-timetable',
@@ -19,7 +19,7 @@ import { add } from 'ionicons/icons';
   styleUrls: ['./timetable.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonSpinner, IonText, IonIcon, TimetableToastUiComponent, IonFab, IonFabButton, IonButtons, IonBackButton]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonSpinner, IonText, IonIcon, TimetableToastUiComponent, IonFab, IonFabButton, IonButtons, IonButton, IonBackButton]
 })
 export class TimetablePage implements OnInit, OnDestroy {
   private timetableService = inject(TimetableService);
@@ -33,9 +33,11 @@ export class TimetablePage implements OnInit, OnDestroy {
   private unsubscribeTimetable: (() => void) | null = null;
   private unsubscribeAgenda: (() => void) | null = null;
   private modalController = inject(ModalController);
+  private alertController = inject(AlertController);
+  private dateRangeTimeout: any;
 
   constructor() {
-    addIcons({ add });
+    addIcons({ add, trash });
   }
 
   async ngOnInit() {
@@ -54,27 +56,33 @@ export class TimetablePage implements OnInit, OnDestroy {
   }
 
   async onDateRangeChanged(event: {start: Date, end: Date}) {
-    const user = await this.usersService.getLoggedUser();
-    if (!user || !user.classesKey || user.classesKey.length === 0) return;
-
-    if (this.unsubscribeAgenda) {
-      this.unsubscribeAgenda();
-      this.unsubscribeAgenda = null;
+    if (this.dateRangeTimeout) {
+      clearTimeout(this.dateRangeTimeout);
     }
 
-    const startStr = event.start.toISOString();
-    const endStr = event.end.toISOString();
+    this.dateRangeTimeout = setTimeout(async () => {
+      const user = await this.usersService.getLoggedUser();
+      if (!user || !user.classesKey || user.classesKey.length === 0) return;
 
-    this.unsubscribeAgenda = this.agendaService.getAgenda4targetedClassesOnrealtime(
-       (events) => {
-         this.agendaEvents.set(events);
-       },
-       [
-         new QueryCondition('classKey', 'array-contains-any', user.classesKey),
-         new QueryCondition('dataFine', '>=', startStr),
-         new QueryCondition('dataFine', '<=', endStr)
-       ]
-    );
+      if (this.unsubscribeAgenda) {
+        this.unsubscribeAgenda();
+        this.unsubscribeAgenda = null;
+      }
+
+      const startStr = event.start.toISOString();
+      const endStr = event.end.toISOString();
+
+      this.unsubscribeAgenda = this.agendaService.getAgenda4targetedClassesOnrealtime(
+         (events) => {
+           this.agendaEvents.set(events);
+         },
+         [
+           new QueryCondition('classKey', 'array-contains-any', user.classesKey),
+           new QueryCondition('dataFine', '>=', startStr),
+           new QueryCondition('dataFine', '<=', endStr)
+         ]
+      );
+    }, 300);
   }
 
   ngOnDestroy() {
@@ -138,5 +146,33 @@ export class TimetablePage implements OnInit, OnDestroy {
     });
 
     await modal.present();
+  }
+
+  async clearTimetable() {
+    const alert = await this.alertController.create({
+      header: 'Svuota Orario',
+      message: 'Sei sicuro di voler eliminare tutto l\'orario? Questa azione non può essere annullata.',
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel'
+        },
+        {
+          text: 'Elimina tutto',
+          role: 'destructive',
+          handler: () => {
+            const currentTimetable = this.timetable();
+            if (currentTimetable.length > 0) {
+              Promise.all(currentTimetable.map(item => this.timetableService.deleteTimetableItem(item.key))).then(() => {
+                console.log('Timetable cleared');
+              }).catch(err => {
+                console.error('Error clearing timetable', err);
+              });
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

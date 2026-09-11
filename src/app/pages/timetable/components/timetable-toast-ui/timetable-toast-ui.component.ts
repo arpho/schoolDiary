@@ -31,6 +31,8 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
     private calendarInstance: any | null = null;
     currentDateDisplay = signal<string>('');
     currentView = signal<'day' | 'week' | 'month'>('week'); // Default to week view for timetable
+    private lastEmittedDateRange = { start: 0, end: 0 };
+    private currentAgendaEvents: AgendaEvent[] = [];
 
     private subjectService = inject(SubjectService);
     private classiService = inject(ClassiService);
@@ -43,6 +45,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         effect(() => {
             const timetable = this.timetable();
             const agendaEvents = this.agendaEvents();
+            this.currentAgendaEvents = agendaEvents;
             const view = this.currentView();
             // We need to fetch subjects to display names/colors
             this.preloadData(timetable, agendaEvents).then(() => {
@@ -132,7 +135,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                             const slotStart = new Date(event.start).getTime();
                             const slotEnd = new Date(event.end).getTime();
 
-                            const matchingAgenda = (this.agendaEvents() || []).filter(ag => {
+                            const matchingAgenda = (this.currentAgendaEvents || []).filter(ag => {
                                 if (ag.allDay) return false;
                                 if (ag.classKey && event.raw.classKey && Array.isArray(ag.classKey) && !ag.classKey.includes(event.raw.classKey)) return false;
                                 if (ag.classKey && event.raw.classKey && !Array.isArray(ag.classKey) && ag.classKey !== event.raw.classKey) return false;
@@ -172,7 +175,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 const agendaEl = target.closest('[data-agenda-id]');
                 if (agendaEl) {
                     const agendaId = agendaEl.getAttribute('data-agenda-id');
-                    const agEvent = this.agendaEvents().find(a => (a.id || a.key) === agendaId);
+                    const agEvent = this.currentAgendaEvents.find(a => (a.id || a.key) === agendaId);
                     if (agEvent) {
                         this.eventClick.emit(agEvent);
                         return;
@@ -180,7 +183,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 }
             }
             
-            const agEvent = this.agendaEvents().find(a => (a.id || a.key) === eventObj.event.id);
+            const agEvent = this.currentAgendaEvents.find(a => (a.id || a.key) === eventObj.event.id);
             if (agEvent) {
                 this.eventClick.emit(agEvent);
                 return;
@@ -260,6 +263,8 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 color = '#ff9f43'; // Orange
             } else if (item.description === 'Ricevimento') {
                 color = '#28c76f'; // Green
+            } else if (item.description === 'A Disposizione') {
+                color = '#00cfe8'; // Cyan
             } else if (item.description === 'Ora Buca') {
                 color = '#ffffff'; // White
                 textColor = '#000000'; // Black text
@@ -466,10 +471,16 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 this.currentDateDisplay.set(`${startStr} - ${endStr}`);
             }
 
-            this.dateRangeChanged.emit({
-                start: new Date(start.getTime()),
-                end: new Date(end.getTime())
-            });
+            const startTime = start.getTime();
+            const endTime = end.getTime();
+            
+            if (this.lastEmittedDateRange.start !== startTime || this.lastEmittedDateRange.end !== endTime) {
+                this.lastEmittedDateRange = { start: startTime, end: endTime };
+                this.dateRangeChanged.emit({
+                    start: new Date(startTime),
+                    end: new Date(endTime)
+                });
+            }
         }
     }
 }
