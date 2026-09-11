@@ -1,9 +1,6 @@
 import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import {getFirestore} from "firebase-admin/firestore";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const PdfPrinterLib = require("pdfmake/js/Printer");
-const PdfPrinter = PdfPrinterLib.default || PdfPrinterLib;
 import {TDocumentDefinitions} from "pdfmake/interfaces";
 
 // Define fonts - we need to fetch them from somewhere or encode them
@@ -45,6 +42,10 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
   {enforceAppCheck: false},
   async (request: CallableRequest<GeneratePdfData>) => {
     const {data} = request;
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const PdfPrinterLib = require("pdfmake/js/Printer");
+    const PdfPrinter = PdfPrinterLib.default || PdfPrinterLib;
 
     if (!data || !data.evaluationKey) {
       throw new Error("Evaluation Key is required");

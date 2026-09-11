@@ -35,11 +35,12 @@ export class AppComponent implements OnInit {
     private usersService: UsersService,
     private activitiesService: ActivitiesService,
     private localLockService: LocalLockService
-  ) { }
+  ) {
+    this.setupAuthListener();
+  }
 
   ngOnInit() {
     this.themeService.initializeTheme();
-    this.setupAuthListener();
     this.checkUpdate();
   }
 
