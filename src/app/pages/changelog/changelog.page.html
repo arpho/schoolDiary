@@ -6,6 +6,46 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
+    <!-- Version 3.0.1 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v3.0.1</ion-badge>
+          <span class="version-date">11 Settembre 2026</span>
+        </div>
+        <ion-card-title>Archiviazione Classi & Fix Orario</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Aggiunta l'archiviazione delle classi, correzione di un loop critico nell'orario e ottimizzazioni al codice server-side.</p>
+
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="archive-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Archiviazione Classi</h3>
+              <p>È ora possibile archiviare le classi completate o non più attive nascondendole dalla vista principale pur mantenendo lo storico.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="calendar-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Fix Loop Orario e Ore "A Disposizione"</h3>
+              <p>Risolto un grave problema che mandava l'app in loop selezionando slot non di lezione (es. "A Disposizione"). Ora i campi "Classe" e "Materia" vengono nascosti correttamente per questi slot. Aggiunta anche la funzionalità per svuotare massivamente l'orario.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="cloud-done-outline" slot="start" color="tertiary"></ion-icon>
+            <ion-label>
+              <h3>Fix Cloud Functions & Auth</h3>
+              <p>Risolti errori di inizializzazione per i moduli Firebase Functions (email e PDF) e ottimizzato il listener per l'autenticazione all'avvio dell'applicazione.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Version 3.0.0 -->
     <ion-card>
       <ion-card-header>
