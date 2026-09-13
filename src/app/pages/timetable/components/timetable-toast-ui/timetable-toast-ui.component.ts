@@ -51,10 +51,7 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
             this.preloadData(timetable, agendaEvents).then(() => {
                 if (this.calendarInstance) {
                     this.calendarInstance.changeView(view);
-                    this.calendarInstance.clear();
-                    const ttEvents = this.transformEvents(timetable, view);
-                    const agEvents = this.transformAgendaEvents(agendaEvents, view);
-                    this.calendarInstance.createEvents([...ttEvents, ...agEvents]);
+                    this.renderEvents();
                     this.updateDateDisplay();
                 }
             });
@@ -189,13 +186,26 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 return;
             }
             
-            const originalEvent = this.timetable().find(t => t.key === eventObj.event.id);
+            const originalEvent = this.timetable().find(t => t.key === (eventObj.event.raw?.key || eventObj.event.id));
             if (originalEvent) {
                 this.eventClick.emit(originalEvent);
             }
         });
 
         this.updateDateDisplay();
+    }
+
+    private renderEvents() {
+        if (!this.calendarInstance) return;
+        
+        const timetable = this.timetable();
+        const agendaEvents = this.currentAgendaEvents;
+        const view = this.currentView();
+        
+        this.calendarInstance.clear();
+        const ttEvents = this.transformEvents(timetable, view);
+        const agEvents = this.transformAgendaEvents(agendaEvents, view);
+        this.calendarInstance.createEvents([...ttEvents, ...agEvents]);
     }
 
     private transformEvents(timetable: TimetableModel[], view: string): any[] {
@@ -223,12 +233,21 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
 
         const events: any[] = [];
 
-        const now = new Date();
-        const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay(); // 1 = Monday, 7 = Sunday
-        const monday = new Date(now);
-        monday.setDate(now.getDate() - currentDayOfWeek + 1);
-        monday.setHours(0, 0, 0, 0);
-        const baseDate = monday;
+        let viewStart = new Date().getTime();
+        let viewEnd = new Date().getTime();
+        
+        if (this.calendarInstance) {
+            viewStart = this.calendarInstance.getDateRangeStart().getTime();
+            viewEnd = this.calendarInstance.getDateRangeEnd().getTime();
+        } else {
+            const now = new Date();
+            const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - currentDayOfWeek + 1);
+            monday.setHours(0, 0, 0, 0);
+            viewStart = monday.getTime();
+            viewEnd = monday.getTime() + (7 * 24 * 60 * 60 * 1000) - 1;
+        }
 
         timetable.forEach(item => {
             const recurrenceDay = dayMap[item.day];
@@ -236,20 +255,18 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
 
             if (!recurrenceDay || targetDayIndex === undefined) return;
 
-            // Calculate a start date for the event that lines up with the day
-            // Jan 1 2024 is Monday (Index 1).
-            // targetDayIndex - 1 gives offset from Jan 1.
-            // If targetDayIndex is 0 (Sunday), offset is +6 (next Sunday) for Week starting Monday, or -1.
-            // Let's just find the first occurrence of this day near Jan 1 2024.
+            let currentDate = new Date(viewStart);
+            currentDate.setHours(0, 0, 0, 0);
 
-            let startDayOffset = targetDayIndex - 1; // 1 (Mon) - 1 = 0.
-            if (targetDayIndex === 0) startDayOffset = 6; // Sunday is 6 days after Monday
+            while (currentDate.getDay() !== targetDayIndex) {
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
 
-            const eventStartDate = new Date(baseDate);
-            eventStartDate.setDate(baseDate.getDate() + startDayOffset);
+            while (currentDate.getTime() <= viewEnd) {
+                const eventStartDate = new Date(currentDate);
 
-            const start = this.combineDateAndTime(eventStartDate, item.startTime);
-            const end = this.combineDateAndTime(eventStartDate, item.endTime);
+                const start = this.combineDateAndTime(eventStartDate, item.startTime);
+                const end = this.combineDateAndTime(eventStartDate, item.endTime);
 
             const subject = this.subjectsCache.get(item.subjectKey);
             const classe = this.classesCache.get(item.classKey);
@@ -286,20 +303,22 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 displayTitle += `<br><span style="font-size: 0.8em; font-style: italic;">(${item.as})</span>`;
             }
 
-            events.push({
-                id: item.key,
-                calendarId: '1',
-                title: displayTitle,
-                category: view === 'month' ? 'allday' : 'time',
-                start: start.toISOString(),
-                end: end.toISOString(),
-                backgroundColor: color,
-                borderColor: color,
-                color: textColor,
-                isReadOnly: true,
-                recurrenceRule: `FREQ=WEEKLY;BYDAY=${recurrenceDay}`,
-                raw: item
-            });
+                events.push({
+                    id: `${item.key}-${eventStartDate.getTime()}`,
+                    calendarId: '1',
+                    title: displayTitle,
+                    category: view === 'month' ? 'allday' : 'time',
+                    start: start.toISOString(),
+                    end: end.toISOString(),
+                    backgroundColor: color,
+                    borderColor: color,
+                    color: textColor,
+                    isReadOnly: true,
+                    raw: item
+                });
+
+                currentDate.setDate(currentDate.getDate() + 7);
+            }
         });
 
         console.log("Generated Calendar Events:", events);
@@ -437,18 +456,27 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
     }
 
     next() {
-        this.calendarInstance?.next();
-        this.updateDateDisplay();
+        if (this.calendarInstance) {
+            this.calendarInstance.next();
+            this.renderEvents();
+            this.updateDateDisplay();
+        }
     }
 
     prev() {
-        this.calendarInstance?.prev();
-        this.updateDateDisplay();
+        if (this.calendarInstance) {
+            this.calendarInstance.prev();
+            this.renderEvents();
+            this.updateDateDisplay();
+        }
     }
 
     today() {
-        this.calendarInstance?.today();
-        this.updateDateDisplay();
+        if (this.calendarInstance) {
+            this.calendarInstance.today();
+            this.renderEvents();
+            this.updateDateDisplay();
+        }
     }
 
     private updateDateDisplay() {
