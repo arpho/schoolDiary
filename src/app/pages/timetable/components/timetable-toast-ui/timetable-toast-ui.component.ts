@@ -250,75 +250,82 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
         }
 
         timetable.forEach(item => {
-            const recurrenceDay = dayMap[item.day];
-            const targetDayIndex = dayIndexMap[item.day];
-
-            if (!recurrenceDay || targetDayIndex === undefined) return;
-
-            let currentDate = new Date(viewStart);
-            currentDate.setHours(0, 0, 0, 0);
-
-            while (currentDate.getDay() !== targetDayIndex) {
-                currentDate.setDate(currentDate.getDate() + 1);
+            let targetDays: number[] = [];
+            if (item.day === 'Everyday' || item.day === 'Ogni giorno') {
+                targetDays = [0, 1, 2, 3, 4, 5, 6];
+            } else {
+                const recurrenceDay = dayMap[item.day];
+                const targetDayIndex = dayIndexMap[item.day];
+                if (!recurrenceDay || targetDayIndex === undefined) return;
+                targetDays = [targetDayIndex];
             }
 
-            while (currentDate.getTime() <= viewEnd) {
-                const eventStartDate = new Date(currentDate);
+            targetDays.forEach(targetDayIndex => {
+                let currentDate = new Date(viewStart);
+                currentDate.setHours(0, 0, 0, 0);
 
-                const start = this.combineDateAndTime(eventStartDate, item.startTime);
-                const end = this.combineDateAndTime(eventStartDate, item.endTime);
+                while (currentDate.getDay() !== targetDayIndex) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
 
-            const subject = this.subjectsCache.get(item.subjectKey);
-            const classe = this.classesCache.get(item.classKey);
-            
-            const classColor = this.getClassColor(item.classKey);
-            let color = classColor || subject?.color || '#3788d8';
-            let textColor = '#FFFFFF';
-            
-            // Override colors for specific types
-            if (item.description === 'Intervallo') {
-                color = '#ff9f43'; // Orange
-            } else if (item.description === 'Ricevimento') {
-                color = '#28c76f'; // Green
-            } else if (item.description === 'A Disposizione') {
-                color = '#00cfe8'; // Cyan
-            } else if (item.description === 'Ora Buca') {
-                color = '#ffffff'; // White
-                textColor = '#000000'; // Black text
-            }
+                while (currentDate.getTime() <= viewEnd) {
+                    const eventStartDate = new Date(currentDate);
 
-            let title = '';
-            
-            if (classe) {
-                title += `${classe.year} ${classe.classe}<br>`;
-            }
-            title += subject?.name || item.description || 'Lezione';
+                    const start = this.combineDateAndTime(eventStartDate, item.startTime);
+                    const end = this.combineDateAndTime(eventStartDate, item.endTime);
 
-            // Build the HTML title
-            let displayTitle = `<strong>${title}</strong>`;
-            if (item.location) {
-                displayTitle += `<br><span style="font-size: 0.9em;">📍 ${item.location}</span>`;
-            }
-            if (item.as) {
-                displayTitle += `<br><span style="font-size: 0.8em; font-style: italic;">(${item.as})</span>`;
-            }
+                    const subject = this.subjectsCache.get(item.subjectKey);
+                    const classe = this.classesCache.get(item.classKey);
+                    
+                    const classColor = this.getClassColor(item.classKey);
+                    let color = classColor || subject?.color || '#3788d8';
+                    let textColor = '#FFFFFF';
+                    
+                    // Override colors for specific types
+                    if (item.description === 'Intervallo') {
+                        color = '#ff9f43'; // Orange
+                    } else if (item.description === 'Ricevimento') {
+                        color = '#28c76f'; // Green
+                    } else if (item.description === 'A Disposizione') {
+                        color = '#00cfe8'; // Cyan
+                    } else if (item.description === 'Ora Buca') {
+                        color = '#ffffff'; // White
+                        textColor = '#000000'; // Black text
+                    }
 
-                events.push({
-                    id: `${item.key}-${eventStartDate.getTime()}`,
-                    calendarId: '1',
-                    title: displayTitle,
-                    category: view === 'month' ? 'allday' : 'time',
-                    start: start.toISOString(),
-                    end: end.toISOString(),
-                    backgroundColor: color,
-                    borderColor: color,
-                    color: textColor,
-                    isReadOnly: true,
-                    raw: item
-                });
+                    let title = '';
+                    
+                    if (classe) {
+                        title += `${classe.year} ${classe.classe}<br>`;
+                    }
+                    title += subject?.name || item.description || 'Lezione';
 
-                currentDate.setDate(currentDate.getDate() + 7);
-            }
+                    // Build the HTML title
+                    let displayTitle = `<strong>${title}</strong>`;
+                    if (item.location) {
+                        displayTitle += `<br><span style="font-size: 0.9em;">📍 ${item.location}</span>`;
+                    }
+                    if (item.as) {
+                        displayTitle += `<br><span style="font-size: 0.8em; font-style: italic;">(${item.as})</span>`;
+                    }
+
+                    events.push({
+                        id: `${item.key}-${eventStartDate.getTime()}-${targetDayIndex}`,
+                        calendarId: '1',
+                        title: displayTitle,
+                        category: view === 'month' ? 'allday' : 'time',
+                        start: start.toISOString(),
+                        end: end.toISOString(),
+                        backgroundColor: color,
+                        borderColor: color,
+                        color: textColor,
+                        isReadOnly: true,
+                        raw: item
+                    });
+
+                    currentDate.setDate(currentDate.getDate() + 7);
+                }
+            });
         });
 
         console.log("Generated Calendar Events:", events);
@@ -345,8 +352,17 @@ export class TimetableToastUiComponent implements AfterViewInit, OnDestroy {
                 const agTime = agStart.getHours() * 60 + agStart.getMinutes();
                 
                 const matchingSlot = timetable.find(tt => {
-                    const ttDayIndex = dayIndexMap[tt.day];
-                    if (ttDayIndex === undefined || ttDayIndex !== agStart.getDay()) return false;
+                    let ttTargetDays: number[] = [];
+                    if (tt.day === 'Everyday' || tt.day === 'Ogni giorno') {
+                        ttTargetDays = [0, 1, 2, 3, 4, 5, 6];
+                    } else {
+                        const ttDayIndex = dayIndexMap[tt.day];
+                        if (ttDayIndex !== undefined) {
+                            ttTargetDays = [ttDayIndex];
+                        }
+                    }
+
+                    if (!ttTargetDays.includes(agStart.getDay())) return false;
                     if (item.classKey && tt.classKey) {
                         const agKeys = Array.isArray(item.classKey) ? item.classKey : [item.classKey];
                         if (!agKeys.includes(tt.classKey)) return false;
