@@ -127,8 +127,18 @@ export class UploadStudentsComponent implements OnInit {
    * Genera l'email istituzionale standard per uno studente (nome.cognome...).
    */
   emailFactory(alunno: Alunno) {
-    const cleanFirstName = alunno.firstName.toLowerCase().replace(/\s+/g, '');
-    const cleanLastName = alunno.lastName.toLowerCase().replace(/\s+/g, '');
+    const cleanFirstName = alunno.firstName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '');
+      
+    const cleanLastName = alunno.lastName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '');
+      
     return `${cleanFirstName}.${cleanLastName}.studenti@iiscuriesraffa.it`;
   }
 

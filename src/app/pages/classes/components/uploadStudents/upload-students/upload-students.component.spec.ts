@@ -31,4 +31,30 @@ describe('UploadStudentsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('emailFactory', () => {
+    it('should generate standard email correctly', () => {
+      const alunno = { firstName: 'Mario', lastName: 'Rossi' } as any;
+      const email = component.emailFactory(alunno);
+      expect(email).toBe('mario.rossi.studenti@iiscuriesraffa.it');
+    });
+
+    it('should remove accents', () => {
+      const alunno = { firstName: 'Nicolò', lastName: 'D\'Amico' } as any;
+      const email = component.emailFactory(alunno);
+      expect(email).toBe('nicolo.damico.studenti@iiscuriesraffa.it');
+    });
+
+    it('should remove spaces and non-alphanumeric characters', () => {
+      const alunno = { firstName: 'Maria  Luisa', lastName: 'De  Luca-Jones' } as any;
+      const email = component.emailFactory(alunno);
+      expect(email).toBe('marialuisa.delucajones.studenti@iiscuriesraffa.it');
+    });
+
+    it('should handle uppercase letters', () => {
+      const alunno = { firstName: 'GIUSEPPE', lastName: 'VERDI' } as any;
+      const email = component.emailFactory(alunno);
+      expect(email).toBe('giuseppe.verdi.studenti@iiscuriesraffa.it');
+    });
+  });
 });
