@@ -153,3 +153,14 @@ ion-fab {
   margin-bottom: 16px;
   margin-right: 16px;
 }
+    .empty-class-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 8px;
+      font-size: 0.8rem;
+      vertical-align: middle;
+      
+      ion-icon {
+        margin-right: 4px;
+      }
+    }

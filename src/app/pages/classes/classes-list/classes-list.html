@@ -25,7 +25,14 @@
         <ion-card class="class-card" (click)="clickedClass(classe)">
           <div class="class-header" [style.background-color]="getClassColor(classe)">
             <div class="year-badge">{{classe.year}}</div>
-            <div class="class-name">{{classe.classe}}</div>
+            <div class="class-name">
+              {{classe.classe}}
+              @if (studentsCountByClass()[classe.key] === 0 || studentsCountByClass()[classe.key] === undefined) {
+                <ion-badge color="warning" class="empty-class-badge" title="Nessun studente">
+                  <ion-icon name="warning-outline"></ion-icon> Vuota
+                </ion-badge>
+              }
+            </div>
           </div>
           <ion-card-content>
             <div class="description">

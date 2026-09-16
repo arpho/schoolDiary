@@ -1,4 +1,4 @@
-import { Component, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, ChangeDetectionStrategy, OnInit, OnDestroy, signal } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,14 +22,18 @@ import {
   IonRow,
   IonCol,
   IonFab,
-  IonFabButton
+  IonFabButton,
+  IonBadge
 } from '@ionic/angular/standalone';
 
 import { ClassiService } from '../services/classi.service';
 import { ClasseModel } from '../models/classModel';
 import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { UsersService } from 'src/app/shared/services/users.service';
+import { UsersRole } from 'src/app/shared/models/usersRole';
+import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { addIcons } from 'ionicons';
-import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionicons/icons';
+import { add, create, trash, close, archive, ellipsisVertical, eye, warningOutline } from 'ionicons/icons';
 
 /**
  * Componente per visualizzare la lista delle classi.
@@ -57,10 +61,11 @@ import { add, create, trash, close, archive, ellipsisVertical, eye } from 'ionic
     IonRow,
     IonCol,
     IonFab,
-    IonFabButton
+    IonFabButton,
+    IonBadge
 ]
 })
-export class ClassesListComponent {
+export class ClassesListComponent implements OnInit, OnDestroy {
   classiList = toSignal(this.service.getClassiOnRealtime(), { initialValue: [] });
 
   sortedClassiList = computed(() =>
@@ -71,14 +76,40 @@ export class ClassesListComponent {
     })
   );
 
+  studentsCountByClass = signal<Record<string, number>>({});
+  private unsubscribeUsers: (() => void) | null = null;
+
   constructor(
     private service: ClassiService,
+    private usersService: UsersService,
     private alertController: AlertController,
     private actionSheetController: ActionSheetController,
     private router: Router,
     private toaster: ToasterService
   ) {
-    addIcons({ add, eye, trash, close, archive, ellipsisVertical });
+    addIcons({ add, eye, trash, close, archive, ellipsisVertical, 'warning-outline': warningOutline });
+  }
+
+  ngOnInit() {
+    this.unsubscribeUsers = this.usersService.getUsersOnRealTime((users) => {
+      const counts: Record<string, number> = {};
+      users.forEach(u => {
+        // Usa classKey se presente (studente), o loop su assignedClasses/classes se docente,
+        // ma la richiesta è per gli studenti
+        if (u.classKey) {
+          counts[u.classKey] = (counts[u.classKey] || 0) + 1;
+        } else if (u.classes && u.classes.length > 0) {
+          u.classes.forEach(c => counts[c] = (counts[c] || 0) + 1);
+        }
+      });
+      this.studentsCountByClass.set(counts);
+    }, [new QueryCondition('role', '==', UsersRole.STUDENT)]);
+  }
+
+  ngOnDestroy() {
+    if (this.unsubscribeUsers) {
+      this.unsubscribeUsers();
+    }
   }
 
   /**
