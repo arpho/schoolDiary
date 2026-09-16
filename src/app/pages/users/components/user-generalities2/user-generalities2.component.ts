@@ -7,7 +7,7 @@ import { addIcons } from 'ionicons';
 import {
   saveOutline, documentTextOutline, trash, add,
   copyOutline, openOutline, schoolOutline, accessibilityOutline,
-  personOutline
+  personOutline, refreshOutline
 } from 'ionicons/icons';
 import { DocumentModel } from 'src/app/pages/classes/models/documentModel';
 import {
@@ -120,7 +120,8 @@ export class UserGeneralities2Component implements OnInit {
       'school-outline': schoolOutline,
       'accessibility-outline': accessibilityOutline,
       'person-outline': personOutline,
-      'document-text-outline': documentTextOutline
+      'document-text-outline': documentTextOutline,
+      'refresh-outline': refreshOutline
     });
 
     effect(() => {
@@ -174,6 +175,34 @@ export class UserGeneralities2Component implements OnInit {
       password += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return password;
+  }
+
+  regenerateEmail() {
+    const v = this.userForm().value();
+    if (v.firstName && v.lastName) {
+      const cleanFirstName = v.firstName
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+        
+      const cleanLastName = v.lastName
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+        
+      const newEmail = `${cleanFirstName}.${cleanLastName}.studenti@iiscuriesraffa.it`;
+      
+      this.userForm().value.update(current => ({...current, email: newEmail }));
+      this.userForm().markAsDirty();
+    } else {
+      this.toaster.presentToast({
+        message: 'Inserisci nome e cognome per generare l\'email',
+        duration: 2000,
+        position: 'bottom'
+      });
+    }
   }
 
   save() {

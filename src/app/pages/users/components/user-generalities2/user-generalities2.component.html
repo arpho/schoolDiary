@@ -45,14 +45,20 @@
 
         <!-- Email -->
         <ion-col size="12" size-md="6">
-          <ion-input
-            class="custom-input"
-            fill="outline"
-            labelPlacement="floating"
-            label="Email *"
-            [formField]="userForm.email"
-            type="email">
-          </ion-input>
+          <div style="display: flex; align-items: center;">
+            <ion-input
+              class="custom-input"
+              style="flex: 1;"
+              fill="outline"
+              labelPlacement="floating"
+              label="Email *"
+              [formField]="userForm.email"
+              type="email">
+            </ion-input>
+            <ion-button fill="clear" (click)="regenerateEmail()" title="Rigenera Email" style="margin-top: -4px;">
+              <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
         </ion-col>
 
         <!-- Telefono -->
