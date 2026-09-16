@@ -24,6 +24,18 @@ import { ReservedNotes4class } from '../../models/reservedNotes4class';
 export class ClassReservedNotesService {
   private notesOnCache = signal<ReservedNotes4class[]>([]);
 
+  // Store Firebase API functions to avoid injection context warnings and allow mocking in tests
+  private collectionFn = collection;
+  private queryFn = query;
+  private whereFn = where;
+  private getDocsFn = getDocs;
+  private addDocFn = addDoc;
+  private onSnapshotFn = onSnapshot;
+  private getDocFn = getDoc;
+  private setDocFn = setDoc;
+  private deleteDocFn = deleteDoc;
+  private docFn = doc;
+
   constructor() {
     this.getNotesOnRealtime('', '', (notes: ReservedNotes4class[]) => {
       this.notesOnCache.set(notes);
@@ -54,16 +66,16 @@ export class ClassReservedNotesService {
   }
 
   protected getCollectionRef() {
-    return collection(this.firestore, this.collection);
+    return this.collectionFn(this.firestore, this.collection);
   }
 
   protected getDocRef(key: string) {
-    return doc(this.firestore, this.collection, key);
+    return this.docFn(this.firestore, this.collection, key);
   }
 
   deleteNote(key: string) {
     const docRef = this.getDocRef(key);
-    return deleteDoc(docRef);
+    return this.deleteDocFn(docRef);
   }
 
   private firestore = inject(Firestore);
@@ -76,7 +88,7 @@ export class ClassReservedNotesService {
    */
   async fetchNote(noteKey: string) {
     const docRef = this.getDocRef(noteKey);
-    const rawNote = await getDoc(docRef);
+    const rawNote = await this.getDocFn(docRef);
     return new ReservedNotes4class(rawNote.data()).setKey(rawNote.id);
   }
 
@@ -88,7 +100,7 @@ export class ClassReservedNotesService {
   addNote(note: ReservedNotes4class) {
     console.log("creaing note", note.serialize())
     const collectionRef = this.getCollectionRef();
-    return addDoc(collectionRef, note.serialize());
+    return this.addDocFn(collectionRef, note.serialize());
   }
 
   /**
@@ -99,7 +111,7 @@ export class ClassReservedNotesService {
    */
   updateNote(noteKey: string, note: ReservedNotes4class) {
     const docRef = this.getDocRef(noteKey);
-    return setDoc(docRef, note.serialize());
+    return this.setDocFn(docRef, note.serialize());
   }
 
   /**
@@ -113,8 +125,8 @@ export class ClassReservedNotesService {
     console.log("ownerKey", ownerKey);
     console.log("getting notes for class", classKey, "for user", ownerKey);
     const collectionRef = this.getCollectionRef();
-    const q = query(collectionRef, where('ownerKey', '==', ownerKey), where('classKey', '==', classKey));
-    return onSnapshot(q, (snapshot) => {
+    const q = this.queryFn(collectionRef, this.whereFn('ownerKey', '==', ownerKey), this.whereFn('classKey', '==', classKey));
+    return this.onSnapshotFn(q, (snapshot) => {
       const notes: ReservedNotes4class[] = [];
       console.log(`notes for class ${classKey} for user ${ownerKey}`, snapshot);
       snapshot.forEach((docSnap) => {

@@ -35,13 +35,13 @@ export class ReservedNotes4studentsService {
     console.log("getting note by student and owner");
     console.log("studentKey", _studentKey);
     console.log("ownerKey", _ownerKey);
-    const collectionRef = collection(this.firestore, this.collection);
-    const q = query(
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    const q = this.queryFn(
       collectionRef,
-      where('ownerKey', '==', _ownerKey),
-      where('studentKey', '==', _studentKey)
+      this.whereFn('ownerKey', '==', _ownerKey),
+      this.whereFn('studentKey', '==', _studentKey)
     );
-    return getDocs(q).then((querySnapshot) => {
+    return this.getDocsFn(q).then((querySnapshot) => {
       const notes: ReservedNotes4student[] = [];
       querySnapshot.forEach((docSnap) => {
         notes.push(new ReservedNotes4student(docSnap.data()).setKey(docSnap.id));
@@ -51,8 +51,21 @@ export class ReservedNotes4studentsService {
     });
   }
   private notesOnCache = signal<ReservedNotes4student[]>([]);
-  private collection = 'reservedNotes4Student';
+  private collectionName = 'reservedNotes4Student';
   private firestore = inject(Firestore);
+
+  // Store Firebase API functions to avoid injection context warnings and allow mocking in tests
+  private collectionFn = collection;
+  private queryFn = query;
+  private whereFn = where;
+  private getDocsFn = getDocs;
+  private addDocFn = addDoc;
+  private onSnapshotFn = onSnapshot;
+  private getDocFn = getDoc;
+  private setDocFn = setDoc;
+  private deleteDocFn = deleteDoc;
+  private docFn = doc;
+
   constructor() {
     // No initialization needed here
   }
@@ -90,8 +103,8 @@ export class ReservedNotes4studentsService {
    * @returns Promise con il riferimento al documento.
    */
   async addNote(note: ReservedNotes4student): Promise<DocumentReference<DocumentData>> {
-    const collectionRef = collection(this.firestore, this.collection);
-    return addDoc(collectionRef, note.serialize());
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    return this.addDocFn(collectionRef, note.serialize());
   }
 
   /**
@@ -101,8 +114,8 @@ export class ReservedNotes4studentsService {
    * @returns Promise vuota.
    */
   async updateNote(noteKey: string, note: ReservedNotes4student): Promise<void> {
-    const docRef = doc(this.firestore, this.collection, noteKey);
-    return setDoc(docRef, note.serialize());
+    const docRef = this.docFn(this.firestore, this.collectionName, noteKey);
+    return this.setDocFn(docRef, note.serialize());
   }
 
   /**
@@ -111,8 +124,8 @@ export class ReservedNotes4studentsService {
    * @returns Promise vuota.
    */
   async deleteNote(noteKey: string): Promise<void> {
-    const docRef = doc(this.firestore, this.collection, noteKey);
-    return deleteDoc(docRef);
+    const docRef = this.docFn(this.firestore, this.collectionName, noteKey);
+    return this.deleteDocFn(docRef);
   }
 
   /**
@@ -123,13 +136,13 @@ export class ReservedNotes4studentsService {
    * @returns Unsubscribe function.
    */
   getNotesOnRealtime(ownerKey: string, studentKey: string, callback: (notes: ReservedNotes4student[]) => void) {
-    const collectionRef = collection(this.firestore, this.collection);
-    const q = query(
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    const q = this.queryFn(
       collectionRef,
-      where('ownerKey', '==', ownerKey),
-      where('studentKey', '==', studentKey)
+      this.whereFn('ownerKey', '==', ownerKey),
+      this.whereFn('studentKey', '==', studentKey)
     );
-    return onSnapshot(q, (snapshot) => {
+    return this.onSnapshotFn(q, (snapshot) => {
       const notes: ReservedNotes4student[] = [];
       snapshot.forEach((docSnap) => {
         notes.push(new ReservedNotes4student(docSnap.data()).setKey(docSnap.id));

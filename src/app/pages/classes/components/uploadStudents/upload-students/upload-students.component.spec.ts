@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { provideIonicAngular, AlertController, ModalController } from '@ionic/angular/standalone';
 import { UsersService } from 'src/app/shared/services/users.service';
 
 import { UploadStudentsComponent } from './upload-students.component';
@@ -11,12 +11,15 @@ describe('UploadStudentsComponent', () => {
   beforeEach(async () => {
     const usersSpy = jasmine.createSpyObj('UsersService', ['createUser']);
     const alertSpy = jasmine.createSpyObj('AlertController', ['create']);
+    const modalSpy = jasmine.createSpyObj('ModalController', ['dismiss']);
 
     await TestBed.configureTestingModule({
-      imports: [IonicModule.forRoot(), UploadStudentsComponent],
+      imports: [UploadStudentsComponent],
       providers: [
+        provideIonicAngular(),
         { provide: UsersService, useValue: usersSpy },
-        { provide: AlertController, useValue: alertSpy }
+        { provide: AlertController, useValue: alertSpy },
+        { provide: ModalController, useValue: modalSpy }
       ]
     }).compileComponents();
 

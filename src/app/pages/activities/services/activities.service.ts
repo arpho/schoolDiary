@@ -41,17 +41,17 @@ export class ActivitiesService {
    * @returns Funzione di unsubscribe.
    */
   fetchActivitiesOnRealTime(callback: (activities: ActivityModel[]) => void, queries?: QueryCondition[]) {
-    const collectionRef = collection(this.firestore, this.collection);
-    let q = query(collectionRef);
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    let q = this.queryFn(collectionRef);
 
     if (queries) {
       queries.forEach((condition: QueryCondition) => {
-        q = query(q, where(condition.field, condition.operator, condition.value));
+        q = this.queryFn(q, this.whereFn(condition.field, condition.operator, condition.value));
       });
     }
 
     const activities: ActivityModel[] = [];
-    const subscription = onSnapshot(q, (snapshot) => {
+    const subscription = this.onSnapshotFn(q, (snapshot) => {
       activities.length = 0; // Clear the array while keeping the reference
       snapshot.forEach((docSnap) => {
         activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
@@ -62,9 +62,22 @@ export class ActivitiesService {
     return () => subscription; // Return an unsubscribe function
   }
   private activitiesOnCache = signal<ActivityModel[]>([]);
-  private collection = 'activities';
+  private collectionName = 'activities';
   private firestore = inject(Firestore);
   private $users = inject(UsersService);
+
+  // Store Firebase API functions to avoid injection context warnings and allow mocking in tests
+  private collectionFn = collection;
+  private queryFn = query;
+  private whereFn = where;
+  private getDocsFn = getDocs;
+  private addDocFn = addDoc;
+  private onSnapshotFn = onSnapshot;
+  private getDocFn = getDoc;
+  private setDocFn = setDoc;
+  private deleteDocFn = deleteDoc;
+  private docFn = doc;
+  private orderByFn = orderBy;
 
   private unsubscribeSnapshot?: () => void;
 
@@ -105,8 +118,8 @@ export class ActivitiesService {
     // Se non trovata in cache, recupera da Firebase
     if (!activity) {
       try {
-        const docRef = doc(this.firestore, this.collection, activityKey);
-        const docSnap = await getDoc(docRef);
+        const docRef = this.docFn(this.firestore, this.collectionName, activityKey);
+        const docSnap = await this.getDocFn(docRef);
 
         if (docSnap.exists()) {
           // Crea l'attività dai dati di Firebase
@@ -134,12 +147,12 @@ export class ActivitiesService {
    */
   fetchActivities(teachersKey: string, classKey: string): Promise<ActivityModel[]> {
     try {
-      const collectionRef = collection(this.firestore, this.collection);
-      let q = query(collectionRef);
-      q = query(q, where('teachersKey', '==', teachersKey));
-      q = query(q, where('classKey', '==', classKey));
-      q = query(q, orderBy('date', 'desc'));
-      return getDocs(q).then(snapshot => {
+      const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+      let q = this.queryFn(collectionRef);
+      q = this.queryFn(q, this.whereFn('teachersKey', '==', teachersKey));
+      q = this.queryFn(q, this.whereFn('classKey', '==', classKey));
+      q = this.queryFn(q, this.orderByFn('date', 'desc'));
+      return this.getDocsFn(q).then(snapshot => {
         return snapshot.docs.map(docSnap => {
           const activity = new ActivityModel();
           activity.build(docSnap.data());
@@ -167,8 +180,8 @@ export class ActivitiesService {
       }
 
       // Se non trovato in cache, cerca nel database
-      const docRef = doc(this.firestore, this.collection, activityKey);
-      const docSnap = await getDoc(docRef);
+      const docRef = this.docFn(this.firestore, this.collectionName, activityKey);
+      const docSnap = await this.getDocFn(docRef);
 
       if (docSnap.exists()) {
         const activity = new ActivityModel();
@@ -194,9 +207,9 @@ export class ActivitiesService {
    * @returns Promise con l'attività creata (inclusa la chiave generata).
    */
   async addActivity(activity: ActivityModel): Promise<ActivityModel> {
-    const collectionRef = collection(this.firestore, this.collection);
-    const docref = await addDoc(collectionRef, activity.serialize());
-    const docSnap = await getDoc(docref);
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    const docref = await this.addDocFn(collectionRef, activity.serialize());
+    const docSnap = await this.getDocFn(docref);
     const newActivity = new ActivityModel(docSnap.data()).setKey(docSnap.id);
     this.activitiesOnCache.update(activities => [...activities, newActivity]);
     return newActivity.setKey(docSnap.id);
@@ -209,8 +222,8 @@ export class ActivitiesService {
    * @returns Promise vuota.
    */
   async updateActivity(activityKey: string, activity: ActivityModel): Promise<void> {
-    const docRef = doc(this.firestore, this.collection, activityKey);
-    return setDoc(docRef, activity.serialize());
+    const docRef = this.docFn(this.firestore, this.collectionName, activityKey);
+    return this.setDocFn(docRef, activity.serialize());
   }
 
   /**
@@ -219,8 +232,8 @@ export class ActivitiesService {
    * @returns Promise vuota.
    */
   async deleteActivity(activityKey: string): Promise<void> {
-    const docRef = doc(this.firestore, this.collection, activityKey);
-    return deleteDoc(docRef);
+    const docRef = this.docFn(this.firestore, this.collectionName, activityKey);
+    return this.deleteDocFn(docRef);
   }
 
   /**
@@ -235,15 +248,15 @@ export class ActivitiesService {
     callback: (activities: ActivityModel[]) => void,
     queries?: QueryCondition[]
   ) {
-    const collectionRef = collection(this.firestore, this.collection);
-    let q = query(collectionRef, where('teacherKey', '==', teachersKey), orderBy('date', 'desc'));
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    let q = this.queryFn(collectionRef, this.whereFn('teacherKey', '==', teachersKey), this.orderByFn('date', 'desc'));
     if (queries) {
       queries.forEach((condition: QueryCondition) => {
-        q = query(q, where(condition.field, condition.operator, condition.value));
+        q = this.queryFn(q, this.whereFn(condition.field, condition.operator, condition.value));
       });
     }
     const activities: ActivityModel[] = [];
-    return onSnapshot(q, (snapshot) => {
+    return this.onSnapshotFn(q, (snapshot) => {
       snapshot.forEach((docSnap) => {
         activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
       });
