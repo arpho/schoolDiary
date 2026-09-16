@@ -6,6 +6,38 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
+    <!-- Version 3.0.2 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v3.0.2</ion-badge>
+          <span class="version-date">16 Settembre 2026</span>
+        </div>
+        <ion-card-title>Ottimizzazioni Import Studenti & Test Database</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Migliorata la logica di importazione studenti e implementati i test per tutti i servizi Firestore.</p>
+
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="mail-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Validazione Email Studenti</h3>
+              <p>La generazione dell'email istituzionale durante l'importazione rimuove ora correttamente tutti i caratteri speciali e gli accenti, garantendo la compatibilità con i sistemi di posta.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="server-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Test DB Completi (Jasmine Spy)</h3>
+              <p>Tutti i servizi per le operazioni CRUD (Lettura, Scrittura, Modifica, Cancellazione) sul database Firestore sono stati resi "testabili" tramite mock. Sono stati scritti e validati test unitari per decine di componenti, garantendo maggiore stabilità senza influire sui dati di produzione.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Version 3.0.1 -->
     <ion-card>
       <ion-card-header>
