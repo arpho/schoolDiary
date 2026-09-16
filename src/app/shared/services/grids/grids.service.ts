@@ -9,7 +9,8 @@ import {
    getDocs,
    addDoc,
    getDoc,
-   onSnapshot
+   onSnapshot,
+   deleteDoc
   } from '@angular/fire/firestore';
 import { Grids } from '../../models/grids';
 
@@ -17,26 +18,37 @@ import { Grids } from '../../models/grids';
   providedIn: 'root'
 })
 export class GridsService {
+  private firestore = inject(Firestore);
+  collection = 'grids';
+
+  // Store Firebase API functions to avoid injection context warnings and allow mocking in tests
+  private collectionFn = collection;
+  private queryFn = query;
+  private whereFn = where;
+  private addDocFn = addDoc;
+  private onSnapshotFn = onSnapshot;
+  private getDocFn = getDoc;
+  private setDocFn = setDoc;
+  private deleteDocFn = deleteDoc;
+  private docFn = doc;
+
   async fetchGrid(gridKey: string) {
-    const docRef = doc(this.firestore, this.collection, gridKey);
-    const rawGrid = await getDoc(docRef);
+    const docRef = this.docFn(this.firestore, this.collection, gridKey);
+    const rawGrid = await this.getDocFn(docRef);
     return new Grids(rawGrid.data()).setKey(rawGrid.id);
   }
   addGrid(grid: Grids) {
-    const collectionRef = collection(this.firestore, this.collection)
-    return addDoc(collectionRef, grid.serialize());
+    const collectionRef = this.collectionFn(this.firestore, this.collection)
+    return this.addDocFn(collectionRef, grid.serialize());
   }
   updateGrid(gridKey: string, grid: Grids) {
-    const docRef = doc(this.firestore, this.collection, gridKey);
-    return setDoc(docRef, grid.serialize());
+    const docRef = this.docFn(this.firestore, this.collection, gridKey);
+    return this.setDocFn(docRef, grid.serialize());
   }
-private firestore = inject(Firestore);
-
-collection = 'grids';
   getGridsOnRealtime(callback: (grids: Grids[]) => void){
     console.log("getGridsOnRealtime");
-    const collectionRef = collection(this.firestore, this.collection)
-    return onSnapshot(collectionRef, (snapshot) => {
+    const collectionRef = this.collectionFn(this.firestore, this.collection)
+    return this.onSnapshotFn(collectionRef, (snapshot) => {
       const grids: Grids[] = [];
       snapshot.forEach((doc) => {
         grids.push( new Grids(doc.data()).setKey(doc.id));

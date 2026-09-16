@@ -25,23 +25,34 @@ import { QueryCondition } from 'src/app/shared/models/queryCondition';
 })
 export class TimetableService {
     private firestore = inject(Firestore);
-    private collectionName = 'timetable';
+  private collectionName = 'timetable';
 
-    // BehaviorSubject per gestire lo stato dell'orario
-    private timetableSubject = new BehaviorSubject<TimetableModel[]>([]);
-    public timetable$ = this.timetableSubject.asObservable();
+  // BehaviorSubject per gestire lo stato dell'orario
+  private timetableSubject = new BehaviorSubject<TimetableModel[]>([]);
+  public timetable$ = this.timetableSubject.asObservable();
 
-    constructor() {
-    }
+  // Store Firebase API functions to avoid injection context warnings and allow mocking in tests
+  private collectionFn = collection;
+  private queryFn = query;
+  private whereFn = where;
+  private addDocFn = addDoc;
+  private onSnapshotFn = onSnapshot;
+  private getDocFn = getDoc;
+  private setDocFn = setDoc;
+  private deleteDocFn = deleteDoc;
+  private docFn = doc;
+
+  constructor() {
+  }
 
     /**
      * Crea un nuovo elemento dell'orario.
      * @param timetableItem Modello dell'elemento da creare.
      * @returns Promise con l'elemento creato (e chiave assegnata).
      */
-    async createTimetableItem(timetableItem: TimetableModel): Promise<TimetableModel> {
-        const collectionRef = collection(this.firestore, this.collectionName);
-        const docRef = await addDoc(collectionRef, timetableItem.serialize());
+  async createTimetableItem(timetableItem: TimetableModel): Promise<TimetableModel> {
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    const docRef = await this.addDocFn(collectionRef, timetableItem.serialize());
         timetableItem.key = docRef.id;
         return timetableItem;
     }
@@ -59,17 +70,17 @@ export class TimetableService {
         // Annulla la sottoscrizione precedente
         this.unsubscribeTimetable.next();
 
-        let q = query(collection(this.firestore, this.collectionName));
-        if (queries.length > 0) {
-            queries.forEach((condition: QueryCondition) => {
-                q = query(q, where(condition.field, condition.operator, condition.value));
-            });
-        }
+    let q = this.queryFn(this.collectionFn(this.firestore, this.collectionName));
+    if (queries.length > 0) {
+      queries.forEach((condition: QueryCondition) => {
+        q = this.queryFn(q, this.whereFn(condition.field, condition.operator, condition.value));
+      });
+    }
 
-        const timetableList: TimetableModel[] = [];
+    const timetableList: TimetableModel[] = [];
 
-        const unsubscribe = onSnapshot(q, {
-            next: (snapshot) => {
+    const unsubscribe = this.onSnapshotFn(q, {
+      next: (snapshot) => {
                 timetableList.length = 0; // Svuota l'array mantenendo il riferimento
                 snapshot.forEach((docSnap) => {
                     timetableList.push(new TimetableModel(docSnap.data()).setKey(docSnap.id));
@@ -96,9 +107,9 @@ export class TimetableService {
      * @param key Chiave dell'elemento.
      * @returns Promise con il modello o undefined.
      */
-    async fetchTimetableItem(key: string): Promise<TimetableModel | undefined> {
-        const docRef = doc(this.firestore, this.collectionName, key);
-        const docSnap = await getDoc(docRef);
+  async fetchTimetableItem(key: string): Promise<TimetableModel | undefined> {
+    const docRef = this.docFn(this.firestore, this.collectionName, key);
+    const docSnap = await this.getDocFn(docRef);
         if (docSnap.exists()) {
             return new TimetableModel(docSnap.data()).setKey(docSnap.id);
         }
@@ -121,19 +132,19 @@ export class TimetableService {
      * @param timetableItem Modello aggiornato.
      * @returns Promise vuota.
      */
-    updateTimetableItem(timetableItem: TimetableModel): Promise<void> {
-        const docRef = doc(this.firestore, this.collectionName, timetableItem.key);
-        return setDoc(docRef, timetableItem.serialize(), { merge: true });
-    }
+  updateTimetableItem(timetableItem: TimetableModel): Promise<void> {
+    const docRef = this.docFn(this.firestore, this.collectionName, timetableItem.key);
+    return this.setDocFn(docRef, timetableItem.serialize(), { merge: true });
+  }
 
     /**
      * Elimina un elemento dell'orario.
      * @param key Chiave dell'elemento.
      * @returns Promise vuota.
      */
-    deleteTimetableItem(key: string): Promise<void> {
-        const docRef = doc(this.firestore, this.collectionName, key);
-        return deleteDoc(docRef);
-    }
+  deleteTimetableItem(key: string): Promise<void> {
+    const docRef = this.docFn(this.firestore, this.collectionName, key);
+    return this.deleteDocFn(docRef);
+  }
 
 }

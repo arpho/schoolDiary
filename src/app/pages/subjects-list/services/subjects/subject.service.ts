@@ -35,11 +35,18 @@ export class SubjectService {
   public subjects$ = this.subjectsSubject.asObservable();
 
   // Store Firebase API functions to avoid injection context warnings
-
+  private collectionFn = collection;
+  private queryFn = query;
+  private whereFn = where;
+  private addDocFn = addDoc;
+  private onSnapshotFn = onSnapshot;
+  private getDocFn = getDoc;
+  private setDocFn = setDoc;
+  private deleteDocFn = deleteDoc;
+  private docFn = doc;
 
   constructor() {
     // Inizializza la sottoscrizione al caricamento delle materie
-
   }
 
   /**
@@ -48,12 +55,10 @@ export class SubjectService {
    * @returns Promise con la materia creata (e chiave assegnata).
    */
   async createSubject(subject: SubjectModel): Promise<SubjectModel> {
-    const collectionRef = collection(this.firestore, this.collectionName);
-    const docRef = await addDoc(collectionRef, subject.serialize());
+    const collectionRef = this.collectionFn(this.firestore, this.collectionName);
+    const docRef = await this.addDocFn(collectionRef, subject.serialize());
     subject.key = docRef.id;
     return subject;
-
-
   }
 
   private unsubscribeSubject = new Subject<void>();
@@ -69,16 +74,16 @@ export class SubjectService {
     // Annulla la sottoscrizione precedente
     this.unsubscribeSubject.next();
 
-    let q = query(collection(this.firestore, this.collectionName));
+    let q = this.queryFn(this.collectionFn(this.firestore, this.collectionName));
     if (queries.length > 0) {
       queries.forEach((condition: QueryCondition) => {
-        q = query(q, where(condition.field, condition.operator, condition.value));
+        q = this.queryFn(q, this.whereFn(condition.field, condition.operator, condition.value));
       });
     }
 
     const subjects: SubjectModel[] = [];
 
-    const unsubscribe = onSnapshot(q, {
+    const unsubscribe = this.onSnapshotFn(q, {
       next: (snapshot) => {
         subjects.length = 0; // Svuota l'array mantenendo il riferimento
         snapshot.forEach((docSnap) => {
@@ -107,8 +112,8 @@ export class SubjectService {
    * @returns Promise con il modello materia o undefined.
    */
   async fetchSubject(subjectKey: string): Promise<SubjectModel | undefined> {
-    const docRef = doc(this.firestore, this.collectionName, subjectKey);
-    const docSnap = await getDoc(docRef);
+    const docRef = this.docFn(this.firestore, this.collectionName, subjectKey);
+    const docSnap = await this.getDocFn(docRef);
     if (docSnap.exists()) {
       return new SubjectModel(docSnap.data()).setKey(docSnap.id);
     }
@@ -132,8 +137,8 @@ export class SubjectService {
    * @returns Promise vuota.
    */
   updateSubject(subject: SubjectModel): Promise<void> {
-    const docRef = doc(this.firestore, this.collectionName, subject.key);
-    return setDoc(docRef, subject.serialize(), { merge: true });
+    const docRef = this.docFn(this.firestore, this.collectionName, subject.key);
+    return this.setDocFn(docRef, subject.serialize(), { merge: true });
   }
 
   /**
@@ -142,8 +147,8 @@ export class SubjectService {
    * @returns Promise vuota.
    */
   deleteSubject(subjectKey: string): Promise<void> {
-    const docRef = doc(this.firestore, this.collectionName, subjectKey);
-    return deleteDoc(docRef);
+    const docRef = this.docFn(this.firestore, this.collectionName, subjectKey);
+    return this.deleteDocFn(docRef);
   }
 
 }
