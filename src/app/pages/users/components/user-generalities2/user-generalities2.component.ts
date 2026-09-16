@@ -281,7 +281,8 @@ export class UserGeneralities2Component implements OnInit {
           duration: 2000,
           position: "bottom"
         });
-        // markAsPristine not supported in Signal Forms
+        // Resettiamo il form per pulire lo stato dirty ed evitare l'avviso di modifiche non salvate
+        this.userForm().reset(this.userForm().value());
         return this.updateUserClaims(user.key, claims);
       })
       .catch(error => {
@@ -303,7 +304,8 @@ export class UserGeneralities2Component implements OnInit {
           duration: 2000,
           position: "bottom"
         });
-        // markAsPristine not supported in Signal Forms
+        // Resettiamo il form per pulire lo stato dirty ed evitare l'avviso di modifiche non salvate
+        this.userForm().reset(this.userForm().value());
         return this.updateUserClaims(user.key, claims);
       })
       .catch(error => {
