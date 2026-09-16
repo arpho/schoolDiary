@@ -89,3 +89,6 @@ test_output.txt
 test_output_2.txt
 
 test-output.txt
+
+alunni_*.xlsx
+generate_excel.js

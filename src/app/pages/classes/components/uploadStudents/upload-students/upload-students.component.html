@@ -38,13 +38,17 @@
       }
 
       <ion-buttons slot="end">
-        <ion-button 
-          (click)="push()" 
-          [disabled]="hasInvalidEmails()"
-          [title]="hasInvalidEmails() ? 'Correggi gli indirizzi email non validi prima di procedere' : 'Salva gli studenti'"
-        >
-          <ion-icon name="push"></ion-icon>
-        </ion-button>
+        @if (isUploading()) {
+          <span class="loader"></span>
+        } @else {
+          <ion-button 
+            (click)="push()" 
+            [disabled]="hasInvalidEmails()"
+            [title]="hasInvalidEmails() ? 'Correggi gli indirizzi email non validi prima di procedere' : 'Salva gli studenti'"
+          >
+            <ion-icon name="push"></ion-icon>
+          </ion-button>
+        }
       </ion-buttons>
     }
   </div>

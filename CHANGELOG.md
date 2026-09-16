@@ -2,6 +2,15 @@
 
 Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in questo file.
 
+## [0.0.2] - 2026-09-16
+
+### Aggiunto
+- **Miglioramento Importazione Studenti**: Aggiunto uno spinner di caricamento e la chiusura automatica del popup al termine del processo, con svuotamento della lista per confermare l'avvenuto salvataggio.
+
+### Risolto
+- **Correzione Importazione Nomi**: Risolto il problema del taglio dei nomi per gli studenti con cognomi composti (es. "Di Maggio") o doppi nomi durante l'importazione massiva da Excel.
+- **Correzione Generazione Email**: Rimossi gli spazi dai nomi e cognomi durante la generazione dell'email istituzionale.
+
 ## [Unreleased] - 2026-07-11
 
 ### Aggiunto

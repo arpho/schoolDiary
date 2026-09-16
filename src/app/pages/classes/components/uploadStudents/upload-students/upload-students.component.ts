@@ -14,7 +14,8 @@ import {
   IonButtons,
   IonText,
   AlertController,
-  IonInput
+  IonInput,
+  ModalController
 } from '@ionic/angular/standalone';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UsersService } from '../../../../../shared/services/users.service';
@@ -46,7 +47,8 @@ export class UploadStudentsComponent implements OnInit {
   constructor(
     private alertCtrl: AlertController,
     private $userService: UsersService,
-    private $toaster: ToasterService
+    private $toaster: ToasterService,
+    private modalCtrl: ModalController
   ) {
     addIcons({
       push: pushOutline,
@@ -58,7 +60,10 @@ export class UploadStudentsComponent implements OnInit {
     return emailRegex.test(email);
   }
 
+  isUploading = signal<boolean>(false);
+
   async push() {
+    this.isUploading.set(true);
     console.log("push to class", this.classkey);
     const validAlunni = this.alunni().filter((alunno: Alunno) => alunno.firstName && alunno.lastName);
 
@@ -76,12 +81,22 @@ export class UploadStudentsComponent implements OnInit {
 
     if (successCount > 0) {
       this.$toaster.presentToast({ message: `${successCount} studenti creati con successo.`, position: 'top', duration: 3000 });
+      
+      // Keep only students that failed to upload
+      const failedAlunni = results.filter(r => !r.success).map(r => r.alunno);
+      this.alunni.set(failedAlunni);
+      
+      // If everything was successful, dismiss the modal
+      if (failCount === 0) {
+        this.modalCtrl.dismiss({ role: 'success' });
+      }
     }
 
     if (failCount > 0) {
-      this.$toaster.presentToast({ message: `${failCount} studenti non creati. Controlla la console.`, position: 'top', duration: 5000 });
+      this.$toaster.presentToast({ message: `Errore: ${failCount} studenti non creati.`, position: 'top', duration: 5000 });
       console.error("Failed uploads:", results.filter(r => !r.success));
     }
+    this.isUploading.set(false);
   }
   private _classkey = '';
   set classkey(value: string) { this._classkey = value; }
@@ -112,7 +127,9 @@ export class UploadStudentsComponent implements OnInit {
    * Genera l'email istituzionale standard per uno studente (nome.cognome...).
    */
   emailFactory(alunno: Alunno) {
-    return `${alunno.firstName.toLowerCase()}.${alunno.lastName.toLowerCase()}.studenti@iiscuriesraffa.it`;
+    const cleanFirstName = alunno.firstName.toLowerCase().replace(/\s+/g, '');
+    const cleanLastName = alunno.lastName.toLowerCase().replace(/\s+/g, '');
+    return `${cleanFirstName}.${cleanLastName}.studenti@iiscuriesraffa.it`;
   }
 
   /**
@@ -187,8 +204,21 @@ export class UploadStudentsComponent implements OnInit {
       // Processa ogni studente
       this.excelData.forEach((student: any) => {
         const nomeCognome = student['Lista schede alunno'].split("    ")[3]?.trim();
-        const firstName = nomeCognome?.split(" ")[1];
-        const lastName = nomeCognome?.split(" ")[0];
+        const words = nomeCognome?.split(" ") || [];
+        let firstName = '';
+        let lastName = '';
+        
+        if (words.length > 0) {
+          const prefissi = ['DI', 'DE', 'DEL', 'DELLA', 'DELLO', 'DEGLI', 'DELLE', 'LO', 'LA', 'DA', "D'"];
+          
+          if (words.length >= 3 && prefissi.includes(words[0].toUpperCase())) {
+            lastName = `${words[0]} ${words[1]}`;
+            firstName = words.slice(2).join(' ');
+          } else {
+            lastName = words[0];
+            firstName = words.slice(1).join(' ');
+          }
+        }
         const alunno = new Alunno({
           firstName: firstName || '',
           lastName: lastName || '',
