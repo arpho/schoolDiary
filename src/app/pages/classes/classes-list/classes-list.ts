@@ -33,7 +33,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
 import { UsersRole } from 'src/app/shared/models/usersRole';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { addIcons } from 'ionicons';
-import { add, create, trash, close, archive, ellipsisVertical, eye, warningOutline } from 'ionicons/icons';
+import { add, create, trash, close, archive, ellipsisVertical, eye, warningOutline, peopleOutline } from 'ionicons/icons';
 
 /**
  * Componente per visualizzare la lista delle classi.
@@ -87,7 +87,7 @@ export class ClassesListComponent implements OnInit, OnDestroy {
     private router: Router,
     private toaster: ToasterService
   ) {
-    addIcons({ add, eye, trash, close, archive, ellipsisVertical, 'warning-outline': warningOutline });
+    addIcons({ add, eye, trash, close, archive, ellipsisVertical, 'warning-outline': warningOutline, 'people-outline': peopleOutline });
   }
 
   ngOnInit() {

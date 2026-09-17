@@ -31,6 +31,10 @@
                 <ion-badge color="warning" class="empty-class-badge" title="Nessun studente">
                   <ion-icon name="warning-outline"></ion-icon> Vuota
                 </ion-badge>
+              } @else {
+                <ion-badge color="light" class="empty-class-badge" title="Numero di studenti">
+                  <ion-icon name="people-outline"></ion-icon> {{ studentsCountByClass()[classe.key] }}
+                </ion-badge>
               }
             </div>
           </div>
