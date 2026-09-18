@@ -11,7 +11,9 @@ import {
   IonLabel,
   IonButton,
   IonItem,
-  IonButtons
+  IonButtons,
+  IonSegment,
+  IonSegmentButton
 } from '@ionic/angular/standalone';
 
 import { FormsModule } from '@angular/forms';
@@ -61,7 +63,9 @@ type TabType = 'generalita' | 'disabilita' | 'note' | 'valutazioni';
     ReservedNotes4studentComponent,
     Evaluation4StudentComponent,
     StudentAvatarComponent,
-    StudentDisabilityComponent
+    StudentDisabilityComponent,
+    IonSegment,
+    IonSegmentButton
 ]
 })
 export class UserDialogPage implements OnInit, HasUnsavedChanges {
@@ -224,8 +228,7 @@ export class UserDialogPage implements OnInit, HasUnsavedChanges {
       }
     }
 
-    const rolesKey = Object.keys(UsersRole);
-    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
+    this.rolesValue = Object.values(UsersRole).filter(v => typeof v === 'number');
   }
 
 

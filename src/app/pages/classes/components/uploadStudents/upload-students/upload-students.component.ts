@@ -213,7 +213,15 @@ export class UploadStudentsComponent implements OnInit {
 
       // Processa ogni studente
       this.excelData.forEach((student: any) => {
-        const nomeCognome = student['Lista schede alunno'].split("    ")[3]?.trim();
+        let nomeCognome = '';
+        if (student['Lista schede alunno']) {
+          nomeCognome = student['Lista schede alunno'].split("    ")[3]?.trim() || '';
+        } else if (student['Nominativo']) {
+          nomeCognome = student['Nominativo'].trim();
+        }
+
+        let birthDate = student['Data di Nascita'] || student['Data Di Nascita'] || '';
+
         const words = nomeCognome?.split(" ") || [];
         let firstName = '';
         let lastName = '';
@@ -232,17 +240,15 @@ export class UploadStudentsComponent implements OnInit {
         const alunno = new Alunno({
           firstName: firstName || '',
           lastName: lastName || '',
+          birthDate: birthDate,
           role: UsersRole.STUDENT,
           classKey: this.classkey,
           password: this.generatePassword()
-        }).setClassKey(this.classkey).setFullName(student['Lista schede alunno'].split("    ")[3]?.trim() || '');
+        }).setClassKey(this.classkey).setFullName(nomeCognome || '');
 
 
         // Aggiungi l'alunno alla lista
         this.alunni.update(current => [...current, alunno])
-
-
-
       });
     };
     reader.readAsBinaryString(file);

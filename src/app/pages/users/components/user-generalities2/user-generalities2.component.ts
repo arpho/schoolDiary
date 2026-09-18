@@ -160,8 +160,7 @@ export class UserGeneralities2Component implements OnInit {
 
   ngOnInit() {
     this.cdr.detectChanges();
-    const rolesKey = Object.keys(UsersRole);
-    this.rolesValue = Object.values(UsersRole).slice(rolesKey.length / 2);
+    this.rolesValue = Object.values(UsersRole).filter(v => typeof v === 'number');
   }
 
   ngAfterViewInit() {

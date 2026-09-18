@@ -19,7 +19,8 @@ import {
   IonModal,
   IonDatetime,
   IonToggle,
-  IonLabel
+  IonLabel,
+  IonSearchbar
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { EvaluationService } from 'src/app/pages/evaluations/services/evaluation/evaluation.service';
@@ -80,6 +81,7 @@ import { AgendaEventInputComponent } from 'src/app/shared/components/agenda-even
     IonModal,
     IonToggle,
     IonLabel,
+    IonSearchbar,
     CommonModule,
     FormsModule,
     StudentAverageGradeDisplayComponent,
@@ -249,6 +251,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
   readonly subjects = signal<SubjectModel[]>([]);
   readonly selectedSubjectKey = signal<string>('all');
   readonly onlyInterrogatedToday = signal<boolean>(false);
+  readonly filterDisability = signal<boolean>(false);
+  readonly searchQuery = signal<string>('');
   readonly agendaEvents = signal<AgendaEvent[]>([]);
   private agendaUnsubscribe?: () => void;
 
@@ -292,9 +296,24 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     const averages = this.studentAverages();
     const filter = this.filterType();
     const showOnlyInterrogatedToday = this.onlyInterrogatedToday();
+    const showDisability = this.filterDisability();
+    const search = this.searchQuery().toLowerCase();
     const events = this.agendaEvents();
 
     let filtered = students;
+
+    if (search) {
+      filtered = filtered.filter(s => 
+        (s.firstName && s.firstName.toLowerCase().includes(search)) || 
+        (s.lastName && s.lastName.toLowerCase().includes(search)) ||
+        (s.firstName && s.lastName && `${s.firstName} ${s.lastName}`.toLowerCase().includes(search)) ||
+        (s.firstName && s.lastName && `${s.lastName} ${s.firstName}`.toLowerCase().includes(search))
+      );
+    }
+
+    if (showDisability) {
+      filtered = filtered.filter(s => s.BES || s.DSA || s.ADHD || s.DVA);
+    }
 
     if (filter === 'insufficient') {
       filtered = students.filter(s => {
