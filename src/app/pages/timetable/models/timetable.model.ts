@@ -6,6 +6,7 @@ export class TimetableModel {
     day = "" // e.g., "Monday", "Tuesday"
     startTime = "" // e.g., "08:00"
     endTime = "" // e.g., "09:00"
+    slotNames: string[] = [] // e.g., ["1° Ora", "2° Ora"]
     subjectKey = ""
     description = ""
     location = "" // e.g., "Room 101"
@@ -31,6 +32,7 @@ export class TimetableModel {
             day: this.day,
             startTime: this.startTime,
             endTime: this.endTime,
+            slotNames: this.slotNames || [],
             subjectKey: this.subjectKey,
             description: this.description,
             location: this.location,

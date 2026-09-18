@@ -45,6 +45,20 @@ export class TimetablePage implements OnInit, OnDestroy {
     if (user && user.key) {
       this.unsubscribeTimetable = this.timetableService.fetchTimetableListOnRealTime(
         (timetable) => {
+          const slots = user.schoolTimeSlots || [];
+          if (slots.length > 0) {
+            // Ricalcola startTime e endTime dinamicamente in base a slotNames
+            timetable.forEach(item => {
+              if (item.slotNames && item.slotNames.length > 0) {
+                const selectedSlots = item.slotNames.map(sn => slots.find(s => s.name === sn)).filter(s => !!s) as any[];
+                if (selectedSlots.length > 0) {
+                  selectedSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
+                  item.startTime = selectedSlots[0].startTime;
+                  item.endTime = selectedSlots[selectedSlots.length - 1].endTime;
+                }
+              }
+            });
+          }
           this.timetable.set(timetable);
           this.loading.set(false);
         },

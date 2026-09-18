@@ -18,6 +18,7 @@ import {
 import { ThemeService, ThemeMode } from '../../shared/services/theme.service';
 import { addIcons } from 'ionicons';
 import { colorPaletteOutline } from 'ionicons/icons';
+import { TimeSlotsManagerComponent } from './components/time-slots-manager/time-slots-manager.component';
 
 @Component({
   selector: 'app-settings',
@@ -25,7 +26,7 @@ import { colorPaletteOutline } from 'ionicons/icons';
   styleUrls: ['./settings.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [UserMenuComponent, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonList, IonItem, IonSelect, IonSelectOption, IonIcon, FormsModule]
+  imports: [UserMenuComponent, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonList, IonItem, IonSelect, IonSelectOption, IonIcon, FormsModule, TimeSlotsManagerComponent]
 })
 export class SettingsPage {
   private themeService = inject(ThemeService);

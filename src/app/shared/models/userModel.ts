@@ -4,6 +4,12 @@ import { AssignedClass } from "src/app/pages/subjects-list/models/assignedClass"
 import { DocumentModel } from "src/app/pages/classes/models/documentModel";
 
 
+export interface SchoolTimeSlot {
+  name: string;
+  startTime: string;
+  endTime: string;
+}
+
 export class UserModel {
   /**
    * Imposta la chiave univoca dell'utente (UID).
@@ -62,6 +68,9 @@ export class UserModel {
   photoUrl: string = '';
   /** Voti finali (es. per anno accademico/materia) */
   finalGrades: { voto: number, data: string, nota: string, subjectKey?: string }[] = [];
+
+  /** Slot orari definiti dall'utente per la scansione oraria giornaliera */
+  schoolTimeSlots: SchoolTimeSlot[] = [];
 
   /**
    * Setter per le chiavi delle classi.
@@ -154,7 +163,8 @@ export class UserModel {
       userName: this.userName,
       classes: this.classesKey,
       photoUrl: this.photoUrl || '',
-      finalGrades: this.finalGrades || []
+      finalGrades: this.finalGrades || [],
+      schoolTimeSlots: this.schoolTimeSlots || []
     };
     return out;
   }

@@ -37,12 +37,13 @@
         </ion-select>
       </ion-item>
 
-      <!-- Orari -->
+      <!-- Orari / Slot -->
       <ion-item>
-        <ion-input type="time" label="Ora di Inizio" labelPlacement="floating" [formField]="slotForm.startTime"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input type="time" label="Ora di Fine" labelPlacement="floating" [formField]="slotForm.endTime"></ion-input>
+        <ion-select label="Scansione Oraria" label-placement="floating" multiple="true" [formField]="slotForm.slotNames">
+          @for (slot of schoolTimeSlots(); track slot.name) {
+            <ion-select-option [value]="slot.name">{{ slot.name }} ({{ slot.startTime }} - {{ slot.endTime }})</ion-select-option>
+          }
+        </ion-select>
       </ion-item>
 
       <!-- Selezione Classe -->

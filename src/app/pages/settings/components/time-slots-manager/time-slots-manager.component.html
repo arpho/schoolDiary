@@ -1,0 +1,60 @@
+<ion-list inset="true" class="glass-panel">
+  <ion-list-header>
+    <ion-label>Scansione Oraria</ion-label>
+    <ion-button fill="clear" (click)="addSlot()">
+      <ion-icon slot="icon-only" name="add"></ion-icon>
+    </ion-button>
+  </ion-list-header>
+
+  <div class="header-desc">
+    <ion-text color="medium" class="ion-padding-horizontal" style="font-size: 0.9em;">
+      Definisci qui la scansione oraria giornaliera (es. 1° Ora, Intervallo). Questo ti permetterà di selezionare direttamente lo slot nell'orario. Scorri verso sinistra per eliminare.
+    </ion-text>
+  </div>
+
+  @for (slot of slots(); track $index) {
+    <ion-item-sliding>
+      <ion-item>
+        <ion-input 
+          label="Nome" 
+          labelPlacement="floating" 
+          [value]="slot.name" 
+          (ionChange)="updateSlot($index, 'name', $any($event.detail.value))">
+        </ion-input>
+        <ion-input 
+          type="time" 
+          label="Inizio" 
+          labelPlacement="floating" 
+          [value]="slot.startTime" 
+          (ionChange)="updateSlot($index, 'startTime', $any($event.detail.value))">
+        </ion-input>
+        <ion-input 
+          type="time" 
+          label="Fine" 
+          labelPlacement="floating" 
+          [value]="slot.endTime" 
+          (ionChange)="updateSlot($index, 'endTime', $any($event.detail.value))">
+        </ion-input>
+      </ion-item>
+      
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="removeSlot($index)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  } @empty {
+    <ion-item>
+      <ion-label color="medium">Nessuno slot definito</ion-label>
+    </ion-item>
+  }
+
+  @if (hasChanges()) {
+    <ion-item lines="none" class="ion-margin-top">
+      <ion-button expand="block" style="width: 100%" (click)="save()">
+        <ion-icon slot="start" name="save"></ion-icon>
+        Salva Scansione Oraria
+      </ion-button>
+    </ion-item>
+  }
+</ion-list>

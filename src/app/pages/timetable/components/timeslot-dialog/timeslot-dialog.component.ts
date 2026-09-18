@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal, computed, effect, Input, ChangeDetec
 
 import { FormsModule } from '@angular/forms';
 import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonItem, IonSelect, IonSelectOption, IonInput, IonList, ModalController, IonFooter, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonItem, IonSelect, IonSelectOption, IonInput, IonList, ModalController, IonFooter, IonGrid, IonRow, IonCol, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
 import { UsersService } from 'src/app/shared/services/users.service';
@@ -12,6 +12,8 @@ import { AssignedClass } from 'src/app/pages/subjects-list/models/assignedClass'
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 import { ClassiService } from 'src/app/pages/classes/services/classi.service';
 import { ClasseModel } from 'src/app/pages/classes/models/classModel';
+import { SchoolTimeSlot } from 'src/app/shared/models/userModel';
+
 @Component({
   selector: 'app-timeslot-dialog',
   templateUrl: './timeslot-dialog.component.html',
@@ -46,14 +48,14 @@ export class TimeslotDialogComponent implements OnInit {
   private usersService = inject(UsersService);
   private subjectService = inject(SubjectService);
   private modalController = inject(ModalController);
+  private alertController = inject(AlertController);
   private classiService = inject(ClassiService);
 
   // Form State
   slotModel = signal({
     slotType: 'lezione' as 'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento' | 'a_disposizione',
     day: '',
-    startTime: '',
-    endTime: '',
+    slotNames: [] as string[],
     classKey: '',
     subjectKey: '',
     location: ''
@@ -62,16 +64,16 @@ export class TimeslotDialogComponent implements OnInit {
   slotForm = form(this.slotModel, schema((s) => {
     required(s.slotType);
     required(s.day);
-    required(s.startTime);
-    required(s.endTime);
   }));
 
   // Async Data State
   activeClasses = signal<ClasseModel[]>([]); 
   classSubjects = signal<SubjectModel[]>([]);
+  schoolTimeSlots = signal<SchoolTimeSlot[]>([]);
 
   isFormValid = computed(() => {
     if (!this.slotForm().valid()) return false;
+    if (this.slotModel().slotNames.length === 0) return false;
     if (this.slotModel().slotType === 'lezione') {
       if (!this.slotModel().classKey || !this.slotModel().subjectKey) return false;
     }
@@ -122,7 +124,20 @@ export class TimeslotDialogComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    const user = await this.usersService.getLoggedUser();
+    if (!user?.schoolTimeSlots || user.schoolTimeSlots.length === 0) {
+      const alert = await this.alertController.create({
+        header: 'Configurazione Mancante',
+        message: 'Per inserire l\'orario devi prima definire la Scansione Oraria nelle Impostazioni.',
+        buttons: ['Vai alle Impostazioni']
+      });
+      await alert.present();
+      this.modalController.dismiss();
+      return;
+    }
+    this.schoolTimeSlots.set(user.schoolTimeSlots);
+
     this.fetchUserClasses();
     if (this.item) {
       let type: 'lezione' | 'ora_buca' | 'intervallo' | 'ricevimento' | 'a_disposizione' = 'lezione';
@@ -139,8 +154,7 @@ export class TimeslotDialogComponent implements OnInit {
       this.slotForm().value.update(v => ({...v,
         slotType: type,
         day: this.item?.day || '',
-        startTime: this.item?.startTime || '',
-        endTime: this.item?.endTime || '',
+        slotNames: this.item?.slotNames || [],
         classKey: this.item?.classKey || '',
         subjectKey: this.item?.subjectKey || '',
         location: this.item?.location || ''
@@ -163,10 +177,25 @@ export class TimeslotDialogComponent implements OnInit {
     
     const val = this.slotModel();
 
+    // Calcoliamo lo startTime e endTime effettivo basandoci sugli slot
+    const slots = this.schoolTimeSlots();
+    const selectedSlots = val.slotNames.map(sn => slots.find(s => s.name === sn)).filter(s => !!s) as SchoolTimeSlot[];
+    
+    let computedStartTime = '';
+    let computedEndTime = '';
+
+    if (selectedSlots.length > 0) {
+      // Ordina gli slot per ora di inizio in modo da prendere il minimo e il massimo
+      selectedSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
+      computedStartTime = selectedSlots[0].startTime;
+      computedEndTime = selectedSlots[selectedSlots.length - 1].endTime;
+    }
+
     const newSlot = new TimetableModel({
       day: val.day,
-      startTime: val.startTime,
-      endTime: val.endTime,
+      startTime: computedStartTime,
+      endTime: computedEndTime,
+      slotNames: val.slotNames,
       location: val.location,
       description: '',
       classKey: val.slotType === 'lezione' ? val.classKey : '',
