@@ -2,6 +2,12 @@
 
 Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in questo file.
 
+## [0.0.4] - 2026-09-20
+
+### Aggiunto
+- **Nuove Icone Glassmorphism**: Aggiornate tutte le 9 icone principali della dashboard. Generate nuove icone 3D in stile glassmorphism, ora dotate di vera trasparenza (senza background a scacchi).
+- **Aggiornamento Riferimenti HTML**: Modificati i file `dashboard-admin.html` e `tutoring.page.html` per l'utilizzo delle nuove icone in formato `.png`.
+
 ## [0.0.2] - 2026-09-16
 
 ### Aggiunto
