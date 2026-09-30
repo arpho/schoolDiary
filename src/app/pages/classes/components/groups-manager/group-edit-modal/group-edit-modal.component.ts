@@ -15,10 +15,11 @@ import {
   IonButton,
   IonButtons,
   ModalController,
-  IonIcon
+  IonIcon,
+  AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { saveOutline, closeOutline } from 'ionicons/icons';
+import { saveOutline, closeOutline, trashOutline } from 'ionicons/icons';
 import { GroupModel } from '../../../models/groupModel';
 import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
 
@@ -109,11 +110,18 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
           </ion-textarea>
         </ion-item>
 
-        <div class="ion-padding-top">
+        <div class="ion-padding-top action-buttons">
           <ion-button expand="block" (click)="save()" [disabled]="!nome().trim()" mode="ios" [color]="showOnlySettings ? 'tertiary' : 'primary'" class="save-button">
             <ion-icon slot="start" name="save-outline"></ion-icon>
             {{ showOnlySettings ? 'Applica Modifiche' : 'Salva Gruppo' }}
           </ion-button>
+          
+          @if (group) {
+            <ion-button expand="block" (click)="confirmDelete()" mode="ios" color="danger" fill="outline" class="delete-button ion-margin-top">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Elimina Gruppo
+            </ion-button>
+          }
         </div>
       </div>
     </ion-content>
@@ -141,6 +149,11 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
       font-weight: 600;
       height: 50px;
     }
+    .delete-button {
+      --border-radius: 12px;
+      font-weight: 600;
+      height: 50px;
+    }
   `]
 })
 export class GroupEditModalComponent implements OnInit {
@@ -156,9 +169,10 @@ export class GroupEditModalComponent implements OnInit {
   note = signal('');
 
   private modalCtrl = inject(ModalController);
+  private alertCtrl = inject(AlertController);
 
   constructor() {
-    addIcons({ saveOutline, closeOutline });
+    addIcons({ saveOutline, closeOutline, trashOutline });
   }
 
   /**
@@ -190,5 +204,30 @@ export class GroupEditModalComponent implements OnInit {
       subjectKey: this.subjectKey(),
       note: this.note()
     }, 'confirm');
+  }
+
+  /**
+   * Chiede conferma prima di eliminare il gruppo.
+   */
+  async confirmDelete() {
+    const alert = await this.alertCtrl.create({
+      header: 'Conferma eliminazione',
+      message: "Sei sicuro di voler eliminare questo gruppo? L'operazione non può essere annullata.",
+      buttons: [
+        {
+          text: 'Annulla',
+          role: 'cancel'
+        },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          handler: () => {
+            this.modalCtrl.dismiss(this.group, 'delete');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

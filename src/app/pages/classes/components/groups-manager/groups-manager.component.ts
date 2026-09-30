@@ -88,6 +88,14 @@ export class GroupsManagerComponent implements OnInit {
         this.toast.showToast({ message: "Errore durante la modifica del gruppo", duration: 2000, position: "bottom" });
         console.error("Errore durante la modifica del gruppo", error);
       }
+    } else if (role === 'delete') {
+      try {
+        await this.service.deleteGroup(group.key);
+        this.toast.showToast({ message: "Gruppo eliminato con successo", duration: 2000, position: "bottom" });
+      } catch (error) {
+        this.toast.showToast({ message: "Errore durante l'eliminazione del gruppo", duration: 2000, position: "bottom" });
+        console.error("Errore durante l'eliminazione del gruppo", error);
+      }
     }
   }
 
@@ -120,6 +128,14 @@ export class GroupsManagerComponent implements OnInit {
       } catch (error) {
         this.toast.showToast({ message: "Errore durante l'aggiornamento", duration: 2000, position: "bottom" });
         console.error("Errore durante l'aggiornamento del gruppo", error);
+      }
+    } else if (role === 'delete') {
+      try {
+        await this.service.deleteGroup(group.key);
+        this.toast.showToast({ message: "Gruppo eliminato con successo", duration: 2000, position: "bottom" });
+      } catch (error) {
+        this.toast.showToast({ message: "Errore durante l'eliminazione del gruppo", duration: 2000, position: "bottom" });
+        console.error("Errore durante l'eliminazione del gruppo", error);
       }
     }
   }
