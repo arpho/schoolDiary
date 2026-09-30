@@ -69,49 +69,53 @@
     </ion-item>
 
     <!-- Data e Ora Inizio -->
+    <ion-modal [isOpen]="isStartModalOpen" (didDismiss)="isStartModalOpen = false" class="datetime-modal">
+      <ng-template>
+        <ion-datetime
+          [formField]="eventForm.dataInizio"
+          (ionChange)="onStartDateChange(); isStartModalOpen = false"
+          (ionCancel)="isStartModalOpen = false"
+          [presentation]="eventModel().allDay ? 'date' : 'date-time'"
+          [showDefaultButtons]="true"
+          doneText="Conferma"
+          cancelText="Annulla"
+          required>
+        </ion-datetime>
+      </ng-template>
+    </ion-modal>
     <ion-item>
       <ion-label>Inizio <span class="required">*</span></ion-label>
-      <ion-datetime-button [datetime]="startDatetimeId"></ion-datetime-button>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime
-            [id]="startDatetimeId"
-            #startDatetime
-            [formField]="eventForm.dataInizio"
-            (ionChange)="onStartDateChange()"
-            [presentation]="eventModel().allDay ? 'date' : 'date-time'"
-            [min]="minDate"
-            [max]="maxDate"
-            [showDefaultButtons]="true"
-            required>
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
+      <ion-button (click)="isStartModalOpen = true" fill="clear" color="dark" style="--background: var(--ion-color-step-150, #e0e0e0); --border-radius: 8px; margin: 0; height: 36px; font-weight: normal;">
+        {{ eventForm.dataInizio().value() | date:(eventModel().allDay ? 'dd MMM yyyy' : 'dd MMM yyyy HH:mm') }}
+      </ion-button>
     </ion-item>
 
     <!-- Data e Ora Fine -->
+    <ion-modal [isOpen]="isEndModalOpen" (didDismiss)="isEndModalOpen = false" class="datetime-modal">
+      <ng-template>
+        <ion-datetime
+          [formField]="eventForm.dataFine"
+          (ionChange)="onEndDateChange(); isEndModalOpen = false"
+          (ionCancel)="isEndModalOpen = false"
+          [presentation]="eventModel().allDay ? 'date' : 'date-time'"
+          [showDefaultButtons]="true"
+          doneText="Conferma"
+          cancelText="Annulla"
+          [disabled]="!eventModel().dataInizio"
+          required>
+        </ion-datetime>
+      </ng-template>
+    </ion-modal>
     <ion-item>
       <ion-label>Fine <span class="required">*</span></ion-label>
-      <ion-datetime-button 
-        [datetime]="endDatetimeId" 
+      <ion-button 
+        (click)="isEndModalOpen = true" 
+        fill="clear" 
+        color="dark" 
+        style="--background: var(--ion-color-step-150, #e0e0e0); --border-radius: 8px; margin: 0; height: 36px; font-weight: normal;"
         [disabled]="!eventModel().dataInizio">
-      </ion-datetime-button>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime
-            [id]="endDatetimeId"
-            #endDatetime
-            [formField]="eventForm.dataFine"
-            (ionChange)="onEndDateChange()"
-            [presentation]="eventModel().allDay ? 'date' : 'date-time'"
-            [min]="eventModel().dataInizio || minDate"
-            [max]="maxDate"
-            [showDefaultButtons]="true"
-            [disabled]="!eventModel().dataInizio"
-            required>
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
+        {{ eventForm.dataFine().value() | date:(eventModel().allDay ? 'dd MMM yyyy' : 'dd MMM yyyy HH:mm') }}
+      </ion-button>
     </ion-item>
 
     <!-- Messaggio di errore per data fine precedente a data inizio -->

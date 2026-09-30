@@ -4,6 +4,9 @@ import { ModalController, IonDatetime, IonDatetimeButton } from '@ionic/angular/
 import { FormsModule } from '@angular/forms';
 import { form, schema, FormField, FormRoot, required } from '@angular/forms/signals';
 import { IonicModule } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { save, close } from 'ionicons/icons';
+import { CommonModule } from '@angular/common';
 
 import { AgendaEvent, IAgendaEvent, EventType } from '../../models/agendaEvent';
 import { IClasseModel } from 'src/app/pages/classes/models/classModel';
@@ -23,9 +26,20 @@ import { SubjectModel } from 'src/app/pages/subjects-list/models/subjectModel';
   selector: 'app-event-dialog',
   templateUrl: './event-dialog.component.html',
   styleUrls: ['./event-dialog.component.scss'],
+  styles: [`
+    ion-modal.datetime-modal {
+      --height: auto;
+      --width: auto;
+      --max-width: 350px;
+      --border-radius: 16px;
+      --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      align-items: center;
+      justify-content: center;
+    }
+  `],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, IonicModule, FormField, FormRoot]
+  imports: [CommonModule, FormsModule, IonicModule, FormField, FormRoot]
 })
 export class EventDialogComponent implements OnInit {
   /**
@@ -49,6 +63,9 @@ export class EventDialogComponent implements OnInit {
 
   students: UserModel[] = [];
   private studentsUnsubscribe?: () => void;
+
+  isStartModalOpen = false;
+  isEndModalOpen = false;
 
   static idCounter = 0;
   uniqueId: string = `evt_${Date.now()}_${EventDialogComponent.idCounter++}`;
@@ -99,7 +116,9 @@ export class EventDialogComponent implements OnInit {
   minDate: string = new Date().toISOString();
   maxDate: string = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString();
 
-  constructor() {}
+  constructor() {
+    addIcons({ save, close });
+  }
 
   async ionViewWillEnter() {
     console.log('EventDialogComponent - ionViewWillEnter');
