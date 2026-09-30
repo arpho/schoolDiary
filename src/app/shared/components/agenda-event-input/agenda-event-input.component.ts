@@ -27,7 +27,7 @@ import {
   IonAccordionGroup
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, timeOutline, openOutline } from 'ionicons/icons';
+import { calendarOutline, timeOutline, openOutline, save, close, warning } from 'ionicons/icons';
 import { AgendaEvent } from '../../../pages/agenda/models/agendaEvent';
 import { AgendaService } from '../../services/agenda.service';
 import { ClassiService } from '../../../pages/classes/services/classi.service';
@@ -79,45 +79,47 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
         <ion-toggle [(ngModel)]="allDay" (ionChange)="onAllDayChange()"></ion-toggle>
       </ion-item>
 
-      <ion-accordion-group class="ion-margin-bottom">
-        <ion-accordion value="start" [class.accordion-invalid]="showErrors && validationErrors['dataInizio']">
-          <ion-item slot="header">
-            <ion-label>
-              <h2>Data inizio <ion-text color="danger">*</ion-text></h2>
-              <p>{{ dataInizio | date: (allDay ? 'dd MMM yyyy' : 'dd MMM yyyy HH:mm') }}</p>
-            </ion-label>
-          </ion-item>
-          <div slot="content" class="ion-no-padding">
-            <ion-datetime 
-              [id]="startDatetimeId"
-              [(ngModel)]="dataInizio" 
-              [presentation]="allDay ? 'date' : 'date-time'" 
-              (ionChange)="onStartDateChange($event)"
-              size="cover"
-              [preferWheel]="true">
-            </ion-datetime>
-          </div>
-        </ion-accordion>
+      <ion-modal [isOpen]="isStartModalOpen" (didDismiss)="isStartModalOpen = false" class="datetime-modal">
+        <ng-template>
+          <ion-datetime 
+            [(ngModel)]="dataInizio" 
+            [presentation]="allDay ? 'date' : 'date-time'" 
+            (ionChange)="onStartDateChange($event)"
+            (ionCancel)="isStartModalOpen = false"
+            [preferWheel]="true"
+            [showDefaultButtons]="true"
+            doneText="Conferma"
+            cancelText="Annulla">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <ion-item [class.ion-invalid]="showErrors && validationErrors['dataInizio']">
+        <ion-label>Data inizio <ion-text color="danger">*</ion-text></ion-label>
+        <ion-button (click)="isStartModalOpen = true" fill="clear" class="datetime-btn">
+          {{ dataInizio | date:(allDay ? 'dd MMM yyyy' : 'dd MMM yyyy HH:mm') }}
+        </ion-button>
+      </ion-item>
 
-        <ion-accordion value="end" [class.accordion-invalid]="showErrors && validationErrors['dataFine']">
-          <ion-item slot="header">
-            <ion-label>
-              <h2>Data fine <ion-text color="danger">*</ion-text></h2>
-              <p>{{ dataFine | date: (allDay ? 'dd MMM yyyy' : 'dd MMM yyyy HH:mm') }}</p>
-            </ion-label>
-          </ion-item>
-          <div slot="content" class="ion-no-padding">
-            <ion-datetime 
-              [id]="endDatetimeId"
-              [(ngModel)]="dataFine" 
-              [presentation]="allDay ? 'date' : 'date-time'" 
-              (ionChange)="onEndDateChange($event)"
-              size="cover"
-              [preferWheel]="true">
-            </ion-datetime>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
+      <ion-modal [isOpen]="isEndModalOpen" (didDismiss)="isEndModalOpen = false" class="datetime-modal">
+        <ng-template>
+          <ion-datetime 
+            [(ngModel)]="dataFine" 
+            [presentation]="allDay ? 'date' : 'date-time'" 
+            (ionChange)="onEndDateChange($event)"
+            (ionCancel)="isEndModalOpen = false"
+            [preferWheel]="true"
+            [showDefaultButtons]="true"
+            doneText="Conferma"
+            cancelText="Annulla">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <ion-item [class.ion-invalid]="showErrors && validationErrors['dataFine']">
+        <ion-label>Data fine <ion-text color="danger">*</ion-text></ion-label>
+        <ion-button (click)="isEndModalOpen = true" fill="clear" class="datetime-btn">
+          {{ dataFine | date:(allDay ? 'dd MMM yyyy' : 'dd MMM yyyy HH:mm') }}
+        </ion-button>
+      </ion-item>
 
       @if (showErrors && (validationErrors['dataInizio'] || validationErrors['dataFine'])) {
         <ion-note color="danger" class="ion-margin-horizontal ion-margin-bottom display-block">
@@ -288,9 +290,25 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
     IonText,
     IonAccordion,
     IonAccordionGroup
-  ] as any[],
   changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
+    ion-modal.datetime-modal {
+      --height: auto;
+      --width: auto;
+      --max-width: 350px;
+      --border-radius: 16px;
+      --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      align-items: center;
+      justify-content: center;
+    }
+    .datetime-btn {
+      --background: var(--ion-color-step-150, #e0e0e0);
+      --color: var(--ion-text-color, #000);
+      --border-radius: 8px;
+      margin: 0;
+      height: 36px;
+      font-weight: normal;
+    }
     .time-icon {
       margin-right: 8px;
     }
@@ -425,6 +443,9 @@ export class AgendaEventInputComponent {
   minDate = this.toLocalISOString(new Date());
   maxDate = this.toLocalISOString(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
 
+  isStartModalOpen = false;
+  isEndModalOpen = false;
+
   private toLocalISOString(date: Date): string {
     const tzoffset = date.getTimezoneOffset() * 60000;
     return new Date(date.getTime() - tzoffset).toISOString().slice(0, -1);
@@ -437,7 +458,7 @@ export class AgendaEventInputComponent {
   async ngOnInit() {
     this.loggedUser = await this.usersService.getLoggedUser();
 
-    addIcons({ calendarOutline, timeOutline, openOutline });
+    addIcons({ calendarOutline, timeOutline, openOutline, save, close, warning });
 
     // Se stiamo modificando un evento esistente, popola TUTTI i campi
     if (this.event) {
