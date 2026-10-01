@@ -125,8 +125,16 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
     }
   }
   async updateEvaluation() {
+    if (!this.isFormValid()) {
+      this.$toaster.presentToast({
+        message: 'Compila tutti i campi obbligatori e verifica che la griglia sia valida',
+        position: 'top',
+        duration: 3000
+      }, 'danger');
+      return;
+    }
     const evaluation = this.evaluation();
-    if (evaluation && this.isFormValid()) {
+    if (evaluation) {
       console.log("evaluation before ", evaluation);
       console.log("evaluationform", this.evaluationform().value());
       evaluation.build(this.evaluationform().value());

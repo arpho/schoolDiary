@@ -290,6 +290,7 @@ import { SubjectService } from '../../../pages/subjects-list/services/subjects/s
     IonText,
     IonAccordion,
     IonAccordionGroup
+  ] as any[],
   changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     ion-modal.datetime-modal {

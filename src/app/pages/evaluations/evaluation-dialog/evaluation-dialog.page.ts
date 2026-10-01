@@ -148,6 +148,15 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
   }
 
   async saveEvaluation() {
+    if (!this.evaluationform().valid()) {
+      this.toaster.presentToast({
+        message: 'Compila tutti i campi obbligatori',
+        position: 'top',
+        duration: 3000
+      }, 'danger');
+      return;
+    }
+
     if (this.evaluationform().valid()) {
       const evaluationData = this.evaluationform().value();
       try {

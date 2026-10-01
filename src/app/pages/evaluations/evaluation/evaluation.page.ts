@@ -317,6 +317,16 @@ export class EvaluationPage implements OnInit {
   }
 
   async saveEvaluation() {
+    if (!this.evaluationform.valid || (this.evaluationform.get('grid')?.value && !this.isGridValid())) {
+      this.evaluationform.markAllAsTouched();
+      this.toaster.showToast({
+        message: 'Compila tutti i campi obbligatori e verifica che la griglia sia valida',
+        position: 'top',
+        duration: 3000
+      }, 'danger');
+      return;
+    }
+
     if (this.evaluationform.valid) {
       const evaluationData = this.evaluationform.value;
       try {
