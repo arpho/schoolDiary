@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject, effect, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonFab, IonFabButton, IonFabList, IonBackButton, IonButtons, IonCardSubtitle, IonButton, AlertInput, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonList, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonFab, IonFabButton, IonFabList, IonBackButton, IonButtons, IonCardSubtitle, IonButton, AlertInput, IonSelect, IonSelectOption, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { ActivityModel } from '../models/activityModel';
 import { UsersService } from '../../../shared/services/users.service';
 import { UserModel } from '../../../shared/models/userModel';
@@ -46,7 +46,10 @@ import { user } from '@angular/fire/auth';
     IonButton,
     DatePipe,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    IonGrid,
+    IonRow,
+    IonCol
   ]
 })
 export class ActivitiesListPage implements OnInit, OnDestroy {

@@ -16,11 +16,14 @@ import {
   IonFab,
   ModalController,
   IonButtons,
-  IonItemSliding,
-  IonItemOptions,
-  IonItemOption,
   IonBackButton,
-  IonItemSliding as IonItemSlidingType
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent
 } from '@ionic/angular/standalone';
 import { SubjectModel } from './models/subjectModel';
 import { signal } from '@angular/core';
@@ -55,9 +58,14 @@ import { Subject } from 'rxjs';
     IonFab,
     IonBackButton,
     IonButtons,
-    IonItemSliding,
-    IonItemOptions,
-    IonItemOption,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonButton,
     FormsModule
 ],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -114,9 +122,7 @@ export class SubjectsListPage implements OnInit, OnDestroy {
    * @param subject La materia da modificare.
    * @param slidingItem L'elemento della lista che contiene l'opzione di modifica (per chiuderlo dopo l'azione).
    */
-  async editSubject(subject: SubjectModel, slidingItem: IonItemSlidingType) {
-    // Chiudi lo sliding item
-    await slidingItem.close();
+  async editSubject(subject: SubjectModel) {
 
     // Crea una copia dell'oggetto per evitare modifiche dirette
     const subjectCopy = signal(new SubjectModel(subject));
@@ -157,10 +163,8 @@ export class SubjectsListPage implements OnInit, OnDestroy {
    * @param subject La materia da eliminare.
    * @param slidingItem L'elemento della lista (per chiuderlo).
    */
-  async deleteSubject(subject: SubjectModel, slidingItem: IonItemSlidingType) {
+  async deleteSubject(subject: SubjectModel) {
     try {
-      // Chiudi lo sliding item
-      await slidingItem.close();
 
       if (subject.key) {
         await this.$subjects.deleteSubject(subject.key);

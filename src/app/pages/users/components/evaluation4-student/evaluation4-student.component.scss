@@ -1,3 +1,4 @@
+@use "sass:color";
 // ═════════════════════════════════════════════════════════════
 //  EVALUATION4-STUDENT — PREMIUM RESTYLING (SCSS)
 // ═════════════════════════════════════════════════════════════
@@ -449,7 +450,7 @@ $primary-glow:  rgba(99, 102, 241, 0.2);
     box-shadow: 0 4px 12px $green-glow;
     &::before { border-color: $green-accent; }
     .score-num { color: $green-accent; }
-    .score-den { color: darken($green-accent, 10%); }
+    .score-den { color: color.adjust($green-accent, $lightness: -10%); }
   }
 
   &.score-mid {
@@ -457,7 +458,7 @@ $primary-glow:  rgba(99, 102, 241, 0.2);
     box-shadow: 0 4px 12px $amber-glow;
     &::before { border-color: $amber-accent; }
     .score-num { color: $amber-accent; }
-    .score-den { color: darken($amber-accent, 10%); }
+    .score-den { color: color.adjust($amber-accent, $lightness: -10%); }
   }
 
   &.score-low {
@@ -465,7 +466,7 @@ $primary-glow:  rgba(99, 102, 241, 0.2);
     box-shadow: 0 4px 12px $red-glow;
     &::before { border-color: $red-accent; }
     .score-num { color: $red-accent; }
-    .score-den { color: darken($red-accent, 10%); }
+    .score-den { color: color.adjust($red-accent, $lightness: -10%); }
   }
 }
 

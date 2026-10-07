@@ -6,16 +6,21 @@ import {
   IonList,
   IonItem,
   IonLabel,
-  IonFab,
-  IonFabButton,
   IonIcon,
-  IonFabList,
   IonButtons,
   IonBackButton,
   IonButton,
   IonBadge,
   ModalController,
-  PopoverController
+  PopoverController,
+  ActionSheetController,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent
 } from '@ionic/angular/standalone';
 import { EvaluationService } from '../../services/evaluation/evaluation.service';
 import { Evaluation } from '../../models/evaluation';
@@ -58,16 +63,19 @@ import { UsersRole } from 'src/app/shared/models/usersRole';
     IonList,
     IonItem,
     IonLabel,
-    IonFab,
-    IonFabButton,
     IonIcon,
-    IonFabList,
     DatePipe,
     IonButtons,
     IonBackButton,
     IonButton,
     IonBadge,
-
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent
   ]
 })
 export class EvaluationsListPage implements OnInit {
@@ -153,6 +161,57 @@ export class EvaluationsListPage implements OnInit {
   evaluationsList = signal<Evaluation[]>([]);
 
   private modalCtrl = inject(ModalController);
+  private actionSheetCtrl = inject(ActionSheetController);
+
+  async presentActionSheet(evaluation: Evaluation) {
+    const buttons = [];
+    
+    if (this.userCanEdit(evaluation)) {
+      buttons.push({
+        text: 'Modifica',
+        icon: 'create',
+        handler: () => this.editEvaluation(evaluation)
+      });
+    }
+
+    buttons.push({
+      text: 'Archivia',
+      icon: 'archive',
+      handler: () => this.archiveEvaluation(evaluation)
+    });
+
+    buttons.push({
+      text: 'Visualizza',
+      icon: 'eye',
+      handler: () => this.viewEvaluation(evaluation)
+    });
+
+    buttons.push({
+      text: 'Stampa PDF',
+      icon: 'print',
+      handler: () => this.evaluationPdf(evaluation)
+    });
+
+    buttons.push({
+      text: 'Elimina',
+      role: 'destructive',
+      icon: 'trash',
+      handler: () => this.deleteEvaluation(evaluation)
+    });
+
+    buttons.push({
+      text: 'Annulla',
+      role: 'cancel',
+      icon: 'close'
+    });
+
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Opzioni Valutazione',
+      buttons: buttons
+    });
+
+    await actionSheet.present();
+  }
 
 
   async ngOnInit() {

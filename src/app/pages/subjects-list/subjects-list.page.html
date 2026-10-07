@@ -10,66 +10,50 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   @if (subjectsList().length > 0) {
-    <ion-list>
-      @for (subject of subjectsList(); track subject.key) {
-        <ion-item-sliding #slidingitem>
-          <ion-item button detail [style.--background]="subject.color + '20'">
-            @if (subject.icon) {
-              <ion-icon 
-                [name]="subject.icon" 
-                slot="start" 
-                [color]="subject.color || 'primary'"
-                aria-hidden="true">
-              </ion-icon>
-            } @else {
-              <ion-icon 
-                name="book-outline" 
-                slot="start" 
-                [color]="subject.color || 'primary'"
-                aria-hidden="true">
-              </ion-icon>
-            }
-            <ion-label>
-              <h2 [style.color]="subject.color || 'inherit'">{{ subject.name }}</h2>
-              @if (subject.description) {
-                <p class="ion-text-wrap">{{ subject.description }}</p>
-              }
-              @if (subject.classeDiConcorso) {
-                <p class="ion-text-wrap">
-                  <ion-text color="medium">{{ subject.classeDiConcorso }}</ion-text>
-                </p>
-              }
-            </ion-label>
-          </ion-item>
+    <ion-grid>
+      <ion-row>
+        @for (subject of subjectsList(); track subject.key) {
+          <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+            <ion-card class="subject-card" [style.border]="'1px solid ' + subject.color + '40'">
+              <ion-card-header [style.background]="subject.color + '15'">
+                <div class="subject-icon-wrapper" [style.color]="subject.color || 'var(--ion-color-primary)'">
+                  @if (subject.icon) {
+                    <ion-icon [name]="subject.icon" aria-hidden="true" style="font-size: 32px;"></ion-icon>
+                  } @else {
+                    <ion-icon name="book-outline" aria-hidden="true" style="font-size: 32px;"></ion-icon>
+                  }
+                </div>
+                <ion-card-title [style.color]="subject.color || 'inherit'" style="margin-top: 8px;">{{ subject.name }}</ion-card-title>
+              </ion-card-header>
+              
+              <ion-card-content style="padding-top: 16px;">
+                @if (subject.description) {
+                  <p class="ion-text-wrap" style="min-height: 40px;">{{ subject.description }}</p>
+                }
+                @if (subject.classeDiConcorso) {
+                  <div style="margin-top: 8px;">
+                    <ion-text color="medium">{{ subject.classeDiConcorso }}</ion-text>
+                  </div>
+                }
+              </ion-card-content>
 
-          <ion-item-options side="end">
-            <!-- Pulsante Modifica -->
-            <ion-item-option 
-              color="primary" 
-              (click)="editSubject(subject, slidingitem)"
-              aria-label="Modifica materia">
-              <ion-icon 
-                slot="icon-only" 
-                name="create-outline"
-                aria-hidden="true">
-              </ion-icon>
-            </ion-item-option>
-
-            <!-- Pulsante Elimina -->
-            <ion-item-option 
-              color="danger" 
-              (click)="deleteSubject(subject, slidingitem)"
-              aria-label="Elimina materia">
-              <ion-icon 
-                slot="icon-only" 
-                name="trash-outline"
-                aria-hidden="true">
-              </ion-icon>
-            </ion-item-option>
-          </ion-item-options>
-        </ion-item-sliding>
-      }
-    </ion-list>
+              <div style="padding: 8px 16px;" [style.background]="subject.color + '10'" [style.border-top]="'1px solid ' + subject.color + '20'">
+                <ion-row class="ion-justify-content-between ion-align-items-center">
+                  <ion-button fill="clear" (click)="editSubject(subject)" [style.color]="subject.color || 'var(--ion-color-primary)'" size="small">
+                    <ion-icon name="create-outline" slot="start"></ion-icon>
+                    Modifica
+                  </ion-button>
+                  <ion-button fill="clear" color="danger" (click)="deleteSubject(subject)" size="small">
+                    <ion-icon name="trash-outline" slot="start"></ion-icon>
+                    Elimina
+                  </ion-button>
+                </ion-row>
+              </div>
+            </ion-card>
+          </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
   } @else {
     <div class="ion-text-center ion-padding">
       <ion-icon name="book-outline" size="large" color="medium"></ion-icon>

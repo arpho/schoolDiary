@@ -18,9 +18,8 @@
   <ion-grid>
     <ion-row>
       @for (grid of gridsList(); track grid.key) {
-        <ion-col>
-          <ion-item (click)="go2GridDialog(grid.key)">
-          <ion-card>
+        <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+          <ion-card (click)="go2GridDialog(grid.key)" style="cursor: pointer; height: 100%; margin: 0;">
             <ion-card-header>
               <ion-card-title>{{grid.descrizione}}</ion-card-title>
             </ion-card-header>
@@ -28,7 +27,6 @@
               <p>{{grid.descrizione}}</p>
             </ion-card-content>
           </ion-card>
-          </ion-item>
         </ion-col>
       }
     </ion-row>
