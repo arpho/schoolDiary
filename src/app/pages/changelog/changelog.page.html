@@ -6,6 +6,46 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
+    <!-- Version 3.3.0 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v3.3.0</ion-badge>
+          <span class="version-date">07 Ottobre 2026</span>
+        </div>
+        <ion-card-title>Restyling UI: Layout a Mosaico e Card</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Abbiamo convertito le liste principali dell'applicazione in un elegante e moderno layout a mosaico ("Grid/Card"), migliorando notevolmente l'estetica e la responsività sui vari dispositivi.</p>
+
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="grid-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Griglie Responsive</h3>
+              <p>Le sezioni Utenti, Attività e Griglie abbandonano il vecchio layout a lista fissa in favore di griglie dinamiche che si adattano perfettamente a smartphone, tablet e desktop, mostrando i contenuti all'interno di card dedicate.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="color-palette-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Materie e Colori Armonizzati</h3>
+              <p>Le materie sono state aggiornate con un layout a card pulito. Le azioni (Modifica/Elimina) sono state spostate in un footer con sfondi traslucidi armonizzati automaticamente in base alla combinazione e alla palette cromatica della specifica materia.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="list-circle-outline" slot="start" color="tertiary"></ion-icon>
+            <ion-label>
+              <h3>Menu Valutazioni e Action Sheet</h3>
+              <p>Rivoluzionata l'interfaccia delle Valutazioni. I vecchi pulsanti flottanti (FAB) che oscuravano i dati sono stati sostituiti da un comodo Action Sheet (Menu Opzioni) integrato in ogni card, accessibile tramite la classica icona a tre puntini.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Version 3.2.0 -->
     <ion-card>
       <ion-card-header>
