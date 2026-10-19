@@ -31,6 +31,7 @@ export class UserModel {
 
   // Flag per Bisogni Educativi Speciali
   /** Disturbi Specifici dell'Apprendimento */
+
   DSA = false;
   /** Diversamente Abile */
   DVA = false;
@@ -38,7 +39,8 @@ export class UserModel {
   BES = false;
   /** Disturbo da Deficit di Attenzione/Iperattività */
   ADHD = false;
-
+/**studente sportivo di alto livello */
+SSHL = false
   /** Note aggiuntive sulle disabilità o bisogni */
   noteDisabilita = '';
   /** URL ai documenti del Piano Didattico Personalizzato */
@@ -153,6 +155,7 @@ export class UserModel {
       role: this.role,
       DVA: this.DVA,
       DSA: this.DSA,
+      SSHL: this.SSHL,
       BES: this.BES,
       ADHD: this.ADHD,
       assignedClasses: this.assignedClasses.map((classe) => 

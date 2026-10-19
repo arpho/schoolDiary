@@ -19,6 +19,7 @@ export interface DisabilityData {
   DSA: boolean;
   BES: boolean;
   ADHD: boolean;
+  SSHL:boolean;
   noteDisabilita: string;
   pdpUrl: DocumentModel[];
 }
@@ -43,11 +44,13 @@ export interface DisabilityData {
   ]
 })
 export class StudentDisabilityComponent {
+
   // ── Input ────────────────────────────────────────────────
   dva     = input<boolean>(false);
   dsa     = input<boolean>(false);
   bes     = input<boolean>(false);
   adhd    = input<boolean>(false);
+  sslhl   = input<boolean>(false);
   noteDisabilita = input<string>('');
   pdpList = input<DocumentModel[]>([]);
 
@@ -59,19 +62,12 @@ export class StudentDisabilityComponent {
   localDSA  = signal(false);
   localBES  = signal(false);
   localADHD = signal(false);
+  localSSHL = signal(false)
   localNote = signal('');
   localPdp  = signal<DocumentModel[]>([]);
 
   constructor(private toaster: ToasterService) {
-    addIcons({
-      'accessibility-outline': accessibilityOutline,
-      'document-text-outline': documentTextOutline,
-      'link-outline': linkOutline,
-      'add': add,
-      'trash': trash,
-      'open-outline': openOutline,
-      'copy-outline': copyOutline
-    });
+    addIcons({accessibilityOutline, documentTextOutline, add, openOutline, copyOutline, trash, linkOutline});
 
     // Sincronizza lo stato locale quando cambiano gli input (sostituisce ngOnChanges per i signal inputs)
     effect(() => {
@@ -79,6 +75,7 @@ export class StudentDisabilityComponent {
       this.localDSA.set(this.dsa());
       this.localBES.set(this.bes());
       this.localADHD.set(this.adhd());
+      this.localSSHL.set
       this.localNote.set(this.noteDisabilita());
       this.localPdp.set((this.pdpList() || []).map(d => new DocumentModel({ ...d })));
     }, { allowSignalWrites: true });
@@ -86,11 +83,12 @@ export class StudentDisabilityComponent {
 
 
   // ── Chip toggle ─────────────────────────────────────────
-  toggle(field: 'DVA' | 'DSA' | 'BES' | 'ADHD') {
+  toggle(field: 'DVA' | 'DSA' | 'BES' | 'ADHD' | 'SSHL') {
     if (field === 'DVA')  this.localDVA.update(v => !v);
     if (field === 'DSA')  this.localDSA.update(v => !v);
     if (field === 'BES')  this.localBES.update(v => !v);
     if (field === 'ADHD') this.localADHD.update(v => !v);
+    if (field === 'SSHL') this.localSSHL.update(v => !v);
     this.emit();
   }
 
@@ -128,12 +126,13 @@ export class StudentDisabilityComponent {
   // ── Emissione verso il genitore ─────────────────────────
   private emit() {
     this.dataChanged.emit({
-      DVA:  this.localDVA(),
-      DSA:  this.localDSA(),
-      BES:  this.localBES(),
+      DVA: this.localDVA(),
+      DSA: this.localDSA(),
+      BES: this.localBES(),
       ADHD: this.localADHD(),
       noteDisabilita: this.localNote(),
-      pdpUrl: this.localPdp()
+      pdpUrl: this.localPdp(),
+      SSHL: this.localSSHL()
     });
   }
 }
