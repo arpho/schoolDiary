@@ -141,6 +141,16 @@
     .chip-label { color: #6a1b9a; }
     .chip-desc  { color: #7b1fa2; }
   }
+  // ── ADHD — viola ───────────────────────────────────────
+  &.chip-sshl {
+    border-color: #2bd11c;
+    background: linear-gradient(135deg, #f3e5f5, #cae7be);
+    box-shadow: 0 4px 12px rgba(56, 104, 12, 0.25);
+
+    .chip-dot  { background: #43ab1a; }
+    .chip-label { color: #2bd11c; }
+    .chip-desc  { color: #43ab1a; }
+  }
 }
 
 // ─── TEXTAREA NOTE ──────────────────────────────────────────
