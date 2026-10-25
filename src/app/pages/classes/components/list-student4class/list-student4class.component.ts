@@ -265,19 +265,19 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private $agenda: AgendaService
   ) {
-    console.log("constructor ListStudent4classComponent#");
     addIcons({
       add,
       sparkles,
       eye,
       close,
       archive,
+      trendingUp,
+      gridOutline,
+      helpBuoyOutline,
+      calendarOutline,
+      cloudUploadOutline,
       'calendar': calendarOutline,
-      'calendar-outline': calendarOutline,
-      'help-buoy-outline': helpBuoyOutline,
-      'cloud-upload': cloudUploadOutline,
-      'trending-up': trendingUp,
-      'grid-outline': gridOutline
+      'cloud-upload': cloudUploadOutline
     });
 
     // Re-load averages whenever subjectKey, classKey or dataInizioPeriodo changes
@@ -303,8 +303,8 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     let filtered = students;
 
     if (search) {
-      filtered = filtered.filter(s => 
-        (s.firstName && s.firstName.toLowerCase().includes(search)) || 
+      filtered = filtered.filter(s =>
+        (s.firstName && s.firstName.toLowerCase().includes(search)) ||
         (s.lastName && s.lastName.toLowerCase().includes(search)) ||
         (s.firstName && s.lastName && `${s.firstName} ${s.lastName}`.toLowerCase().includes(search)) ||
         (s.firstName && s.lastName && `${s.lastName} ${s.firstName}`.toLowerCase().includes(search))
@@ -312,7 +312,7 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     }
 
     if (showDisability) {
-      filtered = filtered.filter(s => s.BES || s.DSA || s.ADHD || s.DVA);
+      filtered = filtered.filter(s => s.BES || s.DSA || s.ADHD || s.DVA || s.SSHL);
     }
 
     if (filter === 'insufficient') {
@@ -413,16 +413,16 @@ export class ListStudent4classComponent implements OnInit, OnChanges {
     if (this.agendaUnsubscribe) {
       this.agendaUnsubscribe();
     }
-    
+
     if (this._classkey) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       const queries = [
         new QueryCondition('classKey', 'array-contains-any', [this._classkey]),
         new QueryCondition('dataFine', '>=', today.toISOString())
       ];
-      
+
       this.agendaUnsubscribe = this.$agenda.getAgenda4targetedClassesOnrealtime((events) => {
         this.agendaEvents.set(events);
       }, queries);

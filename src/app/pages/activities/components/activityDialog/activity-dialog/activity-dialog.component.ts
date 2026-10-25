@@ -19,6 +19,7 @@ import {
   IonSelectOption,
   IonButton,
   IonContent,
+  IonFooter,
   IonHeader,
   IonTitle,
   IonToolbar,
@@ -77,6 +78,7 @@ import { UsersService } from 'src/app/shared/services/users.service';
     IonSelectOption,
     IonButton,
     IonContent,
+    IonFooter,
     IonHeader,
     IonTitle,
     IonToolbar,
@@ -106,15 +108,28 @@ export class ActivityDialogComponent implements OnInit {
   @Input() selectedClass = '';
   @Input() activity: ActivityModel = new ActivityModel();
 
-  isSubmitted = false;
+  isSubmitted = signal(false);
   minDate = new Date().toISOString();
-  isLoading = false;
+  isLoading = signal(false);
 
   // Error message that updates in real-time
-  errorMessage = '';
+  errorMessage = signal('');
 
   // Current datetime being edited
-  currentDatetimeField: 'date' | 'dueDate' | null = null;
+  currentDatetimeField = signal<'date' | 'dueDate' | null>(null);
+  hasSubjects = signal(false);
+
+  get resolvedActivity(): ActivityModel | undefined {
+    const raw = this.activity as unknown;
+    if (typeof raw === 'function') {
+      return (raw as () => ActivityModel)();
+    }
+    return this.activity;
+  }
+
+  get isEdit(): boolean {
+    return !!this.resolvedActivity?.key;
+  }
 
   activityModel = signal({
     title: '',
@@ -133,7 +148,9 @@ export class ActivityDialogComponent implements OnInit {
     minLength(s.description, 10);
     maxLength(s.description, 500);
     required(s.classKey);
-    required(s.subjectsKey);
+    required(s.subjectsKey, {
+      when: () => this.hasSubjects()
+    });
     required(s.date);
   }));
 
@@ -165,32 +182,38 @@ export class ActivityDialogComponent implements OnInit {
       errors.push('La classe è obbligatoria');
     }
 
-    if (this.subjectControl().invalid()) {
+    if (this.hasSubjects() && this.subjectControl().invalid()) {
       errors.push('La materia è obbligatoria');
     }
 
     if (this.dateControl().invalid()) {
       if (this.dateControl().getError('required')) errors.push('La data è obbligatoria');
     }
-    
-    // Custom date validations
+
+    // Custom date validations (normalized to calendar day to avoid time-of-day false positives)
     const dateVal = this.dateControl().value();
     const dueDateVal = this.dueDateControl().value();
-    
+
     if (dateVal) {
-      if (new Date(dateVal) < new Date(new Date().setHours(0,0,0,0))) {
+      const startDay = new Date(dateVal);
+      startDay.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (!this.isEdit && startDay < today) {
         errors.push('La data non può essere precedente a oggi');
       }
-      if (dueDateVal && new Date(dateVal) > new Date(dueDateVal)) {
-        errors.push('La data non può essere successiva alla data di scadenza');
+
+      if (dueDateVal) {
+        const dueDay = new Date(dueDateVal);
+        dueDay.setHours(0, 0, 0, 0);
+        if (startDay > dueDay) {
+          errors.push('La data di scadenza non può essere precedente alla data di inizio');
+        }
       }
     }
-    
-    if (dueDateVal && dateVal && new Date(dueDateVal) < new Date(dateVal)) {
-      errors.push('La data di scadenza non può essere precedente alla data di inizio');
-    }
 
-    this.errorMessage = errors.length > 0 ? errors.join('. ') + '.' : '';
+    this.errorMessage.set(errors.length > 0 ? errors.join('. ') + '.' : '');
   }
 
   constructor(
@@ -201,17 +224,19 @@ export class ActivityDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.hasSubjects.set((this.listaMaterie?.length ?? 0) > 0);
     this.initializeForm();
   }
 
   private initializeForm(): void {
+    const act = this.resolvedActivity;
     this.activityForm().value.update(v => ({...v, ...({
-      title: this.activity?.title || '',
-      description: this.activity?.description || '',
-      classKey: this.activity?.classKey || this.selectedClass || '',
-      subjectsKey: this.activity?.subjectsKey || '',
-      date: this.activity?.date || this.minDate,
-      dueDate: this.activity?.dueDate || null
+      title: act?.title || '',
+      description: act?.description || '',
+      classKey: act?.classKey || this.selectedClass || '',
+      subjectsKey: act?.subjectsKey || '',
+      date: act?.date || this.minDate,
+      dueDate: act?.dueDate || null
     })}));
   }
 
@@ -219,31 +244,36 @@ export class ActivityDialogComponent implements OnInit {
    * Gestisce il submit del form e chiude il modale con i dati aggiornati.
    */
   async onSubmit(): Promise<void> {
-    this.isSubmitted = true;
+    this.isSubmitted.set(true);
     this.updateErrorMessage();
 
-    if (this.activityForm().invalid() || this.errorMessage !== '') {
+    if (this.activityForm().invalid() || this.errorMessage() !== '') {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     try {
       // Create activity object from form values
       const formValue = this.activityForm().value();
-      const teacher = await this.$users.getLoggedUser()
-      console.log("formValue", formValue);
-      const activity = Object.assign(new ActivityModel(), this.activity, formValue, {
-        teacherKey: teacher ? teacher.key : ""
+      const teacher = await this.$users.getLoggedUser();
+      const baseActivity = this.resolvedActivity;
+      const activity = new ActivityModel({
+        ...baseActivity,
+        ...formValue,
+        dueDate: formValue.dueDate || '',
+        teacherKey: baseActivity?.teacherKey || (teacher ? teacher.key : '')
       });
-      console.log("activity", activity);
+      if (baseActivity?.key) {
+        activity.setKey(baseActivity.key);
+      }
 
       await this.modalController.dismiss(activity);
     } catch (error) {
       console.error('Error saving activity:', error);
-      // In a real app, you might want to show an error toast/message
+      this.errorMessage.set('Si è verificato un errore durante il salvataggio.');
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 
@@ -253,7 +283,7 @@ export class ActivityDialogComponent implements OnInit {
 
   // Open datetime picker
   async openDatetimePicker(field: 'date' | 'dueDate') {
-    this.currentDatetimeField = field;
+    this.currentDatetimeField.set(field);
   }
 
   // Handle datetime change
@@ -261,15 +291,19 @@ export class ActivityDialogComponent implements OnInit {
     const customEvent = event as IonDatetimeCustomEvent<DatetimeChangeEventDetail>;
     const value = customEvent.detail.value;
     if (value) {
-      this.activityForm().value.update(v => ({...v, ...({ [field]: value })}));
+      this.activityForm().value.update(v => ({...v, ...({ [field]: value as string })}));
       // update min/max dynamically
       if (field === 'date' && this.dueDateControl().value()) {
-        if (new Date(value as string) > new Date(this.dueDateControl().value()!)) {
+        const startDay = new Date(value as string);
+        startDay.setHours(0, 0, 0, 0);
+        const dueDay = new Date(this.dueDateControl().value()!);
+        dueDay.setHours(0, 0, 0, 0);
+        if (startDay > dueDay) {
           this.activityForm().value.update(v => ({...v, ...({ dueDate: null })}));
         }
       }
     }
-    this.currentDatetimeField = null;
+    this.currentDatetimeField.set(null);
     this.updateErrorMessage();
   }
 

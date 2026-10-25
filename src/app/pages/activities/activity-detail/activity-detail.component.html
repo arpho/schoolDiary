@@ -59,7 +59,6 @@
                 <ion-datetime
                   formControlName="date"
                   label="Data"
-                  [min]="minDate"
                   presentation="date"
                   locale="it-IT">
                 </ion-datetime>
@@ -157,7 +156,7 @@
               <ion-button
                 expand="block"
                 type="submit"
-                [disabled]="activityForm.invalid || isLoading"
+                [disabled]="isLoading"
                 class="ion-margin-bottom">
                 <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
                 Salva modifiche

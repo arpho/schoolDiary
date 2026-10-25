@@ -124,15 +124,18 @@ export class EvaluationDialogPage implements OnInit, HasUnsavedChanges {
       component: ActivityDialogComponent,
       componentProps: {
         listaClassi: classi,
-        activity: activity
+        activity: activity()
       }
     });
     await modal.present();
     const result = await modal.onDidDismiss();
-    if (result.data) {
+    if (result.data && result.role !== 'cancel') {
       console.log("local activity", activity());
       console.log("dismissed activity", result.data);
-      this.activitiesService.addActivity(activity()).then((res: any) => {
+      const createdActivity = result.data instanceof ActivityModel
+        ? result.data
+        : new ActivityModel(result.data);
+      this.activitiesService.addActivity(createdActivity).then((res: any) => {
         console.log("activity added", res);
         this.evaluationform().value.update(v => ({...v,
           activityKey: res.key

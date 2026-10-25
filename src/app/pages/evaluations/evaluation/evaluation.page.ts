@@ -405,14 +405,17 @@ export class EvaluationPage implements OnInit {
       component: ActivityDialogComponent,
       componentProps: {
         listaClassi: classi,
-        activity: activity
+        activity: activity()
       }
     });
     await modal.present();
 
     const result = await modal.onDidDismiss();
-    if (result.data) {
-      const newActivity = await this.activitiesService.addActivity(activity());
+    if (result.data && result.role !== 'cancel') {
+      const createdActivity = result.data instanceof ActivityModel
+        ? result.data
+        : new ActivityModel(result.data);
+      const newActivity = await this.activitiesService.addActivity(createdActivity);
       this.evaluationform.patchValue({
         activityKey: newActivity.key
       });

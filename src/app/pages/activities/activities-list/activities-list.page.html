@@ -32,7 +32,7 @@
     <ion-row>
       @for(activity of activitiesList(); track activity.key) {
         <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
-          <ion-card>
+          <ion-card button (click)="showActions(activity, $event)">
             <ion-card-header>
               <ion-card-title>{{ activity.title }}</ion-card-title>
               <ion-card-subtitle>{{ activity.description }}</ion-card-subtitle>

@@ -8,7 +8,8 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   effect,
-  untracked
+  untracked,
+  viewChild
 } from '@angular/core';
 
 type TabType = 'generalita' | 'attivita' | 'pdp' | 'studenti' | 'note' | 'eventi' | 'gruppi' | 'agenda' | 'annotazioni';
@@ -122,6 +123,8 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
 
   // Gestione sidebar
   sidebarOpen = signal<boolean>(false);
+
+  listActivitiesComp = viewChild(ListActivities4classComponent);
 
   // Metodo per cambiare scheda e chiudere il menu
   selectTab(tab: TabType) {
@@ -333,7 +336,8 @@ export class ClasseDialogPage implements OnInit, HasUnsavedChanges {
   }
 
   async openAddActivityDialog() {
-    console.log('Apertura dialog aggiunta attività');
+    this.sidebarOpen.set(false);
+    await this.listActivitiesComp()?.createActivity();
   }
 
   async addNewEvent() {

@@ -66,6 +66,7 @@ export class ListActivities4classComponent implements OnDestroy {
   teacherkey = input<string>('');
   activitieslist = signal<ActivityModel[]>([]);
   activitiesSubscription: Subscription = new Subscription();
+  private unsubscribeActivities?: () => void;
   private $users = inject(UsersService);
   private $subjects = inject(SubjectService);
 
@@ -145,7 +146,7 @@ export class ListActivities4classComponent implements OnDestroy {
    * Visualizza i dettagli di un'attività
    */
   private viewActivity(activity: ActivityModel) {
-    this.router.navigate(['/activity-details', activity.key]);
+    this.router.navigate(['/activity-detail', activity.key]);
   }
 
   /**
@@ -191,9 +192,23 @@ export class ListActivities4classComponent implements OnDestroy {
 
     await modal.present();
 
-    const { data } = await modal.onWillDismiss();
-    if (data) { // Se data esiste (anche se non ha property saved esplicita, assumiamo sia l'oggetto salvato o flag)
-       this.updateActivities();
+    const { data, role } = await modal.onWillDismiss();
+    if (data && role !== 'cancel') {
+      try {
+        const rawActivity = data.activity ?? data;
+        const newActivity = rawActivity instanceof ActivityModel
+          ? rawActivity
+          : new ActivityModel(rawActivity);
+        const saved = await this.activitiesService.addActivity(newActivity);
+        this.activitieslist.update(list => {
+          const exists = list.some(a => a.key === saved.key);
+          return exists ? list.map(a => a.key === saved.key ? saved : a) : [saved, ...list];
+        });
+        await this.showToast('Attività creata con successo');
+      } catch (error) {
+        console.error('Errore durante la creazione dell\'attività:', error);
+        await this.showToast('Si è verificato un errore durante la creazione', 'danger');
+      }
     }
   }
 
@@ -202,7 +217,7 @@ export class ListActivities4classComponent implements OnDestroy {
    */
   private async editActivity(activity: ActivityModel) {
     // Carica i dettagli completi dell'attività
-    const activityDetails = await this.activitiesService.getActivity(activity.key);
+    const activityDetails = (await this.activitiesService.getActivity(activity.key)) || activity;
     
     const user = await this.$users.getLoggedUser();
     let assignedClasses: AssignedClass[] = [];
@@ -239,10 +254,24 @@ export class ListActivities4classComponent implements OnDestroy {
 
     await modal.present();
 
-    const { data } = await modal.onWillDismiss();
-    if (data?.saved || data) {
-      // Ricarica le attività se è stato salvato qualcosa
-      this.updateActivities();
+    const { data, role } = await modal.onWillDismiss();
+    if (data && role !== 'cancel') {
+      try {
+        const rawActivity = data.activity ?? data;
+        const updatedActivity = rawActivity instanceof ActivityModel
+          ? rawActivity
+          : new ActivityModel(rawActivity);
+        const keyToUpdate = updatedActivity.key || activity.key;
+        updatedActivity.setKey(keyToUpdate);
+        await this.activitiesService.updateActivity(keyToUpdate, updatedActivity);
+        this.activitieslist.update(list =>
+          list.map(a => a.key === keyToUpdate ? updatedActivity : a)
+        );
+        await this.showToast('Attività aggiornata con successo');
+      } catch (error) {
+        console.error('Errore durante l\'aggiornamento dell\'attività:', error);
+        await this.showToast('Si è verificato un errore durante l\'aggiornamento', 'danger');
+      }
     }
   }
 
@@ -311,17 +340,21 @@ export class ListActivities4classComponent implements OnDestroy {
       return;
     }
 
+    if (this.unsubscribeActivities) {
+      this.unsubscribeActivities();
+      this.unsubscribeActivities = undefined;
+    }
+
     // Creo le condizioni di query
     const query: QueryCondition[] = [
-      new QueryCondition('classKey', '==', currentClassKey),
-      new QueryCondition('teacherKey', '==', currentTeacherKey)
+      new QueryCondition('classKey', '==', currentClassKey)
     ];
     console.log("query", query)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     console.log(today.toISOString());
     // Sottoscrivo al servizio getActivitiesOnRealtime
-    this.activitiesService.getActivities4teacherOnRealtime(
+    this.unsubscribeActivities = this.activitiesService.getActivities4teacherOnRealtime(
       currentTeacherKey,
       (activities: ActivityModel[]) => {
         console.log("activities", activities);
@@ -332,6 +365,9 @@ export class ListActivities4classComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    // Non è necessario pulire gli effects in Angular Signals
+    if (this.unsubscribeActivities) {
+      this.unsubscribeActivities();
+      this.unsubscribeActivities = undefined;
+    }
   }
 }

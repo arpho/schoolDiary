@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import {
@@ -104,6 +104,7 @@ export class ActivityDetailComponent implements OnInit {
   private classiService = inject(ClassiService);
   private usersService = inject(UsersService);
   private fb = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
 
   activityForm!: FormGroup;
 
@@ -139,6 +140,7 @@ export class ActivityDetailComponent implements OnInit {
     if (!activityKey) {
       this.error = 'Nessuna attività specificata';
       this.isLoading = false;
+      this.cdr.markForCheck();
       return;
     }
 
@@ -150,6 +152,7 @@ export class ActivityDetailComponent implements OnInit {
       if (!activity) {
         this.error = 'Attività non trovata';
         this.isLoading = false;
+        this.cdr.markForCheck();
         return;
       }
 
@@ -167,6 +170,7 @@ export class ActivityDetailComponent implements OnInit {
       this.error = 'Si è verificato un errore nel caricamento dei dettagli';
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -247,6 +251,7 @@ export class ActivityDetailComponent implements OnInit {
       // Reset form to original values
       this.initializeForm();
     }
+    this.cdr.markForCheck();
   }
 
   /**
@@ -256,30 +261,34 @@ export class ActivityDetailComponent implements OnInit {
     this.isSubmitted = true;
 
     if (this.activityForm.invalid) {
+      this.cdr.markForCheck();
       return;
     }
 
     if (!this.activity?.key) {
       this.error = 'Impossibile salvare: ID attività mancante';
+      this.cdr.markForCheck();
       return;
     }
 
     this.isLoading = true;
+    this.cdr.markForCheck();
 
     try {
-      const formValue = this.activityForm.value;
-      const updatedActivity: ActivityModel = {
+      const formValue = this.activityForm.getRawValue();
+      const updatedActivity = new ActivityModel({
         ...this.activity,
         ...formValue,
         key: this.activity.key, // Ensure we keep the original key
         // Ensure dates are in the correct format
         date: formValue.date,
-        dueDate: formValue.dueDate || null
-      };
+        dueDate: formValue.dueDate || ''
+      }).setKey(this.activity.key);
 
       await this.activitiesService.updateActivity(updatedActivity.key, updatedActivity);
       this.activity = updatedActivity;
       this.isEditMode = false;
+      this.classKeyControl?.disable();
 
       // Show success message or navigate
       // You might want to add a toast notification here
@@ -289,16 +298,18 @@ export class ActivityDetailComponent implements OnInit {
       this.error = 'Si è verificato un errore durante il salvataggio';
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
   onCancelEdit(): void {
     this.isEditMode = false;
     this.initializeForm();
+    this.cdr.markForCheck();
   }
 
   goBack() {
-    this.router.navigate(['/activities']);
+    this.router.navigate(['/activities-list']);
   }
 
   // Keep the editActivity method if you still need it for navigation

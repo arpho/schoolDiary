@@ -108,16 +108,20 @@ export class EditEvaluationPage implements OnInit, HasUnsavedChanges {
     const modal = await this.modalCtrl.create({
       component: ActivityDialogComponent,
       componentProps: {
-        listaClassi: classi4Teacher,
-        activity: activity,
+        listaClassi: classi4Teacher.filter((c): c is ClasseModel => c !== undefined),
+        listaMaterie: this.subjects(),
+        activity: activity(),
         selectedClass: this.classKey()
       }
     });
     await modal.present();
 
     const result = await modal.onDidDismiss();
-    if (result.data) {
-      const newActivity = await this.$activites.addActivity(activity());
+    if (result.data && result.role !== 'cancel') {
+      const createdActivity = result.data instanceof ActivityModel
+        ? result.data
+        : new ActivityModel(result.data);
+      const newActivity = await this.$activites.addActivity(createdActivity);
 
       this.evaluationform().value.update(v => ({...v, ...({
         activityKey: newActivity.key

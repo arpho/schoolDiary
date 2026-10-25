@@ -50,16 +50,15 @@ export class ActivitiesService {
       });
     }
 
-    const activities: ActivityModel[] = [];
     const subscription = this.onSnapshotFn(q, (snapshot) => {
-      activities.length = 0; // Clear the array while keeping the reference
+      const activities: ActivityModel[] = [];
       snapshot.forEach((docSnap) => {
         activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
       });
-      callback([...activities]); // Return a new array reference to trigger change detection
+      callback(activities); // Return a new array reference to trigger change detection
     });
 
-    return () => subscription; // Return an unsubscribe function
+    return () => subscription(); // Return an unsubscribe function
   }
   private activitiesOnCache = signal<ActivityModel[]>([]);
   private collectionName = 'activities';
@@ -207,11 +206,17 @@ export class ActivitiesService {
    * @returns Promise con l'attività creata (inclusa la chiave generata).
    */
   async addActivity(activity: ActivityModel): Promise<ActivityModel> {
+    const activityModel = activity instanceof ActivityModel ? activity : new ActivityModel(activity);
     const collectionRef = this.collectionFn(this.firestore, this.collectionName);
-    const docref = await this.addDocFn(collectionRef, activity.serialize());
+    const docref = await this.addDocFn(collectionRef, activityModel.serialize());
     const docSnap = await this.getDocFn(docref);
     const newActivity = new ActivityModel(docSnap.data()).setKey(docSnap.id);
-    this.activitiesOnCache.update(activities => [...activities, newActivity]);
+    this.activitiesOnCache.update(activities => {
+      const exists = activities.some(a => a.key === newActivity.key);
+      return exists
+        ? activities.map(a => a.key === newActivity.key ? newActivity : a)
+        : [...activities, newActivity];
+    });
     return newActivity.setKey(docSnap.id);
   }
 
@@ -222,8 +227,15 @@ export class ActivitiesService {
    * @returns Promise vuota.
    */
   async updateActivity(activityKey: string, activity: ActivityModel): Promise<void> {
+    const activityModel = activity instanceof ActivityModel
+      ? activity
+      : new ActivityModel(activity);
+    activityModel.setKey(activityKey);
     const docRef = this.docFn(this.firestore, this.collectionName, activityKey);
-    return this.setDocFn(docRef, activity.serialize());
+    await this.setDocFn(docRef, activityModel.serialize());
+    this.activitiesOnCache.update(activities =>
+      activities.map(a => a.key === activityKey ? new ActivityModel(activityModel).setKey(activityKey) : a)
+    );
   }
 
   /**
@@ -233,7 +245,8 @@ export class ActivitiesService {
    */
   async deleteActivity(activityKey: string): Promise<void> {
     const docRef = this.docFn(this.firestore, this.collectionName, activityKey);
-    return this.deleteDocFn(docRef);
+    await this.deleteDocFn(docRef);
+    this.activitiesOnCache.update(activities => activities.filter(a => a.key !== activityKey));
   }
 
   /**
@@ -255,8 +268,8 @@ export class ActivitiesService {
         q = this.queryFn(q, this.whereFn(condition.field, condition.operator, condition.value));
       });
     }
-    const activities: ActivityModel[] = [];
     return this.onSnapshotFn(q, (snapshot) => {
+      const activities: ActivityModel[] = [];
       snapshot.forEach((docSnap) => {
         activities.push(new ActivityModel(docSnap.data()).setKey(docSnap.id));
       });
