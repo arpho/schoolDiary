@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth.guard';
 import { pendingChangesGuard } from './shared/guards/pending-changes.guard';
 import { roleGuard } from './shared/guards/role.guard';
+import { ownerOrRoleGuard } from './shared/guards/owner-or-role.guard';
 import { UsersRole } from './shared/models/usersRole';
 
 /**
@@ -77,16 +78,20 @@ export const routes: Routes = [
   },
   {
     path: 'classes-selector',
-    loadComponent: () => import('./pages/classes/pages/classes-selector/classes-selector.page').then(m => m.ClassesSelectorPage)
+    loadComponent: () => import('./pages/classes/pages/classes-selector/classes-selector.page').then(m => m.ClassesSelectorPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
 
   {
     path: 'profile/:userKey',
-    loadComponent: () => import('./pages/profile/profile.page').then(m => m.ProfilePage)
+    loadComponent: () => import('./pages/profile/profile.page').then(m => m.ProfilePage),
+    canActivate: [authGuard, ownerOrRoleGuard]
   },
   {
     path: 'evaluations-list4-student',
-    loadComponent: () => import('./pages/evaluations/pages/evaluations-list4-student/evaluations-list4-student.page').then(m => m.EvaluationsList4StudentPage)
+    loadComponent: () => import('./pages/evaluations/pages/evaluations-list4-student/evaluations-list4-student.page').then(m => m.EvaluationsList4StudentPage),
+    canActivate: [authGuard]
   },
   {
     path: 'evaluation-dialog',
@@ -104,7 +109,9 @@ export const routes: Routes = [
   },
   {
     path: 'evaluation/:studentKey/:classKey/:teacherKey',
-    loadComponent: () => import('./pages/evaluations/components/evaluation4pages/evaluation4pages.component').then(m => m.Evaluation4pagesComponent)
+    loadComponent: () => import('./pages/evaluations/components/evaluation4pages/evaluation4pages.component').then(m => m.Evaluation4pagesComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'evaluations-list',
@@ -135,11 +142,14 @@ export const routes: Routes = [
   },
   {
     path: "pdf-evaluation/:evaluationKey",
-    loadComponent: () => import('./pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component').then(m => m.Evaluation2PdfComponent)
+    loadComponent: () => import('./pages/evaluations/components/evaluation2-pdf/evaluation2-pdf.component').then(m => m.Evaluation2PdfComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'evaluations4-student/:studentKey/:teacherKey',
-    loadComponent: () => import('./pages/evaluations/pages/evaluations4-student/evaluations4-student.page').then(m => m.Evaluations4StudentPage)
+    loadComponent: () => import('./pages/evaluations/pages/evaluations4-student/evaluations4-student.page').then(m => m.Evaluations4StudentPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'class-evaluations-overview/:classKey/:teacherKey',
@@ -154,7 +164,9 @@ export const routes: Routes = [
   },
   {
     path: 'agenda',
-    loadComponent: () => import('./pages/agenda/agenda.page').then(m => m.AgendaPage)
+    loadComponent: () => import('./pages/agenda/agenda.page').then(m => m.AgendaPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'subjects-list',
@@ -178,19 +190,25 @@ export const routes: Routes = [
   },
   {
     path: 'progress/:studentKey/:subjectsKey',
-    loadComponent: () => import('./pages/evaluations/pages/progress/progress.page').then(m => m.ProgressPage)
+    loadComponent: () => import('./pages/evaluations/pages/progress/progress.page').then(m => m.ProgressPage),
+    canActivate: [authGuard, ownerOrRoleGuard]
   },
   {
     path: 'timetable',
-    loadComponent: () => import('./pages/timetable/timetable.page').then( m => m.TimetablePage)
+    loadComponent: () => import('./pages/timetable/timetable.page').then( m => m.TimetablePage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'tutoring',
-    loadComponent: () => import('./pages/tutoring/tutoring.page').then( m => m.TutoringPage)
+    loadComponent: () => import('./pages/tutoring/tutoring.page').then( m => m.TutoringPage),
+    canActivate: [authGuard]
   },
   {
     path: 'evaluations4-activity/:activityKey',
-    loadComponent: () => import('./pages/evaluations4-activity/evaluations4-activity.page').then( m => m.Evaluations4ActivityPage)
+    loadComponent: () => import('./pages/evaluations4-activity/evaluations4-activity.page').then( m => m.Evaluations4ActivityPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'changelog',
@@ -198,10 +216,13 @@ export const routes: Routes = [
   },
   {
     path: 'interrogations4user/:studentKey',
-    loadComponent: () => import('./pages/agenda/pages/interrogations4user/interrogations4user.page').then( m => m.Interrogations4userPage)
+    loadComponent: () => import('./pages/agenda/pages/interrogations4user/interrogations4user.page').then( m => m.Interrogations4userPage),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [UsersRole.ADMIN, UsersRole.TEACHER] }
   },
   {
     path: 'settings',
-    loadComponent: () => import('./pages/settings/settings.page').then( m => m.SettingsPage)
+    loadComponent: () => import('./pages/settings/settings.page').then( m => m.SettingsPage),
+    canActivate: [authGuard]
   }
 ];
