@@ -121,11 +121,18 @@ export const createUserPlus = onCall(
     const {email, password, role, firstName, lastName, classKey, additionalData = {}} = data;
     const auth = getAuth();
     const db = getFirestore();
-    // Verifica autenticazione
+    // Verifica autenticazione e ruolo ADMIN
     if (!request.auth) {
       throw new functions.https.HttpsError(
         "unauthenticated",
         "Devi essere autenticato per creare o aggiornare un utente",
+      );
+    }
+
+    if (request.auth.token.role !== UsersRole.ADMIN) {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Solo gli amministratori possono creare o modificare utenti",
       );
     }
 

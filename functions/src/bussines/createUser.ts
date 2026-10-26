@@ -31,11 +31,18 @@ export interface CreateUserData {
 export const createUser = onCall({enforceAppCheck: false}, async (request) => {
   const data = request.data as CreateUserData;
 
-  // Solo gli utenti autenticati possono creare nuovi utenti
+  // Solo gli utenti autenticati con ruolo ADMIN possono creare nuovi utenti
   if (!request.auth) {
     throw new functions.https.HttpsError(
       "unauthenticated",
       "Devi essere autenticato per creare un utente"
+    );
+  }
+
+  if (request.auth.token.role !== UsersRole.ADMIN) {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "Solo gli amministratori possono creare nuovi utenti"
     );
   }
 

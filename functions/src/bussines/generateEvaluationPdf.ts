@@ -1,7 +1,8 @@
-import {onCall, CallableRequest} from "firebase-functions/v2/https";
+import {onCall, CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import {getFirestore} from "firebase-admin/firestore";
 import {TDocumentDefinitions} from "pdfmake/interfaces";
+import {UsersRole} from "../shared/models/UsersRole";
 
 // Define fonts - we need to fetch them from somewhere or encode them
 // Since we are in cloud functions, importing fonts might be tricky.
@@ -41,6 +42,10 @@ interface GeneratePdfData {
 export const generateEvaluationPdf = onCall<GeneratePdfData>(
   {enforceAppCheck: false},
   async (request: CallableRequest<GeneratePdfData>) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Devi essere autenticato");
+    }
+
     const {data} = request;
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -48,7 +53,7 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
     const PdfPrinter = PdfPrinterLib.default || PdfPrinterLib;
 
     if (!data || !data.evaluationKey) {
-      throw new Error("Evaluation Key is required");
+      throw new HttpsError("invalid-argument", "Evaluation Key is required");
     }
 
     const {evaluationKey} = data;
@@ -59,9 +64,18 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
       const evalDoc = await db.collection("valutazioni")
         .doc(evaluationKey).get();
       if (!evalDoc.exists) {
-        throw new Error("Evaluation not found");
+        throw new HttpsError("not-found", "Evaluation not found");
       }
       const evaluation = evalDoc.data() as Evaluation;
+
+      // Se l'utente è uno studente, può accedere solo alle proprie valutazioni
+      const callerRole = request.auth.token.role;
+      if (callerRole === UsersRole.STUDENT && evaluation.studentKey !== request.auth.uid) {
+        throw new HttpsError(
+          "permission-denied",
+          "Non hai i permessi per visualizzare o scaricare le valutazioni di altri studenti"
+        );
+      }
 
       // 2. Fetch Related Data (Student, Teacher, Class)
       let studentName = "Unknown Student";
