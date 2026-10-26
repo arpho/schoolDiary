@@ -273,15 +273,19 @@
 
               <!-- Pulsantiera Azioni rapide -->
               <div class="eval-actions-footer">
-                <button class="action-btn edit" (click)="editEvaluation(evaluation)">
-                  <ion-icon name="create"></ion-icon> Modifica
-                </button>
+                @if (userCanEdit(evaluation)) {
+                  <button class="action-btn edit" (click)="editEvaluation(evaluation)">
+                    <ion-icon name="create"></ion-icon> Modifica
+                  </button>
+                }
                 <button class="action-btn pdf" (click)="evaluationPdf(evaluation)">
                   <ion-icon name="print"></ion-icon> Esporta PDF
                 </button>
-                <button class="action-btn delete" (click)="confirmDelete(evaluation)">
-                  <ion-icon name="trash"></ion-icon> Elimina
-                </button>
+                @if (userCanEdit(evaluation)) {
+                  <button class="action-btn delete" (click)="confirmDelete(evaluation)">
+                    <ion-icon name="trash"></ion-icon> Elimina
+                  </button>
+                }
               </div>
 
             </div>

@@ -70,7 +70,7 @@ import {
   documentOutline,
   sparklesOutline
 } from 'ionicons/icons';
-import { UsersRole } from 'functions/src/shared/models/UsersRole';
+import { UsersRole } from 'src/app/shared/models/usersRole';
 import { UserModel } from 'src/app/shared/models/userModel';
 import { UsersService } from 'src/app/shared/services/users.service';
 import { SubjectService } from 'src/app/pages/subjects-list/services/subjects/subject.service';
@@ -122,11 +122,31 @@ export class Evaluation4StudentComponent implements OnInit {
   private actionSheetCtrl = inject(ActionSheetController);
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
+  classKey = signal<string>('');
+  loggedUser = signal<UserModel | null>(null);
+  $users = inject(UsersService);
+
+  userCanEdit(evaluation: Evaluation): boolean {
+    const user = this.loggedUser();
+    if (!user || user.role === undefined || user.role === null) {
+      return false;
+    }
+    if (user.role === UsersRole.ADMIN) {
+      return true;
+    }
+    if (user.role === UsersRole.TEACHER) {
+      return evaluation.teacherKey === user.key;
+    }
+    return false;
+  }
+
   async openActionSheet(evaluation: Evaluation, evente: Event) {
     evente.stopPropagation();
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Azioni valutazione',
-      buttons: [
+    const canEdit = this.userCanEdit(evaluation);
+    const buttons: any[] = [];
+
+    if (canEdit) {
+      buttons.push(
         {
           text: 'Modifica',
           icon: 'create',
@@ -156,36 +176,37 @@ export class Evaluation4StudentComponent implements OnInit {
             actionSheet.dismiss();
             return false;
           }
-        },
-        {
-          text: 'Esporta in PDF',
-          icon: 'print',
-          handler: () => {
-            this.evaluationPdf(evaluation);
-            actionSheet.dismiss();
-            return false;
-          }
-        },
-        {
-          text: 'Annulla',
-          icon: 'close',
-          role: 'cancel',
-          handler: () => {
-            actionSheet.dismiss();
-            return false;
-          }
         }
-      ]
+      );
+    }
+
+    buttons.push(
+      {
+        text: 'Esporta in PDF',
+        icon: 'print',
+        handler: () => {
+          this.evaluationPdf(evaluation);
+          actionSheet.dismiss();
+          return false;
+        }
+      },
+      {
+        text: 'Annulla',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+          actionSheet.dismiss();
+          return false;
+        }
+      }
+    );
+
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Azioni valutazione',
+      buttons
     });
 
     await actionSheet.present();
-  }
-  classKey = signal<string>('');
-  loggedUser = signal<UserModel | null>(null)
-  $users = inject(UsersService);
-  userCanEdit(evaluation: Evaluation) {
-    const canEdit = this.loggedUser()?.role! <= UsersRole.TEACHER && evaluation.teacherKey === this.loggedUser()?.key;
-    return true;
   }
   viewEvaluation(_t12: Evaluation) {
     throw new Error('Method not implemented.');

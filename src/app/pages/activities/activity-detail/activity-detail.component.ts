@@ -38,6 +38,7 @@ import { ClassiService } from '../../classes/services/classi.service';
 import { UsersService } from '../../../shared/services/users.service';
 import { ClasseModel } from '../../classes/models/classModel';
 import { UserModel } from '../../../shared/models/userModel';
+import { UsersRole } from '../../../shared/models/usersRole';
 import {
   personOutline,
   warning,
@@ -111,6 +112,7 @@ export class ActivityDetailComponent implements OnInit {
   activity: ActivityModel | null = null;
   classe = signal<ClasseModel | null>(null);
   teacher = signal<UserModel | null>(null);
+  canEdit = signal<boolean>(false);
   isLoading = true;
   error: string | null = null;
   isEditMode = false;
@@ -145,6 +147,10 @@ export class ActivityDetailComponent implements OnInit {
     }
 
     try {
+      const claims = await this.usersService.getCustomClaims4LoggedUser();
+      const role = claims?.role;
+      this.canEdit.set(role === UsersRole.ADMIN || role === UsersRole.TEACHER);
+
       const activity = await this.activitiesService.getActivity(activityKey);
       if (activity) {
         this.activity = activity
@@ -242,6 +248,8 @@ export class ActivityDetailComponent implements OnInit {
    * Se disattivata, resetta il form ai valori originali.
    */
   toggleEditMode(): void {
+    if (!this.canEdit()) return;
+
     this.isEditMode = !this.isEditMode;
 
     if (this.isEditMode) {
@@ -258,6 +266,12 @@ export class ActivityDetailComponent implements OnInit {
    * Salva le modifiche all'attività.
    */
   async onSubmit(): Promise<void> {
+    if (!this.canEdit()) {
+      this.error = 'Operazione non consentita: permessi insufficienti';
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.isSubmitted = true;
 
     if (this.activityForm.invalid) {
