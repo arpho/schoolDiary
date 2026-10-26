@@ -2,6 +2,14 @@
 
 Tutte le modifiche di rilievo apportate a questo progetto saranno documentate in questo file.
 
+## [3.4.0] - 2026-10-26
+
+### Sicurezza & Risoluzione Vulnerabilità Studente
+- **Firestore Security Rules**: Riscritte completamente le regole di sicurezza con modello Least Privilege e Default Deny. Accesso in lettura e scrittura a valutazioni, attività, profili e agende limitato in base al ruolo e all'ownership, proteggendo dati sanitari e documenti PDP.
+- **Hardening Cloud Functions**: Aggiunta verifica di autenticazione e ruolo Admin obbligatorio su `setCustomClaims`, `createUser` e `createUserPlus`, prevenendo privilege escalation. Protetto `generateEvaluationPdf` verificando che gli studenti possano scaricare solo le proprie valutazioni.
+- **Routing & Ownership Guard**: Introdotto `ownerOrRoleGuard` in Angular per proteggere i profili e le rotte per parametro utente; applicato `roleGuard` a tutte le viste riservate a docenti e segreteria.
+- **Bonifica Componenti UI**: Rimosso il `return true` cablato in `Evaluation4StudentComponent.userCanEdit()` e nascosti i pulsanti e le opzioni di modifica/cancellazione agli studenti sia in `ActivityDetailComponent` che in `Evaluation4StudentComponent`.
+
 ## [0.0.4] - 2026-09-20
 
 ### Aggiunto

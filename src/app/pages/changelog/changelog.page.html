@@ -5,7 +5,54 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="changelog-container">
+    <!-- Version 3.4.0 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v3.4.0</ion-badge>
+          <span class="version-date">26 Ottobre 2026</span>
+        </div>
+        <ion-card-title>Sicurezza & Hardening Ruolo Studente</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Implementazione di una rigorosa architettura di sicurezza multilivello (Firestore, Cloud Functions e Client) per la protezione dei dati sensibili e la limitazione dei permessi del ruolo Studente.</p>
+
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="shield-checkmark-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Regole Firestore a Privilegi Minimi</h3>
+              <p>Riscritte le regole del database con fallback default deny. Gli studenti possono accedere esclusivamente alle proprie valutazioni e attività della propria classe; bloccata la lettura di profili altrui (protezione dati sensibili DSA, BES, ADHD e documenti PDP).</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="lock-closed-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Protezione Cloud Functions da Privilege Escalation</h3>
+              <p>Imposto il controllo del ruolo Admin per le funzioni di assegnazione custom claims e creazione/modifica utenti (setCustomClaims, createUser, createUserPlus); protetto il download delle valutazioni in formato PDF.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="person-outline" slot="start" color="tertiary"></ion-icon>
+            <ion-label>
+              <h3>Guard di Ownership & Rotte Protette</h3>
+              <p>Introdotto ownerOrRoleGuard per verificare che gli studenti possano accedere solo al proprio profilo o progresso; esteso roleGuard a tutte le rotte amministrative e gestionali dei docenti.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="checkmark-done-outline" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>Bonifica UI & Controlli Edit</h3>
+              <p>Nascosti i pulsanti di modifica/eliminazione e le voci dell'Action Sheet per gli studenti nella vista attività e valutazioni; corretto il calcolo dei permessi di modifica per consentire interventi solo al docente autore o all'amministratore.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Version 3.3.0 -->
     <ion-card>
       <ion-card-header>
