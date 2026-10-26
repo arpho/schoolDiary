@@ -1,20 +1,252 @@
 rules_version = '2';
 
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: userProfiles
+// Document ID: userId (Auth UID)
+// Fields:
+//   - key: string (UID of user)
+//   - firstName: string (required)
+//   - lastName: string (required)
+//   - email: string (required)
+//   - role: number (1=Admin, 2=Teacher, 3=Student)
+//   - classKey: string (optional, class identifier for students)
+//   - assignedClasses: array of strings (optional, for teachers)
+//   - DSA, DVA, BES, ADHD: boolean (sensitive medical/educational data)
+//   - noteDisabilita: string (sensitive notes)
+//   - pdpUrl: array of strings (sensitive document links)
+//
+// Collection: valutazioni
+// Document ID: auto-generated or string
+// Fields:
+//   - studentKey: string (UID of student, required)
+//   - teacherKey: string (UID of teacher)
+//   - classKey: string
+//   - description: string
+//   - grid: map
+//
+// Collection: activities
+// Document ID: auto-generated or string
+// Fields:
+//   - classKey: string (required)
+//   - teacherKey: string (UID of author teacher)
+//   - subjectKey / subjectsKey: string
+//   - title / description: string
+//   - date: string / timestamp
+//
+// Collection: agenda-events
+// Document ID: auto-generated or string
+// Fields:
+//   - targetClasses: array of strings
+//   - targetStudents: array of strings
+//   - teacherKey: string
+//   - type: string ('interrogation', 'homework', 'test', etc.)
+//
+// Collection: classi
+// Document ID: classKey
+// Fields:
+//   - classe: string (e.g. '3AI')
+//
+// Collection: subjects
+// Document ID: subjectKey
+// Fields:
+//   - title: string
+//
+// Collection: grids
+// Document ID: gridKey
+// Fields:
+//   - title: string
+//   - indicatori: array
+//
+// Collection: groups
+// Document ID: groupKey
+// Fields:
+//   - classKey: string
+//   - subjectKey: string
+//   - studentsKeyList: array of strings
+//
+// Collection: timetables / timetable
+// Document ID: timetableKey
+//
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**}  {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserRole() {
+      return isAuthenticated() && ('role' in request.auth.token)
+        ? request.auth.token.role
+        : null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        getUserRole() == 1 ||
+        (request.auth.token.admin == true)
+      );
+    }
+
+    function isTeacher() {
+      return isAuthenticated() && (getUserRole() == 2 || isAdmin());
+    }
+
+    function isStudent() {
+      return isAuthenticated() && getUserRole() == 3;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function studentClass() {
+      return ('classKey' in request.auth.token) ? request.auth.token.classKey : null;
+    }
+
+    // ===============================================================
+    // Collection: userProfiles
+    // ===============================================================
+    match /userProfiles/{userId} {
+      // Lettura consentita ad Admin, Docenti, al proprietario del profilo,
+      // oppure agli Studenti SOLO se il profilo letto appartiene a un Docente (role == 2)
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        isTeacher() ||
+        isOwner(userId) ||
+        (isStudent() && resource.data.role == 2)
+      );
+
+      // Creazione e cancellazione permessa solo agli amministratori
+      allow create, delete: if isAdmin();
+
+      // Modifica consentita ad Admin, oppure al proprietario per campi non sensibili
+      // (vietato modificare role, classKey, assignedClasses)
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        (
+          isOwner(userId) &&
+          request.resource.data.role == resource.data.role &&
+          (!('classKey' in resource.data) || request.resource.data.classKey == resource.data.classKey) &&
+          (!('assignedClasses' in resource.data) || request.resource.data.assignedClasses == resource.data.assignedClasses)
+        )
+      );
+
+      // Sottocollezione dispositivi FCM
+      match /devices/{deviceId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // ===============================================================
+    // Collection: valutazioni
+    // ===============================================================
+    match /valutazioni/{valutazioneId} {
+      // Lettura permessa a docenti/admin e allo studente proprietario della valutazione
+      allow read: if isAuthenticated() && (
+        isTeacher() ||
+        isAdmin() ||
+        (isStudent() && resource.data.studentKey == request.auth.uid)
+      );
+
+      // Scrittura (creazione, modifica, eliminazione) categoricamente vietata agli studenti
+      allow create, update, delete: if isTeacher() || isAdmin();
+    }
+
+    // ===============================================================
+    // Collection: activities
+    // ===============================================================
+    match /activities/{activityId} {
+      // Lettura per docenti/admin o per studenti della classe dell'attività
+      allow read: if isAuthenticated() && (
+        isTeacher() ||
+        isAdmin() ||
+        (isStudent() && (studentClass() == null || resource.data.classKey == studentClass()))
+      );
+
+      // Modifica/creazione/eliminazione permessa solo a docenti o admin
+      allow create, update, delete: if isTeacher() || isAdmin();
+    }
+
+    // ===============================================================
+    // Collection: agenda-events
+    // ===============================================================
+    match /agenda-events/{eventId} {
+      // Lettura per utenti autenticati (studenti consultano compiti/verifiche/interrogazioni)
+      allow read: if isAuthenticated();
+
+      // Scrittura permessa solo a docenti o admin
+      allow create, update, delete: if isTeacher() || isAdmin();
+    }
+
+    // ===============================================================
+    // Collection: classi
+    // ===============================================================
+    match /classi/{classId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isTeacher() || isAdmin();
+    }
+
+    // ===============================================================
+    // Collection: subjects
+    // ===============================================================
+    match /subjects/{subjectId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // ===============================================================
+    // Collection: grids
+    // ===============================================================
+    match /grids/{gridId} {
+      // Griglie di valutazione riservate ai docenti e admin
+      allow read, write: if isTeacher() || isAdmin();
+    }
+
+    // ===============================================================
+    // Collection: groups
+    // ===============================================================
+    match /groups/{groupId} {
+      allow read: if isAuthenticated() && (
+        isTeacher() ||
+        isAdmin() ||
+        (
+          isStudent() && (
+            (studentClass() != null && resource.data.classKey == studentClass()) ||
+            ('studentsKeyList' in resource.data && resource.data.studentsKeyList.hasAny([request.auth.uid]))
+          )
+        )
+      );
+
+      allow create, update, delete: if isTeacher() || isAdmin();
+    }
+
+    // ===============================================================
+    // Collection: timetables / timetable
+    // ===============================================================
+    match /timetable/{timetableId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /timetables/{timetableId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    // ===============================================================
+    // Fallback: Default Deny
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
