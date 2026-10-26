@@ -21,7 +21,8 @@ initializeApp();
 const setCustomClaims = onCall<SetCustomClaimsData>(
   {enforceAppCheck: false},
   async (request: CallableRequest<SetCustomClaimsData>) => {
-    // Solo gli utenti autenticati con ruolo ADMIN possono impostare custom claims
+    // Solo gli utenti autenticati con ruolo ADMIN possono impostare
+    // i custom claims
     if (!request.auth) {
       throw new HttpsError(
         "unauthenticated",

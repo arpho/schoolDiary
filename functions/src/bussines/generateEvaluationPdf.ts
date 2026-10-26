@@ -70,10 +70,14 @@ export const generateEvaluationPdf = onCall<GeneratePdfData>(
 
       // Se l'utente è uno studente, può accedere solo alle proprie valutazioni
       const callerRole = request.auth.token.role;
-      if (callerRole === UsersRole.STUDENT && evaluation.studentKey !== request.auth.uid) {
+      if (
+        callerRole === UsersRole.STUDENT &&
+        evaluation.studentKey !== request.auth.uid
+      ) {
         throw new HttpsError(
           "permission-denied",
-          "Non hai i permessi per visualizzare o scaricare le valutazioni di altri studenti"
+          "Non hai i permessi per visualizzare o scaricare le valutazioni " +
+          "di altri studenti"
         );
       }
 
