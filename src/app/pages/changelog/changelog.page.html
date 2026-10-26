@@ -6,6 +6,38 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="changelog-container">
+    <!-- Version 3.5.0 -->
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-badge color="success">v3.5.0</ion-badge>
+          <span class="version-date">26 Ottobre 2026</span>
+        </div>
+        <ion-card-title>Statistiche Valutazioni per Attività</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Introdotta la visualizzazione a schede con ion-segment nella pagina delle valutazioni per attività, permettendo di consultare sia l'elenco degli studenti sia le statistiche analitiche sull'attività.</p>
+
+        <ion-list lines="full">
+          <ion-item>
+            <ion-icon name="stats-chart-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Vista Statistiche & Indicatori Griglia</h3>
+              <p>Analisi dettagliata del rendimento con media generale in decimi, voto massimo e minimo, oltre all'analisi per singolo indicatore della griglia con barre di avanzamento percentuali.</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="list-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Navigazione a Segmenti (Elenco / Statistiche)</h3>
+              <p>Esperienza utente ottimizzata grazie a uno ion-segment integrato nella barra superiore per passare fluidamente dall'elenco studenti al quadro statistico complessivo.</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Version 3.4.0 -->
     <ion-card>
       <ion-card-header>
