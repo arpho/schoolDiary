@@ -5,6 +5,18 @@
     </ion-buttons>
     <ion-title size="large" class="ion-text-center">Valutazioni per {{activity()?.title}}</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [value]="selectedSegment()" (ionChange)="onSegmentChange($event)" mode="ios">
+      <ion-segment-button value="list">
+        <ion-icon name="list-outline"></ion-icon>
+        <ion-label>Elenco ({{evaluations().length}})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="stats">
+        <ion-icon name="stats-chart-outline"></ion-icon>
+        <ion-label>Statistiche</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -14,42 +26,105 @@
     </ion-toolbar>
   </ion-header>
 
-  @if (evaluations().length > 0) {
-    <ion-list>
-      @for (eval of evaluations(); track eval) {
-        <ion-item button (click)="openActionSheet(eval, $event)">
-          <ion-label>
-            <h2>{{eval.studentName}}</h2>
-            <p>Data: {{eval.data | date:'dd/MM/yyyy'}}</p>
-            @if (eval.note) {
-              <p class="ion-text-wrap">Note: {{eval.note}}</p>
-            }
-            @if (eval.enclosedDocuments && eval.enclosedDocuments.length > 0) {
-              <div class="ion-margin-top">
-                <p><strong>Allegati:</strong></p>
-                <div class="ion-flex ion-flex-wrap">
-                  @for (doc of eval.enclosedDocuments; track doc) {
-                    <ion-button fill="outline" size="small" [href]="doc.path" target="_blank" class="ion-margin-end" (click)="$event.stopPropagation()">
-                      <ion-icon slot="start" name="link"></ion-icon>
-                      {{doc.name}}
-                    </ion-button>
-                  }
-                </div>
-              </div>
-            }
-          </ion-label>
-          <ion-note slot="end" color="primary" class="ion-text-center">
-            <h3 style="margin-bottom: 0;">{{eval.voto}} / {{eval.votoMax}}</h3>
-            <p style="margin-top: 0;">({{eval.gradeInDecimal | number:'1.1-2'}}/10)</p>
-          </ion-note>
-        </ion-item>
-      }
-    </ion-list>
-  }
-
   @if (evaluations().length === 0) {
-    <div class="ion-padding ion-text-center">
+    <div class="ion-padding ion-text-center empty-container">
       <p>Nessuna valutazione trovata per questa attività.</p>
     </div>
+  } @else {
+    <!-- VISTA LISTA -->
+    @if (selectedSegment() === 'list') {
+      <ion-list>
+        @for (eval of evaluations(); track eval.key || eval) {
+          <ion-item button (click)="openActionSheet(eval, $event)">
+            <ion-label>
+              <h2>{{eval.studentName}}</h2>
+              <p>Data: {{eval.data | date:'dd/MM/yyyy'}}</p>
+              @if (eval.note) {
+                <p class="ion-text-wrap">Note: {{eval.note}}</p>
+              }
+              @if (eval.enclosedDocuments && eval.enclosedDocuments.length > 0) {
+                <div class="ion-margin-top">
+                  <p><strong>Allegati:</strong></p>
+                  <div class="ion-flex ion-flex-wrap">
+                    @for (doc of eval.enclosedDocuments; track doc) {
+                      <ion-button fill="outline" size="small" [href]="doc.path" target="_blank" class="ion-margin-end" (click)="$event.stopPropagation()">
+                        <ion-icon slot="start" name="link"></ion-icon>
+                        {{doc.name}}
+                      </ion-button>
+                    }
+                  </div>
+                </div>
+              }
+            </ion-label>
+            <ion-note slot="end" color="primary" class="ion-text-center">
+              <h3 style="margin-bottom: 0;">{{eval.voto}} / {{eval.votoMax}}</h3>
+              <p style="margin-top: 0;">({{eval.gradeInDecimal | number:'1.1-2'}}/10)</p>
+            </ion-note>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    <!-- VISTA STATISTICHE -->
+    @if (selectedSegment() === 'stats') {
+      <div class="stats-container ion-padding">
+        <!-- Sintesi Generale -->
+        <ion-card class="stat-card">
+          <ion-card-header>
+            <ion-card-title>Riepilogo Generale</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span class="summary-label">Valutati</span>
+                <span class="summary-value">{{evaluations().length}}</span>
+              </div>
+              <div class="summary-item highlight">
+                <span class="summary-label">Media (in decimi)</span>
+                <span class="summary-value">{{averageGrade() | number:'1.1-2'}} / 10</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Voto Max</span>
+                <span class="summary-value">{{maxGrade() | number:'1.1-2'}} / 10</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Voto Min</span>
+                <span class="summary-value">{{minGrade() | number:'1.1-2'}} / 10</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Statistiche Indicatori Griglia -->
+        <ion-card class="stat-card">
+          <ion-card-header>
+            <ion-card-title>Statistiche Indicatori Griglia</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            @if (indicatorStats().length === 0) {
+              <p class="ion-text-muted">Nessun indicatore presente nelle valutazioni.</p>
+            } @else {
+              <div class="indicators-list">
+                @for (stat of indicatorStats(); track stat.descrizione) {
+                  <div class="indicator-item">
+                    <div class="indicator-header">
+                      <span class="indicator-name">{{stat.descrizione}}</span>
+                      <span class="indicator-score">
+                        Media: <strong>{{stat.avgVoto | number:'1.1-2'}}</strong> / {{stat.valoreMax}}
+                        ({{stat.percentage | number:'1.0-0'}}%)
+                      </span>
+                    </div>
+                    <ion-progress-bar 
+                      [value]="stat.percentage / 100" 
+                      [color]="stat.percentage >= 60 ? 'success' : (stat.percentage >= 50 ? 'warning' : 'danger')">
+                    </ion-progress-bar>
+                  </div>
+                }
+              </div>
+            }
+          </ion-card-content>
+        </ion-card>
+      </div>
+    }
   }
 </ion-content>

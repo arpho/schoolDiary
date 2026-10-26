@@ -46,4 +46,44 @@ describe('Evaluations4ActivityPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should calculate statistics and indicator statistics correctly', () => {
+    component.evaluations.set([
+      {
+        gradeInDecimal: 8,
+        grid: {
+          indicatori: [
+            { descrizione: 'Correttezza', voto: 8, valore: '10' },
+            { descrizione: 'Completezza', voto: 7, valore: '10' }
+          ]
+        }
+      },
+      {
+        gradeInDecimal: 6,
+        grid: {
+          indicatori: [
+            { descrizione: 'Correttezza', voto: 6, valore: '10' },
+            { descrizione: 'Completezza', voto: 5, valore: '10' }
+          ]
+        }
+      }
+    ]);
+
+    expect(component.averageGrade()).toBe(7);
+    expect(component.maxGrade()).toBe(8);
+    expect(component.minGrade()).toBe(6);
+
+    const stats = component.indicatorStats();
+    expect(stats.length).toBe(2);
+
+    const correttezza = stats.find(s => s.descrizione === 'Correttezza');
+    expect(correttezza).toBeDefined();
+    expect(correttezza?.avgVoto).toBe(7);
+    expect(correttezza?.percentage).toBe(70);
+
+    const completezza = stats.find(s => s.descrizione === 'Completezza');
+    expect(completezza).toBeDefined();
+    expect(completezza?.avgVoto).toBe(6);
+    expect(completezza?.percentage).toBe(60);
+  });
 });

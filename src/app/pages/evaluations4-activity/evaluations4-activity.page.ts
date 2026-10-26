@@ -1,8 +1,31 @@
-import { Component, OnInit, inject, signal, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonNote, IonIcon, IonButton, ActionSheetController, AlertController, ToastController, IonButtons, IonBackButton } from '@ionic/angular/standalone';
+import { 
+  IonContent, 
+  IonHeader, 
+  IonTitle, 
+  IonToolbar, 
+  IonList, 
+  IonItem, 
+  IonLabel, 
+  IonNote, 
+  IonIcon, 
+  IonButton, 
+  ActionSheetController, 
+  AlertController, 
+  ToastController, 
+  IonButtons, 
+  IonBackButton,
+  IonSegment,
+  IonSegmentButton,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonProgressBar
+} from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { ActivityModel } from '../activities/models/activityModel';
 import { ActivitiesService } from '../activities/services/activities.service';
@@ -10,7 +33,15 @@ import { EvaluationService } from '../evaluations/services/evaluation/evaluation
 import { UsersService } from '../../shared/services/users.service';
 import { QueryCondition } from 'src/app/shared/models/queryCondition';
 import { addIcons } from 'ionicons';
-import { eye, link, create, archive, trash, print, close } from 'ionicons/icons';
+import { eye, link, create, archive, trash, print, close, listOutline, statsChartOutline } from 'ionicons/icons';
+
+export interface IndicatorStat {
+  descrizione: string;
+  count: number;
+  avgVoto: number;
+  valoreMax: number;
+  percentage: number;
+}
 
 @Component({
   selector: 'app-evaluations4-activity',
@@ -31,6 +62,13 @@ import { eye, link, create, archive, trash, print, close } from 'ionicons/icons'
     IonButton,
     IonButtons,
     IonBackButton,
+    IonSegment,
+    IonSegmentButton,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonProgressBar,
     CommonModule, 
     FormsModule
   ]
@@ -48,10 +86,81 @@ export class Evaluations4ActivityPage implements OnInit, OnDestroy {
   activityKey: string | null = null;
   activity = signal<ActivityModel | null>(null);
   evaluations = signal<any[]>([]);
+  selectedSegment = signal<'list' | 'stats'>('list');
   private unsubscribe: any;
 
+  // Statistiche calcolate
+  averageGrade = computed(() => {
+    const list = this.evaluations();
+    const valid = list.filter(e => typeof e.gradeInDecimal === 'number' && !isNaN(e.gradeInDecimal));
+    if (valid.length === 0) return 0;
+    const sum = valid.reduce((acc, curr) => acc + curr.gradeInDecimal, 0);
+    return sum / valid.length;
+  });
+
+  maxGrade = computed(() => {
+    const list = this.evaluations();
+    const valid = list.filter(e => typeof e.gradeInDecimal === 'number' && !isNaN(e.gradeInDecimal));
+    if (valid.length === 0) return 0;
+    return Math.max(...valid.map(e => e.gradeInDecimal));
+  });
+
+  minGrade = computed(() => {
+    const list = this.evaluations();
+    const valid = list.filter(e => typeof e.gradeInDecimal === 'number' && !isNaN(e.gradeInDecimal));
+    if (valid.length === 0) return 0;
+    return Math.min(...valid.map(e => e.gradeInDecimal));
+  });
+
+  indicatorStats = computed<IndicatorStat[]>(() => {
+    const list = this.evaluations();
+    const indicatorMap = new Map<string, { totalVoto: number; count: number; valoreMax: number }>();
+
+    for (const ev of list) {
+      const indicatori = ev?.grid?.indicatori;
+      if (Array.isArray(indicatori)) {
+        for (const ind of indicatori) {
+          const key = ind.descrizione?.trim() || 'Indicatore senza descrizione';
+          const voto = Number(ind.voto) || 0;
+          const maxVal = Number(ind.valore) || 0;
+
+          if (!indicatorMap.has(key)) {
+            indicatorMap.set(key, { totalVoto: 0, count: 0, valoreMax: maxVal });
+          }
+          const item = indicatorMap.get(key)!;
+          item.totalVoto += voto;
+          item.count += 1;
+          if (maxVal > item.valoreMax) {
+            item.valoreMax = maxVal;
+          }
+        }
+      }
+    }
+
+    const result: IndicatorStat[] = [];
+    indicatorMap.forEach((val, descrizione) => {
+      const avgVoto = val.count > 0 ? val.totalVoto / val.count : 0;
+      const percentage = val.valoreMax > 0 ? (avgVoto / val.valoreMax) * 100 : 0;
+      result.push({
+        descrizione,
+        count: val.count,
+        avgVoto,
+        valoreMax: val.valoreMax,
+        percentage
+      });
+    });
+
+    return result;
+  });
+
   constructor() {
-    addIcons({ eye, link, create, archive, trash, print, close });
+    addIcons({ eye, link, create, archive, trash, print, close, listOutline, statsChartOutline });
+  }
+
+  onSegmentChange(event: any) {
+    if (event?.detail?.value) {
+      this.selectedSegment.set(event.detail.value);
+    }
   }
 
   ngOnInit() {
